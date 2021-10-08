@@ -87,14 +87,6 @@ public class GroupchatRepository {
                     groupchatRealmObject.setPinnedMessageId(groupChat.getPinnedMessageId());
                     groupchatRealmObject.setMembersListVersion(groupChat.getMembersListVersion());
                     groupchatRealmObject.setMembersCount(groupChat.getNumberOfMembers());
-
-                    groupchatRealmObject.setCanInvite(groupChat.isCanInvite());
-                    groupchatRealmObject.setCanChangeSettings(groupChat.isCanChangeSettings());
-                    groupchatRealmObject.setCanChangeUsersSettings(groupChat.isCanChangeUsersSettings());
-                    groupchatRealmObject.setCanChangeNicknames(groupChat.isCanChangeNicknames());
-                    groupchatRealmObject.setCanChangeBadge(groupChat.isCanChangeBadge());
-                    groupchatRealmObject.setCanBlockUsers(groupChat.isCanBlockUsers());
-                    groupchatRealmObject.setCanChangeAvatars(groupChat.isCanChangeAvatars());
                     groupchatRealmObject.setRetractVersion(groupChat.getRetractVersion());
 
                     groupchatRealmObject.setNotificationState(groupChat.getNotificationState());
@@ -127,10 +119,8 @@ public class GroupchatRepository {
                 list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),
                         gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
                         gro.getDescription(), gro.getMembersCount(), gro.getPinnedMessageId(),
-                        gro.getMembersListVersion(), gro.isCanInvite(), gro.isCanChangeSettings(),
-                        gro.isCanChangeUsersSettings(), gro.isCanChangeNicknames(), gro.isCanChangeBadge(),
-                        gro.isCanBlockUsers(), gro.isCanChangeAvatars(), gro.getResource(),
-                        gro.getNotificationState(), gro.getRetractVersion()));
+                        gro.getMembersListVersion(), gro.getResource(), gro.getNotificationState(),
+                        gro.getRetractVersion()));
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
             }

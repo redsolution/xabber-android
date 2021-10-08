@@ -38,13 +38,6 @@ public class GroupchatRealmObject extends RealmObject {
     private String description;
     private String pinnedMessageId;
     private String membersListVersion;
-    private boolean canInvite;
-    private boolean canChangeSettings;
-    private boolean canChangeUsersSettings;
-    private boolean canChangeNicknames;
-    private boolean canChangeBadge;
-    private boolean canBlockUsers;
-    private boolean canChangeAvatars;
     private int membersCount;
     private long present;
     private boolean collect;
@@ -186,55 +179,6 @@ public class GroupchatRealmObject extends RealmObject {
     }
     public void setInvited(RealmList<String> invited) {
         this.invited = invited;
-    }
-
-    public boolean isCanInvite() {
-        return canInvite;
-    }
-    public void setCanInvite(boolean canInvite) {
-        this.canInvite = canInvite;
-    }
-
-    public boolean isCanChangeSettings() {
-        return canChangeSettings;
-    }
-    public void setCanChangeSettings(boolean canChangeSettings) {
-        this.canChangeSettings = canChangeSettings;
-    }
-
-    public boolean isCanChangeUsersSettings() {
-        return canChangeUsersSettings;
-    }
-    public void setCanChangeUsersSettings(boolean canChangeUsersSettings) {
-        this.canChangeUsersSettings = canChangeUsersSettings;
-    }
-
-    public boolean isCanChangeNicknames() {
-        return canChangeNicknames;
-    }
-    public void setCanChangeNicknames(boolean canChangeNicknames) {
-        this.canChangeNicknames = canChangeNicknames;
-    }
-
-    public boolean isCanChangeBadge() {
-        return canChangeBadge;
-    }
-    public void setCanChangeBadge(boolean canChangeBadge) {
-        this.canChangeBadge = canChangeBadge;
-    }
-
-    public boolean isCanBlockUsers() {
-        return canBlockUsers;
-    }
-    public void setCanBlockUsers(boolean canBlockUsers) {
-        this.canBlockUsers = canBlockUsers;
-    }
-
-    public boolean isCanChangeAvatars() {
-        return canChangeAvatars;
-    }
-    public void setCanChangeAvatars(boolean canChangeAvatars) {
-        this.canChangeAvatars = canChangeAvatars;
     }
 
     public String getStatus() {

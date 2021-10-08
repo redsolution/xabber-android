@@ -47,15 +47,6 @@ public class GroupChat extends AbstractChat {
 
     private String retractVersion;
 
-    //Permissions and restrictions
-    private boolean canInvite;
-    private boolean canChangeSettings;
-    private boolean canChangeUsersSettings;
-    private boolean canChangeNicknames;
-    private boolean canChangeBadge;
-    private boolean canBlockUsers;
-    private boolean canChangeAvatars;
-
     public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user) {
         super(account, user);
     }
@@ -63,9 +54,7 @@ public class GroupChat extends AbstractChat {
     public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user, GroupIndexType indexType,
                      GroupMembershipType membershipType, GroupPrivacyType privacyType, String owner,
                      String name, String description, int numberOfMembers, String pinnedMessageId,
-                     String membersListVersion, boolean canInvite, boolean canChangeSettings,
-                     boolean canChangeUsersSettings, boolean canChangeNicknames, boolean canChangeBadge,
-                     boolean canBlockUsers, boolean canChangeAvatars, Resourcepart resource,
+                     String membersListVersion, Resourcepart resource,
                      NotificationState notificationState, String retractVersion) {
         super(account, user);
         this.indexType = indexType;
@@ -77,13 +66,6 @@ public class GroupChat extends AbstractChat {
         this.numberOfMembers = numberOfMembers;
         this.pinnedMessageId = pinnedMessageId;
         this.membersListVersion = membersListVersion;
-        this.canInvite = canInvite;
-        this.canChangeSettings = canChangeSettings;
-        this.canChangeUsersSettings = canChangeUsersSettings;
-        this.canChangeNicknames = canChangeNicknames;
-        this.canChangeBadge = canChangeBadge;
-        this.canBlockUsers = canBlockUsers;
-        this.canChangeAvatars = canChangeAvatars;
         this.resource = resource;
         this.setNotificationState(notificationState, false);
         this.retractVersion = retractVersion;
@@ -156,35 +138,6 @@ public class GroupChat extends AbstractChat {
     public String getMembersListVersion() { return membersListVersion; }
     public void setMembersListVersion(String membersListVersion) {
         this.membersListVersion = membersListVersion;
-    }
-
-    public boolean isCanInvite() { return canInvite; }
-    public void setCanInvite(boolean canInvite) { this.canInvite = canInvite; }
-
-    public boolean isCanChangeSettings() { return canChangeSettings; }
-    public void setCanChangeSettings(boolean canChangeSettings) {
-        this.canChangeSettings = canChangeSettings;
-    }
-
-    public boolean isCanChangeUsersSettings() { return canChangeUsersSettings; }
-    public void setCanChangeUsersSettings(boolean canChangeUsersSettings) {
-        this.canChangeUsersSettings = canChangeUsersSettings;
-    }
-
-    public boolean isCanChangeNicknames() { return canChangeNicknames; }
-    public void setCanChangeNicknames(boolean canChangeNicknames) {
-        this.canChangeNicknames = canChangeNicknames;
-    }
-
-    public boolean isCanChangeBadge() { return canChangeBadge; }
-    public void setCanChangeBadge(boolean canChangeBadge) { this.canChangeBadge = canChangeBadge; }
-
-    public boolean isCanBlockUsers() { return canBlockUsers; }
-    public void setCanBlockUsers(boolean canBlockUsers) { this.canBlockUsers = canBlockUsers; }
-
-    public boolean isCanChangeAvatars() { return canChangeAvatars; }
-    public void setCanChangeAvatars(boolean canChangeAvatars) {
-        this.canChangeAvatars = canChangeAvatars;
     }
 
     public int getNumberOfMembers() { return numberOfMembers; }
