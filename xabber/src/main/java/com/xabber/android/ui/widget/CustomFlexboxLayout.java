@@ -90,13 +90,13 @@ public class CustomFlexboxLayout extends RelativeLayout {
 
         if (viewPartMainLastLineWidth + viewPartSlaveWidth > availableWidth) {
             widthSize += viewPartMainWidth;
-            heightSize += viewPartMainHeight + viewPartSlaveHeight;;
+            heightSize += viewPartMainHeight + viewPartSlaveHeight;
         } else if (viewPartMainWidth >= viewPartMainLastLineWidth + viewPartSlaveWidth) {
             widthSize += viewPartMainWidth;
-            heightSize += viewPartMainHeight;;
+            heightSize += viewPartMainHeight;
         } else {
             widthSize += viewPartMainLastLineWidth + viewPartSlaveWidth;
-            heightSize += viewPartMainHeight;;
+            heightSize += viewPartMainHeight;
         }
 
         this.setMeasuredDimension(widthSize, heightSize);

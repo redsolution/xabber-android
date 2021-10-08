@@ -35,6 +35,7 @@ import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.text.CustomQuoteSpan;
 import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
+import com.xabber.android.ui.widget.CorrectlyTouchEventTextView;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -180,9 +181,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, V
 
         }
 
-        messageText.setMovementMethod(
-                CorrectlyMeasuringTextView.LocalLinkMovementMethod.getInstance()
-        );
+        messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.INSTANCE);
 
         // set unread status
         isUnread = extraData.isUnread();
