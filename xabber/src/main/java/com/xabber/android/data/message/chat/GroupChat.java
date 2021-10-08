@@ -54,7 +54,7 @@ public class GroupChat extends AbstractChat {
     public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user, GroupIndexType indexType,
                      GroupMembershipType membershipType, GroupPrivacyType privacyType, String owner,
                      String name, String description, int numberOfMembers, String pinnedMessageId,
-                     String membersListVersion, Resourcepart resource,
+                     String membersListVersion, Resourcepart resource, int lastPosition,
                      NotificationState notificationState, String retractVersion) {
         super(account, user);
         this.indexType = indexType;
@@ -67,6 +67,7 @@ public class GroupChat extends AbstractChat {
         this.pinnedMessageId = pinnedMessageId;
         this.membersListVersion = membersListVersion;
         this.resource = resource;
+        this.setLastPosition(lastPosition);
         this.setNotificationState(notificationState, false);
         this.retractVersion = retractVersion;
     }

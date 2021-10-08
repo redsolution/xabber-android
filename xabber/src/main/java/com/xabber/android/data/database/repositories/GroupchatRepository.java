@@ -88,6 +88,7 @@ public class GroupchatRepository {
                     groupchatRealmObject.setMembersListVersion(groupChat.getMembersListVersion());
                     groupchatRealmObject.setMembersCount(groupChat.getNumberOfMembers());
                     groupchatRealmObject.setRetractVersion(groupChat.getRetractVersion());
+                    groupchatRealmObject.setLastPosition(groupChat.getLastPosition());
 
                     groupchatRealmObject.setNotificationState(groupChat.getNotificationState());
                     if (groupChat.getResource() != null) groupchatRealmObject.setResource(groupChat.getResource());
@@ -119,8 +120,8 @@ public class GroupchatRepository {
                 list.add(new GroupChat(gro.getAccountJid(), gro.getGroupchatJid(), gro.getIndex(),
                         gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
                         gro.getDescription(), gro.getMembersCount(), gro.getPinnedMessageId(),
-                        gro.getMembersListVersion(), gro.getResource(), gro.getNotificationState(),
-                        gro.getRetractVersion()));
+                        gro.getMembersListVersion(), gro.getResource(), gro.getLastPosition(),
+                        gro.getNotificationState(), gro.getRetractVersion()));
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
             }
