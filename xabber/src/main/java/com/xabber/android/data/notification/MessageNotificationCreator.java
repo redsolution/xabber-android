@@ -51,7 +51,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 
 public class MessageNotificationCreator {
 
@@ -117,11 +116,15 @@ public class MessageNotificationCreator {
 
     public void createNotificationWithoutBannerJustSound(){
         try {
-            MediaPlayer mediaPlayer = MediaPlayer.create(Application.getInstance().getBaseContext(),
+            MediaPlayer mediaPlayer = MediaPlayer.create(
+                    Application.getInstance().getBaseContext(),
                     RingtoneManager.getActualDefaultRingtoneUri(
                             Application.getInstance().getApplicationContext(),
-                            RingtoneManager.TYPE_NOTIFICATION));
+                            RingtoneManager.TYPE_NOTIFICATION
+                    )
+            );
             mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release);
 
             Vibrator v = (Vibrator) Application.getInstance().getSystemService(Context.VIBRATOR_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
