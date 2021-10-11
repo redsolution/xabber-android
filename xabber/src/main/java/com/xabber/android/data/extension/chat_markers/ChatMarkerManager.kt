@@ -118,6 +118,7 @@ object ChatMarkerManager : OnPacketListener {
 
                     // start grace period
                     AccountManager.getAccount(account)?.startGracePeriod()
+                    it.saveLastPosition(it.messages.size)
                 }
             }
         } else if (direction == CarbonExtension.Direction.received) {

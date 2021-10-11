@@ -478,6 +478,13 @@ public class MessageManager implements OnPacketListener {
                     ChatMarkersElements.ReceivedExtension.ELEMENT, ChatMarkersElements.NAMESPACE)
             ) {
                 AccountManager.INSTANCE.getAccount(account).startGracePeriod();
+                try {
+                    ContactJid contactJid = ContactJid.from(message.getTo());
+                    AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
+                    chat.saveLastPosition(chat.getMessages().size());
+                } catch (ContactJid.ContactJidCreateException e) {
+                    LogManager.exception(this, e);
+                }
             }
 
         } else if (direction == CarbonExtension.Direction.received) {

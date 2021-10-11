@@ -25,8 +25,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountDisabledListener;
 import com.xabber.android.data.account.OnAccountRemovedListener;
-import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.GroupchatRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
@@ -351,6 +349,10 @@ public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedLi
             throw new NetworkException(R.string.FILE_NOT_FOUND);
         }
         return file;
+    }
+
+    public void resetLastPosition(AbstractChat abstractChat) {
+
     }
 
 }

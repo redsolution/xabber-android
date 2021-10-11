@@ -512,6 +512,13 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
                     ChatState chatState = ((ChatStateExtension) extension).getChatState();
                     if (chatState == ChatState.active || chatState == ChatState.composing) {
                         AccountManager.INSTANCE.getAccount(account).startGracePeriod();
+                        try {
+                            ContactJid contactJid = ContactJid.from(message.getTo());
+                            AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
+                            chat.saveLastPosition(chat.getMessages().size());
+                        } catch (ContactJid.ContactJidCreateException e) {
+                            LogManager.exception(this, e);
+                        }
                     }
                     break;
                 }
