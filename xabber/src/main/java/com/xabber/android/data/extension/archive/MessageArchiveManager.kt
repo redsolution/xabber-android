@@ -67,22 +67,12 @@ object MessageArchiveManager : OnRosterReceivedListener {
 
     fun isSupported(accountItem: AccountItem) =
         try {
-            ServiceDiscoveryManager.getInstanceFor(accountItem.connection).supportsFeature(
-                accountItem.connection.user.asBareJid(), NAMESPACE
-            )
+            ServiceDiscoveryManager.getInstanceFor(accountItem.connection)
+                .serverSupportsFeature(NAMESPACE)
         } catch (e: Exception) {
             LogManager.exception(this, e)
             false
         }
-
-    fun isSupported(connection: XMPPConnection) = try {
-        ServiceDiscoveryManager.getInstanceFor(connection).supportsFeature(
-            connection.user.asBareJid(), NAMESPACE
-        )
-    } catch (e: Exception) {
-        LogManager.exception(this, e)
-        false
-    }
 
     fun loadMessageByStanzaId(chat: AbstractChat, stanzaId: String) {
         Application.getInstance().runInBackgroundNetworkUserRequest {

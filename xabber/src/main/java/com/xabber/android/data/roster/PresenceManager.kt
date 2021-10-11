@@ -33,7 +33,6 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.extension.archive.MessageArchiveManager
-import com.xabber.android.data.extension.archive.MessageArchiveManager.isSupported
 import com.xabber.android.data.extension.archive.OnHistoryLoaded
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.capability.CapabilitiesManager
@@ -100,7 +99,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         val accountItem = AccountManager.getAccount(connectionItem.account) ?: return
         val accountJid = accountItem.account
 
-        if (isSupported(connectionItem.connection) && accountItem.startHistoryTimestamp == null) {
+        if (MessageArchiveManager.isSupported(accountItem) && accountItem.startHistoryTimestamp == null) {
             try {
                 sendAccountPresence(accountJid)
             } catch (e: NetworkException) {
