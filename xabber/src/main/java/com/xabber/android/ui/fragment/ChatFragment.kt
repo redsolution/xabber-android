@@ -1008,7 +1008,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         message: MessageRealmObject?, needNotification: Boolean
     ) {
         Application.getInstance().runOnUiThread {
-            if (accountJid == accountJid && contactJid == contactJid) {
+            if (accountJid == this.accountJid && this.contactJid == contactJid) {
                 if (needNotification) {
                     playMessageSound()
                 }
