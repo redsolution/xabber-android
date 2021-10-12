@@ -547,18 +547,17 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     private void generateQR() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(account, fakeAccountUser);
-        Intent intent = QRCodeActivity.createIntent(AccountActivity.this, account);
         String textName = rosterContact != null ? rosterContact.getName() : "";
-        intent.putExtra("account_name", textName);
-        String textAddress =  account.getFullJid().asBareJid().toString();
-        intent.putExtra("account_address", textAddress);
+        Intent intent = QRCodeActivity.createIntentForXmppEntity(AccountActivity.this, textName, account.getBareJid());
+
         intent.putExtra("caller", "AccountActivity");
         startActivity(intent);
     }
 
     private void runColorPickerDialog() {
-        AccountColorDialog.newInstance(account).show(getFragmentManager(),
-                AccountColorDialog.class.getSimpleName());
+        AccountColorDialog.newInstance(account).show(
+                getFragmentManager(), AccountColorDialog.class.getSimpleName()
+        );
     }
 
     @Override

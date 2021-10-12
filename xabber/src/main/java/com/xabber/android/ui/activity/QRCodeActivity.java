@@ -8,27 +8,38 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 
+import com.google.zxing.BarcodeFormat;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.xabber.android.R;
-import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.QRCodeFragment;
+
+import org.jxmpp.jid.Jid;
 
 public class QRCodeActivity extends ManagedActivity {
 
-    public static final String ACCOUNT_NAME_ARG = "com.xabber.android.ui.activity.account_name";
-    public static final String ACCOUNT_ADDRESS_ARG = "com.xabber.android.ui.activity.account_address";
-
     private Toolbar toolbar;
 
-    public static Intent createIntent(Context context, AccountJid account) {
-        return IntentHelpersKt.createAccountIntent(context, QRCodeActivity.class, account);
+    private static final String TITLE_ARGUMENT = "com.xabber.android.ui.activity.QRCodeActivity.TITLE_ARGUMENT";
+    private static final String TO_BE_ENCODED_STRING = "com.xabber.android.ui.activity.QRCodeActivity.TO_BE_ENCODED_STRING";
+
+    public static Intent createIntentForXmppEntity(Context context, String title, Jid jid) {
+        return createIntent(context, title, "xmpp:".concat(jid.toString()));
+    }
+
+    public static Intent createIntent(Context context, String title, String toBeEncodedString) {
+        Intent intent = new Intent(context, QRCodeActivity.class);
+        intent.putExtra(TITLE_ARGUMENT, title);
+        intent.putExtra(TO_BE_ENCODED_STRING, toBeEncodedString);
+        return intent;
     }
 
     @Override
@@ -37,10 +48,7 @@ public class QRCodeActivity extends ManagedActivity {
 
         setContentView(R.layout.qrcode_activity);
 
-        Intent intent = getIntent();
-
-        AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         } else {
@@ -49,73 +57,71 @@ public class QRCodeActivity extends ManagedActivity {
 
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        ImageView shareIv = (ImageView) findViewById(R.id.ic_share);
+        ImageView shareIv = findViewById(R.id.ic_share);
         Drawable shareIcon = ResourcesCompat.getDrawable(
                 getResources(), R.drawable.ic_share, null
         );
+
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             shareIcon.setColorFilter(
-                    ResourcesCompat.getColor(
-                            getResources(), R.color.grey_900, null
-                    ),
+                    ResourcesCompat.getColor(getResources(), R.color.grey_900, null),
                     PorterDuff.Mode.SRC_ATOP
             );
         }
+
         shareIv.setImageDrawable(shareIcon);
+
         shareIv.setOnClickListener((view) -> {
-            if (intent.hasExtra(ACCOUNT_ADDRESS_ARG)) {
+            if (getIntent().hasExtra(TO_BE_ENCODED_STRING)) {
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("text/plain");
-                String shareText = "xmpp:" + intent.getExtras().get(ACCOUNT_ADDRESS_ARG).toString();
-                intent.putExtra(
+                getIntent().putExtra(
                         android.content.Intent.EXTRA_TEXT,
-                        shareText
+                        getIntent().getExtras().get(TO_BE_ENCODED_STRING).toString()
                 );
-                startActivity(Intent.createChooser(intent, getString(R.string.share)));
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
             }
         });
 
         toolbar.setTitle(R.string.dialog_show_qr_code__header);
 
-        if(intent.hasExtra("fingerprint")){
-            String fingerprint = intent.getExtras().get("fingerprint").toString();
-            if(savedInstanceState == null){
-                getFragmentManager()
-                        .beginTransaction()
-                        .add(
-                                R.id.fragment_container,
-                                QRCodeFragment.newInstance(fingerprint)
-                        ).commit();
+        if (getIntent().hasExtra(TO_BE_ENCODED_STRING) && getIntent().hasExtra(TITLE_ARGUMENT)){
+            TextView textView = findViewById(R.id.textView);
+            TextView textView2 = findViewById(R.id.textView2);
+
+            String title = getIntent().getStringExtra(TITLE_ARGUMENT);
+            String toBeEncodedString = getIntent().getStringExtra(TO_BE_ENCODED_STRING);
+
+            if (title.equals("")) {
+                textView.setText(toBeEncodedString);
+            } else {
+                textView.setText(title);
+                textView2.setText(toBeEncodedString);
+                textView2.setVisibility(View.VISIBLE);
+            }
+
+            try {
+                ((ImageView) findViewById(R.id.qrCode)).setImageBitmap(
+                        new BarcodeEncoder().encodeBitmap(
+                                toBeEncodedString, BarcodeFormat.QR_CODE, 600, 600
+                        )
+                );
+            } catch (Exception e){
+                LogManager.exception(this, e);
             }
         }
 
-        if(intent.hasExtra(ACCOUNT_NAME_ARG)&&intent.hasExtra(ACCOUNT_ADDRESS_ARG)){
-            Bundle bundle = intent.getExtras();
-            String accountName = bundle.get(ACCOUNT_NAME_ARG).toString();
-            String accountAddress = bundle.get(ACCOUNT_ADDRESS_ARG).toString();
-            if(savedInstanceState == null){
-                getFragmentManager()
-                        .beginTransaction()
-                        .add(
-                                R.id.fragment_container,
-                                QRCodeFragment.newInstance(accountName, accountAddress)
-                        ).commit();
-            }
-        }
-
-        setColors(account);
+        setColors();
     }
 
-    public void setColors(AccountJid account){
+    public void setColors(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
                 getWindow().setStatusBarColor(
-                        ColorManager.getInstance().getAccountPainter().getAccountMainColor(account)
+                        ColorManager.getInstance().getAccountPainter().getDefaultMainColor()
                 );
                 toolbar.setBackgroundColor(
-                        ColorManager.getInstance().getAccountPainter().getAccountRippleColor(
-                                account
-                        )
+                        ColorManager.getInstance().getAccountPainter().getDefaultRippleColor()
                 );
                 findViewById(R.id.fragment_container).setBackgroundColor(Color.WHITE);
             } else {

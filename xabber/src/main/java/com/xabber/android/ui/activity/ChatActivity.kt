@@ -642,15 +642,11 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
                 true
             }
             R.id.action_generate_qrcode -> {
-                QRCodeActivity.createIntent(this, accountJid)
-                    .apply {
-                        putExtra(
-                            QRCodeActivity.ACCOUNT_NAME_ARG,
-                            RosterManager.getInstance()
-                                .getRosterContact(accountJid, contactJid)?.name ?: ""
-                        )
-                        putExtra(QRCodeActivity.ACCOUNT_ADDRESS_ARG, contactJid.toString())
-                    }.also { startActivity(it) }
+                QRCodeActivity.createIntentForXmppEntity(
+                    this,
+                    RosterManager.getInstance().getRosterContact(accountJid, contactJid)?.name ?: "",
+                    accountJid.bareJid
+                ).also { startActivity(it) }
                 true
             }
             R.id.action_view_contact -> {

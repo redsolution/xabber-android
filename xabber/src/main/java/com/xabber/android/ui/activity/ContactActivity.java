@@ -407,11 +407,8 @@ public class ContactActivity extends ManagedActivity implements
 
     public void generateQR() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        Intent intent = QRCodeActivity.createIntent(this, getAccount());
         String textName = rosterContact != null ? rosterContact.getName() : "";
-        intent.putExtra("account_name", textName);
-        String textAddress = getUser().toString();
-        intent.putExtra("account_address", textAddress);
+        Intent intent = QRCodeActivity.createIntentForXmppEntity(this, textName, getUser().getBareJid());
         intent.putExtra("caller", "ContactViewerActivity");
         startActivity(intent);
     }
