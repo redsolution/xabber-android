@@ -31,6 +31,7 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.connection.BaseIqResultUiListener
+import com.xabber.android.data.connection.ConnectionState
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.AccountJid
@@ -96,7 +97,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     OnMessageAvatarClickListener, OnNewIncomingMessageListener, OnNewMessageListener,
     OnGroupPresenceUpdatedListener, OnMessageUpdatedListener, OnLastHistoryLoadStartedListener,
     OnLastHistoryLoadFinishedListener, OnAuthAskListener, OnLastHistoryLoadErrorListener,
-    BaseIqResultUiListener {
+    BaseIqResultUiListener, OnConnectionStateChangedListener {
 
     private var bottomMessagesPanel: BottomMessagesPanel? = null
     private var topPinnedMessagePanel: PinnedMessagePanel? = null
@@ -521,6 +522,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         Application.getInstance().addUIListener(OnLastHistoryLoadStartedListener::class.java, this)
         Application.getInstance().addUIListener(OnLastHistoryLoadFinishedListener::class.java, this)
         Application.getInstance().addUIListener(OnAuthAskListener::class.java, this)
+        Application.getInstance().addUIListener(OnConnectionStateChangedListener::class.java, this)
 
         requestToLoadHistoryIfNeed()
 
@@ -561,6 +563,9 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         )
         Application.getInstance().removeUIListener(
             OnLastHistoryLoadFinishedListener::class.java, this
+        )
+        Application.getInstance().removeUIListener(
+            OnConnectionStateChangedListener::class.java, this
         )
     }
 
@@ -1500,6 +1505,12 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
 
     override fun scrollTo(position: Int) {
         layoutManager.scrollToPosition(position)
+    }
+
+    override fun onConnectionStateChanged(newConnectionState: ConnectionState) {
+        if (newConnectionState == ConnectionState.connected) {
+            requestToLoadHistoryIfNeed()
+        }
     }
 
     override fun onMessagesUpdated() {
