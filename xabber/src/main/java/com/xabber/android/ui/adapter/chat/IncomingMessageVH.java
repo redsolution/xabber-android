@@ -177,6 +177,10 @@ public class IncomingMessageVH  extends FileMessageVH {
                 unsubscribeAll();
             }
         });
+
+        if (messageText.getText().toString().trim().isEmpty()) {
+            messageText.setVisibility(View.GONE);
+        }
     }
 
     private void setUpAvatar(Context context, GroupMemberRealmObject groupMember,

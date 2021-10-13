@@ -75,12 +75,12 @@
                 android:id="@+id/message_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Some text"
-                android:textColor="@color/black_text"
-                android:layout_marginRight="4dp"
                 android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
                 android:autoLink="all"
-                app:lineHeight="18dp" />
+                android:textColor="@color/black_text"
+                app:lineHeight="18dp"
+                tools:text="Some text" />
 
             <LinearLayout
                 android:id="@+id/message_info"
@@ -123,7 +123,7 @@
                     android:id="@+id/message_status_icon"
                     android:layout_width="14dp"
                     android:layout_height="14dp"
-                    android:src="@drawable/ic_message_synced_14dp" />
+                    app:srcCompat="@drawable/ic_message_synced_14dp" />
 
             </LinearLayout>
 

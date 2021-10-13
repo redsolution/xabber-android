@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/message_shadow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="right"
     android:background="@drawable/msg_shadow"
     android:backgroundTint="@color/black"
     android:gravity="right"
@@ -21,14 +21,14 @@
         android:paddingLeft="3dp"
         android:paddingTop="3dp"
         android:paddingRight="3dp"
-        android:paddingBottom="3dp">
-
+        android:paddingBottom="8dp">
 
         <TextView
             android:id="@+id/message_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
             android:paddingTop="1dp"
             android:paddingBottom="3dp"
             android:textSize="12sp"
@@ -44,10 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone">
-
-
             </FrameLayout>
-
 
             <ImageView
                 android:id="@+id/message_image"
@@ -57,6 +54,7 @@
                 android:visibility="gone"
                 tools:srcCompat="@tools:sample/avatars[0]"
                 tools:visibility="visible" />
+
         </FrameLayout>
 
         <include
@@ -64,10 +62,76 @@
             layout="@layout/file_list_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
             android:visibility="gone" />
 
-        <include layout="@layout/item_message_element_text_noflex" />
+        <com.xabber.android.ui.widget.CustomFlexboxLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            app:viewPartMain="@+id/message_text"
+            app:viewPartSlave="@+id/message_info">
+
+            <com.xabber.android.ui.widget.CorrectlyTouchEventTextView
+                android:id="@+id/message_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:autoLink="all"
+                android:textColor="@color/black_text"
+                app:lineHeight="18dp"
+                tools:text="Some text" />
+
+            <LinearLayout
+                android:id="@+id/message_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/message_file_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:textSize="10sp"
+                    android:visibility="gone"
+                    tools:text="Uploading.. 1/3" />
+
+                <ProgressBar
+                    android:id="@+id/message_progress_bar"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/message_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:singleLine="true"
+                    android:textColor="@color/grey_600"
+                    android:textSize="10sp"
+                    tools:text="11:40" />
+
+                <ImageView
+                    android:id="@+id/message_status_icon"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    app:srcCompat="@drawable/ic_message_synced_14dp" />
+
+            </LinearLayout>
+
+        </com.xabber.android.ui.widget.CustomFlexboxLayout>
 
         <TextView
             android:id="@+id/tvForwardedCount"

@@ -26,7 +26,7 @@ class SavedCompanionMessageVH(
     val bindListener: BindListener?,
     val avatarListener: OnMessageAvatarClickListener,
     val appearance: Int,
-) : NoFlexIncomingMsgVH(
+) : IncomingMessageVH(
     itemView,
     messageListener,
     longClickListener,

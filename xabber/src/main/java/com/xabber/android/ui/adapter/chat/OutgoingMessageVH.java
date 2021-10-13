@@ -129,6 +129,10 @@ public class OutgoingMessageVH extends FileMessageVH {
             @Override
             public void onViewDetachedFromWindow(View v) { unsubscribeAll(); }
         });
+
+        if (messageText.getText().toString().trim().isEmpty()) {
+            messageText.setVisibility(View.GONE);
+        }
     }
 
     private void setStatusIcon(MessageRealmObject messageRealmObject) {

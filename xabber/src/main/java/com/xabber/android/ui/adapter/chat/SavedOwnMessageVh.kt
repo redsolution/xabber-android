@@ -13,7 +13,7 @@ class SavedOwnMessageVh(
     val longClickListener: MessageLongClickListener,
     val fileListener: FileListener,
     val appearance: Int,
-) : NoFlexOutgoingMsgVH(
+) : OutgoingMessageVH(
     itemView,
     messageListener,
     longClickListener,

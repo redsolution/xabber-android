@@ -40,8 +40,8 @@ class MessagesAdapter(
     private val adapterListener: AdapterListener? = null,
     private val bindListener: BindListener? = null,
     private val avatarClickListener: OnMessageAvatarClickListener? = null,
-) : RecyclerView.Adapter<BasicMessageVH>(),
-    MessageClickListener, MessageLongClickListener, FileListener, OnMessageAvatarClickListener {
+) : RecyclerView.Adapter<BasicMessageVH>(), MessageClickListener, MessageLongClickListener,
+    FileListener, OnMessageAvatarClickListener {
 
     private val realmListener: OrderedRealmCollectionChangeListener<RealmResults<MessageRealmObject?>?> =
         OrderedRealmCollectionChangeListener<RealmResults<MessageRealmObject?>?> { _, changeSet ->
@@ -133,9 +133,6 @@ class MessagesAdapter(
             val innerSingleSavedMessage =
                 MessageRepository.getForwardedMessages(messageRealmObject)[0]
 
-            val noFlex = innerSingleSavedMessage.hasForwardedMessages()
-                    || messageRealmObject.haveAttachments()
-
             val isImage = innerSingleSavedMessage.hasImage()
             val notJustImage =
                 (innerSingleSavedMessage.text.trim { it <= ' ' }.isNotEmpty()
@@ -154,21 +151,14 @@ class MessagesAdapter(
                     when {
                         isImage && notJustImage -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT
                         isImage -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE
-                        noFlex -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX
                         else -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE
                     }
                 }
                 isImage && notJustImage -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT
                 isImage -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE
-                noFlex -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX
                 else -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE
             }
         } else {
-
-            // if noFlex is true, should use special layout without flexbox-style text
-
-            val noFlex =
-                messageRealmObject.hasForwardedMessages() || messageRealmObject.haveAttachments()
 
             val isImage = messageRealmObject.hasImage()
 
@@ -182,13 +172,11 @@ class MessagesAdapter(
                     when {
                         isImage && notJustImage -> VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT
                         isImage -> VIEW_TYPE_INCOMING_MESSAGE_IMAGE
-                        noFlex -> VIEW_TYPE_INCOMING_MESSAGE_NOFLEX
                         else -> VIEW_TYPE_INCOMING_MESSAGE
                     }
                 }
                 isImage && notJustImage -> VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT
                 isImage -> VIEW_TYPE_OUTGOING_MESSAGE_IMAGE
-                noFlex -> VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX
                 else -> VIEW_TYPE_OUTGOING_MESSAGE
             }
         }
@@ -217,19 +205,13 @@ class MessagesAdapter(
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
-            VIEW_TYPE_INCOMING_MESSAGE_NOFLEX -> NoFlexIncomingMsgVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming_noflex, parent, false
-                ),
-                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE -> NoFlexIncomingMsgVH(
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE -> IncomingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_incoming_image, parent, false
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT -> NoFlexIncomingMsgVH(
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT -> IncomingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_incoming_image_text, parent, false
                 ),
@@ -238,12 +220,6 @@ class MessagesAdapter(
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE -> SavedCompanionMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_incoming, parent, false
-                ),
-                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX -> SavedCompanionMessageVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming_noflex, parent, false
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
@@ -265,19 +241,13 @@ class MessagesAdapter(
                 ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
-            VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX -> NoFlexOutgoingMsgVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing_noflex, parent, false
-                ),
-                this, this, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE -> NoFlexOutgoingMsgVH(
+            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE -> OutgoingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_outgoing_image, parent, false
                 ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> NoFlexOutgoingMsgVH(
+            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> OutgoingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_outgoing_image_text, parent, false
                 ),
@@ -286,12 +256,6 @@ class MessagesAdapter(
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE -> SavedOwnMessageVh(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_outgoing, parent, false
-                ),
-                this, this, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX -> SavedOwnMessageVh(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing_noflex, parent, false
                 ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
@@ -515,23 +479,16 @@ class MessagesAdapter(
                 (holder as? ActionMessageVH)?.bind(message, context, chat.account, isNeedDate)
             }
 
-            VIEW_TYPE_INCOMING_MESSAGE -> {
+            VIEW_TYPE_INCOMING_MESSAGE,
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT,
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE -> {
                 (holder as? IncomingMessageVH)?.bind(message, extraData)
             }
 
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT,
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE,
-            VIEW_TYPE_INCOMING_MESSAGE_NOFLEX -> {
-                (holder as? NoFlexIncomingMsgVH)?.bind(message, extraData)
-            }
-
-            VIEW_TYPE_OUTGOING_MESSAGE -> {
+            VIEW_TYPE_OUTGOING_MESSAGE,
+            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT,
+            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE -> {
                 (holder as? OutgoingMessageVH)?.bind(message, extraData)
-            }
-
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT, VIEW_TYPE_OUTGOING_MESSAGE_IMAGE,
-            VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX -> {
-                (holder as? NoFlexOutgoingMsgVH)?.bind(message, extraData)
             }
 
             VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE -> {
@@ -543,7 +500,6 @@ class MessagesAdapter(
             }
 
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE,
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX,
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE,
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> {
                 (holder as? SavedOwnMessageVh)?.bind(message, extraData)
@@ -552,7 +508,6 @@ class MessagesAdapter(
 
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE,
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX,
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> {
                 (holder as? SavedCompanionMessageVH)?.bind(message, extraData)
             }
@@ -674,17 +629,18 @@ class MessagesAdapter(
     private fun getSimpleType(type: Int): Int {
         return when (type) {
 
-            VIEW_TYPE_INCOMING_MESSAGE, VIEW_TYPE_INCOMING_MESSAGE_NOFLEX,
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE, VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT,
+            VIEW_TYPE_INCOMING_MESSAGE,
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE,
+            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT,
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE,
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX -> 1
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> 1
 
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE, VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE,
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE,
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE,
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT,
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX, VIEW_TYPE_OUTGOING_MESSAGE,
-            VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX, VIEW_TYPE_OUTGOING_MESSAGE_IMAGE,
+            VIEW_TYPE_OUTGOING_MESSAGE,
+            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE,
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> 2
 
             VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE, VIEW_TYPE_ACTION_MESSAGE -> 3
@@ -702,10 +658,6 @@ class MessagesAdapter(
         const val VIEW_TYPE_OUTGOING_MESSAGE = 2
         const val VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE = 3
         const val VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE = 4
-        const val VIEW_TYPE_INCOMING_MESSAGE_NOFLEX = 5
-        const val VIEW_TYPE_OUTGOING_MESSAGE_NOFLEX = 6
-        const val VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_NOFLEX = 7
-        const val VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_NOFLEX = 8
         const val VIEW_TYPE_OUTGOING_MESSAGE_IMAGE = 9
         const val VIEW_TYPE_INCOMING_MESSAGE_IMAGE = 10
         const val VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE = 11
