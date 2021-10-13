@@ -121,7 +121,7 @@ open class CorrectlyTouchEventTextView @JvmOverloads constructor(
             isUrlHighlighted = false
             val text = textView.text as Spannable
             val highlightSpan =
-                textView.getTag(R.id.clickable_span_highlight_background) as BackgroundColorSpan
+                textView.getTag(R.id.clickable_span_highlight_background) as? BackgroundColorSpan? ?: return
             text.removeSpan(highlightSpan)
             Selection.removeSelection(text)
         }
