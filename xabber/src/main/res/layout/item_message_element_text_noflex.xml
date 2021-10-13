@@ -20,7 +20,7 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp">-->
 
-    <com.xabber.android.ui.widget.CorrectlyMeasuringTextView
+    <com.xabber.android.ui.widget.CorrectlyTouchEventTextView
         android:id="@+id/message_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

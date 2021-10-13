@@ -13,7 +13,7 @@
         app:viewPartMain="@+id/message_text"
         app:viewPartSlave="@+id/message_info">
 
-        <com.xabber.android.ui.widget.CorrectlyMeasuringTextView
+        <com.xabber.android.ui.widget.CorrectlyTouchEventTextView
             android:id="@+id/message_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
