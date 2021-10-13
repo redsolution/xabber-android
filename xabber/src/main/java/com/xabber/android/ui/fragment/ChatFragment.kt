@@ -569,6 +569,11 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         )
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        chatMessageAdapter.release()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(VOICE_MESSAGE, recordingPath)
