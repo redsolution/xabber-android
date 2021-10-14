@@ -9,7 +9,6 @@ import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.extension.groups.GroupMemberManager.getGroupMemberById
 import com.xabber.android.data.log.LogManager
-import com.xabber.android.ui.adapter.chat.FileMessageVH.FileListener
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageClickListener
 import com.xabber.android.ui.adapter.chat.MessageVH.MessageLongClickListener
 import io.realm.RealmRecyclerViewAdapter
@@ -23,7 +22,7 @@ class ForwardedAdapter(
     MessageLongClickListener {
 
     private val appearanceStyle = SettingsManager.chatsAppearanceStyle()
-    private val listener: FileListener? = extraData.listener
+    private val listener: MessageVH.FileListener? = extraData.listener
     private val fwdListener: ForwardListener? = extraData.fwdListener
 
     interface ForwardListener {
@@ -38,14 +37,7 @@ class ForwardedAdapter(
             || messageRealmObject.haveAttachments()
             || messageRealmObject.hasImage()
         ) {
-            if (messageRealmObject.haveAttachments()
-                && messageRealmObject.isAttachmentImageOnly
-                && messageRealmObject.text.trim { it <= ' ' }.isEmpty()
-            ) {
-                VIEW_TYPE_IMAGE
-            } else {
-                VIEW_TYPE_MESSAGE_NOFLEX
-            }
+            VIEW_TYPE_IMAGE
         } else {
             VIEW_TYPE_MESSAGE
         }
@@ -63,19 +55,16 @@ class ForwardedAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicMessageVH {
         return when (viewType) {
-            VIEW_TYPE_IMAGE -> NoFlexForwardedVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_forwarded_image, parent, false),
+            VIEW_TYPE_IMAGE -> MessageVH(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_forwarded_image, parent, false
+                ),
                 this, this, listener, appearanceStyle
             )
-            VIEW_TYPE_MESSAGE_NOFLEX -> NoFlexForwardedVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_forwarded_noflex, parent, false),
-                this, this, listener, appearanceStyle
-            )
-            else -> ForwardedVH(
-                LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_message_forwarded, parent, false),
+            else -> MessageVH(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_message_forwarded, parent, false
+                ),
                 this, this, listener, appearanceStyle
             )
         }
@@ -112,8 +101,8 @@ class ForwardedAdapter(
             isNeedName = true
         )
         when (getItemViewType(position)) {
-            VIEW_TYPE_IMAGE, VIEW_TYPE_MESSAGE_NOFLEX -> {
-                (holder as NoFlexForwardedVH).bind(
+            VIEW_TYPE_IMAGE -> {
+                (holder as ForwardedVH).bind(
                     messageRealmObject,
                     extraData,
                     messageRealmObject.account.fullJid.asBareJid().toString()
@@ -141,7 +130,6 @@ class ForwardedAdapter(
 
     companion object {
         private const val VIEW_TYPE_MESSAGE = 1
-        private const val VIEW_TYPE_MESSAGE_NOFLEX = 2
         private const val VIEW_TYPE_IMAGE = 3
     }
 

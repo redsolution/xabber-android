@@ -1,5 +1,9 @@
 package com.xabber.android.data.extension.file;
 
+import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_BORDER_CORNERS;
+import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_BORDER_WIDTH;
+import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_CORNERS;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -38,10 +42,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
-
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_CORNERS;
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_WIDTH;
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_CORNERS;
 
 public class FileManager {
 
@@ -105,8 +105,12 @@ public class FileManager {
         imageView.setLayoutParams(layoutParams);
         Glide.with(context)
                 .load(path)
-                .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS),
-                        new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
+                .transform(
+                        new MultiTransformation<>(
+                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)
+                        )
+                )
                 .into(imageView);
 
         return true;
@@ -212,7 +216,7 @@ public class FileManager {
 
         FileInputStream fis;
         try {
-            fis = new FileInputStream(new File(srcPath));
+            fis = new FileInputStream(srcPath);
         } catch (FileNotFoundException e) {
             return false;
         }

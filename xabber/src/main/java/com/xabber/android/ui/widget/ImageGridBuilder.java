@@ -1,5 +1,9 @@
 package com.xabber.android.ui.widget;
 
+import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_BORDER_CORNERS;
+import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_BORDER_WIDTH;
+import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_CORNERS;
+
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -30,10 +34,6 @@ import com.xabber.android.ui.helper.RoundedBorders;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_CORNERS;
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_WIDTH;
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_CORNERS;
 
 public class ImageGridBuilder {
 
@@ -89,7 +89,13 @@ public class ImageGridBuilder {
 
         Glide.with(parent.getContext())
                 .load(uri)
-                .transform(new MultiTransformation<>(new CenterCrop(), new RoundedCorners(IMAGE_ROUNDED_CORNERS), new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
+                .transform(
+                        new MultiTransformation<>(
+                                new CenterCrop(),
+                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)
+                        )
+                )
                 .placeholder(R.drawable.ic_recent_image_placeholder)
                 .error(R.drawable.ic_recent_image_placeholder)
                 .into(imageView);

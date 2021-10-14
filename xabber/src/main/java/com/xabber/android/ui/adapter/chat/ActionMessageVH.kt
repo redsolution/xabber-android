@@ -16,11 +16,9 @@ class ActionMessageVH(itemView: View?) : BasicMessageVH(itemView) {
         account: AccountJid?,
         needDate: Boolean
     ) {
-        val name = RosterManager.getInstance().getBestContact(account, messageRealmObject.user).name
-
         messageText.text = messageRealmObject.chatAction.getText(
             context,
-            name,
+            RosterManager.getInstance().getBestContact(account, messageRealmObject.user).name,
             messageRealmObject.spannable.toString()
         )
 

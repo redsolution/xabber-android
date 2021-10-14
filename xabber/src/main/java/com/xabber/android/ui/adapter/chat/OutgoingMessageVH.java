@@ -19,7 +19,7 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.ui.helper.MessageDeliveryStatusHelper;
 
-public class OutgoingMessageVH extends FileMessageVH {
+public class OutgoingMessageVH extends MessageVH {
 
     OutgoingMessageVH(View itemView, MessageClickListener messageListener, MessageLongClickListener longClickListener,
                       FileListener fileListener, @StyleRes int appearance) {

@@ -5,7 +5,7 @@ import android.content.res.ColorStateList
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 
 data class MessageExtraData(
-    val listener: FileMessageVH.FileListener?,
+    val listener: MessageVH.FileListener?,
     val fwdListener: ForwardedAdapter.ForwardListener?,
     val context: Context,
     val username: String,

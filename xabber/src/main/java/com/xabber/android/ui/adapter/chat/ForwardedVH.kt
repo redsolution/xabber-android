@@ -24,7 +24,7 @@ open class ForwardedVH(
     longClickListener: MessageLongClickListener?,
     listener: FileListener?,
     appearance: Int,
-) : FileMessageVH(itemView, messageListener, longClickListener, listener, appearance) {
+) : MessageVH(itemView, messageListener, longClickListener, listener, appearance) {
 
     private val tvForwardedCount: TextView = itemView.findViewById(R.id.tvForwardedCount)
 
@@ -127,6 +127,11 @@ open class ForwardedVH(
                 )
             )
         }
+
+        if (messageText.text.toString().trim { it <= ' ' }.isEmpty()) {
+            messageText.visibility = View.GONE
+        }
+
     }
 
 }

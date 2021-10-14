@@ -21,10 +21,10 @@ import com.xabber.android.ui.color.ColorManager
 class SavedCompanionMessageVH(
     val itemView: View,
     val messageListener: MessageClickListener,
-    val longClickListener: MessageLongClickListener,
+    private val longClickListener: MessageLongClickListener,
     val fileListener: FileListener,
-    val bindListener: BindListener?,
-    val avatarListener: OnMessageAvatarClickListener,
+    bindListener: BindListener?,
+    private val avatarListener: OnMessageAvatarClickListener,
     val appearance: Int,
 ) : IncomingMessageVH(
     itemView,

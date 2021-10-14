@@ -19,7 +19,6 @@ import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterManager
-import com.xabber.android.ui.adapter.chat.FileMessageVH.FileListener
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter.ForwardListener
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH.BindListener
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH.OnMessageAvatarClickListener
@@ -35,13 +34,13 @@ class MessagesAdapter(
     private val messageRealmObjects: RealmResults<MessageRealmObject?>,
     private val chat: AbstractChat,
     private val messageListener: MessageClickListener? = null,
-    private val fileListener: FileListener? = null,
+    private val fileListener: MessageVH.FileListener? = null,
     private val fwdListener: ForwardListener? = null,
     private val adapterListener: AdapterListener? = null,
     private val bindListener: BindListener? = null,
     private val avatarClickListener: OnMessageAvatarClickListener? = null,
 ) : RecyclerView.Adapter<BasicMessageVH>(), MessageClickListener, MessageLongClickListener,
-    FileListener, OnMessageAvatarClickListener {
+    MessageVH.FileListener, OnMessageAvatarClickListener {
 
     private val realmListener: OrderedRealmCollectionChangeListener<RealmResults<MessageRealmObject?>?> =
         OrderedRealmCollectionChangeListener<RealmResults<MessageRealmObject?>?> { _, changeSet ->

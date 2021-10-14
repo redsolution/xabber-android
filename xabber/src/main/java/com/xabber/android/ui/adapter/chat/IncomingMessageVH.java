@@ -26,7 +26,7 @@ import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.jid.parts.Resourcepart;
 
-public class IncomingMessageVH  extends FileMessageVH {
+public class IncomingMessageVH  extends MessageVH {
 
     public ImageView avatar;
     public ImageView avatarBackground;

@@ -41,8 +41,8 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.activity.MessagesActivity;
-import com.xabber.android.ui.adapter.chat.FileMessageVH;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
+import com.xabber.android.ui.adapter.chat.MessageVH;
 import com.xabber.android.ui.dialog.AttachDialog;
 import com.xabber.android.ui.dialog.VoiceDownloadDialog;
 import com.xabber.android.ui.helper.PermissionsRequester;
@@ -62,7 +62,7 @@ import rx.Subscription;
 import rx.subjects.PublishSubject;
 import top.oply.opuslib.OpusEvent;
 
-public class FileInteractionFragment extends Fragment implements FileMessageVH.FileListener,
+public class FileInteractionFragment extends Fragment implements MessageVH.FileListener,
         ForwardedAdapter.ForwardListener, AttachDialog.Listener {
 
     private static final String LOG_TAG = FileInteractionFragment.class.getSimpleName();
