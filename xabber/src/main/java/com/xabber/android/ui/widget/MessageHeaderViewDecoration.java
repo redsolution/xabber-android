@@ -137,7 +137,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
             View child = parent.getChildAt(i);
             RecyclerView.ViewHolder holder = parent.getChildViewHolder(child);
             if (i != 0) {
-                if (holder instanceof BasicMessageVH && ((BasicMessageVH)holder).needDate) {
+                if (holder instanceof BasicMessageVH && ((BasicMessageVH)holder).getNeedDate()) {
                     // Draw a Date view for all visible messages that require one.
                     // Since the position is != 0, these dates will not behave in the same way
                     // as the sticky date, they will simply be directly tied to the message.
@@ -168,7 +168,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
             if (nextHolder instanceof BasicMessageVH) {
                 // Check if the date of the originalChild is
                 // the same as the date of the nextChild
-                if (holder.date.equals(((BasicMessageVH) nextHolder).date)) {
+                if (holder.getDate().equals(((BasicMessageVH) nextHolder).getDate())) {
                     // if same, make sure we have enough space to draw the sticky header
                     if (checkIfStickyHeaderFitsAboveNextChild(nextChild)) {
                         drawDateStickyHeader(c, parent, originalChild, holder, true);
@@ -231,7 +231,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     // Draws a date that appears at the top of chat window, either as a sticky date
     // that stays in one place, or a date of the partially visible message
     private void drawDateStickyHeader(Canvas c, RecyclerView parent, View child, BasicMessageVH holder, boolean forceDrawAsSticky) {
-        int width = measureText(paintFont, holder.date);
+        int width = measureText(paintFont, holder.getDate());
 
         headerViewXMargin = (parent.getMeasuredWidth() - width)/2;
 
@@ -312,13 +312,13 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
                 break;
         }
 
-        drawString(c, holder.date, drawableBounds, alpha);
+        drawString(c, holder.getDate(), drawableBounds, alpha);
     }
 
     // Draws a date that appears on top of the first message of the day.
     // This date nearly always stays directly tied to the message position.
     private void drawDateMessageHeader(Canvas c, RecyclerView parent, View child, BasicMessageVH holder) {
-        int width = measureText(paintFont, holder.date);
+        int width = measureText(paintFont, holder.getDate());
         // additional vertical offset for the Date header.
         int additionalOffset = 0;
 
@@ -346,7 +346,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
             drawableBounds.top = child.getTop() - backgroundDrawableHeight - backgroundDrawableYMargin - additionalOffset;
         }
 
-        drawString(c, holder.date, drawableBounds, 255);
+        drawString(c, holder.getDate(), drawableBounds, 255);
     }
 
     private void drawUnreadMessageHeader(Canvas c, RecyclerView parent, View child, MessageVH holder) {
@@ -404,7 +404,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         RecyclerView.ViewHolder holder = parent.getChildViewHolder(view);
         int topOffset = 0;
-        if (holder instanceof BasicMessageVH && ((BasicMessageVH) holder).needDate) {
+        if (holder instanceof BasicMessageVH && ((BasicMessageVH) holder).getNeedDate()) {
             topOffset += dateLayoutHeight;
         }
         if (holder instanceof MessageVH && ((MessageVH)holder).isUnread) {

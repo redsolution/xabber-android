@@ -32,13 +32,14 @@ public class IncomingMessageVH  extends MessageVH {
     public ImageView avatarBackground;
     private final BindListener listener;
 
-    public interface BindListener { void onBind(MessageRealmObject message);}
+    public interface BindListener { void onBind(MessageRealmObject message); }
 
     public interface OnMessageAvatarClickListener{ void onMessageAvatarClick(int position);}
 
-    IncomingMessageVH(View itemView, MessageClickListener messageListener, MessageLongClickListener longClickListener,
-                      FileListener fileListener, BindListener listener,
-                      OnMessageAvatarClickListener avatarClickListener, @StyleRes int appearance) {
+    IncomingMessageVH(View itemView, MessageClickListener messageListener,
+                      MessageLongClickListener longClickListener, FileListener fileListener,
+                      BindListener listener, OnMessageAvatarClickListener avatarClickListener,
+                      @StyleRes int appearance) {
         super(itemView, messageListener, longClickListener, fileListener, appearance);
 
         avatar = itemView.findViewById(R.id.avatar);
@@ -47,8 +48,9 @@ public class IncomingMessageVH  extends MessageVH {
             int adapterPosition = getAdapterPosition();
             if (adapterPosition == RecyclerView.NO_POSITION) {
                 LogManager.w(this.getClass().getSimpleName(), "onClick: no position");
-                return;
-            } else avatarClickListener.onMessageAvatarClick(adapterPosition);
+            } else {
+                avatarClickListener.onMessageAvatarClick(adapterPosition);
+            }
         });
 
         avatarBackground = itemView.findViewById(R.id.avatarBackground);
@@ -84,23 +86,30 @@ public class IncomingMessageVH  extends MessageVH {
                     dipToPx(0f, context));
 
             forwardLayout.setLayoutParams(forwardedParams);
-        } else forwardLayout.setVisibility(View.GONE);
+        } else {
+            forwardLayout.setVisibility(View.GONE);
+        }
 
         boolean imageAttached = false;
         boolean imageOnly = true;
+
         if(messageRealmObject.haveAttachments()) {
             for (AttachmentRealmObject a : messageRealmObject.getAttachmentRealmObjects()){
                 if (a.isImage()) {
                     imageAttached = true;
                 } else imageOnly = false;
 
-                if (imageOnly) needTail = false;
+                if (imageOnly) {
+                    needTail = false;
+                }
             }
         } else if (messageRealmObject.hasImage() && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
-            if (messageText.getText().toString().trim().isEmpty()) {
+            if (getMessageText().getText().toString().trim().isEmpty()) {
                 imageAttached = true;
                 needTail = false; //not using the tail for messages with *only* images
-            } else imageAttached = true;
+            } else {
+                imageAttached = true;
+            }
         }
 
             // setup BACKGROUND
@@ -133,14 +142,17 @@ public class IncomingMessageVH  extends MessageVH {
                 dipToPx(12f, context),
                 dipToPx(8f, context));
 
-        if(imageAttached) {
+        if (imageAttached) {
             float border = 3.5f;
             messageBalloon.setPadding(
                     dipToPx(needTail ? border + 8f : border, context),
                     dipToPx(border, context),
                     dipToPx(border, context),
-                    dipToPx(border, context));
-            if(messageText.getText().toString().trim().isEmpty() && messageRealmObject.isAttachmentImageOnly()) {
+                    dipToPx(border, context)
+            );
+            if (getMessageText().getText().toString().trim().isEmpty()
+                    && messageRealmObject.isAttachmentImageOnly()
+            ) {
                 messageTime.setTextColor(context.getResources().getColor(R.color.white));
             }
         }
@@ -178,8 +190,8 @@ public class IncomingMessageVH  extends MessageVH {
             }
         });
 
-        if (messageText.getText().toString().trim().isEmpty()) {
-            messageText.setVisibility(View.GONE);
+        if (getMessageText().getText().toString().trim().isEmpty()) {
+            getMessageText().setVisibility(View.GONE);
         }
     }
 
@@ -188,7 +200,9 @@ public class IncomingMessageVH  extends MessageVH {
 
         boolean needAvatar = SettingsManager.chatsShowAvatars();
         // for new groupchats (0GGG)
-        if (groupMember != null) needAvatar = true;
+        if (groupMember != null) {
+            needAvatar = true;
+        }
 
         if (!needAvatar) {
             avatar.setVisibility(View.GONE);
@@ -207,22 +221,26 @@ public class IncomingMessageVH  extends MessageVH {
 
         //groupchat avatar
         if (groupMember != null) {
-
             Drawable placeholder;
-
             try {
                 ContactJid contactJid = ContactJid.from(messageRealmObject.getUser().getJid().toString()
                         + "/"
                         + groupMember.getNickname());
-                placeholder = AvatarManager.getInstance().getOccupantAvatar(contactJid, groupMember.getNickname());
+                placeholder = AvatarManager.getInstance().getOccupantAvatar(
+                        contactJid, groupMember.getNickname()
+                );
 
             } catch (ContactJid.ContactJidCreateException e) {
                placeholder = AvatarManager.getInstance().generateDefaultAvatar(
-                       groupMember.getNickname(), groupMember.getNickname());
+                       groupMember.getNickname(), groupMember.getNickname()
+               );
             }
             Glide.with(context)
-                    .load(AvatarManager.getInstance().getGroupMemberAvatar(
-                            groupMember, messageRealmObject.getAccount()))
+                    .load(
+                            AvatarManager.getInstance().getGroupMemberAvatar(
+                                    groupMember, messageRealmObject.getAccount()
+                            )
+                    )
                     .centerCrop()
                     .placeholder(placeholder)
                     .error(placeholder)
@@ -242,11 +260,14 @@ public class IncomingMessageVH  extends MessageVH {
 
             try {
                 contactJid = ContactJid.from(user.getJid().toString() + "/" + resource.toString());
-                avatar.setImageDrawable(AvatarManager.getInstance().getOccupantAvatar(contactJid, nick));
-
+                avatar.setImageDrawable(
+                        AvatarManager.getInstance().getOccupantAvatar(contactJid, nick)
+                );
             } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(this, e);
-                avatar.setImageDrawable(AvatarManager.getInstance().generateDefaultAvatar(nick, nick));
+                avatar.setImageDrawable(
+                        AvatarManager.getInstance().generateDefaultAvatar(nick, nick)
+                );
             }
         }
     }

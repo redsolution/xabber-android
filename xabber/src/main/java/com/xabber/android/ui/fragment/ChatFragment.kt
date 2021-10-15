@@ -1336,10 +1336,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     override fun onMessageClick(caller: View, position: Int) {
-        val itemViewType = chatMessageAdapter.getItemViewType(position)
-        if (itemViewType != MessagesAdapter.VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE
-            && itemViewType != MessagesAdapter.VIEW_TYPE_ACTION_MESSAGE
-        ) {
+        if (chatMessageAdapter.getItemViewType(position) != MessagesAdapter.VIEW_TYPE_SYSTEM_MESSAGE) {
             val clickedMessageRealmObject = chatMessageAdapter.getMessageItem(position)
             if (clickedMessageRealmObject == null) {
                 LogManager.w(

@@ -19,6 +19,8 @@ import android.content.Context;
 import com.xabber.android.R;
 import com.xabber.android.data.account.StatusMode;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Action in chat.
  *
@@ -169,7 +171,7 @@ public enum ChatAction {
      * @param text    additional text depend on action.
      * @return Text representation for the action.
      */
-    public String getText(Context context, String name, String text) {
+    public String getText(@NotNull Context context, String name, String text) {
         if (this == ChatAction.available)
             return context.getString(R.string.action_status_available, name)
                     + getOptionalText(text);

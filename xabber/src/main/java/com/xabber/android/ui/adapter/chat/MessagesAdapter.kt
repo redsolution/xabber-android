@@ -109,12 +109,8 @@ class MessagesAdapter(
     override fun getItemViewType(position: Int): Int {
         val messageRealmObject = getMessageItem(position) ?: return 0
 
-        if (messageRealmObject.action != null) {
-            return VIEW_TYPE_ACTION_MESSAGE
-        }
-
-        if (messageRealmObject.isGroupchatSystem) {
-            return VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE
+        if (messageRealmObject.action != null || messageRealmObject.isGroupchatSystem) {
+            return VIEW_TYPE_SYSTEM_MESSAGE
         }
 
         val isMeInGroup =
@@ -188,15 +184,11 @@ class MessagesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicMessageVH {
         return when (viewType) {
-            VIEW_TYPE_ACTION_MESSAGE -> ActionMessageVH(
+            VIEW_TYPE_SYSTEM_MESSAGE -> SystemMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_system_message, parent, false
-                )
-            )
-            VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE -> GroupchatSystemMessageVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_system_message, parent, false
-                )
+                ),
+                SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_INCOMING_MESSAGE -> IncomingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
@@ -340,7 +332,7 @@ class MessagesAdapter(
                         }
                     return if (user2 != null) groupMember.memberId != user2.memberId else true
                 }
-                viewType != VIEW_TYPE_ACTION_MESSAGE -> {
+                viewType != VIEW_TYPE_SYSTEM_MESSAGE -> {
                     return getSimpleType(viewType) != getSimpleType(getItemViewType(position + 1))
                 }
                 else -> {
@@ -474,8 +466,8 @@ class MessagesAdapter(
         )
 
         when (viewType) {
-            VIEW_TYPE_ACTION_MESSAGE -> {
-                (holder as? ActionMessageVH)?.bind(message, context, chat.account, isNeedDate)
+            VIEW_TYPE_SYSTEM_MESSAGE -> {
+                (holder as? SystemMessageVH)?.bind(message, isNeedDate, context)
             }
 
             VIEW_TYPE_INCOMING_MESSAGE,
@@ -490,19 +482,10 @@ class MessagesAdapter(
                 (holder as? OutgoingMessageVH)?.bind(message, extraData)
             }
 
-            VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE -> {
-                when (holder) {
-                    is GroupchatSystemMessageVH -> holder.bind(message)
-                    is SavedOwnMessageVh -> holder.bind(message, extraData)
-                    is SavedCompanionMessageVH -> holder.bind(message, extraData)
-                }
-            }
-
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE,
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE,
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> {
                 (holder as? SavedOwnMessageVh)?.bind(message, extraData)
-                (holder as? SavedCompanionMessageVH)?.bind(message, extraData)
             }
 
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE,
@@ -595,9 +578,11 @@ class MessagesAdapter(
         if (recyclerView?.isComputingLayout == true || recyclerView?.isAnimating == true) {
             return
         }
+
         recyclerView?.stopScroll()
         val messageRealmObject = getItem(position)
         val uniqueId = messageRealmObject?.primaryKey
+
         if (checkedItemIds.contains(uniqueId)) {
             checkedMessageRealmObjects.remove(messageRealmObject)
             checkedItemIds.remove(uniqueId)
@@ -605,13 +590,16 @@ class MessagesAdapter(
             uniqueId?.let { checkedItemIds.add(it) }
             checkedMessageRealmObjects.add(messageRealmObject)
         }
+
         val isCheckModePrevious = isCheckMode
+
         isCheckMode = checkedItemIds.size > 0
         if (isCheckMode != isCheckModePrevious) {
             notifyDataSetChanged()
         } else {
             notifyItemChanged(position)
         }
+
         adapterListener?.onChangeCheckedItems(checkedItemIds.size)
     }
 
@@ -642,7 +630,7 @@ class MessagesAdapter(
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE,
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> 2
 
-            VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE, VIEW_TYPE_ACTION_MESSAGE -> 3
+            VIEW_TYPE_SYSTEM_MESSAGE -> 3
 
             else -> 0
         }
@@ -665,8 +653,7 @@ class MessagesAdapter(
         const val VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT = 14
         const val VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT = 15
         const val VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT = 16
-        const val VIEW_TYPE_ACTION_MESSAGE = 17
-        const val VIEW_TYPE_GROUPCHAT_SYSTEM_MESSAGE = 18
+        const val VIEW_TYPE_SYSTEM_MESSAGE = 17
     }
 
     interface AdapterListener {

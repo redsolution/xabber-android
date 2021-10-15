@@ -16,8 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.ui.adapter.chat.ActionMessageVH;
-import com.xabber.android.ui.adapter.chat.GroupchatSystemMessageVH;
+import com.xabber.android.ui.adapter.chat.SystemMessageVH;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -66,7 +65,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        if (viewHolder instanceof ActionMessageVH || viewHolder instanceof GroupchatSystemMessageVH) return 0;
+        if (viewHolder instanceof SystemMessageVH) return 0;
         return makeMovementFlags(0, swipeEnabled ? ItemTouchHelper.LEFT : 0);
     }
 

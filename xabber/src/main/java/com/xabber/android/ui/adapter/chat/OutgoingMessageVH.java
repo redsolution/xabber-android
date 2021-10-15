@@ -21,7 +21,8 @@ import com.xabber.android.ui.helper.MessageDeliveryStatusHelper;
 
 public class OutgoingMessageVH extends MessageVH {
 
-    OutgoingMessageVH(View itemView, MessageClickListener messageListener, MessageLongClickListener longClickListener,
+    OutgoingMessageVH(View itemView, MessageClickListener messageListener,
+                      MessageLongClickListener longClickListener,
                       FileListener fileListener, @StyleRes int appearance) {
         super(itemView, messageListener, longClickListener, fileListener, appearance);
     }
@@ -63,9 +64,13 @@ public class OutgoingMessageVH extends MessageVH {
                     dipToPx(0f, context));
 
             forwardLayout.setLayoutParams(forwardedParams);
-        } else if (forwardLayout != null) forwardLayout.setVisibility(View.GONE);
+        } else if (forwardLayout != null) {
+            forwardLayout.setVisibility(View.GONE);
+        }
 
-        if(messageRealmObject.haveAttachments() && messageRealmObject.hasImage()) needTail = false;
+        if (messageRealmObject.haveAttachments() && messageRealmObject.hasImage()) {
+            needTail = false;
+        }
 
         // setup BACKGROUND
         Drawable shadowDrawable = context.getResources().getDrawable(
@@ -85,7 +90,8 @@ public class OutgoingMessageVH extends MessageVH {
                 dipToPx(0f, context),
                 dipToPx(haveForwarded ? 0f : 3f, context),
                 dipToPx(needTail ? 3f : 11f, context),
-                dipToPx(3f, context));
+                dipToPx(3f, context)
+        );
         messageShadow.setLayoutParams(layoutParams);
 
         // setup MESSAGE padding
@@ -97,21 +103,21 @@ public class OutgoingMessageVH extends MessageVH {
                 dipToPx(8f, context));
 
         float border = 3.5f;
+
         if(messageRealmObject.haveAttachments()) {
             if(messageRealmObject.hasImage()) {
                 messageBalloon.setPadding(
                         dipToPx(border, context),
                         dipToPx(border-0.05f, context),
                         dipToPx(border, context),
-                        dipToPx(border, context));
+                        dipToPx(border, context)
+                );
                 if (messageRealmObject.isAttachmentImageOnly()) {
                     messageTime.setTextColor(context.getResources().getColor(R.color.white));
                 } else {
                     messageInfo.setPadding(
-                            0,
-                            0,
-                            dipToPx(border+1.5f, context),
-                            dipToPx(4.7f, context));
+                            0, 0, dipToPx(border+1.5f, context), dipToPx(4.7f, context)
+                    );
                 }
             }
         }
@@ -119,8 +125,10 @@ public class OutgoingMessageVH extends MessageVH {
         // setup BACKGROUND COLOR
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.message_background, typedValue, true);
-        setUpMessageBalloonBackground(messageBalloon,
-                AppCompatResources.getColorStateList(context, typedValue.resourceId));
+        setUpMessageBalloonBackground(
+                messageBalloon,
+                AppCompatResources.getColorStateList(context, typedValue.resourceId)
+        );
 
         // subscribe for FILE UPLOAD PROGRESS
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
@@ -130,8 +138,8 @@ public class OutgoingMessageVH extends MessageVH {
             public void onViewDetachedFromWindow(View v) { unsubscribeAll(); }
         });
 
-        if (messageText.getText().toString().trim().isEmpty()) {
-            messageText.setVisibility(View.GONE);
+        if (getMessageText().getText().toString().trim().isEmpty()) {
+            getMessageText().setVisibility(View.GONE);
         }
     }
 
@@ -140,9 +148,13 @@ public class OutgoingMessageVH extends MessageVH {
         progressBar.setVisibility(View.GONE);
 
         if (messageRealmObject.getMessageStatus() == MessageStatus.UPLOADING) {
-            messageText.setText("");
+            getMessageText().setText("");
             statusIcon.setVisibility(View.GONE);
-        } else MessageDeliveryStatusHelper.INSTANCE.setupStatusImageView(messageRealmObject, statusIcon);
+        } else {
+            MessageDeliveryStatusHelper.INSTANCE.setupStatusImageView(
+                    messageRealmObject, statusIcon
+            );
+        }
     }
 
 }

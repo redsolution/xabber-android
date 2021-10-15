@@ -321,7 +321,13 @@ public class MessageRealmObject extends RealmObject {
 
     public void setForwarded(boolean forwarded) { this.forwarded = forwarded; }
 
-    public ChatAction getChatAction() { return ChatAction.valueOf(getAction()); }
+    public ChatAction getChatAction() {
+        try {
+            return ChatAction.valueOf(getAction());
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
 
     public Spannable getSpannable() { return new SpannableString(getText()); }
 

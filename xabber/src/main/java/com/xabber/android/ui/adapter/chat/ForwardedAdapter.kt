@@ -55,13 +55,13 @@ class ForwardedAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicMessageVH {
         return when (viewType) {
-            VIEW_TYPE_IMAGE -> MessageVH(
+            VIEW_TYPE_IMAGE -> ForwardedVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_forwarded_image, parent, false
                 ),
                 this, this, listener, appearanceStyle
             )
-            else -> MessageVH(
+            else -> ForwardedVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_forwarded, parent, false
                 ),
@@ -102,17 +102,15 @@ class ForwardedAdapter(
         )
         when (getItemViewType(position)) {
             VIEW_TYPE_IMAGE -> {
-                (holder as ForwardedVH).bind(
+                (holder as MessageVH).bind(
                     messageRealmObject,
                     extraData,
-                    messageRealmObject.account.fullJid.asBareJid().toString()
                 )
             }
             else -> {
-                (holder as ForwardedVH).bind(
+                (holder as MessageVH).bind(
                     messageRealmObject,
                     extraData,
-                    messageRealmObject.account.fullJid.asBareJid().toString()
                 )
             }
         }

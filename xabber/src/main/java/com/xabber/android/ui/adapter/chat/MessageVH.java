@@ -59,7 +59,6 @@ import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.text.CustomQuoteSpan;
 import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
-import com.xabber.android.ui.widget.CorrectlyTouchEventTextView;
 import com.xabber.android.ui.widget.ImageGridBuilder;
 
 import java.util.Arrays;
@@ -73,7 +72,6 @@ import rx.subscriptions.CompositeSubscription;
 
 public class MessageVH extends BasicMessageVH implements View.OnClickListener, FilesAdapter.FileListListener, View.OnLongClickListener {
 
-    private static final String LOG_TAG = MessageVH.class.getSimpleName();
     public static final int IMAGE_ROUNDED_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_corner_radius);
     public static final int IMAGE_ROUNDED_BORDER_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_radius);
     public static final int IMAGE_ROUNDED_BORDER_WIDTH = 0;
@@ -203,9 +201,10 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M)
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                messageText.setTextColor(itemView.getContext().getColor(R.color.grey_200));
+
+                getMessageText().setTextColor(itemView.getContext().getColor(R.color.grey_200));
             } else {
-                messageText.setTextColor(itemView.getContext().getColor(R.color.black));
+                getMessageText().setTextColor(itemView.getContext().getColor(R.color.black));
             }
 
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
@@ -237,10 +236,10 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
             }
 
             modifySpannableWithCustomQuotes(spannable, displayMetrics, color);
-            messageText.setText(spannable, TextView.BufferType.SPANNABLE);
+            getMessageText().setText(spannable, TextView.BufferType.SPANNABLE);
         } else {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                messageText.setText(
+                getMessageText().setText(
                         StringUtilsKt.getDecodedSpannable(
                                 messageRealmObject.getText().trim().concat(
                                         String.valueOf(Character.MIN_VALUE)
@@ -249,7 +248,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
                         TextView.BufferType.SPANNABLE
                 );
             } else {
-                messageText.setText(
+                getMessageText().setText(
                         messageRealmObject.getText().trim().concat(
                                 String.valueOf(Character.MIN_VALUE)
                         )
@@ -258,14 +257,14 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
         }
 
-        messageText.setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.INSTANCE);
+        getMessageText().setMovementMethod(CorrectlyMeasuringTextView.LocalLinkMovementMethod.INSTANCE);
 
         // set unread status
         isUnread = extraData.isUnread();
 
         // set date
-        needDate = extraData.isNeedDate();
-        date = StringUtilsKt.getDateStringForMessage(messageRealmObject.getTimestamp());
+        setNeedDate(extraData.isNeedDate());
+        setDate(StringUtilsKt.getDateStringForMessage(messageRealmObject.getTimestamp()));
 
         needName = extraData.isNeedName();
         if (!needName) {
@@ -404,7 +403,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
                         });
                     } catch (Exception e) {
-                        LogManager.exception(LOG_TAG, e);
+                        LogManager.exception(this, e);
                     } finally {
                         if (realm != null) realm.close();
                     }
@@ -487,7 +486,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
                                                 }
                                         });
                                     } catch (Exception e) {
-                                        LogManager.exception(LOG_TAG, e);
+                                        LogManager.exception(this, e);
                                     } finally { if (realm != null) realm.close(); }
                                 });
 
@@ -510,7 +509,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
     public void onFileClick(int attachmentPosition) {
         int messagePosition = getAdapterPosition();
         if (messagePosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onClick: no position");
+            LogManager.w(this, "onClick: no position");
             return;
         }
         fileListener.onFileClick(messagePosition, attachmentPosition, messageId);
@@ -520,7 +519,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
     public void onVoiceClick(int attachmentPosition, String attachmentId, boolean saved, Long mainMessageTimestamp) {
         int messagePosition = getAdapterPosition();
         if (messagePosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onClick: no position");
+            LogManager.w(this, "onClick: no position");
             return;
         }
         if (!saved) {
@@ -532,7 +531,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
     public void onVoiceProgressClick(int attachmentPosition, String attachmentId, Long timestamp, int current, int max) {
         int messagePosition = getAdapterPosition();
         if (messagePosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onClick: no position");
+            LogManager.w(this, "onClick: no position");
             return;
         }
         VoiceManager.getInstance().seekAudioPlaybackTo(attachmentId, timestamp, current, max);
@@ -557,7 +556,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
     public void onClick(View v) {
         int adapterPosition = getAdapterPosition();
         if (adapterPosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onClick: no position");
+            LogManager.w(this, "onClick: no position");
             return;
         }
 
@@ -775,11 +774,12 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
     public boolean onLongClick(View v) {
         int adapterPosition = getAdapterPosition();
         if (adapterPosition == RecyclerView.NO_POSITION) {
-            LogManager.w(LOG_TAG, "onClick: no position");
+            LogManager.w(this, "onClick: no position");
             return false;
+        } else {
+            longClickListener.onLongMessageClick(adapterPosition);
+            return true;
         }
-        longClickListener.onLongMessageClick(adapterPosition);
-        return true;
     }
 
     protected void setUpMessageBalloonBackground(View view, ColorStateList colorList) {
