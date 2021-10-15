@@ -63,9 +63,9 @@ public class OutgoingMessageVH extends MessageVH {
                     dipToPx(12f, context),
                     dipToPx(0f, context));
 
-            forwardLayout.setLayoutParams(forwardedParams);
-        } else if (forwardLayout != null) {
-            forwardLayout.setVisibility(View.GONE);
+            forwardedMessagesRV.setLayoutParams(forwardedParams);
+        } else if (forwardedMessagesRV != null) {
+            forwardedMessagesRV.setVisibility(View.GONE);
         }
 
         if (messageRealmObject.haveAttachments() && messageRealmObject.hasImage()) {

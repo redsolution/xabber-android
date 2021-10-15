@@ -61,10 +61,8 @@ class SavedCompanionMessageVH(
     ) {
         if (!needTail) {
             avatar.visibility = View.INVISIBLE
-            avatarBackground.visibility = View.INVISIBLE
         } else {
             avatar.visibility = View.VISIBLE
-            avatarBackground.visibility = View.VISIBLE
             //groupchat avatar
             if (groupMember != null) {
                 val placeholder: Drawable? = try {
@@ -72,8 +70,10 @@ class SavedCompanionMessageVH(
                         ContactJid.from(messageRealmObject.user.jid.toString() + "/" + groupMember.nickname)
                     AvatarManager.getInstance().getOccupantAvatar(contactJid, groupMember.nickname)
                 } catch (e: ContactJidCreateException) {
-                    AvatarManager.getInstance()
-                        .generateDefaultAvatar(groupMember.nickname ?: "", groupMember.nickname ?: "")
+                    AvatarManager.getInstance().generateDefaultAvatar(
+                        groupMember.nickname ?: "",
+                        groupMember.nickname ?: ""
+                    )
                 }
                 Glide.with(itemView.context)
                     .load(AvatarManager.getInstance().getGroupMemberAvatar(groupMember, messageRealmObject.account))

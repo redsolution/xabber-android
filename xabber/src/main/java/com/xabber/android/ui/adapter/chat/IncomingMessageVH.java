@@ -29,7 +29,6 @@ import org.jxmpp.jid.parts.Resourcepart;
 public class IncomingMessageVH  extends MessageVH {
 
     public ImageView avatar;
-    public ImageView avatarBackground;
     private final BindListener listener;
 
     public interface BindListener { void onBind(MessageRealmObject message); }
@@ -52,8 +51,6 @@ public class IncomingMessageVH  extends MessageVH {
                 avatarClickListener.onMessageAvatarClick(adapterPosition);
             }
         });
-
-        avatarBackground = itemView.findViewById(R.id.avatarBackground);
 
         this.listener = listener;
     }
@@ -85,9 +82,9 @@ public class IncomingMessageVH  extends MessageVH {
                     dipToPx(1f, context),
                     dipToPx(0f, context));
 
-            forwardLayout.setLayoutParams(forwardedParams);
+            forwardedMessagesRV.setLayoutParams(forwardedParams);
         } else {
-            forwardLayout.setVisibility(View.GONE);
+            forwardedMessagesRV.setVisibility(View.GONE);
         }
 
         boolean imageAttached = false;
@@ -172,7 +169,6 @@ public class IncomingMessageVH  extends MessageVH {
             messageShadow.setVisibility(View.GONE);
             messageTime.setVisibility(View.GONE);
             avatar.setVisibility(View.GONE);
-            avatarBackground.setVisibility(View.GONE);
             LogManager.w(this, "Empty message! Hidden, but need to correct");
         } else {
             messageBalloon.setVisibility(View.VISIBLE);
@@ -206,18 +202,15 @@ public class IncomingMessageVH  extends MessageVH {
 
         if (!needAvatar) {
             avatar.setVisibility(View.GONE);
-            avatarBackground.setVisibility(View.GONE);
             return;
         }
 
         if (!needTail) {
             avatar.setVisibility(View.INVISIBLE);
-            avatarBackground.setVisibility(View.INVISIBLE);
             return;
         }
 
         avatar.setVisibility(View.VISIBLE);
-        avatarBackground.setVisibility(View.VISIBLE);
 
         //groupchat avatar
         if (groupMember != null) {

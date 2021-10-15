@@ -26,7 +26,7 @@ open class ForwardedVH(
     appearance: Int,
 ) : MessageVH(itemView, messageListener, longClickListener, listener, appearance) {
 
-    private val tvForwardedCount: TextView = itemView.findViewById(R.id.tvForwardedCount)
+    private val tvForwardedCount: TextView = itemView.findViewById(R.id.forwarded_count_tv)
 
     @SuppressLint("UseCompatLoadingForDrawables")
     open fun bind(messageRealmObject: MessageRealmObject, extraData: MessageExtraData, accountJid: String) {
@@ -65,27 +65,20 @@ open class ForwardedVH(
         val context = extraData.context
         val haveForwarded = messageRealmObject.hasForwardedMessages()
         if (haveForwarded) {
-            forwardLayout.visibility = View.VISIBLE
+            forwardedMessagesRV.visibility = View.VISIBLE
             val forwardedCount = messageRealmObject.forwardedIds.size
             tvForwardedCount.text = extraData.context.resources.getQuantityString(
                 R.plurals.forwarded_messages_count, forwardedCount, forwardedCount
             )
             tvForwardedCount.paintFlags = tvForwardedCount.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-            forwardLayout.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f))
+            forwardedMessagesRV.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f))
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-                forwardLeftBorder.setBackgroundColor(extraData.accountMainColor)
-                forwardLeftBorder.alpha = 1f
                 tvForwardedCount.alpha = 1f
             } else {
-                forwardLeftBorder.setBackgroundColor(
-                    ColorManager.getInstance().accountPainter
-                        .getAccountColorWithTint(messageRealmObject.account, 900)
-                )
-                forwardLeftBorder.alpha = 0.6f
                 tvForwardedCount.alpha = 0.6f
             }
         } else {
-            forwardLayout.visibility = View.GONE
+            forwardedMessagesRV.visibility = View.GONE
         }
 
         LogManager.d(this, messageRealmObject.forwardedIds.joinToString { it.forwardMessageId })

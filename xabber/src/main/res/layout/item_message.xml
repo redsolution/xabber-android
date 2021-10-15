@@ -1,73 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/message_shadow"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/msg_shadow"
-    android:backgroundTint="@color/black">
+    android:backgroundTint="@color/black"
+    android:gravity="right"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:id="@+id/message_balloon"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/msg"
         android:backgroundTint="?attr/message_background"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:orientation="vertical"
+        android:paddingLeft="3dp"
+        android:paddingTop="3dp"
+        android:paddingRight="3dp"
+        android:paddingBottom="8dp" >
 
         <TextView
-            android:id="@+id/message_header"
+            android:id="@+id/message_sender_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:includeFontPadding="false"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="3dp"
             android:textSize="12sp"
             tools:text="nickname@example.com" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/forwardedRecyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingTop="2dp"
+            android:paddingLeft="4dp"
+            android:paddingBottom="2dp"
+            tools:visibility="visible"
+            android:visibility="gone"/>
+
         <FrameLayout
-            android:id="@+id/imageGridContainer"
+            android:id="@+id/image_grid_container_fl"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:visibility="gone">
+        </FrameLayout>
 
-        <ImageView
-            android:id="@+id/message_image"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/file_list_rv"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:visibility="gone" />
-
-        <include
-            android:id="@+id/fileLayout"
-            layout="@layout/file_list_layout"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/tvForwardedCount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="3 forwarded message"
-            android:drawableLeft="@drawable/ic_message_forwarded_14dp"
-            android:drawablePadding="2dp"
-            android:textColor="@color/forwarded_background_color"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/message_text_for_filenames"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="160dp"
-            tools:text="some_file_name.txt"
-            android:visibility="gone" />
+            android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            tools:listitem="@layout/item_file_message"
+            android:visibility="gone"/>
 
         <com.xabber.android.ui.widget.CustomFlexboxLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
             app:viewPartMain="@+id/message_text"
             app:viewPartSlave="@+id/message_info">
 
@@ -82,12 +78,11 @@
                 app:lineHeight="18dp"
                 tools:text="Some text" />
 
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/message_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/message_file_info"
@@ -125,9 +120,18 @@
                     android:layout_height="14dp"
                     app:srcCompat="@drawable/ic_message_synced_14dp" />
 
-            </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </com.xabber.android.ui.widget.CustomFlexboxLayout>
+
+        <TextView
+            android:id="@+id/forwarded_count_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_message_forwarded_14dp"
+            android:drawablePadding="2dp"
+            android:textColor="@color/forwarded_background_color"
+            android:visibility="gone" />
 
     </LinearLayout>
 

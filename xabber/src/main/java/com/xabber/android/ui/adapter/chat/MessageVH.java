@@ -87,8 +87,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
     String messageId;
     Long timestamp;
     View messageInfo;
-    View forwardLayout;
-    View forwardLeftBorder;
+    RecyclerView forwardedMessagesRV;
 
     private final CompositeSubscription subscriptions = new CompositeSubscription();
 
@@ -103,8 +102,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
     final TextView messageFileInfo;
     final ProgressBar progressBar;
-    final ImageView messageImage;
-    final View fileLayout;
     final RecyclerView rvFileList;
     final FrameLayout imageGridContainer;
     final ProgressBar uploadProgressBar;
@@ -141,17 +138,15 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
         messageInfo = itemView.findViewById(R.id.message_info);
         messageTime = itemView.findViewById(R.id.message_time);
-        messageHeader = itemView.findViewById(R.id.message_header);
+        messageHeader = itemView.findViewById(R.id.message_sender_tv);
         messageBalloon = itemView.findViewById(R.id.message_balloon);
         messageShadow = itemView.findViewById(R.id.message_shadow);
         statusIcon = itemView.findViewById(R.id.message_status_icon);
-        forwardLayout = itemView.findViewById(R.id.forwardLayout);
-        forwardLeftBorder = itemView.findViewById(R.id.forwardLeftBorder);
 
-        messageImage = itemView.findViewById(R.id.message_image);
-        fileLayout = itemView.findViewById(R.id.fileLayout);
-        rvFileList = itemView.findViewById(R.id.rvFileList);
-        imageGridContainer = itemView.findViewById(R.id.imageGridContainer);
+        forwardedMessagesRV = itemView.findViewById(R.id.forwardedRecyclerView);
+
+        rvFileList = itemView.findViewById(R.id.file_list_rv);
+        imageGridContainer = itemView.findViewById(R.id.image_grid_container_fl);
         uploadProgressBar = itemView.findViewById(R.id.uploadProgressBar);
         ivCancelUpload = itemView.findViewById(R.id.ivCancelUpload);
         progressBar = itemView.findViewById(R.id.message_progress_bar);
@@ -159,9 +154,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
         if (ivCancelUpload != null) {
             ivCancelUpload.setOnClickListener(this);
-        }
-        if (messageImage != null) {
-            messageImage.setOnClickListener(this);
         }
 
         itemView.setOnClickListener(this);
@@ -313,8 +305,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
     }
 
     protected void setupImageOrFile(MessageRealmObject messageRealmObject, Context context) {
-        fileLayout.setVisibility(View.GONE);
-        if (messageImage != null) messageImage.setVisibility(View.GONE);
+          rvFileList.setVisibility(View.GONE);
         if (imageGridContainer != null) {
             imageGridContainer.removeAllViews();
             imageGridContainer.setVisibility(View.GONE);
@@ -376,7 +367,7 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
             rvFileList.setLayoutManager(layoutManager);
             FilesAdapter adapter = new FilesAdapter(fileAttachmentRealmObjects, timestamp, this);
             rvFileList.setAdapter(adapter);
-            fileLayout.setVisibility(View.VISIBLE);
+            rvFileList.setVisibility(View.VISIBLE);
         }
     }
 
@@ -385,122 +376,122 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
         if (!SettingsManager.connectionLoadImages()) return;
 
-        if (imagePath != null) {
-            boolean result = FileManager.loadImageFromFile(context, imagePath, messageImage);
-
-            if (result) {
-                messageImage.setVisibility(View.VISIBLE);
-            } else {
-                Application.getInstance().runInBackground(() -> {
-                    Realm realm = null;
-                    try {
-                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                        realm.executeTransactionAsync(realm1 -> {
-                            MessageRealmObject first = realm1.where(MessageRealmObject.class)
-                                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
-                                    .findFirst();
-                            if (first != null) first.getAttachmentRealmObjects().get(0).setFilePath(null);
-
-                        });
-                    } catch (Exception e) {
-                        LogManager.exception(this, e);
-                    } finally {
-                        if (realm != null) realm.close();
-                    }
-                });
-            }
-        } else {
-            final ViewGroup.LayoutParams layoutParams = messageImage.getLayoutParams();
-
-            if (imageWidth != null && imageHeight != null) {
-                FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
-                Glide.with(context)
-                        .load(imageUrl)
-                        .transform(new MultiTransformation<>(new CenterCrop(),
-                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
-                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
-                        .listener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
-                                                        Target<Drawable> target, boolean isFirstResource) {
-                                messageImage.setVisibility(View.GONE);
-                                return true;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model,
-                                                           Target<Drawable> target,
-                                                           DataSource dataSource,
-                                                           boolean isFirstResource) {
-                                return false;
-                            }
-                        })
-                        .into(messageImage);
-
-                messageImage.setVisibility(View.VISIBLE);
-            } else {
-
-                Glide.with(context)
-                        .asBitmap()
-                        .load(imageUrl)
-                        .transform(new MultiTransformation<>(new CenterCrop(),
-                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
-                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
-                        .placeholder(R.drawable.ic_recent_image_placeholder)
-                        .error(R.drawable.ic_recent_image_placeholder)
-                        .into(new CustomTarget<Bitmap>() {
-                            @Override
-                            public void onLoadStarted(@Nullable Drawable placeholder) {
-                                super.onLoadStarted(placeholder);
-                                messageImage.setImageDrawable(placeholder);
-                                messageImage.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                                super.onLoadFailed(errorDrawable);
-                                messageImage.setImageDrawable(errorDrawable);
-                                messageImage.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                final int width = resource.getWidth();
-                                final int height = resource.getHeight();
-
-                                if (width <= 0 || height <= 0) {
-                                    messageImage.setVisibility(View.GONE);
-                                    return;
-                                }
-                                Application.getInstance().runInBackground(() -> {
-                                    Realm realm = null;
-                                    try {
-                                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                                        realm.executeTransactionAsync(realm1 -> {
-                                                MessageRealmObject first = realm1.where(MessageRealmObject.class)
-                                                        .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
-                                                        .findFirst();
-                                                if (first != null) {
-                                                    first.getAttachmentRealmObjects().get(0).setImageWidth(width);
-                                                    first.getAttachmentRealmObjects().get(0).setImageHeight(height);
-                                                }
-                                        });
-                                    } catch (Exception e) {
-                                        LogManager.exception(this, e);
-                                    } finally { if (realm != null) realm.close(); }
-                                });
-
-
-                                FileManager.scaleImage(layoutParams, height, width);
-                                messageImage.setImageBitmap(resource);
-                                messageImage.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) { }
-                        });
-            }
-        }
+//        if (imagePath != null) {
+//            boolean result = FileManager.loadImageFromFile(context, imagePath, messageImage);
+//
+//            if (result) {
+//                messageImage.setVisibility(View.VISIBLE);
+//            } else {
+//                Application.getInstance().runInBackground(() -> {
+//                    Realm realm = null;
+//                    try {
+//                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+//                        realm.executeTransactionAsync(realm1 -> {
+//                            MessageRealmObject first = realm1.where(MessageRealmObject.class)
+//                                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
+//                                    .findFirst();
+//                            if (first != null) first.getAttachmentRealmObjects().get(0).setFilePath(null);
+//
+//                        });
+//                    } catch (Exception e) {
+//                        LogManager.exception(this, e);
+//                    } finally {
+//                        if (realm != null) realm.close();
+//                    }
+//                });
+//            }
+//        } else {
+//            final ViewGroup.LayoutParams layoutParams = messageImage.getLayoutParams();
+//
+//            if (imageWidth != null && imageHeight != null) {
+//                FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
+//                Glide.with(context)
+//                        .load(imageUrl)
+//                        .transform(new MultiTransformation<>(new CenterCrop(),
+//                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+//                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
+//                        .listener(new RequestListener<Drawable>() {
+//                            @Override
+//                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
+//                                                        Target<Drawable> target, boolean isFirstResource) {
+//                                messageImage.setVisibility(View.GONE);
+//                                return true;
+//                            }
+//
+//                            @Override
+//                            public boolean onResourceReady(Drawable resource, Object model,
+//                                                           Target<Drawable> target,
+//                                                           DataSource dataSource,
+//                                                           boolean isFirstResource) {
+//                                return false;
+//                            }
+//                        })
+//                        .into(messageImage);
+//
+//                messageImage.setVisibility(View.VISIBLE);
+//            } else {
+//
+//                Glide.with(context)
+//                        .asBitmap()
+//                        .load(imageUrl)
+//                        .transform(new MultiTransformation<>(new CenterCrop(),
+//                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
+//                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
+//                        .placeholder(R.drawable.ic_recent_image_placeholder)
+//                        .error(R.drawable.ic_recent_image_placeholder)
+//                        .into(new CustomTarget<Bitmap>() {
+//                            @Override
+//                            public void onLoadStarted(@Nullable Drawable placeholder) {
+//                                super.onLoadStarted(placeholder);
+//                                messageImage.setImageDrawable(placeholder);
+//                                messageImage.setVisibility(View.VISIBLE);
+//                            }
+//
+//                            @Override
+//                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+//                                super.onLoadFailed(errorDrawable);
+//                                messageImage.setImageDrawable(errorDrawable);
+//                                messageImage.setVisibility(View.VISIBLE);
+//                            }
+//
+//                            @Override
+//                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                                final int width = resource.getWidth();
+//                                final int height = resource.getHeight();
+//
+//                                if (width <= 0 || height <= 0) {
+//                                    messageImage.setVisibility(View.GONE);
+//                                    return;
+//                                }
+//                                Application.getInstance().runInBackground(() -> {
+//                                    Realm realm = null;
+//                                    try {
+//                                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+//                                        realm.executeTransactionAsync(realm1 -> {
+//                                                MessageRealmObject first = realm1.where(MessageRealmObject.class)
+//                                                        .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
+//                                                        .findFirst();
+//                                                if (first != null) {
+//                                                    first.getAttachmentRealmObjects().get(0).setImageWidth(width);
+//                                                    first.getAttachmentRealmObjects().get(0).setImageHeight(height);
+//                                                }
+//                                        });
+//                                    } catch (Exception e) {
+//                                        LogManager.exception(this, e);
+//                                    } finally { if (realm != null) realm.close(); }
+//                                });
+//
+//
+//                                FileManager.scaleImage(layoutParams, height, width);
+//                                messageImage.setImageBitmap(resource);
+//                                messageImage.setVisibility(View.VISIBLE);
+//                            }
+//
+//                            @Override
+//                            public void onLoadCleared(@Nullable Drawable placeholder) { }
+//                        });
+//            }
+//        }
     }
 
     /** File list Listener */
@@ -562,9 +553,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
         switch (v.getId()) {
             case R.id.ivImage0:
-            case R.id.message_image:
-                fileListener.onImageClick(adapterPosition, 0, messageId);
-                break;
             case R.id.ivImage1:
                 fileListener.onImageClick(adapterPosition, 1, messageId);
                 break;
@@ -743,26 +731,13 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
                             .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
 
             if (forwardedMessages.size() > 0) {
-                RecyclerView recyclerView = forwardLayout.findViewById(R.id.recyclerView);
                 ForwardedAdapter adapter = new ForwardedAdapter(forwardedMessages, extraData);
-                recyclerView.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
-                recyclerView.setAdapter(adapter);
-                forwardLayout.setBackgroundColor(
+                forwardedMessagesRV.setLayoutManager(new LinearLayoutManager(extraData.getContext()));
+                forwardedMessagesRV.setAdapter(adapter);
+                forwardedMessagesRV.setBackgroundColor(
                         ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f)
                 );
-                if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-                    forwardLeftBorder.setBackgroundColor(extraData.getAccountMainColor());
-                    forwardLeftBorder.setAlpha(1);
-                }
-                else{
-                    forwardLeftBorder.setBackgroundColor(
-                            ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(
-                                    messageRealmObject.getAccount(), 900
-                            )
-                    );
-                    forwardLeftBorder.setAlpha(0.6f);
-                }
-                forwardLayout.setVisibility(View.VISIBLE);
+                forwardedMessagesRV.setVisibility(View.VISIBLE);
             }
             if (Looper.myLooper() != Looper.getMainLooper()) {
                 realm.close();

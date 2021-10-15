@@ -12,8 +12,7 @@
         android:id="@+id/message"
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/forwardLayout"
@@ -22,24 +21,15 @@
             android:orientation="horizontal"
             android:visibility="gone"
             android:layout_marginLeft="1dp"
-            android:layout_marginRight="1dp"
-            >
-
-            <View
-                android:id="@+id/forwardLeftBorder"
-                android:layout_width="4dp"
-                android:layout_height="match_parent"
-                android:background="@color/grey_500"
-                />
+            android:layout_marginRight="1dp">
 
             <TextView
-                android:id="@+id/tvForwardedCount"
+                android:id="@+id/forwarded_count_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
                 tools:text="3 forwarded message"
-                android:textColor="@color/forwarded_background_color"
-                />
+                android:textColor="@color/forwarded_background_color" />
 
         </LinearLayout>
 

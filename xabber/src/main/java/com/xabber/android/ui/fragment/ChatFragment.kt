@@ -1550,7 +1550,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         val view = stubInviteFakeMessage.inflate()
         view.findViewById<ImageView>(R.id.avatar)?.setImageDrawable(senderAvatar)
         view.findViewById<TextView>(R.id.message_text)?.text = reasonText
-        view.findViewById<TextView>(R.id.message_header)?.text = senderName
+        view.findViewById<TextView>(R.id.message_sender_tv)?.text = senderName
         view.findViewById<View>(R.id.message_status_icon).visibility = View.GONE
 
         view.findViewById<View>(R.id.message_balloon).apply {

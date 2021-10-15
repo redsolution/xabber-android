@@ -198,13 +198,13 @@ class MessagesAdapter(
             )
             VIEW_TYPE_INCOMING_MESSAGE_IMAGE -> IncomingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming_image, parent, false
+                    R.layout.item_message_incoming, parent, false
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT -> IncomingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming_image_text, parent, false
+                    R.layout.item_message_incoming, parent, false
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
@@ -216,16 +216,18 @@ class MessagesAdapter(
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE -> SavedCompanionMessageVH(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming_image, parent, false
+                    R.layout.item_message_incoming, parent, false
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> SavedCompanionMessageVH(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming_image_text, parent, false
+                    R.layout.item_message_incoming, parent, false
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
+
+
             VIEW_TYPE_OUTGOING_MESSAGE -> OutgoingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_outgoing, parent, false
@@ -234,13 +236,13 @@ class MessagesAdapter(
             )
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE -> OutgoingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing_image, parent, false
+                    R.layout.item_message_outgoing, parent, false
                 ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> OutgoingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing_image_text, parent, false
+                    R.layout.item_message_outgoing, parent, false
                 ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
@@ -252,13 +254,13 @@ class MessagesAdapter(
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE -> SavedOwnMessageVh(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing_image, parent, false
+                    R.layout.item_message_outgoing, parent, false
                 ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> SavedOwnMessageVh(
                 LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing_image_text, parent, false
+                    R.layout.item_message_outgoing, parent, false
                 ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
