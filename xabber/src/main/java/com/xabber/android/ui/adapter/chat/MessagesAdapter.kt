@@ -187,8 +187,7 @@ class MessagesAdapter(
             VIEW_TYPE_SYSTEM_MESSAGE -> SystemMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_system_message, parent, false
-                ),
-                SettingsManager.chatsAppearanceStyle()
+                )
             )
             VIEW_TYPE_INCOMING_MESSAGE -> IncomingMessageVH(
                 LayoutInflater.from(parent.context).inflate(

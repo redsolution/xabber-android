@@ -10,7 +10,7 @@ import com.xabber.android.ui.helper.dipToPx
 import com.xabber.android.ui.text.getDateStringForMessage
 
 class SystemMessageVH(
-    itemView: View, @StyleRes appearance: Int
+    itemView: View, @StyleRes appearance: Int = 0
 ) : BasicMessageVH(itemView, appearance) {
 
     fun bind(messageRealmObject: MessageRealmObject, needDate: Boolean, context: Context) {

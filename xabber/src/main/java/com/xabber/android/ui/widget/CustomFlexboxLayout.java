@@ -33,7 +33,6 @@ public class CustomFlexboxLayout extends RelativeLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-
         try {
             viewPartMain = this.findViewById(a.getResourceId(R.styleable.CustomFlexboxLayout_viewPartMain, -1));
             viewPartSlave = this.findViewById(a.getResourceId(R.styleable.CustomFlexboxLayout_viewPartSlave, -1));
