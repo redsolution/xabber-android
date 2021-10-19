@@ -1510,13 +1510,17 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     override fun onConnectionStateChanged(newConnectionState: ConnectionState) {
-        if (newConnectionState == ConnectionState.connected) {
-            requestToLoadHistoryIfNeed()
+        Application.getInstance().runOnUiThread {
+            if (newConnectionState == ConnectionState.connected) {
+                requestToLoadHistoryIfNeed()
+            }
         }
     }
 
     override fun onMessagesUpdated() {
-        requestToLoadHistoryIfNeed()
+        Application.getInstance().runOnUiThread {
+            requestToLoadHistoryIfNeed()
+        }
     }
 
     private fun showHideNotifyIfNeed() {
