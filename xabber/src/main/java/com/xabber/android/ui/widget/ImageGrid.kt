@@ -1,14 +1,13 @@
 package com.xabber.android.ui.widget
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.LayoutRes
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
@@ -21,13 +20,14 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject
-import com.xabber.android.data.extension.file.FileManager
-import com.xabber.android.data.message.MessageManager
 import com.xabber.android.ui.helper.RoundedBorders
 import io.realm.Realm
 import io.realm.RealmList
-import java.io.File
 
+
+/**
+ * todo Yep, there are no right disk caching implemented yet.
+ */
 class ImageGrid {
 
     private val centerCropTransformation: MultiTransformation<Bitmap> by lazy {
@@ -43,6 +43,15 @@ class ImageGrid {
     }
 
     private fun createStandardTransformation(vararg extraTransformation: BitmapTransformation) =
+        MultiTransformation(
+            listOf(
+                RoundedCorners(IMAGE_ROUNDED_CORNERS),
+                RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH),
+                *extraTransformation
+            )
+        )
+
+    private fun createStandardTransformationWithExtra(vararg extraTransformation: BitmapTransformation) =
         MultiTransformation(
             listOf(
                 RoundedCorners(IMAGE_ROUNDED_CORNERS),
@@ -103,20 +112,12 @@ class ImageGrid {
     private fun setupImageViewIntoFlexibleSingleImageCell(
         attachmentRealmObject: AttachmentRealmObject, imageView: ImageView
     ) {
-        attachmentRealmObject.filePath?.let {
-            val result = loadImageFromFile(it, imageView)
-            if (!result) {
-                MessageManager.setAttachmentLocalPathToNull(attachmentRealmObject.uniqueId)
-            }
-            return
-        }
-
         val imageWidth = attachmentRealmObject.imageWidth
         val imageHeight = attachmentRealmObject.imageHeight
 
         if (imageWidth != null && imageHeight != null) {
             setupImageViewWithDimensions(
-                imageView, attachmentRealmObject.fileUrl, imageHeight, imageWidth
+                imageView, attachmentRealmObject.fileUrl, imageWidth, imageHeight
             )
         } else {
             setupImageViewWithoutDimensions(
@@ -181,17 +182,18 @@ class ImageGrid {
     private fun setupImageViewWithDimensions(
         imageView: ImageView, url: String, width: Int, height: Int
     ) {
-        scaleImage(imageView.layoutParams, height, width)
-
         Glide.with(imageView.context)
             .load(url)
-            .transform(centerInsideTransformation)
+            .transform(justRoundedTransformation)
             .placeholder(R.drawable.ic_recent_image_placeholder)
             .error(R.drawable.ic_recent_image_placeholder)
             .into(imageView)
+
+        scaleImage(imageView.layoutParams, height, width)
     }
 
-    private fun getLayoutResource(imageCount: Int): Int {
+    @LayoutRes
+    private fun getLayoutResource(imageCount: Int):  Int {
         return when (imageCount) {
             1 -> R.layout.image_grid_1
             2 -> R.layout.image_grid_2
@@ -213,52 +215,23 @@ class ImageGrid {
         }
     }
 
-    private fun loadImageFromFile(path: String, imageView: ImageView): Boolean {
-        val options = BitmapFactory.Options()
-        options.inJustDecodeBounds = true
-
-        // Returns null, sizes are in the options variable
-        BitmapFactory.decodeFile(path, options)
-
-        val layoutParams = imageView.layoutParams
-
-        if (FileManager.isImageNeededDimensionsFlip(Uri.fromFile(File(path)))) {
-            scaleImage(layoutParams, options.outWidth, options.outHeight)
-        } else {
-            scaleImage(layoutParams, options.outHeight, options.outWidth)
-        }
-
-        if (options.outHeight == 0 || options.outWidth == 0) {
-            return false
-        }
-
-        imageView.layoutParams = layoutParams
-
-        Glide.with(imageView.context)
-            .load(path)
-            .transform(justRoundedTransformation)
-            .into(imageView)
-
-        return true
-    }
-
     private fun scaleImage(layoutParams: ViewGroup.LayoutParams, height: Int, width: Int) {
-        var scaledWidth: Int
-        var scaledHeight: Int
+        val scaledWidth: Int
+        val scaledHeight: Int
         if (width <= height) {
-            if (height > MAX_IMAGE_HEIGHT_SIZE) {
-                scaledWidth =
-                    (width / (height.toDouble() / MAX_IMAGE_HEIGHT_SIZE)).toInt()
-                scaledHeight = MAX_IMAGE_HEIGHT_SIZE
-            } else if (width < MIN_IMAGE_SIZE) {
-                scaledWidth = MIN_IMAGE_SIZE
-                scaledHeight = (height / (width.toDouble() / MIN_IMAGE_SIZE)).toInt()
-                if (scaledHeight > MAX_IMAGE_HEIGHT_SIZE) {
+            when {
+                height > MAX_IMAGE_HEIGHT_SIZE -> {
+                    scaledWidth = (width / (height.toDouble() / MAX_IMAGE_HEIGHT_SIZE)).toInt()
                     scaledHeight = MAX_IMAGE_HEIGHT_SIZE
                 }
-            } else {
-                scaledWidth = width
-                scaledHeight = height
+                width < MIN_IMAGE_SIZE -> {
+                    scaledWidth = MIN_IMAGE_SIZE
+                    scaledHeight = (height / (width.toDouble() / MIN_IMAGE_SIZE)).toInt().coerceAtMost(MAX_IMAGE_HEIGHT_SIZE)
+                }
+                else -> {
+                    scaledWidth = width
+                    scaledHeight = height
+                }
             }
         } else {
             when {
@@ -267,10 +240,7 @@ class ImageGrid {
                     scaledHeight = (height / (width.toDouble() / MAX_IMAGE_SIZE)).toInt()
                 }
                 height < MIN_IMAGE_SIZE -> {
-                    scaledWidth = (width / (height.toDouble() / MIN_IMAGE_SIZE)).toInt()
-                    if (scaledWidth > MAX_IMAGE_SIZE) {
-                        scaledWidth = MAX_IMAGE_SIZE
-                    }
+                    scaledWidth = (width / (height.toDouble() / MIN_IMAGE_SIZE)).toInt().coerceAtMost(MAX_IMAGE_SIZE)
                     scaledHeight = MIN_IMAGE_SIZE
                 }
                 else -> {
@@ -279,6 +249,7 @@ class ImageGrid {
                 }
             }
         }
+
         layoutParams.width = scaledWidth
         layoutParams.height = scaledHeight
     }
