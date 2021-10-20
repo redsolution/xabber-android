@@ -401,6 +401,8 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
 
         switch (v.getId()) {
             case R.id.ivImage0:
+                fileListener.onImageClick(adapterPosition, 0, messageId);
+                break;
             case R.id.ivImage1:
                 fileListener.onImageClick(adapterPosition, 1, messageId);
                 break;

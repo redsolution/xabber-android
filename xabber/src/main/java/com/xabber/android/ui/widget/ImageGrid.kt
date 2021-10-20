@@ -20,9 +20,11 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject
+import com.xabber.android.data.log.LogManager
 import com.xabber.android.ui.helper.RoundedBorders
 import io.realm.Realm
 import io.realm.RealmList
+import java.lang.Exception
 
 
 /**
@@ -43,15 +45,6 @@ class ImageGrid {
     }
 
     private fun createStandardTransformation(vararg extraTransformation: BitmapTransformation) =
-        MultiTransformation(
-            listOf(
-                RoundedCorners(IMAGE_ROUNDED_CORNERS),
-                RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH),
-                *extraTransformation
-            )
-        )
-
-    private fun createStandardTransformationWithExtra(vararg extraTransformation: BitmapTransformation) =
         MultiTransformation(
             listOf(
                 RoundedCorners(IMAGE_ROUNDED_CORNERS),
@@ -117,7 +110,7 @@ class ImageGrid {
 
         if (imageWidth != null && imageHeight != null) {
             setupImageViewWithDimensions(
-                imageView, attachmentRealmObject.fileUrl, imageWidth, imageHeight
+                imageView, attachmentRealmObject, imageWidth, imageHeight
             )
         } else {
             setupImageViewWithoutDimensions(
@@ -132,7 +125,7 @@ class ImageGrid {
         Glide.with(imageView.context)
             .asBitmap()
             .load(url)
-            .transform(centerCropTransformation)
+            .transform(justRoundedTransformation)
             .placeholder(R.drawable.ic_recent_image_placeholder)
             .error(R.drawable.ic_recent_image_placeholder)
             .into(object : CustomTarget<Bitmap?>() {
@@ -180,10 +173,13 @@ class ImageGrid {
     }
 
     private fun setupImageViewWithDimensions(
-        imageView: ImageView, url: String, width: Int, height: Int
+        imageView: ImageView, attachmentRealmObject: AttachmentRealmObject, width: Int, height: Int
     ) {
+        val uri = attachmentRealmObject.filePath?.takeIf { it.isNotEmpty() }
+            ?: attachmentRealmObject.fileUrl
+
         Glide.with(imageView.context)
-            .load(url)
+            .load(uri)
             .transform(justRoundedTransformation)
             .placeholder(R.drawable.ic_recent_image_placeholder)
             .error(R.drawable.ic_recent_image_placeholder)
