@@ -1,32 +1,18 @@
 package com.xabber.android.data.extension.file;
 
-import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_BORDER_CORNERS;
-import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_BORDER_WIDTH;
-import static com.xabber.android.ui.adapter.chat.MessageVH.IMAGE_ROUNDED_CORNERS;
-
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.MultiTransformation;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.xabber.android.BuildConfig;
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.helper.RoundedBorders;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -53,28 +39,12 @@ public class FileManager {
     private static final String XABBER_DIR = "Xabber";
     private static final String XABBER_AUDIO_DIR = "Xabber Audio";
 
-    private static final int MAX_IMAGE_SIZE;
-    private static final int MAX_IMAGE_HEIGHT_SIZE;
-    private static final int MIN_IMAGE_SIZE;
-
-
     static {
         instance = new FileManager();
-
-        Resources resources = Application.getInstance().getResources();
-        MAX_IMAGE_SIZE = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
-        MAX_IMAGE_HEIGHT_SIZE = resources.getDimensionPixelSize(R.dimen.max_chat_image_height_size);
-        MIN_IMAGE_SIZE = resources.getDimensionPixelSize(R.dimen.min_chat_image_size);
     }
 
     public static FileManager getInstance() {
         return instance;
-    }
-
-    public static void processFileMessage(final MessageRealmObject messageRealmObject) {
-        boolean isImage = isImageUrl(messageRealmObject.getText());
-        if (messageRealmObject.getAttachmentRealmObjects() != null)
-            messageRealmObject.getAttachmentRealmObjects().get(0).setIsImage(isImage);
     }
 
     public static boolean fileIsImage(File file) {
@@ -83,37 +53,6 @@ public class FileManager {
 
     public static boolean extensionIsImage(String extension) {
         return Arrays.asList(VALID_IMAGE_EXTENSIONS).contains(extension);
-    }
-
-    public static boolean loadImageFromFile(Context context, String path, ImageView imageView) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-
-        // Returns null, sizes are in the options variable
-        BitmapFactory.decodeFile(path, options);
-
-        ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-        if (FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
-            scaleImage(layoutParams, options.outWidth, options.outHeight);
-        } else
-            scaleImage(layoutParams, options.outHeight, options.outWidth);
-
-        if (options.outHeight == 0 || options.outWidth == 0) {
-            return false;
-        }
-
-        imageView.setLayoutParams(layoutParams);
-        Glide.with(context)
-                .load(path)
-                .transform(
-                        new MultiTransformation<>(
-                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
-                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)
-                        )
-                )
-                .into(imageView);
-
-        return true;
     }
 
     public static boolean isImageUrl(String text) {
@@ -166,46 +105,6 @@ public class FileManager {
             return filename.substring(dotPosition + 1).toLowerCase();
         }
         return null;
-    }
-
-
-    public static void scaleImage(ViewGroup.LayoutParams layoutParams, int height, int width) {
-        int scaledWidth;
-        int scaledHeight;
-
-        if (width <= height) {
-            if (height > MAX_IMAGE_HEIGHT_SIZE) {
-                scaledWidth = (int) (width / ((double) height / MAX_IMAGE_HEIGHT_SIZE));
-                scaledHeight = MAX_IMAGE_HEIGHT_SIZE;
-            } else if (width < MIN_IMAGE_SIZE) {
-                scaledWidth = MIN_IMAGE_SIZE;
-                scaledHeight = (int) (height / ((double) width / MIN_IMAGE_SIZE));
-                if (scaledHeight > MAX_IMAGE_HEIGHT_SIZE) {
-                    scaledHeight = MAX_IMAGE_HEIGHT_SIZE;
-                }
-            } else {
-                scaledWidth = width;
-                scaledHeight = height;
-            }
-        } else {
-            if (width > MAX_IMAGE_SIZE) {
-                scaledWidth = MAX_IMAGE_SIZE;
-                scaledHeight = (int) (height / ((double) width / MAX_IMAGE_SIZE));
-            } else if (height < MIN_IMAGE_SIZE) {
-                scaledWidth = (int) (width / ((double) height / MIN_IMAGE_SIZE));
-                if (scaledWidth > MAX_IMAGE_SIZE) {
-                    scaledWidth = MAX_IMAGE_SIZE;
-                }
-                scaledHeight = MIN_IMAGE_SIZE;
-            } else {
-                scaledWidth = width;
-                scaledHeight = height;
-            }
-        }
-
-        layoutParams.width = scaledWidth;
-        layoutParams.height = scaledHeight;
-
     }
 
     public static boolean isImageSizeGreater(Uri srcUri, int maxSize) {

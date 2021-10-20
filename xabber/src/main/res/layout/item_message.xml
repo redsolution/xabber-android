@@ -40,7 +40,6 @@
             android:paddingTop="2dp"
             android:paddingLeft="4dp"
             android:paddingBottom="2dp"
-            tools:visibility="visible"
             android:visibility="gone"/>
 
         <FrameLayout

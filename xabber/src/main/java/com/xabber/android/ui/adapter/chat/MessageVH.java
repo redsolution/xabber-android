@@ -2,7 +2,6 @@ package com.xabber.android.ui.adapter.chat;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Looper;
@@ -12,31 +11,18 @@ import android.text.Spanned;
 import android.text.style.QuoteSpan;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.MultiTransformation;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -44,7 +30,6 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager;
@@ -54,12 +39,11 @@ import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.ui.adapter.FilesAdapter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.helper.RoundedBorders;
 import com.xabber.android.ui.text.ClickTagHandler;
 import com.xabber.android.ui.text.CustomQuoteSpan;
 import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.android.ui.widget.CorrectlyMeasuringTextView;
-import com.xabber.android.ui.widget.ImageGridBuilder;
+import com.xabber.android.ui.widget.ImageGrid;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -71,10 +55,6 @@ import io.realm.Sort;
 import rx.subscriptions.CompositeSubscription;
 
 public class MessageVH extends BasicMessageVH implements View.OnClickListener, FilesAdapter.FileListListener, View.OnLongClickListener {
-
-    public static final int IMAGE_ROUNDED_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_corner_radius);
-    public static final int IMAGE_ROUNDED_BORDER_CORNERS = Application.getInstance().getResources().getDimensionPixelSize(R.dimen.chat_image_border_radius);
-    public static final int IMAGE_ROUNDED_BORDER_WIDTH = 0;
 
     public boolean isUnread;
     public boolean needName;
@@ -314,23 +294,11 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
             setUpImage(messageRealmObject.getAttachmentRealmObjects());
             //setUpVoice(messageItem.getAttachments(), context);
             setUpFile(messageRealmObject.getAttachmentRealmObjects(), context);
-        } else if (messageRealmObject.hasImage() && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
-            prepareImage(messageRealmObject, context);
         }
     }
 
-    //todo check this
-    private void prepareImage(MessageRealmObject messageRealmObject, Context context) {
-        String filePath = messageRealmObject.getAttachmentRealmObjects().get(0).getFilePath();
-        Integer imageWidth = messageRealmObject.getAttachmentRealmObjects().get(0).getImageWidth();
-        Integer imageHeight = messageRealmObject.getAttachmentRealmObjects().get(0).getImageHeight();
-        String imageUrl = messageRealmObject.getText();
-        final String uniqueId = messageRealmObject.getPrimaryKey();
-        setUpImage(filePath, imageUrl, uniqueId, imageWidth, imageHeight, context);
-    }
-
     private void setUpImage(RealmList<AttachmentRealmObject> attachmentRealmObjects) {
-        final ImageGridBuilder gridBuilder = new ImageGridBuilder();
+        final ImageGrid gridBuilder = new ImageGrid();
 
         if (!SettingsManager.connectionLoadImages()) return;
 
@@ -345,7 +313,10 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
         imageCounter = 0;
         if (imageAttachmentRealmObjects.size() > 0) {
             View imageGridView = gridBuilder.inflateView(imageGridContainer, imageAttachmentRealmObjects.size());
-            gridBuilder.bindView(imageGridView, imageAttachmentRealmObjects, this);
+            gridBuilder.bindView(imageGridView, imageAttachmentRealmObjects, this, v -> {
+                onLongClick(v);
+                return true;
+            });
 
             imageGridContainer.addView(imageGridView);
             imageGridContainer.setVisibility(View.VISIBLE);
@@ -369,129 +340,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
             rvFileList.setAdapter(adapter);
             rvFileList.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void setUpImage(String imagePath, String imageUrl, final String uniqueId, Integer imageWidth,
-                            Integer imageHeight, Context context) {
-
-        if (!SettingsManager.connectionLoadImages()) return;
-
-//        if (imagePath != null) {
-//            boolean result = FileManager.loadImageFromFile(context, imagePath, messageImage);
-//
-//            if (result) {
-//                messageImage.setVisibility(View.VISIBLE);
-//            } else {
-//                Application.getInstance().runInBackground(() -> {
-//                    Realm realm = null;
-//                    try {
-//                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-//                        realm.executeTransactionAsync(realm1 -> {
-//                            MessageRealmObject first = realm1.where(MessageRealmObject.class)
-//                                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
-//                                    .findFirst();
-//                            if (first != null) first.getAttachmentRealmObjects().get(0).setFilePath(null);
-//
-//                        });
-//                    } catch (Exception e) {
-//                        LogManager.exception(this, e);
-//                    } finally {
-//                        if (realm != null) realm.close();
-//                    }
-//                });
-//            }
-//        } else {
-//            final ViewGroup.LayoutParams layoutParams = messageImage.getLayoutParams();
-//
-//            if (imageWidth != null && imageHeight != null) {
-//                FileManager.scaleImage(layoutParams, imageHeight, imageWidth);
-//                Glide.with(context)
-//                        .load(imageUrl)
-//                        .transform(new MultiTransformation<>(new CenterCrop(),
-//                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
-//                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS,IMAGE_ROUNDED_BORDER_WIDTH)))
-//                        .listener(new RequestListener<Drawable>() {
-//                            @Override
-//                            public boolean onLoadFailed(@Nullable GlideException e, Object model,
-//                                                        Target<Drawable> target, boolean isFirstResource) {
-//                                messageImage.setVisibility(View.GONE);
-//                                return true;
-//                            }
-//
-//                            @Override
-//                            public boolean onResourceReady(Drawable resource, Object model,
-//                                                           Target<Drawable> target,
-//                                                           DataSource dataSource,
-//                                                           boolean isFirstResource) {
-//                                return false;
-//                            }
-//                        })
-//                        .into(messageImage);
-//
-//                messageImage.setVisibility(View.VISIBLE);
-//            } else {
-//
-//                Glide.with(context)
-//                        .asBitmap()
-//                        .load(imageUrl)
-//                        .transform(new MultiTransformation<>(new CenterCrop(),
-//                                new RoundedCorners(IMAGE_ROUNDED_CORNERS),
-//                                new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
-//                        .placeholder(R.drawable.ic_recent_image_placeholder)
-//                        .error(R.drawable.ic_recent_image_placeholder)
-//                        .into(new CustomTarget<Bitmap>() {
-//                            @Override
-//                            public void onLoadStarted(@Nullable Drawable placeholder) {
-//                                super.onLoadStarted(placeholder);
-//                                messageImage.setImageDrawable(placeholder);
-//                                messageImage.setVisibility(View.VISIBLE);
-//                            }
-//
-//                            @Override
-//                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-//                                super.onLoadFailed(errorDrawable);
-//                                messageImage.setImageDrawable(errorDrawable);
-//                                messageImage.setVisibility(View.VISIBLE);
-//                            }
-//
-//                            @Override
-//                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-//                                final int width = resource.getWidth();
-//                                final int height = resource.getHeight();
-//
-//                                if (width <= 0 || height <= 0) {
-//                                    messageImage.setVisibility(View.GONE);
-//                                    return;
-//                                }
-//                                Application.getInstance().runInBackground(() -> {
-//                                    Realm realm = null;
-//                                    try {
-//                                        realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-//                                        realm.executeTransactionAsync(realm1 -> {
-//                                                MessageRealmObject first = realm1.where(MessageRealmObject.class)
-//                                                        .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId)
-//                                                        .findFirst();
-//                                                if (first != null) {
-//                                                    first.getAttachmentRealmObjects().get(0).setImageWidth(width);
-//                                                    first.getAttachmentRealmObjects().get(0).setImageHeight(height);
-//                                                }
-//                                        });
-//                                    } catch (Exception e) {
-//                                        LogManager.exception(this, e);
-//                                    } finally { if (realm != null) realm.close(); }
-//                                });
-//
-//
-//                                FileManager.scaleImage(layoutParams, height, width);
-//                                messageImage.setImageBitmap(resource);
-//                                messageImage.setVisibility(View.VISIBLE);
-//                            }
-//
-//                            @Override
-//                            public void onLoadCleared(@Nullable Drawable placeholder) { }
-//                        });
-//            }
-//        }
     }
 
     /** File list Listener */
@@ -718,7 +566,6 @@ public class MessageVH extends BasicMessageVH implements View.OnClickListener, F
                 return view.findViewById(R.id.ivImage0Shadow);
         }
     }
-
 
     void setupForwarded(MessageRealmObject messageRealmObject, MessageExtraData extraData) {
         String[] forwardedIDs = messageRealmObject.getForwardedIdsAsArray();

@@ -501,23 +501,19 @@ public class MessageManager implements OnPacketListener {
         }
     }
 
-    /**
-     * @return Whether message was delayed by server.
-     */
-    public static boolean isOfflineMessage(Domainpart server, Stanza stanza) {
-        DelayInformation delayInformation = DelayInformation.from(stanza);
-        return delayInformation != null && TextUtils.equals(delayInformation.getFrom(), server);
-    }
-
     public static void setAttachmentLocalPathToNull(final String uniqId) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.executeTransactionAsync(realm1 -> {
             AttachmentRealmObject first = realm1.where(AttachmentRealmObject.class)
                     .equalTo(AttachmentRealmObject.Fields.UNIQUE_ID, uniqId)
                     .findFirst();
-            if (first != null) first.setFilePath(null);
+            if (first != null) {
+                first.setFilePath(null);
+            }
         });
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            realm.close();
+        }
     }
 
 }
