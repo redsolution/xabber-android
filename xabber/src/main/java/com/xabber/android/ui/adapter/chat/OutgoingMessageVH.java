@@ -38,15 +38,15 @@ public class OutgoingMessageVH extends MessageVH {
 
         // setup PROGRESS
         if (messageRealmObject.getMessageStatus().equals(MessageStatus.UPLOADING)) {
-            progressBar.setVisibility(View.VISIBLE);
-            messageFileInfo.setText(R.string.message_status_uploading);
-            messageFileInfo.setVisibility(View.VISIBLE);
-            messageTime.setVisibility(View.GONE);
+            getProgressBar().setVisibility(View.VISIBLE);
+            getMessageFileInfo().setText(R.string.message_status_uploading);
+            getMessageFileInfo().setVisibility(View.VISIBLE);
+            getMessageTime().setVisibility(View.GONE);
         } else {
-            progressBar.setVisibility(View.GONE);
-            messageFileInfo.setText("");
-            messageFileInfo.setVisibility(View.GONE);
-            messageTime.setVisibility(View.VISIBLE);
+            getProgressBar().setVisibility(View.GONE);
+            getMessageFileInfo().setText("");
+            getMessageFileInfo().setVisibility(View.GONE);
+            getMessageTime().setVisibility(View.VISIBLE);
         }
 
         // setup FORWARDED
@@ -63,9 +63,9 @@ public class OutgoingMessageVH extends MessageVH {
                     dipToPx(12f, context),
                     dipToPx(0f, context));
 
-            forwardedMessagesRV.setLayoutParams(forwardedParams);
-        } else if (forwardedMessagesRV != null) {
-            forwardedMessagesRV.setVisibility(View.GONE);
+            getForwardedMessagesRV().setLayoutParams(forwardedParams);
+        } else if (getForwardedMessagesRV() != null) {
+            getForwardedMessagesRV().setVisibility(View.GONE);
         }
 
         if (messageRealmObject.haveAttachments() && messageRealmObject.hasImage()) {
@@ -77,10 +77,10 @@ public class OutgoingMessageVH extends MessageVH {
                 haveForwarded ? (needTail ? R.drawable.fwd_out_shadow : R.drawable.fwd_shadow)
                         : (needTail ? R.drawable.msg_out_shadow : R.drawable.msg_shadow));
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
-        messageBalloon.setBackground(context.getResources().getDrawable(
+        getMessageBalloon().setBackground(context.getResources().getDrawable(
                 haveForwarded ? (needTail ? R.drawable.fwd_out : R.drawable.fwd)
                             : (needTail ? R.drawable.msg_out : R.drawable.msg)));
-        messageShadow.setBackground(shadowDrawable);
+        getMessageShadow().setBackground(shadowDrawable);
 
         // setup BALLOON margins
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -92,10 +92,10 @@ public class OutgoingMessageVH extends MessageVH {
                 dipToPx(needTail ? 3f : 11f, context),
                 dipToPx(3f, context)
         );
-        messageShadow.setLayoutParams(layoutParams);
+        getMessageShadow().setLayoutParams(layoutParams);
 
         // setup MESSAGE padding
-        messageBalloon.setPadding(
+        getMessageBalloon().setPadding(
                 dipToPx(12f, context),
                 dipToPx(8f, context),
                 //Utils.dipToPx(needTail ? 20f : 12f, context),
@@ -106,16 +106,16 @@ public class OutgoingMessageVH extends MessageVH {
 
         if(messageRealmObject.haveAttachments()) {
             if(messageRealmObject.hasImage()) {
-                messageBalloon.setPadding(
+                getMessageBalloon().setPadding(
                         dipToPx(border, context),
                         dipToPx(border-0.05f, context),
                         dipToPx(border, context),
                         dipToPx(border, context)
                 );
                 if (messageRealmObject.isAttachmentImageOnly()) {
-                    messageTime.setTextColor(context.getResources().getColor(R.color.white));
+                    getMessageTime().setTextColor(context.getResources().getColor(R.color.white));
                 } else {
-                    messageInfo.setPadding(
+                    getMessageInfo().setPadding(
                             0, 0, dipToPx(border+1.5f, context), dipToPx(4.7f, context)
                     );
                 }
@@ -126,7 +126,7 @@ public class OutgoingMessageVH extends MessageVH {
         TypedValue typedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.message_background, typedValue, true);
         setUpMessageBalloonBackground(
-                messageBalloon,
+                getMessageBalloon(),
                 AppCompatResources.getColorStateList(context, typedValue.resourceId)
         );
 
@@ -144,15 +144,15 @@ public class OutgoingMessageVH extends MessageVH {
     }
 
     private void setStatusIcon(MessageRealmObject messageRealmObject) {
-        statusIcon.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
+        getStatusIcon().setVisibility(View.VISIBLE);
+        getProgressBar().setVisibility(View.GONE);
 
         if (messageRealmObject.getMessageStatus() == MessageStatus.UPLOADING) {
             getMessageText().setText("");
-            statusIcon.setVisibility(View.GONE);
+            getStatusIcon().setVisibility(View.GONE);
         } else {
             MessageDeliveryStatusHelper.INSTANCE.setupStatusImageView(
-                    messageRealmObject, statusIcon
+                    messageRealmObject, getStatusIcon()
             );
         }
     }

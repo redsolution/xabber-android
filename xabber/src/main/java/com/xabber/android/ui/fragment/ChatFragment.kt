@@ -1382,7 +1382,6 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             ).show()
 
         }
-
     }
 
     override fun onMessageAvatarClick(position: Int) {

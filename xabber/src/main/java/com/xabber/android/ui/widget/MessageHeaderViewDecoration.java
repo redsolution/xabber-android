@@ -143,7 +143,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
                     // as the sticky date, they will simply be directly tied to the message.
                     drawDateMessageHeader(c, parent, child, (BasicMessageVH) holder);
                 }
-                if (holder instanceof MessageVH && ((MessageVH)holder).isUnread) {
+                if (holder instanceof MessageVH && ((MessageVH)holder).isUnread()) {
                     drawUnreadMessageHeader(c, parent, child, (MessageVH) holder);
                 }
             }
@@ -225,7 +225,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     }
 
     private boolean needToDrawUnreadHeader(BasicMessageVH holder) {
-        return holder instanceof MessageVH && ((MessageVH)holder).isUnread;
+        return holder instanceof MessageVH && ((MessageVH)holder).isUnread();
     }
 
     // Draws a date that appears at the top of chat window, either as a sticky date
@@ -407,7 +407,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
         if (holder instanceof BasicMessageVH && ((BasicMessageVH) holder).getNeedDate()) {
             topOffset += dateLayoutHeight;
         }
-        if (holder instanceof MessageVH && ((MessageVH)holder).isUnread) {
+        if (holder instanceof MessageVH && ((MessageVH)holder).isUnread()) {
             topOffset += dateLayoutHeight;
         }
         outRect.set(0, topOffset, 0, 0);

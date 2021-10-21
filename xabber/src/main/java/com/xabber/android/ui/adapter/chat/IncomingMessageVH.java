@@ -66,7 +66,7 @@ public class IncomingMessageVH  extends MessageVH {
 
         // setup ARCHIVED icon
         //statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
-        statusIcon.setVisibility(View.GONE);
+        getStatusIcon().setVisibility(View.GONE);
 
         // setup FORWARDED
         boolean haveForwarded = messageRealmObject.hasForwardedMessages();
@@ -82,9 +82,9 @@ public class IncomingMessageVH  extends MessageVH {
                     dipToPx(1f, context),
                     dipToPx(0f, context));
 
-            forwardedMessagesRV.setLayoutParams(forwardedParams);
+            getForwardedMessagesRV().setLayoutParams(forwardedParams);
         } else {
-            forwardedMessagesRV.setVisibility(View.GONE);
+            getForwardedMessagesRV().setVisibility(View.GONE);
         }
 
         boolean imageAttached = false;
@@ -118,8 +118,8 @@ public class IncomingMessageVH  extends MessageVH {
                             : (needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow));
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black),
                 PorterDuff.Mode.MULTIPLY);
-        messageBalloon.setBackground(balloonDrawable);
-        messageShadow.setBackground(shadowDrawable);
+        getMessageBalloon().setBackground(balloonDrawable);
+        getMessageShadow().setBackground(shadowDrawable);
 
         // setup BALLOON margins
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -130,10 +130,10 @@ public class IncomingMessageVH  extends MessageVH {
                 dipToPx(haveForwarded ? 0f : 3f, context),
                 dipToPx(0f, context),
                 dipToPx(3f, context));
-        messageShadow.setLayoutParams(layoutParams);
+        getMessageShadow().setLayoutParams(layoutParams);
 
         // setup MESSAGE padding
-        messageBalloon.setPadding(
+        getMessageBalloon().setPadding(
                 dipToPx(needTail ? 20f : 12f, context),
                 dipToPx(8f, context),
                 dipToPx(12f, context),
@@ -141,7 +141,7 @@ public class IncomingMessageVH  extends MessageVH {
 
         if (imageAttached) {
             float border = 3.5f;
-            messageBalloon.setPadding(
+            getMessageBalloon().setPadding(
                     dipToPx(needTail ? border + 8f : border, context),
                     dipToPx(border, context),
                     dipToPx(border, context),
@@ -150,14 +150,14 @@ public class IncomingMessageVH  extends MessageVH {
             if (getMessageText().getText().toString().trim().isEmpty()
                     && messageRealmObject.isAttachmentImageOnly()
             ) {
-                messageTime.setTextColor(context.getResources().getColor(R.color.white));
+                getMessageTime().setTextColor(context.getResources().getColor(R.color.white));
             }
         }
 
         needTail = extraData.isNeedTail(); //restoring the original tail value for the interaction with avatars
 
         // setup BACKGROUND COLOR
-        setUpMessageBalloonBackground(messageBalloon, extraData.getColorStateList());
+        setUpMessageBalloonBackground(getMessageBalloon(), extraData.getColorStateList());
 
         setUpAvatar(context, extraData.getGroupMember(), messageRealmObject, needTail);
 
@@ -165,14 +165,14 @@ public class IncomingMessageVH  extends MessageVH {
         if (messageRealmObject.getText().trim().isEmpty()
                 && !messageRealmObject.hasForwardedMessages()
                 && !messageRealmObject.haveAttachments()) {
-            messageBalloon.setVisibility(View.GONE);
-            messageShadow.setVisibility(View.GONE);
-            messageTime.setVisibility(View.GONE);
+            getMessageBalloon().setVisibility(View.GONE);
+            getMessageShadow().setVisibility(View.GONE);
+            getMessageTime().setVisibility(View.GONE);
             avatar.setVisibility(View.GONE);
             LogManager.w(this, "Empty message! Hidden, but need to correct");
         } else {
-            messageBalloon.setVisibility(View.VISIBLE);
-            messageTime.setVisibility(View.VISIBLE);
+            getMessageBalloon().setVisibility(View.VISIBLE);
+            getMessageTime().setVisibility(View.VISIBLE);
         }
 
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {

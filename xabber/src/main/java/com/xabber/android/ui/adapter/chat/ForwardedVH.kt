@@ -20,8 +20,8 @@ import com.xabber.android.ui.helper.dipToPx
 
 open class ForwardedVH(
     itemView: View,
-    messageListener: MessageClickListener?,
-    longClickListener: MessageLongClickListener?,
+    messageListener: MessageClickListener,
+    longClickListener: MessageLongClickListener,
     listener: FileListener?,
     appearance: Int,
 ) : MessageVH(itemView, messageListener, longClickListener, listener, appearance) {

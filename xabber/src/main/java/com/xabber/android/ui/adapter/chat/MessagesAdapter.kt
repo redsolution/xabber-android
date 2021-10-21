@@ -528,8 +528,7 @@ class MessagesAdapter(
         firstUnreadMessageID = id
     }
 
-    /** File listener  */
-    override fun onImageClick(messagePosition: Int, attachmentPosition: Int, messageUID: String) {
+    override fun onImageClick(messagePosition: Int, attachmentPosition: Int, messageUID: String?) {
         if (isCheckMode) {
             addOrRemoveCheckedItem(messagePosition)
         } else {
@@ -537,7 +536,7 @@ class MessagesAdapter(
         }
     }
 
-    override fun onFileClick(messagePosition: Int, attachmentPosition: Int, messageUID: String) {
+    override fun onFileClick(messagePosition: Int, attachmentPosition: Int, messageUID: String?) {
         if (isCheckMode) {
             addOrRemoveCheckedItem(messagePosition)
         } else {
@@ -546,8 +545,11 @@ class MessagesAdapter(
     }
 
     override fun onVoiceClick(
-        messagePosition: Int, attachmentPosition: Int, attachmentId: String, messageUID: String,
-        timestamp: Long
+        messagePosition: Int,
+        attachmentPosition: Int,
+        attachmentId: String?,
+        messageUID: String?,
+        timestamp: Long?
     ) {
         if (isCheckMode) {
             addOrRemoveCheckedItem(messagePosition)
@@ -558,7 +560,7 @@ class MessagesAdapter(
         }
     }
 
-    override fun onFileLongClick(attachmentRealmObject: AttachmentRealmObject, caller: View) {
+    override fun onFileLongClick(attachmentRealmObject: AttachmentRealmObject?, caller: View?) {
         fileListener?.onFileLongClick(attachmentRealmObject, caller)
     }
 
@@ -570,7 +572,7 @@ class MessagesAdapter(
         fileListener?.onUploadCancel()
     }
 
-    override fun onDownloadError(error: String) {
+    override fun onDownloadError(error: String?) {
         fileListener?.onDownloadError(error)
     }
 
