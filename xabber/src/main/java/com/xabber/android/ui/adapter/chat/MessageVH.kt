@@ -1,9 +1,7 @@
 package com.xabber.android.ui.adapter.chat
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Build
-import android.os.Looper
 import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -53,29 +51,26 @@ open class MessageVH(
     View.OnLongClickListener {
 
     var isUnread = false
-    var needName = false
     var messageId: String? = null
-    protected var timestamp: Long? = null
 
     private val subscriptions = CompositeSubscription()
 
-    protected var messageTime: TextView? = itemView.findViewById(R.id.message_time)
+    protected var messageTime: TextView = itemView.findViewById(R.id.message_time)
     protected var messageHeader: TextView = itemView.findViewById(R.id.message_sender_tv)
     protected var messageBalloon: View = itemView.findViewById(R.id.message_balloon)
     protected var messageShadow: View = itemView.findViewById(R.id.message_shadow)
     protected var statusIcon: ImageView = itemView.findViewById(R.id.message_status_icon)
     protected var messageInfo: View = itemView.findViewById(R.id.message_info)
     protected var forwardedMessagesRV: RecyclerView = itemView.findViewById(R.id.forwardedRecyclerView)
-    protected val messageFileInfo: TextView? = itemView.findViewById(R.id.message_file_info)
+    protected val messageFileInfo: TextView = itemView.findViewById(R.id.message_file_info)
     protected val progressBar: ProgressBar = itemView.findViewById(R.id.message_progress_bar)
     private val rvFileList: RecyclerView = itemView.findViewById(R.id.file_list_rv)
-    private val imageGridContainer: FrameLayout? = itemView.findViewById(R.id.image_grid_container_fl)
+    private val imageGridContainer: FrameLayout = itemView.findViewById(R.id.image_grid_container_fl)
+
     private val uploadProgressBar: ProgressBar? = itemView.findViewById(R.id.uploadProgressBar)
     private val ivCancelUpload: ImageButton? = itemView.findViewById(R.id.ivCancelUpload)
 
-    private var imageCounter = 0
     private var imageCount = 0
-    private var fileCounter = 0
     private var fileCount = 0
 
     interface FileListener {
@@ -108,6 +103,7 @@ open class MessageVH(
         val chat = ChatManager.getInstance().getChat(
             messageRealmObject.account, messageRealmObject.user
         )
+
         // groupchat
         if (extraData.groupMember != null) {
             if (!extraData.groupMember.isMe) {
@@ -132,10 +128,13 @@ open class MessageVH(
                 messageHeader.visibility = View.VISIBLE
             }
         }
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-            messageText.setTextColor(itemView.context.getColor(R.color.grey_200))
-        } else {
-            messageText.setTextColor(itemView.context.getColor(R.color.black))
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
+                messageText.setTextColor(itemView.context.getColor(R.color.grey_200))
+            } else {
+                messageText.setTextColor(itemView.context.getColor(R.color.black))
+            }
         }
 
         // Added .concat("&zwj;") and .concat(String.valueOf(Character.MIN_VALUE)
@@ -151,7 +150,6 @@ open class MessageVH(
                     extraData.context, messageRealmObject.account
                 )
             ) as SpannableStringBuilder
-            val displayMetrics = itemView.context.resources.displayMetrics
             val color: Int = if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                     ColorManager.getInstance().accountPainter.getAccountMainColor(
                         messageRealmObject.account
@@ -161,7 +159,11 @@ open class MessageVH(
                         messageRealmObject.account
                     )
                 }
-            modifySpannableWithCustomQuotes(spannable, displayMetrics, color)
+            modifySpannableWithCustomQuotes(
+                spannable,
+                itemView.context.resources.displayMetrics,
+                color
+            )
             messageText.setText(spannable, TextView.BufferType.SPANNABLE)
         } else {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
@@ -182,108 +184,90 @@ open class MessageVH(
         // set date
         needDate = extraData.isNeedDate
         date = getDateStringForMessage(messageRealmObject.timestamp)
-        needName = extraData.isNeedName
-        if (!needName) {
+        if (!extraData.isNeedName) {
             messageHeader.visibility = View.GONE
         }
 
         // setup CHECKED
         if (extraData.isChecked) {
             itemView.setBackgroundColor(
-                extraData.context.resources.getColor(
-                    R.color.unread_messages_background
-                )
+                extraData.context.resources.getColor(R.color.unread_messages_background)
             )
         } else {
             itemView.background = null
         }
         setupTime(extraData, messageRealmObject)
-        setupImageOrFile(messageRealmObject, extraData.context)
+        setupImageOrFile(messageRealmObject, extraData)
     }
 
     protected fun setupTime(extraData: MessageExtraData, messageRealmObject: MessageRealmObject) {
-        //Since the original and forwarded voice messages are basically the same, we need some help with properly differentiating them to avoid cases when
-        //original voice message and the forward with this voice message are showing the same progress change during playback.
-        //Saving any type of data from the base message (message that "houses" the forwarded messages) will help us differentiate
-        //original voice message and voice message inside forwards, as well as same forwarded messages in different replies.
-        //TODO:should probably swap timestamp to the UID of the message, since it's more versatile
-        timestamp = extraData.mainMessageTimestamp
         var time = getTimeText(Date(messageRealmObject.timestamp))
-        val delayTimestamp = messageRealmObject.delayTimestamp
-        if (delayTimestamp != null) {
+        messageRealmObject.delayTimestamp?.let {
             val delay = extraData.context.getString(
                 if (messageRealmObject.isIncoming) R.string.chat_delay else R.string.chat_typed,
-                getTimeText(Date(delayTimestamp))
+                getTimeText(Date(it))
             )
             time += " ($delay)"
         }
-        val editedTimestamp = messageRealmObject.editedTimestamp
-        if (editedTimestamp != null) {
+        messageRealmObject.editedTimestamp?.let {
             time += extraData.context.getString(
                 R.string.edited,
-                getTimeText(Date(editedTimestamp))
+                getTimeText(Date(it))
             )
         }
-        messageTime!!.text = time
+        messageTime?.text = time
     }
 
-    private fun setupImageOrFile(messageRealmObject: MessageRealmObject, context: Context) {
+    private fun setupImageOrFile(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
         rvFileList.visibility = View.GONE
-        if (imageGridContainer != null) {
-            imageGridContainer.removeAllViews()
-            imageGridContainer.visibility = View.GONE
-        }
+        imageGridContainer.removeAllViews()
+        imageGridContainer.visibility = View.GONE
         if (messageRealmObject.haveAttachments()) {
             setUpImage(messageRealmObject.attachmentRealmObjects)
-            //setUpVoice(messageItem.getAttachments(), context);
-            setUpFile(messageRealmObject.attachmentRealmObjects, context)
+            setUpFile(messageRealmObject.attachmentRealmObjects, extraData)
         }
     }
 
     private fun setUpImage(attachmentRealmObjects: RealmList<AttachmentRealmObject>) {
-        val gridBuilder = ImageGrid()
-        if (!SettingsManager.connectionLoadImages()) return
-        val imageAttachmentRealmObjects = RealmList<AttachmentRealmObject>()
-        for (attachmentRealmObject in attachmentRealmObjects) {
-            if (attachmentRealmObject.isImage) {
-                imageAttachmentRealmObjects.add(attachmentRealmObject)
-                imageCounter++
+        if (!SettingsManager.connectionLoadImages()) {
+            return
+        }
+        attachmentRealmObjects.filter { it.isImage }
+            .also { imageCount = it.size }
+            .takeIf { it.isNotEmpty() }
+            ?.let {
+                RealmList<AttachmentRealmObject>().apply {
+                    addAll(it)
+                }
             }
-        }
-        imageCount = imageCounter
-        imageCounter = 0
-        if (imageAttachmentRealmObjects.size > 0) {
-            val imageGridView =
-                gridBuilder.inflateView(imageGridContainer!!, imageAttachmentRealmObjects.size)
-            gridBuilder.bindView(imageGridView, imageAttachmentRealmObjects, this, { v: View ->
-                onLongClick(v)
-                true
-            })
-            imageGridContainer.addView(imageGridView)
-            imageGridContainer.visibility = View.VISIBLE
-        }
+            ?.let {
+                val gridBuilder = ImageGrid()
+                val imageGridView = gridBuilder.inflateView(imageGridContainer, it.size)
+                gridBuilder.bindView(imageGridView, it, this) { v: View ->
+                    onLongClick(v)
+                    true
+                }
+                imageGridContainer.addView(imageGridView)
+                imageGridContainer.visibility = View.VISIBLE
+            }
     }
 
     private fun setUpFile(
-        attachmentRealmObjects: RealmList<AttachmentRealmObject>,
-        context: Context
+        attachmentRealmObjects: RealmList<AttachmentRealmObject>, extraData: MessageExtraData
     ) {
-        val fileAttachmentRealmObjects = RealmList<AttachmentRealmObject>()
-        for (attachmentRealmObject in attachmentRealmObjects) {
-            if (!attachmentRealmObject.isImage) {
-                fileAttachmentRealmObjects.add(attachmentRealmObject)
-                fileCounter++
+        attachmentRealmObjects.filter { !it.isImage }
+            .also { fileCount = it.size }
+            .takeIf { it.isNotEmpty() }
+            ?.let {
+                RealmList<AttachmentRealmObject>().apply { addAll(it) }
             }
-        }
-        fileCount = fileCounter
-        fileCounter = 0
-        if (fileAttachmentRealmObjects.size > 0) {
-            val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(context)
-            rvFileList.layoutManager = layoutManager
-            val adapter = FilesAdapter(fileAttachmentRealmObjects, timestamp, this)
-            rvFileList.adapter = adapter
-            rvFileList.visibility = View.VISIBLE
-        }
+            ?.let {
+                rvFileList.apply {
+                    layoutManager = LinearLayoutManager(extraData.context)
+                    adapter = FilesAdapter(it, extraData.mainMessageTimestamp, this@MessageVH)
+                    visibility = View.VISIBLE
+                }
+            }
     }
 
     /** File list Listener  */
@@ -316,8 +300,9 @@ open class MessageVH(
                 mainMessageTimestamp
             )
         } else {
-            VoiceManager.getInstance()
-                .voiceClicked(messageId, attachmentPosition, mainMessageTimestamp)
+            VoiceManager.getInstance().voiceClicked(
+                messageId, attachmentPosition, mainMessageTimestamp
+            )
         }
     }
 
@@ -368,14 +353,42 @@ open class MessageVH(
 
     /** Upload progress subscription  */
     protected fun subscribeForUploadProgress() {
+        fun setUpProgress(progressData: HttpFileUploadManager.ProgressData?) {
+            if (progressData != null && messageId == progressData.messageId) {
+                if (progressData.isCompleted) {
+                    showProgress(false)
+                    showFileProgressModified(rvFileList, fileCount, fileCount)
+                    showProgressModified(false, 0, imageCount)
+                } else if (progressData.error != null) {
+                    showProgress(false)
+                    showFileProgressModified(rvFileList, fileCount, fileCount)
+                    showProgressModified(false, 0, imageCount)
+                    fileListener?.onDownloadError(progressData.error)
+                } else {
+                    showProgress(true)
+                    messageFileInfo?.setText(R.string.message_status_uploading)
+                    if (progressData.progress <= imageCount) {
+                        showProgressModified(true, progressData.progress - 1, imageCount)
+                    }
+                    if (progressData.progress - imageCount <= fileCount) {
+                        showFileProgressModified(
+                            rvFileList,
+                            progressData.progress - imageCount,
+                            progressData.fileCount - imageCount
+                        )
+                    }
+                }
+            } else {
+                showProgress(false)
+                showFileProgressModified(rvFileList, fileCount, fileCount)
+                showProgressModified(false, 0, imageCount)
+            }
+        }
+
         subscriptions.add(
             HttpFileUploadManager.getInstance()
                 .subscribeForProgress()
-                .doOnNext { progressData: HttpFileUploadManager.ProgressData? ->
-                    setUpProgress(
-                        progressData
-                    )
-                }
+                .doOnNext { progressData -> setUpProgress(progressData) }
                 .subscribe()
         )
     }
@@ -384,45 +397,9 @@ open class MessageVH(
         subscriptions.clear()
     }
 
-    private fun setUpProgress(progressData: HttpFileUploadManager.ProgressData?) {
-        if (progressData != null && messageId == progressData.messageId) {
-            if (progressData.isCompleted) {
-                showProgress(false)
-                showFileProgressModified(rvFileList, fileCount, fileCount)
-                showProgressModified(false, 0, imageCount)
-            } else if (progressData.error != null) {
-                showProgress(false)
-                showFileProgressModified(rvFileList, fileCount, fileCount)
-                showProgressModified(false, 0, imageCount)
-                fileListener?.onDownloadError(progressData.error)
-            } else {
-                showProgress(true)
-                messageFileInfo?.setText(R.string.message_status_uploading)
-                if (progressData.progress <= imageCount && imageGridContainer != null) {
-                    showProgressModified(true, progressData.progress - 1, imageCount)
-                }
-                if (progressData.progress - imageCount <= fileCount) {
-                    showFileProgressModified(
-                        rvFileList,
-                        progressData.progress - imageCount,
-                        progressData.fileCount - imageCount
-                    )
-                }
-            }
-        } else {
-            showProgress(false)
-            showFileProgressModified(rvFileList, fileCount, fileCount)
-            showProgressModified(false, 0, imageCount)
-        }
-    }
-
     private fun showProgress(show: Boolean) {
-        if (messageFileInfo != null) {
-            messageFileInfo.visibility = if (show) View.VISIBLE else View.GONE
-        }
-        if (messageTime != null) {
-            messageTime!!.visibility = if (show) View.GONE else View.VISIBLE
-        }
+        messageFileInfo?.visibility = if (show) View.VISIBLE else View.GONE
+        messageTime?.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     private fun showFileProgressModified(view: RecyclerView, startAt: Int, endAt: Int) {
@@ -435,13 +412,37 @@ open class MessageVH(
     }
 
     private fun showFileUploadProgress(view: View, show: Boolean) {
-        val upload = view.findViewById<ProgressBar>(R.id.uploadProgressBar)
-        if (upload != null) {
-            upload.visibility = if (show) View.VISIBLE else View.GONE
-        }
+        view.findViewById<ProgressBar>(R.id.uploadProgressBar)?.visibility =
+            if (show) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
     }
 
     private fun showProgressModified(show: Boolean, current: Int, last: Int) {
+        fun getProgressView(view: View, index: Int): ProgressBar {
+            return when (index) {
+                1 -> view.findViewById(R.id.uploadProgressBar1)
+                2 -> view.findViewById(R.id.uploadProgressBar2)
+                3 -> view.findViewById(R.id.uploadProgressBar3)
+                4 -> view.findViewById(R.id.uploadProgressBar4)
+                5 -> view.findViewById(R.id.uploadProgressBar5)
+                else -> view.findViewById(R.id.uploadProgressBar0)
+            }
+        }
+
+        fun getImageShadow(view: View, index: Int): ImageView {
+            return when (index) {
+                1 -> view.findViewById(R.id.ivImage1Shadow)
+                2 -> view.findViewById(R.id.ivImage2Shadow)
+                3 -> view.findViewById(R.id.ivImage3Shadow)
+                4 -> view.findViewById(R.id.ivImage4Shadow)
+                5 -> view.findViewById(R.id.ivImage5Shadow)
+                else -> view.findViewById(R.id.ivImage0Shadow)
+            }
+        }
+
         if (show) {
             for (i in 0 until current) {
                 getProgressView(imageGridContainer, i).visibility = View.GONE
@@ -459,49 +460,25 @@ open class MessageVH(
         }
     }
 
-    private fun getProgressView(view: View?, index: Int): ProgressBar {
-        return when (index) {
-            1 -> view!!.findViewById(R.id.uploadProgressBar1)
-            2 -> view!!.findViewById(R.id.uploadProgressBar2)
-            3 -> view!!.findViewById(R.id.uploadProgressBar3)
-            4 -> view!!.findViewById(R.id.uploadProgressBar4)
-            5 -> view!!.findViewById(R.id.uploadProgressBar5)
-            else -> view!!.findViewById(R.id.uploadProgressBar0)
-        }
-    }
-
-    private fun getImageShadow(view: View?, index: Int): ImageView {
-        return when (index) {
-            1 -> view!!.findViewById(R.id.ivImage1Shadow)
-            2 -> view!!.findViewById(R.id.ivImage2Shadow)
-            3 -> view!!.findViewById(R.id.ivImage3Shadow)
-            4 -> view!!.findViewById(R.id.ivImage4Shadow)
-            5 -> view!!.findViewById(R.id.ivImage5Shadow)
-            else -> view!!.findViewById(R.id.ivImage0Shadow)
-        }
-    }
-
     fun setupForwarded(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
         val forwardedIDs = messageRealmObject.forwardedIdsAsArray
-        if (!listOf(*forwardedIDs).contains(null)) {
-            val realm = DatabaseManager.getInstance().defaultRealmInstance
-            val forwardedMessages = realm
+        if (!forwardedIDs.contains(null)) {
+            DatabaseManager.getInstance().defaultRealmInstance
                 .where(MessageRealmObject::class.java)
                 .`in`(MessageRealmObject.Fields.PRIMARY_KEY, forwardedIDs)
                 .findAll()
                 .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING)
-            if (forwardedMessages.size > 0) {
-                val adapter = ForwardedAdapter(forwardedMessages, extraData)
-                forwardedMessagesRV.layoutManager = LinearLayoutManager(extraData.context)
-                forwardedMessagesRV.adapter = adapter
-                forwardedMessagesRV.setBackgroundColor(
-                    ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f)
-                )
-                forwardedMessagesRV.visibility = View.VISIBLE
-            }
-            if (Looper.myLooper() != Looper.getMainLooper()) {
-                realm.close()
-            }
+                .takeIf { it.isNotEmpty() }
+                ?.let { forwardedMessages ->
+                    forwardedMessagesRV.apply {
+                        layoutManager = LinearLayoutManager(extraData.context)
+                        adapter = ForwardedAdapter(forwardedMessages, extraData)
+                        setBackgroundColor(
+                            ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f)
+                        )
+                        visibility = View.VISIBLE
+                    }
+                }
         }
     }
 

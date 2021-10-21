@@ -36,10 +36,6 @@ class ImageGrid {
         createStandardTransformation(CenterCrop())
     }
 
-    private val centerInsideTransformation: MultiTransformation<Bitmap> by lazy {
-        createStandardTransformation(CenterInside())
-    }
-
     private val justRoundedTransformation: MultiTransformation<Bitmap> by lazy {
         createStandardTransformation()
     }
