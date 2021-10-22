@@ -355,7 +355,7 @@ public class MessageRealmObject extends RealmObject {
         this.attachmentRealmObjects = attachmentRealmObjects;
     }
 
-    public boolean haveAttachments() { return attachmentRealmObjects != null && attachmentRealmObjects.size() > 0; }
+    public boolean hasAttachments() { return attachmentRealmObjects != null && attachmentRealmObjects.size() > 0; }
 
     public RealmList<ForwardIdRealmObject> getForwardedIds() { return forwardedIds; }
 
@@ -431,7 +431,7 @@ public class MessageRealmObject extends RealmObject {
                     }
                     stringBuilder.append(message.getText().trim()).append(" ");
                     String attachmentName = "";
-                    if (message.haveAttachments() && message.getAttachmentRealmObjects().size() > 0) {
+                    if (message.hasAttachments() && message.getAttachmentRealmObjects().size() > 0) {
                         AttachmentRealmObject attachmentRealmObject = message.getAttachmentRealmObjects().get(0);
                         attachmentName = StringUtilsKt.wrapWithColorTag(attachmentRealmObject.getTitle().trim(), color);
                         stringBuilder.append(attachmentName);

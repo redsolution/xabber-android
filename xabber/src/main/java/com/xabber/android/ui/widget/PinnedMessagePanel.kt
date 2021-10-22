@@ -115,7 +115,7 @@ class PinnedMessagePanel : Fragment() {
                         forwardedCount, forwardedCount
                     )
                 }
-                message.haveAttachments() -> {
+                message.hasAttachments() -> {
                     textView.text = getColoredAttachmentDisplayName(
                         requireContext(), message.attachmentRealmObjects, -1
                     )

@@ -185,7 +185,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid()) != null) {
                 String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid());
                 messageText = StringUtilsKt.wrapWithColorTag(chatState, accountColorIndicatorLight);
-            } else if (lastMessage.haveAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
+            } else if (lastMessage.hasAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
                 AttachmentRealmObject attachmentRealmObject = lastMessage.getAttachmentRealmObjects().get(0);
                 if (attachmentRealmObject.isVoice()) {
                     StringBuilder voiceText = new StringBuilder();

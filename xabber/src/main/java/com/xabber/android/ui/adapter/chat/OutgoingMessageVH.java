@@ -42,11 +42,13 @@ public class OutgoingMessageVH extends MessageVH {
             getMessageFileInfo().setText(R.string.message_status_uploading);
             getMessageFileInfo().setVisibility(View.VISIBLE);
             getMessageTime().setVisibility(View.GONE);
+            getBottomMessageTime().setVisibility(View.GONE);
         } else {
             getProgressBar().setVisibility(View.GONE);
             getMessageFileInfo().setText("");
             getMessageFileInfo().setVisibility(View.GONE);
             getMessageTime().setVisibility(View.VISIBLE);
+            getBottomMessageTime().setVisibility(View.VISIBLE);
         }
 
         // setup FORWARDED
@@ -68,7 +70,7 @@ public class OutgoingMessageVH extends MessageVH {
             getForwardedMessagesRV().setVisibility(View.GONE);
         }
 
-        if (messageRealmObject.haveAttachments() && messageRealmObject.hasImage()) {
+        if (messageRealmObject.hasAttachments() && messageRealmObject.hasImage()) {
             needTail = false;
         }
 
@@ -104,7 +106,7 @@ public class OutgoingMessageVH extends MessageVH {
 
         float border = 3.5f;
 
-        if(messageRealmObject.haveAttachments()) {
+        if(messageRealmObject.hasAttachments()) {
             if(messageRealmObject.hasImage()) {
                 getMessageBalloon().setPadding(
                         dipToPx(border, context),
@@ -114,6 +116,7 @@ public class OutgoingMessageVH extends MessageVH {
                 );
                 if (messageRealmObject.isAttachmentImageOnly()) {
                     getMessageTime().setTextColor(context.getResources().getColor(R.color.white));
+                    getBottomMessageTime().setTextColor(context.getResources().getColor(R.color.white));
                 } else {
                     getMessageInfo().setPadding(
                             0, 0, dipToPx(border+1.5f, context), dipToPx(4.7f, context)
@@ -145,14 +148,19 @@ public class OutgoingMessageVH extends MessageVH {
 
     private void setStatusIcon(MessageRealmObject messageRealmObject) {
         getStatusIcon().setVisibility(View.VISIBLE);
+        getBottomStatusIcon().setVisibility(View.VISIBLE);
         getProgressBar().setVisibility(View.GONE);
 
         if (messageRealmObject.getMessageStatus() == MessageStatus.UPLOADING) {
             getMessageText().setText("");
             getStatusIcon().setVisibility(View.GONE);
+            getBottomStatusIcon().setVisibility(View.GONE);
         } else {
             MessageDeliveryStatusHelper.INSTANCE.setupStatusImageView(
                     messageRealmObject, getStatusIcon()
+            );
+            MessageDeliveryStatusHelper.INSTANCE.setupStatusImageView(
+                    messageRealmObject, getBottomStatusIcon()
             );
         }
     }

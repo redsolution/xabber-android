@@ -34,7 +34,7 @@ class ForwardedAdapter(
 
         // if have forwarded-messages or attachments should use special layout without flexbox-style text
         return if (messageRealmObject.hasForwardedMessages()
-            || messageRealmObject.haveAttachments()
+            || messageRealmObject.hasAttachments()
             || messageRealmObject.hasImage()
         ) {
             VIEW_TYPE_IMAGE

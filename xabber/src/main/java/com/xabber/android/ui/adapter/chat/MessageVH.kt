@@ -11,6 +11,7 @@ import android.util.DisplayMetrics
 import android.view.View
 import android.widget.*
 import androidx.annotation.StyleRes
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,17 +56,22 @@ open class MessageVH(
 
     private val subscriptions = CompositeSubscription()
 
-    protected var messageTime: TextView = itemView.findViewById(R.id.message_time)
-    protected var messageHeader: TextView = itemView.findViewById(R.id.message_sender_tv)
-    protected var messageBalloon: View = itemView.findViewById(R.id.message_balloon)
-    protected var messageShadow: View = itemView.findViewById(R.id.message_shadow)
-    protected var statusIcon: ImageView = itemView.findViewById(R.id.message_status_icon)
-    protected var messageInfo: View = itemView.findViewById(R.id.message_info)
-    protected var forwardedMessagesRV: RecyclerView = itemView.findViewById(R.id.forwardedRecyclerView)
+    protected val messageTime: TextView = itemView.findViewById(R.id.message_time)
+    protected val messageHeader: TextView = itemView.findViewById(R.id.message_sender_tv)
+    protected val messageBalloon: View = itemView.findViewById(R.id.message_balloon)
+    protected val messageShadow: View = itemView.findViewById(R.id.message_shadow)
+    protected val statusIcon: ImageView = itemView.findViewById(R.id.message_status_icon)
+    protected val messageInfo: View = itemView.findViewById(R.id.message_info)
+    protected val forwardedMessagesRV: RecyclerView = itemView.findViewById(R.id.forwardedRecyclerView)
     protected val messageFileInfo: TextView = itemView.findViewById(R.id.message_file_info)
     protected val progressBar: ProgressBar = itemView.findViewById(R.id.message_progress_bar)
     private val rvFileList: RecyclerView = itemView.findViewById(R.id.file_list_rv)
     private val imageGridContainer: FrameLayout = itemView.findViewById(R.id.image_grid_container_fl)
+
+    //todo there are duplicated views! (or else triplicated!)
+    private val messageStatusLayout: LinearLayoutCompat = itemView.findViewById(R.id.message_bottom_status)
+    protected val bottomMessageTime: TextView = messageStatusLayout.findViewById(R.id.message_time)
+    protected var bottomStatusIcon: ImageView = messageStatusLayout.findViewById(R.id.message_status_icon)
 
     private val uploadProgressBar: ProgressBar? = itemView.findViewById(R.id.uploadProgressBar)
     private val ivCancelUpload: ImageButton? = itemView.findViewById(R.id.ivCancelUpload)
@@ -186,6 +192,13 @@ open class MessageVH(
             messageHeader.visibility = View.GONE
         }
 
+        if (messageRealmObject.text.isNullOrEmpty()
+            && messageRealmObject.attachmentRealmObjects.none { it.isImage }
+        ) {
+            messageStatusLayout.visibility = View.VISIBLE
+            //todo setupBottomMessageStatusLayout
+        }
+
         // setup CHECKED
         if (extraData.isChecked) {
             itemView.setBackgroundColor(
@@ -214,13 +227,14 @@ open class MessageVH(
             )
         }
         messageTime.text = time
+        bottomMessageTime.text = time
     }
 
     private fun setupImageOrFile(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
         rvFileList.visibility = View.GONE
         imageGridContainer.removeAllViews()
         imageGridContainer.visibility = View.GONE
-        if (messageRealmObject.haveAttachments()) {
+        if (messageRealmObject.hasAttachments()) {
             setUpImage(messageRealmObject.attachmentRealmObjects)
             setUpFile(messageRealmObject.attachmentRealmObjects, extraData)
         }
@@ -398,6 +412,7 @@ open class MessageVH(
     private fun showProgress(show: Boolean) {
         messageFileInfo.visibility = if (show) View.VISIBLE else View.GONE
         messageTime.visibility = if (show) View.GONE else View.VISIBLE
+        bottomMessageTime.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     private fun showFileProgressModified(view: RecyclerView, startAt: Int, endAt: Int) {

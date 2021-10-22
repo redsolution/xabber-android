@@ -34,6 +34,7 @@ open class ForwardedVH(
 
         // hide STATUS ICONS
         statusIcon.visibility = View.GONE
+        bottomStatusIcon.visibility = View.GONE
 
         // setup MESSAGE AUTHOR
         val jid =
@@ -96,7 +97,7 @@ open class ForwardedVH(
         messageBalloon.background = balloonDrawable
         messageShadow.background = shadowDrawable
         val border = 3.5f
-        if (messageRealmObject.haveAttachments()) {
+        if (messageRealmObject.hasAttachments()) {
             if (messageRealmObject.isAttachmentImageOnly) {
                 messageBalloon.setPadding(
                     dipToPx(border, context),

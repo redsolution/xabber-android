@@ -1352,7 +1352,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                 message = clickedMessageRealmObject,
                 chat = chat,
                 onMessageRepeatClick = {
-                    if (clickedMessageRealmObject.haveAttachments()) {
+                    if (clickedMessageRealmObject.hasAttachments()) {
                         HttpFileUploadManager.getInstance().retrySendFileMessage(
                             clickedMessageRealmObject, activity
                         )
@@ -1441,7 +1441,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                         || clickedMessage.messageStatus == MessageStatus.DISPLAYED
 
             val isMessageAbleForEditing = !clickedMessage.isIncoming
-                    && !clickedMessage.haveAttachments()
+                    && !clickedMessage.hasAttachments()
                     && isRightMessageStatusForEditing
 
             val isSingleCheckedItem = checkedItems == 1

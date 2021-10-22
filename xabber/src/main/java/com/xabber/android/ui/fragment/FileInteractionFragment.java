@@ -229,7 +229,7 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
             return;
         }
 
-        if (messageRealmObject.haveAttachments()) {
+        if (messageRealmObject.hasAttachments()) {
             try {
                 startActivity(ImageViewerActivity.createIntent(getActivity(),
                         messageRealmObject.getPrimaryKey(), attachmentPosition));
@@ -571,7 +571,7 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
             return;
         }
 
-        if (messageRealmObject.haveAttachments()) {
+        if (messageRealmObject.hasAttachments()) {
             RealmList<AttachmentRealmObject> fileAttachmentRealmObjects = new RealmList<>();
             for (AttachmentRealmObject attachmentRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
                 if (!attachmentRealmObject.isImage()) fileAttachmentRealmObjects.add(attachmentRealmObject);

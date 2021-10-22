@@ -67,6 +67,7 @@ public class IncomingMessageVH  extends MessageVH {
         // setup ARCHIVED icon
         //statusIcon.setVisibility(messageItem.isReceivedFromMessageArchive() ? View.VISIBLE : View.GONE);
         getStatusIcon().setVisibility(View.GONE);
+        getBottomStatusIcon().setVisibility(View.GONE);
 
         // setup FORWARDED
         boolean haveForwarded = messageRealmObject.hasForwardedMessages();
@@ -90,7 +91,7 @@ public class IncomingMessageVH  extends MessageVH {
         boolean imageAttached = false;
         boolean imageOnly = true;
 
-        if(messageRealmObject.haveAttachments()) {
+        if(messageRealmObject.hasAttachments()) {
             for (AttachmentRealmObject a : messageRealmObject.getAttachmentRealmObjects()){
                 if (a.isImage()) {
                     imageAttached = true;
@@ -151,6 +152,7 @@ public class IncomingMessageVH  extends MessageVH {
                     && messageRealmObject.isAttachmentImageOnly()
             ) {
                 getMessageTime().setTextColor(context.getResources().getColor(R.color.white));
+                getBottomMessageTime().setTextColor(context.getResources().getColor(R.color.white));
             }
         }
 
@@ -164,15 +166,17 @@ public class IncomingMessageVH  extends MessageVH {
         // hide empty message
         if (messageRealmObject.getText().trim().isEmpty()
                 && !messageRealmObject.hasForwardedMessages()
-                && !messageRealmObject.haveAttachments()) {
+                && !messageRealmObject.hasAttachments()) {
             getMessageBalloon().setVisibility(View.GONE);
             getMessageShadow().setVisibility(View.GONE);
             getMessageTime().setVisibility(View.GONE);
+            getBottomMessageTime().setVisibility(View.GONE);
             avatar.setVisibility(View.GONE);
             LogManager.w(this, "Empty message! Hidden, but need to correct");
         } else {
             getMessageBalloon().setVisibility(View.VISIBLE);
             getMessageTime().setVisibility(View.VISIBLE);
+            getBottomMessageTime().setVisibility(View.VISIBLE);
         }
 
         itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
