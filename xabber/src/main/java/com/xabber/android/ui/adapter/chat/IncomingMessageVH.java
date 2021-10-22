@@ -136,7 +136,7 @@ public class IncomingMessageVH  extends MessageVH {
         getMessageBalloon().setPadding(
                 dipToPx(needTail ? 20f : 12f, context),
                 dipToPx(8f, context),
-                dipToPx(12f, context),
+                dipToPx(8f, context),
                 dipToPx(8f, context));
 
         if (imageAttached) {

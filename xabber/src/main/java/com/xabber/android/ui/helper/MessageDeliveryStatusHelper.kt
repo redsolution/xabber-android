@@ -11,8 +11,10 @@ object MessageDeliveryStatusHelper {
     fun setupStatusImageView(messageRealmObject: MessageRealmObject, imageView: ImageView) {
         imageView.visibility =
             if (messageRealmObject.text == null || messageRealmObject.isIncoming) {
-                View.INVISIBLE
-            } else View.VISIBLE
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
         imageView.setImageResource(getMessageStatusIconResource(messageRealmObject))
     }
 

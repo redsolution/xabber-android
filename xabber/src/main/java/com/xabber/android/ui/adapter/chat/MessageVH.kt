@@ -141,10 +141,8 @@ open class MessageVH(
         // to avoid click by empty space after ClickableSpan
         // Try to decode to avoid ugly non-english links
         if (messageRealmObject.markupText != null && messageRealmObject.markupText.isNotEmpty()) {
-            val spannable = Html.fromHtml(messageRealmObject.markupText
-                .trim { it <= ' ' }
-                .replace("\n", "<br/>")
-                    + "&zwj;",
+            val spannable = Html.fromHtml(
+                messageRealmObject.markupText.trim { it <= ' ' }.replace("\n", "<br/>") + "&zwj;",
                 null,
                 ClickTagHandler(
                     extraData.context, messageRealmObject.account
@@ -215,7 +213,7 @@ open class MessageVH(
                 getTimeText(Date(it))
             )
         }
-        messageTime?.text = time
+        messageTime.text = time
     }
 
     private fun setupImageOrFile(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
@@ -366,7 +364,7 @@ open class MessageVH(
                     fileListener?.onDownloadError(progressData.error)
                 } else {
                     showProgress(true)
-                    messageFileInfo?.setText(R.string.message_status_uploading)
+                    messageFileInfo.setText(R.string.message_status_uploading)
                     if (progressData.progress <= imageCount) {
                         showProgressModified(true, progressData.progress - 1, imageCount)
                     }
@@ -398,8 +396,8 @@ open class MessageVH(
     }
 
     private fun showProgress(show: Boolean) {
-        messageFileInfo?.visibility = if (show) View.VISIBLE else View.GONE
-        messageTime?.visibility = if (show) View.GONE else View.VISIBLE
+        messageFileInfo.visibility = if (show) View.VISIBLE else View.GONE
+        messageTime.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     private fun showFileProgressModified(view: RecyclerView, startAt: Int, endAt: Int) {
