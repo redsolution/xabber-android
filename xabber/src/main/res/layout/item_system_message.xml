@@ -1,37 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:gravity="center_horizontal"
     android:orientation="horizontal">
 
-    <com.xabber.android.ui.widget.CustomFlexboxLayout
+    <com.xabber.android.ui.widget.CorrectlyTouchEventTextView
+        android:id="@+id/message_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:viewPartMain="@+id/message_text"
-        app:viewPartSlave="@+id/message_info">
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+        android:background="@drawable/groupchat_system_message_background"
+        android:textSize="14sp"
+        android:textStyle="normal|italic"
+        android:textColor="@color/white"
 
-        <com.xabber.android.ui.widget.CorrectlyTouchEventTextView
-            android:id="@+id/message_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_marginRight="4dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingStart="16dp"
-            android:paddingLeft="16dp"
-            android:paddingEnd="16dp"
-            android:paddingRight="16dp"
-            android:background="@drawable/groupchat_system_message_background"
-            android:textSize="14sp"
-            android:textStyle="normal|italic"
-            android:textColor="@color/white"
-
-            android:text="Incoming subscription request" />
-
-    </com.xabber.android.ui.widget.CustomFlexboxLayout>
+        android:text="Incoming subscription request" />
 
 </LinearLayout>
