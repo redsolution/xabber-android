@@ -93,18 +93,8 @@ class ForwardedAdapter(
             isNeedName = true
         )
         when (getItemViewType(position)) {
-            VIEW_TYPE_IMAGE -> {
-                (holder as MessageVH).bind(
-                    messageRealmObject,
-                    extraData,
-                )
-            }
-            else -> {
-                (holder as MessageVH).bind(
-                    messageRealmObject,
-                    extraData,
-                )
-            }
+            VIEW_TYPE_IMAGE -> (holder as MessageVH).bind(messageRealmObject, extraData)
+            else -> (holder as MessageVH).bind(messageRealmObject, extraData)
         }
     }
 

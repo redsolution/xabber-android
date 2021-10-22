@@ -37,7 +37,6 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:paddingTop="2dp"
-            android:paddingLeft="4dp"
             android:paddingBottom="2dp"
             android:visibility="gone"/>
 
@@ -52,8 +51,6 @@
             android:id="@+id/file_list_rv"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginStart="12dp"
-            android:layout_marginLeft="12dp"
             tools:listitem="@layout/item_file_message"
             android:visibility="gone"/>
 
