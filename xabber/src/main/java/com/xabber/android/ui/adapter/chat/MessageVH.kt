@@ -487,9 +487,6 @@ open class MessageVH(
                     forwardedMessagesRV.apply {
                         layoutManager = LinearLayoutManager(extraData.context)
                         adapter = ForwardedAdapter(forwardedMessages, extraData)
-                        setBackgroundColor(
-                            ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f)
-                        )
                         visibility = View.VISIBLE
                     }
                 }

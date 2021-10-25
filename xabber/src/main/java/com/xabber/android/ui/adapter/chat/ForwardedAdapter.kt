@@ -17,7 +17,7 @@ import io.realm.RealmResults
 class ForwardedAdapter(
     private val realmResults: RealmResults<MessageRealmObject?>,
     private val extraData: MessageExtraData
-) : RealmRecyclerViewAdapter<MessageRealmObject?, BasicMessageVH?>(realmResults, true, true),
+) : RealmRecyclerViewAdapter<MessageRealmObject?, ForwardedVH?>(realmResults, true, true),
     MessageClickListener,
     MessageLongClickListener {
 
@@ -27,20 +27,6 @@ class ForwardedAdapter(
 
     interface ForwardListener {
         fun onForwardClick(messageId: String?)
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        val messageRealmObject = getMessageItem(position) ?: return 0
-
-        // if have forwarded-messages or attachments should use special layout without flexbox-style text
-        return if (messageRealmObject.hasForwardedMessages()
-            || messageRealmObject.hasAttachments()
-            || messageRealmObject.hasImage()
-        ) {
-            VIEW_TYPE_IMAGE
-        } else {
-            VIEW_TYPE_MESSAGE
-        }
     }
 
     override fun getItemCount() =
@@ -53,7 +39,7 @@ class ForwardedAdapter(
             else -> null
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasicMessageVH {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForwardedVH {
         return ForwardedVH(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.item_message_forwarded, parent, false
@@ -62,7 +48,7 @@ class ForwardedAdapter(
         )
     }
 
-    override fun onBindViewHolder(holder: BasicMessageVH, position: Int) {
+    override fun onBindViewHolder(holder: ForwardedVH, position: Int) {
         val messageRealmObject = getMessageItem(position)
         if (messageRealmObject == null) {
             LogManager.w(this, "onBindViewHolder Null message item. Position: $position")
@@ -70,9 +56,7 @@ class ForwardedAdapter(
         }
 
         // setup message uniqueId
-        if (holder is MessageVH) {
-            holder.messageId = messageRealmObject.primaryKey
-        }
+        holder.messageId = messageRealmObject.primaryKey
 
         val extraData = MessageExtraData(
             null,
@@ -92,10 +76,7 @@ class ForwardedAdapter(
             isNeedDate = true,
             isNeedName = true
         )
-        when (getItemViewType(position)) {
-            VIEW_TYPE_IMAGE -> (holder as MessageVH).bind(messageRealmObject, extraData)
-            else -> (holder as MessageVH).bind(messageRealmObject, extraData)
-        }
+        holder.bind(messageRealmObject, extraData)
     }
 
     override fun onMessageClick(caller: View, position: Int) {
@@ -107,10 +88,5 @@ class ForwardedAdapter(
     }
 
     override fun onLongMessageClick(position: Int) {}
-
-    companion object {
-        private const val VIEW_TYPE_MESSAGE = 1
-        private const val VIEW_TYPE_IMAGE = 3
-    }
 
 }

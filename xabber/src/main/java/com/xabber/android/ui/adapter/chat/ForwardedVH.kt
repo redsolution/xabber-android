@@ -3,16 +3,12 @@ package com.xabber.android.ui.adapter.chat
 import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.graphics.PorterDuff
-import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
-import com.xabber.android.data.entity.ContactJid
-import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
@@ -29,21 +25,12 @@ open class ForwardedVH(
     private val tvForwardedCount: TextView = itemView.findViewById(R.id.forwarded_count_tv)
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    open fun bind(messageRealmObject: MessageRealmObject, extraData: MessageExtraData, accountJid: String) {
+    override fun bind(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
         super.bind(messageRealmObject, extraData)
 
         // hide STATUS ICONS
         statusIcon.visibility = View.GONE
         bottomStatusIcon.visibility = View.GONE
-
-        // setup MESSAGE AUTHOR
-        val jid =
-            try {
-                ContactJid.from(messageRealmObject.originalFrom)
-            } catch (e: ContactJidCreateException) {
-                LogManager.exception(javaClass.simpleName, e)
-                null
-            }
 
         val author =
             if (extraData.groupMember != null && !extraData.groupMember.isMe) {
@@ -72,7 +59,6 @@ open class ForwardedVH(
                 R.plurals.forwarded_messages_count, forwardedCount, forwardedCount
             )
             tvForwardedCount.paintFlags = tvForwardedCount.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-            forwardedMessagesRV.setBackgroundColor(ColorManager.getColorWithAlpha(R.color.forwarded_background_color, 0.2f))
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
                 tvForwardedCount.alpha = 1f
             } else {
@@ -96,36 +82,24 @@ open class ForwardedVH(
         shadowDrawable.setColorFilter(context.resources.getColor(R.color.black), PorterDuff.Mode.MULTIPLY)
         messageBalloon.background = balloonDrawable
         messageShadow.background = shadowDrawable
-        val border = 3.5f
-        if (messageRealmObject.hasAttachments()) {
-            if (messageRealmObject.isAttachmentImageOnly) {
-                messageBalloon.setPadding(
-                    dipToPx(border, context),
-                    dipToPx(border, context),
-                    dipToPx(border, context),
-                    dipToPx(border, context)
-                )
-            }
-        }
+        messageBalloon.setPadding(
+            dipToPx(BALLOON_BORDER, context),
+            dipToPx(BALLOON_BORDER, context),
+            dipToPx(BALLOON_BORDER, context),
+            dipToPx(BALLOON_BORDER, context)
+        )
 
         // setup BACKGROUND COLOR
-        if (jid != null && accountJid != jid.bareJid.toString()) {
-            setUpMessageBalloonBackground(messageBalloon, extraData.colorStateList)
-        } else {
-            setUpMessageBalloonBackground(
-                messageBalloon, AppCompatResources.getColorStateList(
-                    context,
-                    TypedValue().apply {
-                        context.theme.resolveAttribute(R.attr.message_background, this, true)
-                    }.resourceId
-                )
-            )
-        }
+        setUpMessageBalloonBackground(messageBalloon, extraData.colorStateList)
 
         if (messageText.text.toString().trim { it <= ' ' }.isEmpty()) {
             messageText.visibility = View.GONE
         }
 
+    }
+
+    companion object {
+        private const val BALLOON_BORDER = 6f
     }
 
 }
