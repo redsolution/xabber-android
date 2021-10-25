@@ -1,18 +1,21 @@
 package com.xabber.android.ui.widget
 
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.LayoutRes
+import androidx.appcompat.widget.LinearLayoutCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.MultiTransformation
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.CenterInside
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -20,11 +23,12 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject
-import com.xabber.android.data.log.LogManager
+import com.xabber.android.data.database.realmobjects.MessageRealmObject
+import com.xabber.android.ui.adapter.chat.MessageExtraData
+import com.xabber.android.ui.helper.MessageDeliveryStatusHelper
 import com.xabber.android.ui.helper.RoundedBorders
 import io.realm.Realm
-import io.realm.RealmList
-import java.lang.Exception
+import java.util.*
 
 
 /**
@@ -54,10 +58,13 @@ class ImageGrid {
 
     fun bindView(
         view: View,
-        attachmentRealmObjects: RealmList<AttachmentRealmObject>,
+        messageRealmObject: MessageRealmObject,
         clickListener: View.OnClickListener?,
-        wholeGridLongTapListener: View.OnLongClickListener? = null
+        messageExtraData: MessageExtraData,
+        wholeGridLongTapListener: View.OnLongClickListener? = null,
     ) {
+        val attachmentRealmObjects = messageRealmObject.attachmentRealmObjects
+
         if (attachmentRealmObjects.size == 1) {
             getImageView(view, 0)
                 .apply {
@@ -84,9 +91,58 @@ class ImageGrid {
                 }
             }
         }
+
+        bindMessageStatus(messageRealmObject, view, messageExtraData)
     }
 
-    private fun setupImageViewIntoRigidGridCell(attachmentRealmObject: AttachmentRealmObject, imageView: ImageView) {
+    private fun bindMessageStatus(
+        message: MessageRealmObject, view: View, messageExtraData: MessageExtraData
+    ) {
+        fun getTime(): String {
+            var time = DateFormat.getTimeFormat(Application.getInstance()).format(Date(message.timestamp))
+            message.delayTimestamp?.let {
+                val delay = messageExtraData.context.getString(
+                    if (message.isIncoming) R.string.chat_delay else R.string.chat_typed,
+                    DateFormat.getTimeFormat(Application.getInstance()).format(Date(it))
+                )
+                time += " ($delay)"
+            }
+            message.editedTimestamp?.let {
+                time += messageExtraData.context.getString(
+                    R.string.edited,
+                    DateFormat.getTimeFormat(Application.getInstance()).format(Date(it))
+                )
+            }
+            return time
+        }
+
+        if (message.isAttachmentImageOnly) {
+            view.findViewById<LinearLayoutCompat>(R.id.message_info).apply {
+                visibility = View.VISIBLE
+                setBackgroundColor(Color.BLACK)
+                alpha = 0.6f
+            }
+            view.findViewById<TextView>(R.id.message_time).apply {
+                setTextColor(context.resources.getColor(R.color.white))
+                text = getTime()
+            }
+
+            view.findViewById<ImageView>(R.id.message_status_icon)?.apply {
+                if (message.isIncoming) {
+                    visibility = View.GONE
+                } else {
+                    MessageDeliveryStatusHelper.setupStatusImageView(message, this)
+                }
+            }
+
+        } else {
+            view.findViewById<LinearLayout>(R.id.message_info).visibility = View.GONE
+        }
+    }
+
+    private fun setupImageViewIntoRigidGridCell(
+        attachmentRealmObject: AttachmentRealmObject, imageView: ImageView
+    ) {
         val uri = attachmentRealmObject.filePath?.takeIf { it.isNotEmpty() }
             ?: attachmentRealmObject.fileUrl
 

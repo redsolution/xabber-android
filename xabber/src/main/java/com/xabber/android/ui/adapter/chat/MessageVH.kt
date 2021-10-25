@@ -235,18 +235,19 @@ open class MessageVH(
         imageGridContainer.removeAllViews()
         imageGridContainer.visibility = View.GONE
         if (messageRealmObject.hasAttachments()) {
-            setUpImage(messageRealmObject.attachmentRealmObjects)
+            setUpImage(messageRealmObject, extraData)
             setUpFile(messageRealmObject.attachmentRealmObjects, extraData)
         }
     }
 
-    private fun setUpImage(attachmentRealmObjects: RealmList<AttachmentRealmObject>) {
+    private fun setUpImage(message: MessageRealmObject, messageExtraData: MessageExtraData) {
         if (!SettingsManager.connectionLoadImages()) {
             return
         }
-        attachmentRealmObjects.filter { it.isImage }
-            .also { imageCount = it.size }
-            .takeIf { it.isNotEmpty() }
+        message.attachmentRealmObjects
+            ?.filter { it.isImage }
+            ?.also { imageCount = it.size }
+            ?.takeIf { it.isNotEmpty() }
             ?.let {
                 RealmList<AttachmentRealmObject>().apply {
                     addAll(it)
@@ -255,7 +256,7 @@ open class MessageVH(
             ?.let {
                 val gridBuilder = ImageGrid()
                 val imageGridView = gridBuilder.inflateView(imageGridContainer, it.size)
-                gridBuilder.bindView(imageGridView, it, this) { v: View ->
+                gridBuilder.bindView(imageGridView, message, this, messageExtraData) { v: View ->
                     onLongClick(v)
                     true
                 }
