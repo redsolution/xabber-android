@@ -56,20 +56,14 @@
         <item name="contact_list_subgroup_expander_color">@color/black</item>
 
         <item name="contact_list_contact_background">@color/white</item>
-        <item name="contact_list_contact_separator">@color/grey_500</item>
         <item name="contact_list_contact_name_text_color">@color/grey_900</item>
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
         <item name="contact_list_contact_second_line_text_color">@color/contact_item_text_second</item>
-        <item name="contact_list_contact_client_large_icon_color">@color/grey_400</item>
         <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_light</item>
         <item name="contact_list_muc_indicator_color">@color/black</item>
         <item name="chat_list_ripple_color">@color/grey_400</item>
 
         <item name="contact_list_active_chat_subgroup_background">@color/grey_100</item>
-        <item name="contact_list_active_chat_background">@color/grey_50</item>
-        <item name="contact_list_active_chat_text_color">@color/black</item>
-        <item name="contact_list_active_chat_separator">@color/grey_500</item>
-        <item name="contact_list_active_chat_client_large_icon_color">@color/grey_300</item>
 
         <item name="account_main_color">@array/account_500</item>
         <item name="account_status_bar_color">@array/account_700</item>
@@ -163,20 +157,14 @@
         <item name="contact_list_subgroup_expander_color">@color/white</item>
 
         <item name="contact_list_contact_background">@color/black</item>
-        <item name="contact_list_contact_separator">@color/contact_list_separator_dark</item>
         <item name="contact_list_contact_name_text_color">@color/grey_100</item>
         <item name="contact_list_contact_muc_private_chat_name_text_color">@color/grey_600</item>
         <item name="contact_list_contact_second_line_text_color">@color/contact_item_text_second_dark</item>
-        <item name="contact_list_contact_client_large_icon_color">@color/grey_900</item>
         <item name="contact_list_contact_small_right_icon_alpha">@dimen/contact_list_contact_small_right_icon_alpha_dark</item>
         <item name="contact_list_muc_indicator_color">@color/grey_600</item>
         <item name="chat_list_ripple_color">@color/grey_700</item>
 
         <item name="contact_list_active_chat_subgroup_background">@color/contact_list_active_chat_background_dark</item>
-        <item name="contact_list_active_chat_background">@color/grey_200</item>
-        <item name="contact_list_active_chat_text_color">@color/black</item>
-        <item name="contact_list_active_chat_separator">@color/contact_list_separator_dark</item>
-        <item name="contact_list_active_chat_client_large_icon_color">@color/grey_400</item>
 
         <item name="account_main_color">@array/account_800</item>
         <item name="account_status_bar_color">@array/account_900</item>
