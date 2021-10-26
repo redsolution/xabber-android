@@ -1,40 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:paddingRight="8dp"
-    android:paddingEnd="8dp"
-    android:layout_marginTop="2dp"
-    android:layout_marginBottom="2dp">
+    xmlns:tools="http://schemas.android.com/tools" >
 
-    <LinearLayout
-        android:id="@+id/message"
-        android:orientation="vertical"
+    <TextView
+        android:id="@+id/forwarded_count_tv"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
 
-        <LinearLayout
-            android:id="@+id/forwardLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:layout_marginLeft="1dp"
-            android:layout_marginRight="1dp">
+        android:padding="8dp"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
 
-            <TextView
-                android:id="@+id/forwarded_count_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                tools:text="3 forwarded message"
-                android:textColor="@color/forwarded_background_color" />
+        android:visibility="gone"
 
-        </LinearLayout>
+        tools:text="3 forwarded message"
+        android:textColor="@color/forwarded_background_color" />
 
-        <include layout="@layout/item_message" />
-
-    </LinearLayout>
+    <include
+        layout="@layout/item_message" />
 
 </RelativeLayout>

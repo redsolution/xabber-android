@@ -77,11 +77,19 @@ public class OutgoingMessageVH extends MessageVH {
         // setup BACKGROUND
         Drawable shadowDrawable = context.getResources().getDrawable(
                 haveForwarded ? (needTail ? R.drawable.fwd_out_shadow : R.drawable.fwd_shadow)
-                        : (needTail ? R.drawable.msg_out_shadow : R.drawable.msg_shadow));
-        shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black), PorterDuff.Mode.MULTIPLY);
-        getMessageBalloon().setBackground(context.getResources().getDrawable(
-                haveForwarded ? (needTail ? R.drawable.fwd_out : R.drawable.fwd)
-                            : (needTail ? R.drawable.msg_out : R.drawable.msg)));
+                        : (needTail ? R.drawable.msg_out_shadow : R.drawable.msg_shadow)
+        );
+
+        shadowDrawable.setColorFilter(
+                context.getResources().getColor(R.color.black),
+                PorterDuff.Mode.MULTIPLY
+        );
+
+        getMessageBalloon().setBackground(
+                context.getResources().getDrawable(
+                        haveForwarded ? (needTail ? R.drawable.fwd_out : R.drawable.fwd)
+                                : (needTail ? R.drawable.msg_out : R.drawable.msg))
+        );
         getMessageShadow().setBackground(shadowDrawable);
 
         // setup BALLOON margins

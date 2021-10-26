@@ -434,6 +434,8 @@ open class MessageVH(
             }
     }
 
+
+    //todo yep, these methods must be in ImageGrid 🗿
     private fun showProgressModified(show: Boolean, current: Int, last: Int) {
         fun getProgressView(view: View, index: Int): ProgressBar {
             return when (index) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/message_shadow"
@@ -12,7 +13,7 @@
 
     <LinearLayout
         android:id="@+id/message_balloon"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/msg"
         android:backgroundTint="?attr/message_background"
@@ -35,7 +36,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/forwardedRecyclerView"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:visibility="gone"/>
@@ -50,12 +51,12 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/file_list_rv"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             tools:listitem="@layout/item_file_message"
             android:visibility="gone"/>
 
         <com.xabber.android.ui.widget.CustomFlexboxLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:viewPartMain="@+id/message_text"
             app:viewPartSlave="@+id/message_info">
@@ -76,15 +77,6 @@
                 layout="@layout/item_message_status"/>
 
         </com.xabber.android.ui.widget.CustomFlexboxLayout>
-
-        <TextView
-            android:id="@+id/forwarded_count_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_message_forwarded_14dp"
-            android:drawablePadding="2dp"
-            android:textColor="@color/forwarded_background_color"
-            android:visibility="gone" />
 
         <include
             android:id="@+id/message_bottom_status"
