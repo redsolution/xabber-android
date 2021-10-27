@@ -159,7 +159,7 @@ public class IncomingMessageVH  extends MessageVH {
         needTail = extraData.isNeedTail(); //restoring the original tail value for the interaction with avatars
 
         // setup BACKGROUND COLOR
-        setUpMessageBalloonBackground(getMessageBalloon(), extraData.getColorStateList());
+        setUpMessageBalloonBackground(getMessageBalloon(), extraData.getColors().getIncomingRegularBalloonColors());
 
         setUpAvatar(context, extraData.getGroupMember(), messageRealmObject, needTail);
 

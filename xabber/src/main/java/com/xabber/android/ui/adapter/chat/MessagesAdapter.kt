@@ -1,9 +1,11 @@
 package com.xabber.android.ui.adapter.chat
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
@@ -449,11 +451,34 @@ class MessagesAdapter(
 
         val isNeedDate = isMessageNeedDate(position)
 
+        val outgoingRegularTypedValue = TypedValue()
+        context.theme.resolveAttribute(R.attr.message_background, outgoingRegularTypedValue, true)
+        val outgoingForwardedTypedValue = TypedValue()
+        context.theme.resolveAttribute(R.attr.forwarded_outgoing_message_background, outgoingForwardedTypedValue, true)
+
+        val isAuthorMe = groupMember?.isMe ?: !message.isIncoming
+
+        val balloonColors = MessageBalloonColors(
+            ColorManager.getInstance().getChatIncomingRegularBalloonColorsStateList(chat.account),
+            if (isAuthorMe) {
+                ColorManager.getInstance().getChatIncomingRegularBalloonColorsStateList(chat.account)
+            } else {
+                ColorManager.getInstance().getChatIncomingForwardedBalloonColorsStateList(chat.account)
+            },
+
+            AppCompatResources.getColorStateList(context, outgoingRegularTypedValue.resourceId),
+            if (isAuthorMe) {
+                AppCompatResources.getColorStateList(context, outgoingForwardedTypedValue.resourceId)
+            } else {
+                AppCompatResources.getColorStateList(context, outgoingRegularTypedValue.resourceId)
+            }
+        )
+
         val extraData = MessageExtraData(
             fileListener,
             fwdListener,
             RosterManager.getInstance().getName(chat.account, chat.contactJid),
-            ColorManager.getInstance().getChatIncomingBalloonColorsStateList(chat.account),
+            balloonColors,
             groupMember,
             ColorManager.getInstance().accountPainter.getAccountMainColor(chat.account),
             ColorManager.getInstance().accountPainter.getAccountIndicatorBackColor(chat.account),

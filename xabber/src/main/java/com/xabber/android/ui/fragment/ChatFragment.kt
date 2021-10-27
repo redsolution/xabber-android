@@ -1569,7 +1569,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 background.setTintList(
-                    ColorManager.getInstance().getChatIncomingBalloonColorsStateList(accountJid)
+                    ColorManager.getInstance().getChatIncomingRegularBalloonColorsStateList(accountJid)
                 )
             }
         }

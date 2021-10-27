@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import androidx.annotation.StyleRes;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import com.xabber.android.R;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
@@ -134,11 +133,9 @@ public class OutgoingMessageVH extends MessageVH {
         }
 
         // setup BACKGROUND COLOR
-        TypedValue typedValue = new TypedValue();
-        context.getTheme().resolveAttribute(R.attr.message_background, typedValue, true);
         setUpMessageBalloonBackground(
                 getMessageBalloon(),
-                AppCompatResources.getColorStateList(context, typedValue.resourceId)
+                extraData.getColors().getOutgoingRegularBalloonColors()
         );
 
         // subscribe for FILE UPLOAD PROGRESS

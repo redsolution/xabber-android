@@ -61,7 +61,7 @@ class ForwardedAdapter(
             null,
             null,
             messageRealmObject.originalFrom ?: messageRealmObject.user.toString(),
-            colorStateList = extraData.colorStateList,
+            colors = extraData.colors,
             groupMember = messageRealmObject.groupchatUserId?.let {
                 getGroupMemberById(messageRealmObject.account, messageRealmObject.user, it)
             },

@@ -9,7 +9,7 @@
     android:background="@drawable/msg_shadow"
     android:backgroundTint="@color/black"
     android:gravity="right"
-    android:orientation="horizontal">
+    android:orientation="horizontal" >
 
     <LinearLayout
         android:id="@+id/message_balloon"

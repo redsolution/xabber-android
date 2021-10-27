@@ -23,7 +23,8 @@ import java.util.HashMap;
 public class ColorManager {
 
     private static ColorManager instance = null;
-    private ColorStateList[] chatIncomingBalloonColorStateLists;
+    private ColorStateList[] chatIncomingRegularBalloonColorStateLists;
+    private ColorStateList[] chatIncomingForwardedBalloonColorStateLists;
     private int[] unreadMessagesBackground;
     private int themeId;
     private AccountPainter accountPainter;
@@ -67,24 +68,43 @@ public class ColorManager {
         final Context context = Application.getInstance().getApplicationContext();
         final Resources resources = context.getResources();
 
-        int[] chatIncomingBalloonColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon));
-        int[] chatIncomingBalloonPressedColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon_pressed));
+        int[] chatIncomingRegularBalloonColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon));
+        int[] chatIncomingRegularBalloonPressedColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon_pressed));
+
+        int[] chatIncomingForwardedBalloonColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_forwarded_balloon));
+        int[] chatIncomingForwardedBalloonPressedColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_forwarded_balloon_pressed));
+
         unreadMessagesBackground = resources.getIntArray(getThemeResource(context, R.attr.chat_unread_messages_background));
 
-        final int length = chatIncomingBalloonColors.length;
+        final int length = chatIncomingRegularBalloonColors.length;
 
-        chatIncomingBalloonColorStateLists = new ColorStateList[length];
+        chatIncomingRegularBalloonColorStateLists = new ColorStateList[length];
+        chatIncomingForwardedBalloonColorStateLists = new ColorStateList[length];
 
         for (int i = 0; i < length; i++) {
-            chatIncomingBalloonColorStateLists[i] = new ColorStateList(
+            chatIncomingRegularBalloonColorStateLists[i] = new ColorStateList(
                     new int[][]{
                             new int[]{android.R.attr.state_pressed},
                             new int[]{},
 
                     },
                     new int[] {
-                            chatIncomingBalloonPressedColors[i],
-                            chatIncomingBalloonColors[i],
+                            chatIncomingRegularBalloonPressedColors[i],
+                            chatIncomingRegularBalloonColors[i],
+                    }
+            );
+        }
+
+        for (int i = 0; i < length; i++) {
+            chatIncomingForwardedBalloonColorStateLists[i] = new ColorStateList(
+                    new int[][]{
+                            new int[]{android.R.attr.state_pressed},
+                            new int[]{},
+
+                    },
+                    new int[] {
+                            chatIncomingForwardedBalloonPressedColors[i],
+                            chatIncomingForwardedBalloonColors[i],
                     }
             );
         }
@@ -111,8 +131,12 @@ public class ColorManager {
         return color;
     }
 
-    public ColorStateList getChatIncomingBalloonColorsStateList(AccountJid account) {
-        return chatIncomingBalloonColorStateLists[getAccountColorLevel(account)];
+    public ColorStateList getChatIncomingRegularBalloonColorsStateList(AccountJid account) {
+        return chatIncomingRegularBalloonColorStateLists[getAccountColorLevel(account)];
+    }
+
+    public ColorStateList getChatIncomingForwardedBalloonColorsStateList(AccountJid account) {
+        return chatIncomingForwardedBalloonColorStateLists[getAccountColorLevel(account)];
     }
 
     public int getUnreadMessageBackground(AccountJid account) {

@@ -9,6 +9,7 @@ import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
+import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
@@ -89,7 +90,19 @@ open class ForwardedVH(
         )
 
         // setup BACKGROUND COLOR
-        setUpMessageBalloonBackground(messageBalloon, extraData.colorStateList)
+        val isAuthorMe = extraData.groupMember?.isMe
+            ?: ContactJid.from(messageRealmObject.originalFrom)
+                .bareJid
+                .toString()
+                .contains(messageRealmObject.user.bareJid.toString())
+
+        val backgroundColor =
+            if (isAuthorMe) {
+                extraData.colors.incomingForwardedBalloonColors
+            } else {
+                extraData.colors.outgoingForwardedBalloonColors
+            }
+        setUpMessageBalloonBackground(messageBalloon, backgroundColor)
 
         if (messageText.text.toString().trim { it <= ' ' }.isEmpty()) {
             messageText.visibility = View.GONE

@@ -7,7 +7,7 @@ data class MessageExtraData(
     val listener: MessageVH.FileListener?,
     val fwdListener: ForwardedAdapter.ForwardListener?,
     val username: String,
-    val colorStateList: ColorStateList,
+    val colors: MessageBalloonColors,
     val groupMember: GroupMemberRealmObject?,
     val accountMainColor: Int,
     val mentionColor: Int,
@@ -17,4 +17,12 @@ data class MessageExtraData(
     val isNeedTail: Boolean,
     val isNeedDate: Boolean,
     val isNeedName: Boolean,
+)
+
+data class MessageBalloonColors(
+    val incomingRegularBalloonColors: ColorStateList,
+    val incomingForwardedBalloonColors: ColorStateList,
+
+    val outgoingRegularBalloonColors: ColorStateList,
+    val outgoingForwardedBalloonColors: ColorStateList,
 )

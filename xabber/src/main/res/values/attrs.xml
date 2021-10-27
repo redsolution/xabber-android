@@ -7,8 +7,12 @@
         <attr name="chat_input_background" format="reference" />
         <attr name="chat_input_button_color" format="reference" />
         <attr name="chat_send_button_color" format="reference" />
+
         <attr name="chat_incoming_balloon" format="reference" />
+        <attr name="chat_incoming_forwarded_balloon" format="reference" />
         <attr name="chat_incoming_balloon_pressed" format="reference" />
+        <attr name="chat_incoming_forwarded_balloon_pressed" format="reference" />
+
         <attr name="chat_unread_messages_background" format="reference" />
 
         <attr name="contact_list_background" format="reference" />
@@ -61,6 +65,7 @@
         <attr name="contact_list_contact_archived_background" format="reference|color" />
         <attr name="transparent_rounded_background" format="reference|color" />
         <attr name="message_background" format="color|reference" />
+        <attr name="forwarded_outgoing_message_background" format="color|reference" />
         <attr name="round_background" format="reference"/>
         <attr name="shevron_file_icons_color" format="reference"/>
         <attr name="file_message_text_color" format="reference"/>
