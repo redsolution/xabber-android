@@ -31,7 +31,7 @@ public class OutgoingMessageVH extends MessageVH {
     public void bind(MessageRealmObject messageRealmObject, MessageExtraData extraData) {
         super.bind(messageRealmObject, extraData);
 
-        final Context context = extraData.getContext();
+        final Context context = itemView.getContext();
         boolean needTail = extraData.isNeedTail();
 
         setStatusIcon(messageRealmObject);

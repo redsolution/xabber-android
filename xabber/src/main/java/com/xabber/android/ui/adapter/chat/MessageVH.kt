@@ -151,7 +151,7 @@ open class MessageVH(
                 messageRealmObject.markupText.trim { it <= ' ' }.replace("\n", "<br/>") + "&zwj;",
                 null,
                 ClickTagHandler(
-                    extraData.context, messageRealmObject.account
+                    itemView.context, messageRealmObject.account
                 )
             ) as SpannableStringBuilder
             val color: Int = if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
@@ -202,7 +202,7 @@ open class MessageVH(
         // setup CHECKED
         if (extraData.isChecked) {
             itemView.setBackgroundColor(
-                extraData.context.resources.getColor(R.color.unread_messages_background)
+                itemView.context.resources.getColor(R.color.unread_messages_background)
             )
         } else {
             itemView.background = null
@@ -214,14 +214,14 @@ open class MessageVH(
     protected fun setupTime(extraData: MessageExtraData, messageRealmObject: MessageRealmObject) {
         var time = getTimeText(Date(messageRealmObject.timestamp))
         messageRealmObject.delayTimestamp?.let {
-            val delay = extraData.context.getString(
+            val delay = itemView.context.getString(
                 if (messageRealmObject.isIncoming) R.string.chat_delay else R.string.chat_typed,
                 getTimeText(Date(it))
             )
             time += " ($delay)"
         }
         messageRealmObject.editedTimestamp?.let {
-            time += extraData.context.getString(
+            time += itemView.context.getString(
                 R.string.edited,
                 getTimeText(Date(it))
             )
@@ -276,7 +276,7 @@ open class MessageVH(
             }
             ?.let {
                 rvFileList.apply {
-                    layoutManager = LinearLayoutManager(extraData.context)
+                    layoutManager = LinearLayoutManager(itemView.context)
                     adapter = FilesAdapter(it, extraData.mainMessageTimestamp, this@MessageVH)
                     visibility = View.VISIBLE
                 }
@@ -487,7 +487,7 @@ open class MessageVH(
                 .takeIf { it.isNotEmpty() }
                 ?.let { forwardedMessages ->
                     forwardedMessagesRV.apply {
-                        layoutManager = LinearLayoutManager(extraData.context)
+                        layoutManager = LinearLayoutManager(itemView.context)
                         adapter = ForwardedAdapter(forwardedMessages, extraData)
                         visibility = View.VISIBLE
                     }

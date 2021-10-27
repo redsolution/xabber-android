@@ -101,14 +101,14 @@ class ImageGrid {
         fun getTime(): String {
             var time = DateFormat.getTimeFormat(Application.getInstance()).format(Date(message.timestamp))
             message.delayTimestamp?.let {
-                val delay = messageExtraData.context.getString(
+                val delay = view.context.getString(
                     if (message.isIncoming) R.string.chat_delay else R.string.chat_typed,
                     DateFormat.getTimeFormat(Application.getInstance()).format(Date(it))
                 )
                 time += " ($delay)"
             }
             message.editedTimestamp?.let {
-                time += messageExtraData.context.getString(
+                time += view.context.getString(
                     R.string.edited,
                     DateFormat.getTimeFormat(Application.getInstance()).format(Date(it))
                 )

@@ -18,8 +18,7 @@ class ForwardedAdapter(
     private val realmResults: RealmResults<MessageRealmObject?>,
     private val extraData: MessageExtraData
 ) : RealmRecyclerViewAdapter<MessageRealmObject?, ForwardedVH?>(realmResults, true, true),
-    MessageClickListener,
-    MessageLongClickListener {
+    MessageClickListener, MessageLongClickListener {
 
     private val appearanceStyle = SettingsManager.chatsAppearanceStyle()
     private val listener: MessageVH.FileListener? = extraData.listener
@@ -61,7 +60,6 @@ class ForwardedAdapter(
         val extraData = MessageExtraData(
             null,
             null,
-            extraData.context,
             messageRealmObject.originalFrom ?: messageRealmObject.user.toString(),
             colorStateList = extraData.colorStateList,
             groupMember = messageRealmObject.groupchatUserId?.let {

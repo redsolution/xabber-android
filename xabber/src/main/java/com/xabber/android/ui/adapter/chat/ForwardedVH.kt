@@ -50,12 +50,11 @@ open class ForwardedVH(
         }
 
         // setup FORWARDED
-        val context = extraData.context
         val haveForwarded = messageRealmObject.hasForwardedMessages()
         if (haveForwarded) {
             forwardedMessagesRV.visibility = View.VISIBLE
             val forwardedCount = messageRealmObject.forwardedIds.size
-            tvForwardedCount.text = extraData.context.resources.getQuantityString(
+            tvForwardedCount.text = itemView.context.resources.getQuantityString(
                 R.plurals.forwarded_messages_count, forwardedCount, forwardedCount
             )
             tvForwardedCount.paintFlags = tvForwardedCount.paintFlags or Paint.UNDERLINE_TEXT_FLAG
@@ -71,22 +70,22 @@ open class ForwardedVH(
         LogManager.d(this, messageRealmObject.forwardedIds.joinToString { it.forwardMessageId })
 
         // setup BACKGROUND
-        val balloonDrawable = context.resources.getDrawable(
+        val balloonDrawable = itemView.context.resources.getDrawable(
             if (haveForwarded) R.drawable.fwd else R.drawable.msg
         )
 
-        val shadowDrawable = context.resources.getDrawable(
+        val shadowDrawable = itemView.context.resources.getDrawable(
             if (haveForwarded) R.drawable.fwd_shadow else R.drawable.msg_shadow
         )
 
-        shadowDrawable.setColorFilter(context.resources.getColor(R.color.black), PorterDuff.Mode.MULTIPLY)
+        shadowDrawable.setColorFilter(itemView.context.resources.getColor(R.color.black), PorterDuff.Mode.MULTIPLY)
         messageBalloon.background = balloonDrawable
         messageShadow.background = shadowDrawable
         messageBalloon.setPadding(
-            dipToPx(BALLOON_BORDER, context),
-            dipToPx(BALLOON_BORDER, context),
-            dipToPx(BALLOON_BORDER, context),
-            dipToPx(BALLOON_BORDER, context)
+            dipToPx(BALLOON_BORDER, itemView.context),
+            dipToPx(BALLOON_BORDER, itemView.context),
+            dipToPx(BALLOON_BORDER, itemView.context),
+            dipToPx(BALLOON_BORDER, itemView.context)
         )
 
         // setup BACKGROUND COLOR

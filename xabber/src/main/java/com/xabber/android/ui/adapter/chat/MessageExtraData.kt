@@ -1,13 +1,11 @@
 package com.xabber.android.ui.adapter.chat
 
-import android.content.Context
 import android.content.res.ColorStateList
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 
 data class MessageExtraData(
     val listener: MessageVH.FileListener?,
     val fwdListener: ForwardedAdapter.ForwardListener?,
-    val context: Context,
     val username: String,
     val colorStateList: ColorStateList,
     val groupMember: GroupMemberRealmObject?,

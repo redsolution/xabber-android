@@ -61,7 +61,7 @@ public class IncomingMessageVH  extends MessageVH {
 
         super.bind(messageRealmObject, extraData);
 
-        Context context = extraData.getContext();
+        Context context = itemView.getContext();
         boolean needTail = extraData.isNeedTail();
 
         // setup ARCHIVED icon

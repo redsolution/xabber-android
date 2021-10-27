@@ -452,7 +452,6 @@ class MessagesAdapter(
         val extraData = MessageExtraData(
             fileListener,
             fwdListener,
-            context,
             RosterManager.getInstance().getName(chat.account, chat.contactJid),
             ColorManager.getInstance().getChatIncomingBalloonColorsStateList(chat.account),
             groupMember,
