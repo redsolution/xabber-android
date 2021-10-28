@@ -180,6 +180,11 @@ open class MessageVH(
                     messageRealmObject.text.trim { it <= ' ' } + Character.MIN_VALUE.toString()
             }
         }
+
+        if (messageText.text.isNotEmpty()) {
+            messageStatusLayout.visibility = View.GONE
+        }
+
         messageText.movementMethod = CorrectlyTouchEventTextView.LocalLinkMovementMethod
 
         // set unread status
