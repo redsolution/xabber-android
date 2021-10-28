@@ -54,15 +54,18 @@ open class ForwardedVH(
         val haveForwarded = messageRealmObject.hasForwardedMessages()
         if (haveForwarded) {
             forwardedMessagesRV.visibility = View.VISIBLE
-            val forwardedCount = messageRealmObject.forwardedIds.size
-            tvForwardedCount.text = itemView.context.resources.getQuantityString(
-                R.plurals.forwarded_messages_count, forwardedCount, forwardedCount
-            )
-            tvForwardedCount.paintFlags = tvForwardedCount.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-                tvForwardedCount.alpha = 1f
-            } else {
-                tvForwardedCount.alpha = 0.6f
+            tvForwardedCount.apply {
+                val forwardedCount = messageRealmObject.forwardedIds.size
+                text = itemView.context.resources.getQuantityString(
+                    R.plurals.forwarded_messages_count, forwardedCount, forwardedCount
+                )
+                paintFlags = tvForwardedCount.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+                alpha =
+                    if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
+                        1f
+                    } else {
+                        0.6f
+                    }
             }
         } else {
             forwardedMessagesRV.visibility = View.GONE
