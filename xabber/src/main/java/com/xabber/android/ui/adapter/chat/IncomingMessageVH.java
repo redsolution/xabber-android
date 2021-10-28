@@ -75,7 +75,7 @@ public class IncomingMessageVH  extends MessageVH {
             setupForwarded(messageRealmObject, extraData);
 
             LinearLayout.LayoutParams forwardedParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             forwardedParams.setMargins(
                     dipToPx(12f, context),
@@ -124,7 +124,7 @@ public class IncomingMessageVH  extends MessageVH {
 
         // setup BALLOON margins
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         layoutParams.setMargins(
                 dipToPx(needTail ? 3f : 11f, context),
