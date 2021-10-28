@@ -3,14 +3,11 @@ package com.xabber.android.ui.adapter.chat
 import android.content.res.ColorStateList
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 
-data class MessageExtraData(
+data class MessageVhExtraData(
     val listener: MessageVH.FileListener?,
     val fwdListener: ForwardedAdapter.ForwardListener?,
-    val username: String,
     val colors: MessageBalloonColors,
     val groupMember: GroupMemberRealmObject?,
-    val accountMainColor: Int,
-    val mentionColor: Int,
     val mainMessageTimestamp: Long?,
     val isUnread: Boolean,
     val isChecked: Boolean,

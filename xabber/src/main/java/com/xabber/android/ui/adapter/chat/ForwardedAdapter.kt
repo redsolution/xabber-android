@@ -16,13 +16,13 @@ import io.realm.RealmResults
 
 class ForwardedAdapter(
     private val realmResults: RealmResults<MessageRealmObject?>,
-    private val extraData: MessageExtraData
+    private val vhExtraData: MessageVhExtraData
 ) : RealmRecyclerViewAdapter<MessageRealmObject?, ForwardedVH?>(realmResults, true, true),
     MessageClickListener, MessageLongClickListener {
 
     private val appearanceStyle = SettingsManager.chatsAppearanceStyle()
-    private val listener: MessageVH.FileListener? = extraData.listener
-    private val fwdListener: ForwardListener? = extraData.fwdListener
+    private val listener: MessageVH.FileListener? = vhExtraData.listener
+    private val fwdListener: ForwardListener? = vhExtraData.fwdListener
 
     interface ForwardListener {
         fun onForwardClick(messageId: String?)
@@ -32,10 +32,10 @@ class ForwardedAdapter(
         if (realmResults.isValid && realmResults.isLoaded) realmResults.size else 0
 
     fun getMessageItem(position: Int): MessageRealmObject? =
-        when {
-            position == RecyclerView.NO_POSITION -> null
-            position < realmResults.size -> realmResults[position]
-            else -> null
+        if (position < realmResults.size && position != RecyclerView.NO_POSITION) {
+            realmResults[position]
+        } else {
+            null
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForwardedVH {
@@ -57,17 +57,14 @@ class ForwardedAdapter(
         // setup message uniqueId
         holder.messageId = messageRealmObject.primaryKey
 
-        val extraData = MessageExtraData(
+        val extraData = MessageVhExtraData(
             null,
             null,
-            messageRealmObject.originalFrom ?: messageRealmObject.user.toString(),
-            colors = extraData.colors,
+            colors = vhExtraData.colors,
             groupMember = messageRealmObject.groupchatUserId?.let {
                 getGroupMemberById(messageRealmObject.account, messageRealmObject.user, it)
             },
-            accountMainColor = extraData.accountMainColor,
-            mentionColor = extraData.mentionColor,
-            mainMessageTimestamp = extraData.mainMessageTimestamp,
+            mainMessageTimestamp = vhExtraData.mainMessageTimestamp,
             isUnread = false,
             isChecked = false,
             isNeedTail = false,

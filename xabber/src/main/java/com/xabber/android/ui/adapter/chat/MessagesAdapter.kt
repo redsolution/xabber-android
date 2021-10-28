@@ -19,7 +19,6 @@ import com.xabber.android.data.extension.groups.GroupMemberManager.getMe
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat
-import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter.ForwardListener
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH.BindListener
 import com.xabber.android.ui.adapter.chat.IncomingMessageVH.OnMessageAvatarClickListener
@@ -402,14 +401,11 @@ class MessagesAdapter(
             }
         )
 
-        val extraData = MessageExtraData(
+        val extraData = MessageVhExtraData(
             fileListener,
             fwdListener,
-            RosterManager.getInstance().getName(chat.account, chat.contactJid),
             balloonColors,
             groupMember,
-            ColorManager.getInstance().accountPainter.getAccountMainColor(chat.account),
-            ColorManager.getInstance().accountPainter.getAccountIndicatorBackColor(chat.account),
             message.timestamp,
             message.primaryKey == firstUnreadMessageID,
             checkedItemIds.contains(message.primaryKey),

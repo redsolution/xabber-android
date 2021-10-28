@@ -24,7 +24,7 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
-import com.xabber.android.ui.adapter.chat.MessageExtraData
+import com.xabber.android.ui.adapter.chat.MessageVhExtraData
 import com.xabber.android.ui.helper.MessageDeliveryStatusHelper
 import com.xabber.android.ui.helper.RoundedBorders
 import io.realm.Realm
@@ -60,7 +60,7 @@ class ImageGrid {
         view: View,
         messageRealmObject: MessageRealmObject,
         clickListener: View.OnClickListener?,
-        messageExtraData: MessageExtraData,
+        messageVhExtraData: MessageVhExtraData,
         wholeGridLongTapListener: View.OnLongClickListener? = null,
     ) {
         val attachmentRealmObjects = messageRealmObject.attachmentRealmObjects
@@ -92,11 +92,11 @@ class ImageGrid {
             }
         }
 
-        bindMessageStatus(messageRealmObject, view, messageExtraData)
+        bindMessageStatus(messageRealmObject, view, messageVhExtraData)
     }
 
     private fun bindMessageStatus(
-        message: MessageRealmObject, view: View, messageExtraData: MessageExtraData
+        message: MessageRealmObject, view: View, messageVhExtraData: MessageVhExtraData
     ) {
         fun getTime(): String {
             var time = DateFormat.getTimeFormat(Application.getInstance()).format(Date(message.timestamp))

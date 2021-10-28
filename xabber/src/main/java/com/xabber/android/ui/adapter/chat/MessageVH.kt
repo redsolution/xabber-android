@@ -104,16 +104,16 @@ open class MessageVH(
         fun onLongMessageClick(position: Int)
     }
 
-    open fun bind(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
+    open fun bind(messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData) {
         messageHeader.visibility = View.GONE
         val chat = ChatManager.getInstance().getChat(
             messageRealmObject.account, messageRealmObject.user
         )
 
         // groupchat
-        if (extraData.groupMember != null) {
-            if (!extraData.groupMember.isMe) {
-                val user = extraData.groupMember
+        if (vhExtraData.groupMember != null) {
+            if (!vhExtraData.groupMember.isMe) {
+                val user = vhExtraData.groupMember
                 messageHeader.text = user.nickname
                 messageHeader.setTextColor(
                     ColorManager.changeColor(
@@ -123,7 +123,7 @@ open class MessageVH(
                 )
                 messageHeader.visibility = View.VISIBLE
             } else if (chat is GroupChat && chat.privacyType === GroupPrivacyType.INCOGNITO) {
-                val user = extraData.groupMember
+                val user = vhExtraData.groupMember
                 messageHeader.text = user.nickname
                 messageHeader.setTextColor(
                     ColorManager.changeColor(
@@ -183,12 +183,12 @@ open class MessageVH(
         messageText.movementMethod = CorrectlyTouchEventTextView.LocalLinkMovementMethod
 
         // set unread status
-        isUnread = extraData.isUnread
+        isUnread = vhExtraData.isUnread
 
         // set date
-        needDate = extraData.isNeedDate
+        needDate = vhExtraData.isNeedDate
         date = getDateStringForMessage(messageRealmObject.timestamp)
-        if (!extraData.isNeedName) {
+        if (!vhExtraData.isNeedName) {
             messageHeader.visibility = View.GONE
         }
 
@@ -200,18 +200,18 @@ open class MessageVH(
         }
 
         // setup CHECKED
-        if (extraData.isChecked) {
+        if (vhExtraData.isChecked) {
             itemView.setBackgroundColor(
                 itemView.context.resources.getColor(R.color.unread_messages_background)
             )
         } else {
             itemView.background = null
         }
-        setupTime(extraData, messageRealmObject)
-        setupImageOrFile(messageRealmObject, extraData)
+        setupTime(vhExtraData, messageRealmObject)
+        setupImageOrFile(messageRealmObject, vhExtraData)
     }
 
-    protected fun setupTime(extraData: MessageExtraData, messageRealmObject: MessageRealmObject) {
+    protected fun setupTime(vhExtraData: MessageVhExtraData, messageRealmObject: MessageRealmObject) {
         var time = getTimeText(Date(messageRealmObject.timestamp))
         messageRealmObject.delayTimestamp?.let {
             val delay = itemView.context.getString(
@@ -230,17 +230,17 @@ open class MessageVH(
         bottomMessageTime.text = time
     }
 
-    private fun setupImageOrFile(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
+    private fun setupImageOrFile(messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData) {
         rvFileList.visibility = View.GONE
         imageGridContainer.removeAllViews()
         imageGridContainer.visibility = View.GONE
         if (messageRealmObject.hasAttachments()) {
-            setUpImage(messageRealmObject, extraData)
-            setUpFile(messageRealmObject.attachmentRealmObjects, extraData)
+            setUpImage(messageRealmObject, vhExtraData)
+            setUpFile(messageRealmObject.attachmentRealmObjects, vhExtraData)
         }
     }
 
-    private fun setUpImage(message: MessageRealmObject, messageExtraData: MessageExtraData) {
+    private fun setUpImage(message: MessageRealmObject, messageVhExtraData: MessageVhExtraData) {
         if (!SettingsManager.connectionLoadImages()) {
             return
         }
@@ -256,7 +256,7 @@ open class MessageVH(
             ?.let {
                 val gridBuilder = ImageGrid()
                 val imageGridView = gridBuilder.inflateView(imageGridContainer, it.size)
-                gridBuilder.bindView(imageGridView, message, this, messageExtraData) { v: View ->
+                gridBuilder.bindView(imageGridView, message, this, messageVhExtraData) { v: View ->
                     onLongClick(v)
                     true
                 }
@@ -266,7 +266,7 @@ open class MessageVH(
     }
 
     private fun setUpFile(
-        attachmentRealmObjects: RealmList<AttachmentRealmObject>, extraData: MessageExtraData
+        attachmentRealmObjects: RealmList<AttachmentRealmObject>, vhExtraData: MessageVhExtraData
     ) {
         attachmentRealmObjects.filter { !it.isImage }
             .also { fileCount = it.size }
@@ -277,7 +277,7 @@ open class MessageVH(
             ?.let {
                 rvFileList.apply {
                     layoutManager = LinearLayoutManager(itemView.context)
-                    adapter = FilesAdapter(it, extraData.mainMessageTimestamp, this@MessageVH)
+                    adapter = FilesAdapter(it, vhExtraData.mainMessageTimestamp, this@MessageVH)
                     visibility = View.VISIBLE
                 }
             }
@@ -476,7 +476,7 @@ open class MessageVH(
         }
     }
 
-    fun setupForwarded(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
+    fun setupForwarded(messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData) {
         val forwardedIDs = messageRealmObject.forwardedIdsAsArray
         if (!forwardedIDs.contains(null)) {
             DatabaseManager.getInstance().defaultRealmInstance
@@ -488,7 +488,7 @@ open class MessageVH(
                 ?.let { forwardedMessages ->
                     forwardedMessagesRV.apply {
                         layoutManager = LinearLayoutManager(itemView.context)
-                        adapter = ForwardedAdapter(forwardedMessages, extraData)
+                        adapter = ForwardedAdapter(forwardedMessages, vhExtraData)
                         visibility = View.VISIBLE
                     }
                 }

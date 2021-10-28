@@ -26,16 +26,16 @@ open class ForwardedVH(
     private val tvForwardedCount: TextView = itemView.findViewById(R.id.forwarded_count_tv)
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    override fun bind(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
-        super.bind(messageRealmObject, extraData)
+    override fun bind(messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData) {
+        super.bind(messageRealmObject, vhExtraData)
 
         // hide STATUS ICONS
         statusIcon.visibility = View.GONE
         bottomStatusIcon.visibility = View.GONE
 
         val author =
-            if (extraData.groupMember != null && !extraData.groupMember.isMe) {
-                extraData.groupMember.nickname
+            if (vhExtraData.groupMember != null && !vhExtraData.groupMember.isMe) {
+                vhExtraData.groupMember.nickname
             } else {
                 RosterManager.getDisplayAuthorName(messageRealmObject)
             }
@@ -90,7 +90,7 @@ open class ForwardedVH(
         )
 
         // setup BACKGROUND COLOR
-        val isAuthorMe = extraData.groupMember?.isMe
+        val isAuthorMe = vhExtraData.groupMember?.isMe
             ?: ContactJid.from(messageRealmObject.originalFrom)
                 .bareJid
                 .toString()
@@ -98,9 +98,9 @@ open class ForwardedVH(
 
         val backgroundColor =
             if (isAuthorMe) {
-                extraData.colors.incomingForwardedBalloonColors
+                vhExtraData.colors.incomingForwardedBalloonColors
             } else {
-                extraData.colors.outgoingForwardedBalloonColors
+                vhExtraData.colors.outgoingForwardedBalloonColors
             }
         setUpMessageBalloonBackground(messageBalloon, backgroundColor)
 

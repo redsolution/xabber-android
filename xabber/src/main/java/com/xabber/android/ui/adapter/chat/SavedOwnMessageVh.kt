@@ -21,12 +21,12 @@ class SavedOwnMessageVh(
     appearance,
 ) {
 
-    override fun bind(messageRealmObject: MessageRealmObject, extraData: MessageExtraData) {
+    override fun bind(messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData) {
         super.bind(
             MessageRepository.getForwardedMessages(messageRealmObject)?.first() ?: messageRealmObject,
-            extraData
+            vhExtraData
         )
-        setupTime(extraData, messageRealmObject)
+        setupTime(vhExtraData, messageRealmObject)
     }
 
 }
