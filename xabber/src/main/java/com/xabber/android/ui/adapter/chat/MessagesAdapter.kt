@@ -17,7 +17,6 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupMemberManager.getGroupMemberById
 import com.xabber.android.data.extension.groups.GroupMemberManager.getMe
 import com.xabber.android.data.log.LogManager
-import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.data.roster.RosterManager
@@ -130,12 +129,6 @@ class MessagesAdapter(
             val innerSingleSavedMessage =
                 MessageRepository.getForwardedMessages(messageRealmObject)[0]
 
-            val isImage = innerSingleSavedMessage.hasImage()
-            val notJustImage =
-                (innerSingleSavedMessage.text.trim { it <= ' ' }.isNotEmpty()
-                        && innerSingleSavedMessage.messageStatus != MessageStatus.UPLOADING
-                        || !innerSingleSavedMessage.isAttachmentImageOnly)
-
             val contact =
                 if (innerSingleSavedMessage.originalFrom != null) {
                     innerSingleSavedMessage.originalFrom
@@ -145,35 +138,16 @@ class MessagesAdapter(
 
             when {
                 !contact.contains(chat.account.bareJid.toString()) -> {
-                    when {
-                        isImage && notJustImage -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT
-                        isImage -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE
-                        else -> VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE
-                    }
+                    VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE
                 }
-                isImage && notJustImage -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT
-                isImage -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE
                 else -> VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE
             }
         } else {
 
-            val isImage = messageRealmObject.hasImage()
-
-            val notJustImage =
-                (messageRealmObject.text.trim { it <= ' ' }.isNotEmpty()
-                        && messageRealmObject.messageStatus != MessageStatus.UPLOADING
-                        || !messageRealmObject.isAttachmentImageOnly)
-
             when {
                 messageRealmObject.isIncoming && !isSavedMessagesMode && !isMeInGroup -> {
-                    when {
-                        isImage && notJustImage -> VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT
-                        isImage -> VIEW_TYPE_INCOMING_MESSAGE_IMAGE
-                        else -> VIEW_TYPE_INCOMING_MESSAGE
-                    }
+                    VIEW_TYPE_INCOMING_MESSAGE
                 }
-                isImage && notJustImage -> VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT
-                isImage -> VIEW_TYPE_OUTGOING_MESSAGE_IMAGE
                 else -> VIEW_TYPE_OUTGOING_MESSAGE
             }
         }
@@ -191,43 +165,20 @@ class MessagesAdapter(
                     R.layout.item_system_message, parent, false
                 )
             )
+
             VIEW_TYPE_INCOMING_MESSAGE -> IncomingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_incoming, parent, false
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE -> IncomingMessageVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming, parent, false
-                ),
-                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT -> IncomingMessageVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming, parent, false
-                ),
-                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
-            )
+
             VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE -> SavedCompanionMessageVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_incoming, parent, false
                 ),
                 this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
             )
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE -> SavedCompanionMessageVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming, parent, false
-                ),
-                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> SavedCompanionMessageVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_incoming, parent, false
-                ),
-                this, this, this, bindListener, this, SettingsManager.chatsAppearanceStyle()
-            )
-
 
             VIEW_TYPE_OUTGOING_MESSAGE -> OutgoingMessageVH(
                 LayoutInflater.from(parent.context).inflate(
@@ -235,31 +186,8 @@ class MessagesAdapter(
                 ),
                 this, this, this, SettingsManager.chatsAppearanceStyle()
             )
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE -> OutgoingMessageVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing, parent, false
-                ),
-                this, this, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> OutgoingMessageVH(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing, parent, false
-                ),
-                this, this, this, SettingsManager.chatsAppearanceStyle()
-            )
+
             VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE -> SavedOwnMessageVh(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing, parent, false
-                ),
-                this, this, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE -> SavedOwnMessageVh(
-                LayoutInflater.from(parent.context).inflate(
-                    R.layout.item_message_outgoing, parent, false
-                ),
-                this, this, this, SettingsManager.chatsAppearanceStyle()
-            )
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> SavedOwnMessageVh(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.item_message_outgoing, parent, false
                 ),
@@ -495,27 +423,19 @@ class MessagesAdapter(
                 (holder as? SystemMessageVH)?.bind(message, isNeedDate, context)
             }
 
-            VIEW_TYPE_INCOMING_MESSAGE,
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT,
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE -> {
+            VIEW_TYPE_INCOMING_MESSAGE -> {
                 (holder as? IncomingMessageVH)?.bind(message, extraData)
             }
 
-            VIEW_TYPE_OUTGOING_MESSAGE,
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT,
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE -> {
+            VIEW_TYPE_OUTGOING_MESSAGE -> {
                 (holder as? OutgoingMessageVH)?.bind(message, extraData)
             }
 
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE,
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE,
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT -> {
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE -> {
                 (holder as? SavedOwnMessageVh)?.bind(message, extraData)
             }
 
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> {
+            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE -> {
                 (holder as? SavedCompanionMessageVH)?.bind(message, extraData)
             }
         }
@@ -643,19 +563,9 @@ class MessagesAdapter(
     private fun getSimpleType(type: Int): Int {
         return when (type) {
 
-            VIEW_TYPE_INCOMING_MESSAGE,
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE,
-            VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE,
-            VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT -> 1
+            VIEW_TYPE_INCOMING_MESSAGE, VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE, -> 1
 
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE,
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE,
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT,
-            VIEW_TYPE_OUTGOING_MESSAGE,
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE,
-            VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT -> 2
+            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE, VIEW_TYPE_OUTGOING_MESSAGE -> 2
 
             VIEW_TYPE_SYSTEM_MESSAGE -> 3
 
@@ -672,15 +582,7 @@ class MessagesAdapter(
         const val VIEW_TYPE_OUTGOING_MESSAGE = 2
         const val VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE = 3
         const val VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE = 4
-        const val VIEW_TYPE_OUTGOING_MESSAGE_IMAGE = 9
-        const val VIEW_TYPE_INCOMING_MESSAGE_IMAGE = 10
-        const val VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE = 11
-        const val VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE = 12
-        const val VIEW_TYPE_OUTGOING_MESSAGE_IMAGE_TEXT = 13
-        const val VIEW_TYPE_INCOMING_MESSAGE_IMAGE_TEXT = 14
-        const val VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE_IMAGE_TEXT = 15
-        const val VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE_IMAGE_TEXT = 16
-        const val VIEW_TYPE_SYSTEM_MESSAGE = 17
+        const val VIEW_TYPE_SYSTEM_MESSAGE = 5
     }
 
     interface AdapterListener {
