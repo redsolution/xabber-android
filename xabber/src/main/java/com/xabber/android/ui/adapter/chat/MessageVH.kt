@@ -9,6 +9,7 @@ import android.text.format.DateFormat
 import android.text.style.QuoteSpan
 import android.util.DisplayMetrics
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.StyleRes
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -36,6 +37,7 @@ import com.xabber.android.ui.text.CustomQuoteSpan
 import com.xabber.android.ui.text.getDateStringForMessage
 import com.xabber.android.ui.text.getDecodedSpannable
 import com.xabber.android.ui.widget.CorrectlyTouchEventTextView
+import com.xabber.android.ui.widget.CustomFlexboxLayout
 import com.xabber.android.ui.widget.ImageGrid
 import io.realm.RealmList
 import io.realm.Sort
@@ -62,6 +64,7 @@ open class MessageVH(
     protected val messageShadow: View = itemView.findViewById(R.id.message_shadow)
     protected val statusIcon: ImageView = itemView.findViewById(R.id.message_status_icon)
     protected val messageInfo: View = itemView.findViewById(R.id.message_info)
+    private val flexboxLayout: CustomFlexboxLayout = itemView.findViewById(R.id.message_flex_layout)
     protected val forwardedMessagesRV: RecyclerView = itemView.findViewById(R.id.forwardedRecyclerView)
     protected val messageFileInfo: TextView = itemView.findViewById(R.id.message_file_info)
     protected val progressBar: ProgressBar = itemView.findViewById(R.id.message_progress_bar)
@@ -183,6 +186,12 @@ open class MessageVH(
 
         if (messageText.text.isNotEmpty()) {
             messageStatusLayout.visibility = View.GONE
+        }
+
+        if (messageRealmObject.hasAttachments() || messageRealmObject.hasForwardedMessages()) {
+            flexboxLayout.layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            )
         }
 
         messageText.movementMethod = CorrectlyTouchEventTextView.LocalLinkMovementMethod
