@@ -94,10 +94,14 @@ open class ForwardedVH(
 
         // setup BACKGROUND COLOR
         val isAuthorMe = vhExtraData.groupMember?.isMe
-            ?: ContactJid.from(messageRealmObject.originalFrom)
-                .bareJid
-                .toString()
-                .contains(messageRealmObject.user.bareJid.toString())
+            ?: try {
+                ContactJid.from(messageRealmObject.originalFrom)
+                    .bareJid
+                    .toString()
+                    .contains(messageRealmObject.user.bareJid.toString())
+            } catch (ex: ContactJid.ContactJidCreateException) {
+                false
+            }
 
         val backgroundColor =
             if (isAuthorMe) {
