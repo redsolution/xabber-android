@@ -18,22 +18,24 @@ class ResultSessionsIQ(val sessions: List<Session>) : IQ(ELEMENT, NAMESPACE) {
         val uid: String,
         val ip: String,
         val expire: Long,
-        val lastAuth: Long
+        val lastAuth: Long,
+        val description: String,
     ) {
 
         companion object {
-            const val ELEMENT = "field"
+            const val ELEMENT_NAME = "xtoken"
             const val ELEMENT_CLIENT = "client"
             const val ELEMENT_DEVICE = "device"
-            const val ELEMENT_TOKEN_UID = "token-uid"
+            const val ELEMENT_UID_ATTRIBUTE = "uid"
             const val ELEMENT_EXPIRE = "expire"
             const val ELEMENT_IP = "ip"
+            const val ELEMENT_DESCRIPTION = "description"
             const val ELEMENT_LAST_AUTH = "last-auth"
         }
     }
 
     companion object {
-        const val ELEMENT = "x"
+        const val ELEMENT = "query"
         private const val HASH_BLOCK = "#items"
         const val NAMESPACE = XTokenManager.NAMESPACE + HASH_BLOCK
     }

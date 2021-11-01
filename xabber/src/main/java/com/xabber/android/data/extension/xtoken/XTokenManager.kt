@@ -94,6 +94,14 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
         }
     }
 
+    fun sendRevokeAllRequest(connection: XMPPTCPConnection) {
+        try {
+            connection.sendStanza(RevokeAllXTokenRequestIQ(connection.xmppServiceDomain))
+        } catch (e: Exception) {
+            LogManager.exception(javaClass.simpleName, e)
+        }
+    }
+
     fun requestSessions(
         currentTokenUID: String, connection: XMPPTCPConnection, listener: SessionsListener
     ) {

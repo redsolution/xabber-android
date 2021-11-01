@@ -74,14 +74,10 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             return;
         }
 
-        if (accountItem.getConnectionSettings().getXToken() != null &&
-                !accountItem.getConnectionSettings().getXToken().isExpired()) {
-            XTokenEnabled = true;
-        } else {
-            XTokenEnabled = false;
-        }
+        XTokenEnabled = accountItem.getConnectionSettings().getXToken() != null &&
+                !accountItem.getConnectionSettings().getXToken().isExpired();
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
@@ -205,9 +201,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         new AlertDialog.Builder(ActiveSessionsActivity.this)
             .setMessage(R.string.terminate_all_sessions_title)
             .setPositiveButton(R.string.button_terminate, (dialogInterface, i) -> {
-                XTokenManager.INSTANCE.sendRevokeXTokenRequest(
-                        accountItem.getConnection(), adapter.getItemsIDs()
-                );
+                XTokenManager.INSTANCE.sendRevokeAllRequest(accountItem.getConnection());
                 getSessionsData();
             })
             .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
