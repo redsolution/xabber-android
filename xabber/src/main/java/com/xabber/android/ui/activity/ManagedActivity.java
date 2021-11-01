@@ -100,12 +100,13 @@ public abstract class ManagedActivity extends AppCompatActivity {
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
         if (!accountErrorEvent.getType().equals(CONNECTION)) {
             // show enter pass dialog
-            if (AccountManager.INSTANCE.getAccount(accountErrorEvent.getAccount())
-                    .getConnectionSettings().getXToken() != null
-                    && !accountErrorEvent.getMessage().contains("SASLError using X-TOKEN: not-authorized"))
+            if (AccountManager.INSTANCE.getAccount(accountErrorEvent.getAccount()).getConnectionSettings().getXToken() != null){
                 ConnectionManager.getInstance().connectAll();
-            else AccountEnterPassDialog.newInstance(accountErrorEvent)
-                    .show(getFragmentManager(), AccountEnterPassDialog.class.getSimpleName());
+            } else {
+                AccountEnterPassDialog.newInstance(accountErrorEvent).show(
+                        getFragmentManager(), AccountEnterPassDialog.class.getSimpleName()
+                );
+            }
         } else {
             // show error dialog
             AccountErrorDialogFragment.newInstance(accountErrorEvent)

@@ -80,6 +80,8 @@ public class AccountRepository {
                         accountRealmObject.setXToken(
                                 XTokenRealmObject.createFromXToken(connectionSettings.getXToken())
                         );
+                    } else {
+                        accountRealmObject.setXToken(null);
                     }
                     accountRealmObject.setToken(connectionSettings.getToken());
                     accountRealmObject.setOrder(accountItem.getOrder());

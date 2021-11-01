@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.xtoken
 
 import android.os.Build
 import com.xabber.android.data.Application
+import com.xabber.android.data.account.AccountErrorEvent
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.OnAuthenticatedListener
@@ -15,6 +16,7 @@ import com.xabber.xmpp.smack.XMPPTCPConnection
 import com.xabber.xmpp.xtoken.*
 import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.getXTokenRevokeExtensionElement
 import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.hasXTokenRevokeExtensionElement
+import org.greenrobot.eventbus.EventBus
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import java.lang.ref.WeakReference
@@ -46,7 +48,24 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
     }
 
     fun onAccountXTokenRevoked(accountJid: AccountJid) {
+        LogManager.e(this, "${this::class.java.simpleName}.onAccountXTokenRevoked($accountJid)")
         AccountManager.removeAccount(accountJid)
+    }
+
+    fun onAccountXTokenCounterOutOfSync(accountJid: AccountJid) {
+        LogManager.e(this, "${this::class.java.simpleName}.onAccountXTokenCounterOutOfSync($accountJid)")
+        val accountItem = AccountManager.getAccount(accountJid)
+        accountItem?.connectionSettings?.xToken = null
+        accountItem?.recreateConnection()
+        AccountManager.setEnabled(accountJid, false)
+        AccountRepository.saveAccountToRealm(accountItem)
+        val accountErrorEvent = AccountErrorEvent(
+            accountJid,
+            AccountErrorEvent.Type.PASS_REQUIRED,
+            ""
+        )
+        EventBus.getDefault().postSticky(accountErrorEvent)
+        //todo possible remove xtoken
     }
 
     fun sendXTokenRequest(connection: XMPPTCPConnection) {

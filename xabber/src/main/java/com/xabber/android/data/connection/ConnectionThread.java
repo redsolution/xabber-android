@@ -138,14 +138,23 @@ class ConnectionThread {
         LogManager.i(this, "Use DNS Java resolver");
         ExtDNSJavaResolver.setup();
 
-        ProviderManager.addExtensionProvider(DataForm.ELEMENT,
-                DataForm.NAMESPACE, new CustomDataProvider());
+        ProviderManager.addExtensionProvider(
+                DataForm.ELEMENT,
+                DataForm.NAMESPACE,
+                new CustomDataProvider()
+        );
 
-        ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
-                ForwardComment.NAMESPACE, new ForwardCommentProvider());
+        ProviderManager.addExtensionProvider(
+                ForwardComment.ELEMENT,
+                ForwardComment.NAMESPACE,
+                new ForwardCommentProvider()
+        );
 
-        ProviderManager.addExtensionProvider(ReferenceElement.ELEMENT,
-                ReferenceElement.NAMESPACE, new ReferencesProvider());
+        ProviderManager.addExtensionProvider(
+                ReferenceElement.ELEMENT,
+                ReferenceElement.NAMESPACE,
+                new ReferencesProvider()
+        );
 
         ProviderManager.addIQProvider(
                 IncomingNewXTokenIQ.ELEMENT,
@@ -153,11 +162,17 @@ class ConnectionThread {
                 new XTokenProvider()
         );
 
-        ProviderManager.addIQProvider(ResultSessionsIQ.ELEMENT,
-                ResultSessionsIQ.NAMESPACE, new SessionsProvider());
+        ProviderManager.addIQProvider(
+                ResultSessionsIQ.ELEMENT,
+                ResultSessionsIQ.NAMESPACE,
+                new SessionsProvider()
+        );
 
-        ProviderManager.addIQProvider(GroupchatMemberRightsReplyIQ.ELEMENT, GroupchatMemberRightsReplyIQ.NAMESPACE + GroupchatMemberRightsReplyIQ.HASH_BLOCK,
-                new GroupchatMemberRightsReplyIqProvider());
+        ProviderManager.addIQProvider(
+                GroupchatMemberRightsReplyIQ.ELEMENT,
+                GroupchatMemberRightsReplyIQ.NAMESPACE + GroupchatMemberRightsReplyIQ.HASH_BLOCK,
+                new GroupchatMemberRightsReplyIqProvider()
+        );
 
         try {
             LogManager.i(this, "Trying to connect and login...");
@@ -182,18 +197,28 @@ class ConnectionThread {
             LogManager.exception(this, e);
 
             if (e.getMechanism().equals(SASLXTOKENMechanism.NAME)) {
-                XTokenManager.INSTANCE.onAccountXTokenRevoked(connectionItem.getAccount());
+                switch (e.getSASLFailure().getSASLError()) {
+                    case not_authorized: {
+                        XTokenManager.INSTANCE.onAccountXTokenRevoked(connectionItem.getAccount());
+                        break;
+                    }
+                    case malformed_request: {
+                        XTokenManager.INSTANCE.onAccountXTokenCounterOutOfSync(connectionItem.getAccount());
+                        break;
+                    }
+                }
+            } else {
+                AccountErrorEvent accountErrorEvent = new AccountErrorEvent(
+                        connectionItem.getAccount(),
+                        AccountErrorEvent.Type.AUTHORIZATION,
+                        e.getMessage()
+                );
+
+                com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(
+                        connectionItem.getAccount(), false
+                );
+                EventBus.getDefault().postSticky(accountErrorEvent);
             }
-
-            AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
-                    AccountErrorEvent.Type.AUTHORIZATION, e.getMessage());
-
-            //com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
-            com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(connectionItem.getAccount(), false);
-            EventBus.getDefault().postSticky(accountErrorEvent);
-
-            // catching RuntimeExceptions seems to be strange, but we got a lot of error coming from
-            // Smack or mini DSN client inside of Smack.
         } catch (XMPPException | SmackException | IOException | RuntimeException e) {
             LogManager.exception(this, e);
 
@@ -202,11 +227,17 @@ class ConnectionThread {
 
                 AccountErrorEvent accountErrorEvent;
                 if (e instanceof XMPPException.StreamErrorException) {
-                    accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
-                            AccountErrorEvent.Type.CONNECTION, ((XMPPException.StreamErrorException)e).getStreamError().getDescriptiveText());
+                    accountErrorEvent = new AccountErrorEvent(
+                            connectionItem.getAccount(),
+                            AccountErrorEvent.Type.CONNECTION,
+                            ((XMPPException.StreamErrorException)e).getStreamError().getDescriptiveText()
+                    );
                 } else {
-                    accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
-                            AccountErrorEvent.Type.CONNECTION, Log.getStackTraceString(e));
+                    accountErrorEvent = new AccountErrorEvent(
+                            connectionItem.getAccount(),
+                            AccountErrorEvent.Type.CONNECTION,
+                            Log.getStackTraceString(e)
+                    );
                 }
 
                 com.xabber.android.data.account.AccountManager.INSTANCE.addAccountError(accountErrorEvent);
