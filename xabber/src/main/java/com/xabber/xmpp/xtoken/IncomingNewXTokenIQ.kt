@@ -8,17 +8,17 @@ class IncomingNewXTokenIQ(
 ) : IQ(ELEMENT, NAMESPACE) {
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
+        attribute(ATTRIBUTE_UID, uid)
         rightAngleBracket()
         element(ELEMENT_TOKEN, token)
-        element(ELEMENT_TOKEN_UID, uid)
         element(ELEMENT_EXPIRE, expire.toString())
     }
 
     companion object {
         const val NAMESPACE = XTokenManager.NAMESPACE
-        const val ELEMENT = "x"
+        const val ELEMENT = "xtoken"
         const val ELEMENT_TOKEN = "token"
-        const val ELEMENT_TOKEN_UID = "token-uid"
+        const val ATTRIBUTE_UID = "uid"
         const val ELEMENT_EXPIRE = "expire"
     }
 

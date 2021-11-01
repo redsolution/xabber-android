@@ -4,7 +4,9 @@ import android.os.Build
 import com.xabber.android.data.Application
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
+import com.xabber.android.data.connection.OnAuthenticatedListener
 import com.xabber.android.data.connection.OnPacketListener
+import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.ui.OnXTokenSessionsUpdatedListener
@@ -17,7 +19,7 @@ import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import java.lang.ref.WeakReference
 
-object XTokenManager : OnPacketListener {
+object XTokenManager : OnPacketListener, OnAuthenticatedListener {
 
     const val NAMESPACE = "https://xabber.com/protocol/auth-tokens"
 
@@ -35,6 +37,12 @@ object XTokenManager : OnPacketListener {
                 }
             }
         }
+    }
+
+    override fun onAuthenticated(connectionItem: ConnectionItem) {
+        val account = AccountManager.getAccount(connectionItem.account)
+        account?.connectionSettings?.xToken?.counter = (account?.connectionSettings?.xToken?.counter ?: -1) + 1
+        AccountRepository.saveAccountToRealm(account)
     }
 
     fun onAccountXTokenRevoked(accountJid: AccountJid) {

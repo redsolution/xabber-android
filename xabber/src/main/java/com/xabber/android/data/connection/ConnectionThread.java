@@ -147,8 +147,11 @@ class ConnectionThread {
         ProviderManager.addExtensionProvider(ReferenceElement.ELEMENT,
                 ReferenceElement.NAMESPACE, new ReferencesProvider());
 
-        ProviderManager.addIQProvider(IncomingNewXTokenIQ.ELEMENT,
-                IncomingNewXTokenIQ.NAMESPACE, new XTokenProvider());
+        ProviderManager.addIQProvider(
+                IncomingNewXTokenIQ.ELEMENT,
+                IncomingNewXTokenIQ.NAMESPACE,
+                new XTokenProvider()
+        );
 
         ProviderManager.addIQProvider(ResultSessionsIQ.ELEMENT,
                 ResultSessionsIQ.NAMESPACE, new SessionsProvider());
