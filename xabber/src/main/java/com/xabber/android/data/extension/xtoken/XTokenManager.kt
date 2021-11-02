@@ -2,6 +2,7 @@ package com.xabber.android.data.extension.xtoken
 
 import android.os.Build
 import com.xabber.android.data.Application
+import com.xabber.android.data.NetworkException
 import com.xabber.android.data.account.AccountErrorEvent
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
@@ -82,6 +83,18 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
         }
     }
 
+    fun sendChangeXTokenDescriptionRequest(
+        connection: XMPPTCPConnection, tokenID: String, description: String
+    ) {
+        try {
+            connection.sendStanza(
+                ChangeXTokenDescriptionIQ(connection.xmppServiceDomain, tokenID, description)
+            )
+        } catch (e: NetworkException) {
+            LogManager.exception(javaClass.simpleName, e)
+        }
+    }
+
     fun sendRevokeXTokenRequest(connection: XMPPTCPConnection, tokenID: String) {
         sendRevokeXTokenRequest(connection, mutableListOf(tokenID))
     }
@@ -106,37 +119,27 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
         currentTokenUID: String, connection: XMPPTCPConnection, listener: SessionsListener
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            sendSessionsRequestIQ(
-                currentTokenUID, connection, WeakReference(listener)
-            )
-        }
-    }
-
-    private fun sendSessionsRequestIQ(
-        currentTokenUID: String,
-        connection: XMPPTCPConnection,
-        wrListener: WeakReference<SessionsListener>
-    ) {
-        val requestIQ = RequestSessionsIQ(connection.xmppServiceDomain)
-        try {
-            connection.sendIqWithResponseCallback(
-                requestIQ,
-                {
-                    (it as? ResultSessionsIQ)?.getMainAndOtherSessions(currentTokenUID)?.let {
-                        Application.getInstance().runOnUiThread {
-                            wrListener.get()?.onResult(
-                                it.first, it.second.toMutableList()
-                            )
+            val wrListener = WeakReference(listener)
+            try {
+                connection.sendIqWithResponseCallback(
+                    RequestSessionsIQ(connection.xmppServiceDomain),
+                    {
+                        (it as? ResultSessionsIQ)?.getMainAndOtherSessions(currentTokenUID)?.let {
+                            Application.getInstance().runOnUiThread {
+                                wrListener.get()?.onResult(
+                                    it.first, it.second.toMutableList()
+                                )
+                            }
                         }
+                    },
+                    {
+                        wrListener.get()?.onError()
                     }
-                },
-                {
-                    wrListener.get()?.onError()
-                }
-            )
-        } catch (e: Exception) {
-            wrListener.get()?.onError()
-            LogManager.exception(this, e)
+                )
+            } catch (e: Exception) {
+                wrListener.get()?.onError()
+                LogManager.exception(this, e)
+            }
         }
     }
 

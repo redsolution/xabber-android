@@ -7,12 +7,12 @@
     android:background="?android:attr/selectableItemBackground">
 
     <RelativeLayout
+        android:id="@+id/current_session_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        >
+        android:layout_marginLeft="16dp">
 
         <TextView
             android:id="@+id/tvClient"
@@ -24,8 +24,7 @@
             android:layout_toStartOf="@id/tvDate"
             android:textColor="?android:textColorPrimary"
             android:textStyle="bold"
-            tools:text="Xabber for Web 1.0.131"
-            />
+            tools:text="Xabber for Web 1.0.131" />
 
         <TextView
             android:id="@+id/tvDate"
@@ -36,8 +35,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:textColor="?android:textColorSecondary"
-            tools:text="Jul 14"
-            />
+            tools:text="Jul 14" />
 
     </RelativeLayout>
 
@@ -48,8 +46,7 @@
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         android:textColor="?android:textColorSecondary"
-        tools:text="PC, Linux x86_64"
-        />
+        tools:text="PC, Linux x86_64" />
 
     <TextView
         android:id="@+id/tvIPAddress"
@@ -59,15 +56,13 @@
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="16dp"
         android:textColor="?android:textColorSecondary"
-        tools:text="127.0.0.1"
-        />
+        tools:text="127.0.0.1" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:background="?attr/contact_list_subgroup_separator"
-        />
+        android:background="?attr/contact_list_subgroup_separator" />
 
 </LinearLayout>

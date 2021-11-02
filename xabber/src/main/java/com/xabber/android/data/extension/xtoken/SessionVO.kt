@@ -9,7 +9,8 @@ data class SessionVO(
     val device: String,
     val uid: String,
     val ip: String,
-    val lastAuth: String
+    val lastAuth: String,
+    val description: String?,
 )
 
 /**
@@ -23,7 +24,7 @@ fun ResultSessionsIQ.getMainAndOtherSessions(
         Pair(
             iqSessions
                 .first { it.uid == currentSessionUid }
-                .let { SessionVO(it.client, it.device, it.uid, it.ip, "online") },
+                .let { SessionVO(it.client, it.device, it.uid, it.ip, "online", it.description) },
             iqSessions
                 .filter { it.uid != currentSessionUid }
                 .map {
@@ -32,7 +33,8 @@ fun ResultSessionsIQ.getMainAndOtherSessions(
                         it.device,
                         it.uid,
                         it.ip,
-                        Date(it.lastAuth).getSmartTimeTextForRoster()
+                        Date(it.lastAuth).getSmartTimeTextForRoster(),
+                        it.description
                     )
                 }
         )
