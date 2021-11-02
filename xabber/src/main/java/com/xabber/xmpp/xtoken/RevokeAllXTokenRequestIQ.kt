@@ -8,10 +8,11 @@ class RevokeAllXTokenRequestIQ(server: DomainBareJid) : IQ(ELEMENT, XTokenManage
 
     init {
         type = Type.set
+        to = server
     }
 
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder?) = xml?.apply {
-        closeEmptyElement()
+        rightAngleBracket()
     }
 
     private companion object {
