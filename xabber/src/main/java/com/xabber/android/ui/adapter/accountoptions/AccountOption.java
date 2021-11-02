@@ -7,8 +7,7 @@ import com.xabber.android.R;
 
 public enum  AccountOption {
     CONNECTION_SETTINGS(R.drawable.ic_settings_grey600_24dp, R.string.account_connection_settings),
-    CONNECTED_DEVICES(R.drawable.ic_vcard_jabber_24dp, R.string.account_connected_devices),
-    SESSIONS(R.drawable.ic_key, R.string.account_active_sessions),
+    SESSIONS(R.drawable.ic_key, R.string.account_connected_devices),
     VCARD(R.drawable.ic_vcard_contact_info_24dp, R.string.account_vcard),
     SYNCHRONIZATION(R.drawable.ic_cloud_sync, R.string.account_sync),
     COLOR(R.drawable.ic_color_lens_grey600_24dp, R.string.account_color),
