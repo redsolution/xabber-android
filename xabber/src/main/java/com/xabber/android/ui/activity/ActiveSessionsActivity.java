@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +32,8 @@ import com.xabber.android.ui.OnXTokenSessionsUpdatedListener;
 import com.xabber.android.ui.adapter.SessionAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.AndroidUtilsKt;
+
+import org.jivesoftware.smack.packet.IQ;
 
 import java.util.List;
 
@@ -106,7 +108,6 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             recyclerView.setNestedScrollingEnabled(false);
 
             // current session
-            RelativeLayout rvCurrentSession = findViewById(R.id.current_session_layout);
             tvCurrentClient = findViewById(R.id.tvClient);
             tvCurrentDevice = findViewById(R.id.tvDevice);
             tvCurrentIPAddress = findViewById(R.id.tvIPAddress);
@@ -116,7 +117,8 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             tvTokensUnavailableHeader.setVisibility(View.GONE);
             getSessionsData();
 
-            rvCurrentSession.setOnClickListener(v -> showChangeDescriptionDialog());
+            findViewById(R.id.current_session_root).setOnClickListener(v -> showChangeDescriptionDialog());
+
         } else {
             tvTokensUnavailable.setVisibility(View.VISIBLE);
             tvTokensUnavailable.setText(
@@ -216,12 +218,18 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
 
     private void showChangeDescriptionDialog() {
         EditText descriptionEditText = new EditText(this);
-        descriptionEditText.setPadding(
-                AndroidUtilsKt.dipToPx(32f, this),
-                descriptionEditText.getPaddingTop(),
-                AndroidUtilsKt.dipToPx(32f, this),
-                descriptionEditText.getPaddingBottom()
+        descriptionEditText.setMaxLines(1);
+
+        FrameLayout container = new FrameLayout(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
         );
+
+        params.leftMargin = AndroidUtilsKt.dipToPx(20f, this);
+        params.rightMargin = AndroidUtilsKt.dipToPx(16f, this);
+
+        descriptionEditText.setLayoutParams(params);
+        container.addView(descriptionEditText);
 
         if (currentSession != null && currentSession.getDescription() != null) {
             descriptionEditText.setText(currentSession.getDescription());
@@ -229,12 +237,23 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
 
         new AlertDialog.Builder(this)
                 .setTitle("Device description") //todo use right resources strings
-                .setView(descriptionEditText)
+                .setView(container)
                 .setPositiveButton("Set description", (dialog, which) ->
                         XTokenManager.INSTANCE.sendChangeXTokenDescriptionRequest(
                                 accountItem.getConnection(),
                                 currentSession.getUid(),
-                                descriptionEditText.getText().toString()
+                                descriptionEditText.getText().toString(),
+                                packet -> Application.getInstance().runOnUiThread(() -> {
+                                    if (packet instanceof IQ && ((IQ)packet).getType() == IQ.Type.result) {
+                                        refreshData();
+                                    }
+                                }),
+                                exception -> Application.getInstance().runOnUiThread(() ->
+                                        Toast.makeText(
+                                                this,
+                                                "Failed to set token description",
+                                                Toast.LENGTH_SHORT
+                                        ).show())
                         )
                 )
                 .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())

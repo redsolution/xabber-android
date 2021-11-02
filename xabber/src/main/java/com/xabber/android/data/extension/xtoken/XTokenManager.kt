@@ -5,6 +5,7 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.NetworkException
 import com.xabber.android.data.account.AccountErrorEvent
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.OnAuthenticatedListener
 import com.xabber.android.data.connection.OnPacketListener
@@ -18,6 +19,8 @@ import com.xabber.xmpp.xtoken.*
 import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.getXTokenRevokeExtensionElement
 import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.hasXTokenRevokeExtensionElement
 import org.greenrobot.eventbus.EventBus
+import org.jivesoftware.smack.ExceptionCallback
+import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 import java.lang.ref.WeakReference
@@ -84,11 +87,17 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
     }
 
     fun sendChangeXTokenDescriptionRequest(
-        connection: XMPPTCPConnection, tokenID: String, description: String
+        connection: XMPPTCPConnection,
+        tokenID: String,
+        description: String,
+        listener: StanzaListener,
+        exceptionCallback: ExceptionCallback,
     ) {
         try {
-            connection.sendStanza(
-                ChangeXTokenDescriptionIQ(connection.xmppServiceDomain, tokenID, description)
+            connection.sendIqWithResponseCallback(
+                ChangeXTokenDescriptionIQ(connection.xmppServiceDomain, tokenID, description),
+                listener,
+                exceptionCallback
             )
         } catch (e: NetworkException) {
             LogManager.exception(javaClass.simpleName, e)
@@ -119,25 +128,22 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
         currentTokenUID: String, connection: XMPPTCPConnection, listener: SessionsListener
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            val wrListener = WeakReference(listener)
             try {
                 connection.sendIqWithResponseCallback(
                     RequestSessionsIQ(connection.xmppServiceDomain),
                     {
                         (it as? ResultSessionsIQ)?.getMainAndOtherSessions(currentTokenUID)?.let {
                             Application.getInstance().runOnUiThread {
-                                wrListener.get()?.onResult(
-                                    it.first, it.second.toMutableList()
-                                )
+                                listener.onResult(it.first, it.second.toMutableList())
                             }
                         }
                     },
                     {
-                        wrListener.get()?.onError()
+                        listener.onError()
                     }
                 )
             } catch (e: Exception) {
-                wrListener.get()?.onError()
+                listener.onError()
                 LogManager.exception(this, e)
             }
         }
