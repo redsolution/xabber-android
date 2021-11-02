@@ -5,7 +5,6 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.NetworkException
 import com.xabber.android.data.account.AccountErrorEvent
 import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.connection.BaseIqResultUiListener
 import com.xabber.android.data.connection.ConnectionItem
 import com.xabber.android.data.connection.OnAuthenticatedListener
 import com.xabber.android.data.connection.OnPacketListener
@@ -23,7 +22,6 @@ import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
-import java.lang.ref.WeakReference
 
 object XTokenManager : OnPacketListener, OnAuthenticatedListener {
 
@@ -47,7 +45,9 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
 
     override fun onAuthenticated(connectionItem: ConnectionItem) {
         val account = AccountManager.getAccount(connectionItem.account)
-        account?.connectionSettings?.xToken?.counter = (account?.connectionSettings?.xToken?.counter ?: -1) + 1
+        LogManager.d(this, "XTokenCounter: ${account?.connectionSettings?.xToken?.counter ?: "null"}")
+        account?.connectionSettings?.xToken?.counter = (account?.connectionSettings?.xToken?.counter ?: 0) + 1
+        LogManager.i(this, "Try to increment XToken counter. New value of counter: ${account?.connectionSettings?.xToken?.counter ?: "null"}")
         AccountRepository.saveAccountToRealm(account)
     }
 
