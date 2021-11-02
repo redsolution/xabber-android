@@ -9,6 +9,12 @@
         <className>com.xabber.xmpp.vcardupdate.VCardUpdateProvider</className>
     </extensionProvider>
 
+    <!-- XEP-DEVICE Device Management -->
+    <extensionProvider>
+        <elementName>device</elementName>
+        <namespace>https://xabber.com/protocol/devices</namespace>
+        <className>com.xabber.xmpp.device.DeviceExtensionElementProvider</className>
+    </extensionProvider>
 
     <!-- XEP-TOKEN Token Management -->
     <extensionProvider>
