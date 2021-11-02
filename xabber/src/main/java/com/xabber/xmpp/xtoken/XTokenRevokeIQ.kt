@@ -39,7 +39,7 @@ class XTokenRevokeIQ(
         override fun getElementName() = ELEMENT_NAME
 
         companion object {
-            const val ELEMENT_NAME = "token"
+            const val ELEMENT_NAME = "xtoken"
             const val UID_ATTRIBUTE = "uid"
         }
     }
