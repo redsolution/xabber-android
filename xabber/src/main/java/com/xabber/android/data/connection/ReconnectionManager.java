@@ -7,7 +7,6 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.delivery.DeliveryManager;
 import com.xabber.android.data.log.LogManager;
 
@@ -54,18 +53,9 @@ public class ReconnectionManager implements OnConnectedListener,
             DeliveryManager.getInstance().resendMessagesWithoutReceipt();
         }
         Collection<AccountJid> allAccounts = AccountManager.INSTANCE.getAllAccounts();
-//        checkCarbonStatus();
         for (AccountJid accountJid : allAccounts) {
             checkConnection(AccountManager.INSTANCE.getAccount(accountJid),
                     getReconnectionInfo(accountJid));
-        }
-    }
-
-    private void checkCarbonStatus(){
-        Collection<AccountItem> accountItems = AccountManager.INSTANCE.getAllAccountItems();
-        for (AccountItem accountItem : accountItems){
-            LogManager.d(LOG_TAG,
-                    "For account " + accountItem.getAccount().toString() + " carbons status is: " + CarbonManager.INSTANCE.isCarbonsEnabledForConnection((ConnectionItem) accountItem));
         }
     }
 

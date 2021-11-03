@@ -108,8 +108,23 @@ public abstract class ConnectionItem {
 
         connectionThread = new ConnectionThread(connection, this);
 
-        addConnectionListeners();
-        configureConnection();
+        final Roster roster = Roster.getInstanceFor(connection);
+        roster.addRosterListener(rosterListener);
+        roster.addRosterLoadedListener(rosterListener);
+        roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
+        roster.setRosterLoadedAtLogin(true);
+
+        connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
+        connection.addConnectionListener(connectionListener);
+
+        refreshPingFailedListener(true);
+        // enable Stream Management support. SMACK will only enable SM if supported by the server,
+        // so no additional checks are required.
+        connection.setUseStreamManagement(true);
+        connection.setUseStreamManagementResumption(false);
+
+        // by default Smack disconnects in case of parsing errors
+        connection.setParsingExceptionCallback(new ExceptionLoggingCallback());
 
         return connection;
     }
@@ -148,40 +163,14 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-        if (getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting) {
-            // if we wanted to connect during the disconnection process, we
-            // need to make sure our connection settings aren't outdated.
-            checkIfConnectionIsOutdated();
-        }
+
+        checkIfConnectionIsOutdated();
+
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
         }
 
         return connectionThread.start();
-    }
-
-    private void configureConnection() {
-        // enable Stream Management support. SMACK will only enable SM if supported by the server,
-        // so no additional checks are required.
-        connection.setUseStreamManagement(true);
-        connection.setUseStreamManagementResumption(false);
-
-        // by default Smack disconnects in case of parsing errors
-        connection.setParsingExceptionCallback(new ExceptionLoggingCallback());
-
-    }
-
-    private void addConnectionListeners() {
-        final Roster roster = Roster.getInstanceFor(connection);
-        roster.addRosterListener(rosterListener);
-        roster.addRosterLoadedListener(rosterListener);
-        roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
-        roster.setRosterLoadedAtLogin(true);
-
-        connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
-        connection.addConnectionListener(connectionListener);
-
-        refreshPingFailedListener(true);
     }
 
     /**

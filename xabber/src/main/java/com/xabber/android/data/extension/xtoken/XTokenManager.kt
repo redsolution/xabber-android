@@ -45,9 +45,11 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
 
     override fun onAuthenticated(connectionItem: ConnectionItem) {
         val account = AccountManager.getAccount(connectionItem.account)
-        LogManager.d(this, "XTokenCounter: ${account?.connectionSettings?.xToken?.counter ?: "null"}")
-        account?.connectionSettings?.xToken?.counter = (account?.connectionSettings?.xToken?.counter ?: 0) + 1
-        LogManager.i(this, "Try to increment XToken counter. New value of counter: ${account?.connectionSettings?.xToken?.counter ?: "null"}")
+        account?.connectionSettings?.xToken?.let {
+            it.counter++
+            AccountManager.updateXToken(account.account, it)
+        }
+        account?.setConnectionIsOutdated(true)
         AccountRepository.saveAccountToRealm(account)
     }
 
