@@ -85,8 +85,6 @@ class ConnectionBuilder {
             SASLAuthentication.registerSASLMechanism(new SASLXTOKENMechanism());
             builder.addEnabledSaslMechanism(SASLXTOKENMechanism.NAME);
             builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getXToken().getTokenAndCounterStringForSASL());
-        } else {
-            LogManager.d(LOG_TAG, "Token of account " + account.toString() + " null or expired!");
         }
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());

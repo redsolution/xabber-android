@@ -701,8 +701,6 @@ public class XabberAccountManager implements OnLoadListener {
             realmItems.add(realmItem);
         }
 
-        // TODO: 13.03.18 ANR - WRITE
-        final long startTime = System.currentTimeMillis();
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
@@ -723,9 +721,6 @@ public class XabberAccountManager implements OnLoadListener {
                 if (realm != null) realm.close();
             }
         });
-
-        LogManager.d("REALM", Thread.currentThread().getName()
-                + " save sync state: " + (System.currentTimeMillis() - startTime));
     }
 
     /**

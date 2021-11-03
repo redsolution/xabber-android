@@ -16,7 +16,6 @@ package com.xabber.android.data.message;
 
 import android.net.Uri;
 import android.os.Looper;
-import android.text.TextUtils;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -51,9 +50,7 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
-import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jxmpp.jid.Jid;
-import org.jxmpp.jid.parts.Domainpart;
 import org.jxmpp.util.XmppDateTime;
 
 import java.io.File;
@@ -272,22 +269,13 @@ public class MessageManager implements OnPacketListener {
      * Removes all messages from chat.
      */
     public void clearHistory(final AccountJid account, final ContactJid user) {
-        final long startTime = System.currentTimeMillis();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        realm.executeTransactionAsync(realm1 -> {
-            realm1.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
-                    .equalTo(MessageRealmObject.Fields.USER, user.toString())
-                    .findAll().deleteAllFromRealm();
-            LogManager.d("REALM", Thread.currentThread().getName()
-                    + " clear history: " + (System.currentTimeMillis() - startTime));
-        });
+        realm.executeTransactionAsync(realm1 -> realm1.where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageRealmObject.Fields.USER, user.toString())
+                .findAll().deleteAllFromRealm());
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-    }
-
-    public void clearHistoryForAccount(final  AccountJid accountJid) {
-        //todo
     }
 
     /**
