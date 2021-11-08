@@ -108,7 +108,6 @@ open class MessageVH(
     }
 
     open fun bind(messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData) {
-        messageHeader.visibility = View.GONE
         val chat = ChatManager.getInstance().getChat(
             messageRealmObject.account, messageRealmObject.user
         )
@@ -136,6 +135,8 @@ open class MessageVH(
                 )
                 messageHeader.visibility = View.VISIBLE
             }
+        } else {
+            messageHeader.visibility = View.GONE
         }
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
@@ -192,6 +193,10 @@ open class MessageVH(
             flexboxLayout.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
+        } else {
+            flexboxLayout.layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            )
         }
 
         messageTextTv.movementMethod = CorrectlyTouchEventTextView.LocalLinkMovementMethod
@@ -210,7 +215,8 @@ open class MessageVH(
             && messageRealmObject.attachmentRealmObjects.none { it.isImage }
         ) {
             messageStatusLayout.visibility = View.VISIBLE
-            //todo setupBottomMessageStatusLayout
+        }  else {
+            messageStatusLayout.visibility = View.GONE
         }
 
         // setup CHECKED
@@ -221,11 +227,12 @@ open class MessageVH(
         } else {
             itemView.background = null
         }
-        setupTime(vhExtraData, messageRealmObject)
+
+        setupTime(messageRealmObject)
         setupImageOrFile(messageRealmObject, vhExtraData)
     }
 
-    protected fun setupTime(vhExtraData: MessageVhExtraData, messageRealmObject: MessageRealmObject) {
+    protected fun setupTime(messageRealmObject: MessageRealmObject) {
         var time = getTimeText(Date(messageRealmObject.timestamp))
         messageRealmObject.delayTimestamp?.let {
             val delay = itemView.context.getString(
