@@ -163,14 +163,18 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-
         checkIfConnectionIsOutdated();
 
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
         }
 
-        return connectionThread.start();
+        boolean isConnectionThreadStarted = connectionThread.start();
+
+        LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + "; and connectionThread is started: " + isConnectionThreadStarted);
+        LogManager.exception("XTOKEN", new Exception());
+
+        return isConnectionThreadStarted;
     }
 
     /**

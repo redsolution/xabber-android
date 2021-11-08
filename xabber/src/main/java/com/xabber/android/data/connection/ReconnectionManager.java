@@ -54,8 +54,10 @@ public class ReconnectionManager implements OnConnectedListener,
         }
         Collection<AccountJid> allAccounts = AccountManager.INSTANCE.getAllAccounts();
         for (AccountJid accountJid : allAccounts) {
-            checkConnection(AccountManager.INSTANCE.getAccount(accountJid),
-                    getReconnectionInfo(accountJid));
+            checkConnection(
+                    AccountManager.INSTANCE.getAccount(accountJid),
+                    getReconnectionInfo(accountJid)
+            );
         }
     }
 
