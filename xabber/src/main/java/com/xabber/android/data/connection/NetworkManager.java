@@ -15,7 +15,6 @@
 package com.xabber.android.data.connection;
 
 import android.content.Context;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
@@ -57,24 +56,14 @@ public class  NetworkManager implements OnCloseListener, OnInitializedListener {
 
     @Override
     public void onInitialized() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        Application.getInstance().registerReceiver(connectivityReceiver, filter);
-        connectivityReceiver.setRegistered(true);
+        connectivityReceiver.requestRegister(Application.getInstance());
         WakeLockManager.onWakeLockSettingsChanged();
         WakeLockManager.onWifiLockSettingsChanged();
     }
 
     @Override
     public void onClose() {
-        if (connectivityReceiver.isRegistered()) {
-            try {
-                Application.getInstance().unregisterReceiver(connectivityReceiver);
-                connectivityReceiver.setRegistered(false);
-            } catch (IllegalArgumentException e) {
-                LogManager.exception(LOG_TAG, e);
-            }
-        }
+        connectivityReceiver.requestUnregister(Application.getInstance());
     }
 
     public void onNetworkChange() {

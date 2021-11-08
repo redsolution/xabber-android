@@ -17,6 +17,8 @@ package com.xabber.android.receiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import com.xabber.android.data.connection.NetworkManager
 import com.xabber.android.data.log.LogManager
 
@@ -27,10 +29,32 @@ import com.xabber.android.data.log.LogManager
  */
 class ConnectivityReceiver : BroadcastReceiver() {
 
-    var isRegistered = false
+    private var isRegistered = false
 
     override fun onReceive(context: Context, intent: Intent) {
         LogManager.i(this, "onReceive " + intent.action)
         NetworkManager.getInstance().onNetworkChange()
     }
+
+    fun requestRegister(context: Context) {
+        if (!isRegistered) {
+            context.registerReceiver(
+                this,
+                IntentFilter().apply { addAction(ConnectivityManager.CONNECTIVITY_ACTION) }
+            )
+            isRegistered = true
+        }
+    }
+
+    fun requestUnregister(context: Context) {
+        try {
+            if (isRegistered) {
+                context.unregisterReceiver(this)
+                isRegistered = false
+            }
+        } catch (e: IllegalArgumentException) {
+            LogManager.exception(this::class.java.simpleName, e)
+        }
+    }
+
 }
