@@ -366,6 +366,8 @@ class MessagesAdapter(
             return
         }
 
+        holder.setIsRecyclable(false)
+
         // setup message uniqueId
         (holder as? MessageVH)?.messageId = message.primaryKey
 
