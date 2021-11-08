@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -48,15 +48,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CapabilitiesManager {
 
-    @SuppressWarnings("WeakerAccess")
-    static final String LOG_TAG = CapabilitiesManager.class.getSimpleName();
-
     private static CapabilitiesManager instance;
 
     // cache for jids does not supporting Entity Caps
     @SuppressWarnings("WeakerAccess")
-    Map<Jid, DiscoverInfo> discoverInfoCache;
-    private Map<Jid, ClientInfo> clientInfoCache;
+    final Map<Jid, DiscoverInfo> discoverInfoCache = new ConcurrentHashMap<>();
+    private final Map<Jid, ClientInfo> clientInfoCache = new ConcurrentHashMap<>();
 
     public static CapabilitiesManager getInstance() {
         if (instance == null) {
@@ -73,9 +70,6 @@ public class CapabilitiesManager {
         EntityCapsManager.setPersistentCache(new EntityCapsCache());
 
         setServiceDiscoveryClientIdentity(applicationContext);
-
-        discoverInfoCache = new ConcurrentHashMap<>();
-        clientInfoCache = new ConcurrentHashMap<>();
     }
 
     private void setServiceDiscoveryClientIdentity(Context applicationContext) {
@@ -122,7 +116,9 @@ public class CapabilitiesManager {
             return;
         }
 
-        Application.getInstance().runInBackgroundNetwork(() -> updateClientInfo(accountJid, from));
+        Application.getInstance().runInBackgroundNetwork(
+                () -> updateClientInfo(accountJid, from)
+        );
     }
 
     public void requestClientInfoByUser(final AccountJid account, final Jid jid) {
@@ -143,18 +139,19 @@ public class CapabilitiesManager {
         }
 
         try {
-            discoverInfo = ServiceDiscoveryManager.getInstanceFor(accountItem.getConnection())
-                    .discoverInfo(jid);
+            if (accountItem.isSuccessfulConnectionHappened()) {
+                discoverInfo = ServiceDiscoveryManager.getInstanceFor(accountItem.getConnection())
+                        .discoverInfo(jid);
 
-            EntityCapsManager.NodeVerHash nodeVerHashByJid = EntityCapsManager.getNodeVerHashByJid(jid);
-            if (nodeVerHashByJid == null) {
-                discoverInfoCache.put(jid, discoverInfo);
+                EntityCapsManager.NodeVerHash nodeVerHashByJid = EntityCapsManager.getNodeVerHashByJid(jid);
+                if (nodeVerHashByJid == null) {
+                    discoverInfoCache.put(jid, discoverInfo);
+                }
+
+                if (discoverInfo != null) {
+                    clientInfoCache.put(jid, ClientInfo.fromDiscoveryInfo(discoverInfo));
+                }
             }
-
-            if (discoverInfo != null) {
-                clientInfoCache.put(jid, ClientInfo.fromDiscoveryInfo(discoverInfo));
-            }
-
         } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException | SmackException.NotConnectedException | ClassCastException e) {
             LogManager.exception(this, e);
             clientInfoCache.put(jid, ClientInfo.INVALID_CLIENT_INFO);
@@ -166,32 +163,13 @@ public class CapabilitiesManager {
             final ArrayList<RosterContact> rosterContacts = new ArrayList<>();
             rosterContacts.add(rosterContact);
 
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    for (OnContactChangedListener onContactChangedListener
-                            : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
-                        onContactChangedListener.onContactsChanged(rosterContacts);
-                    }
+            Application.getInstance().runOnUiThread(() -> {
+                for (OnContactChangedListener onContactChangedListener
+                        : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
+                    onContactChangedListener.onContactsChanged(rosterContacts);
                 }
             });
         }
-    }
-
-    public boolean isFeatureSupported(Jid jid, String namespace) {
-        DiscoverInfo discoverInfo = getDiscoverInfo(jid);
-        return discoverInfo != null && discoverInfo.containsFeature(namespace);
-    }
-
-    @Nullable
-    private DiscoverInfo getDiscoverInfo(final Jid jid) {
-        DiscoverInfo discoverInfoByUser = EntityCapsManager.getDiscoverInfoByUser(jid);
-
-        if (discoverInfoByUser == null) {
-            discoverInfoByUser = discoverInfoCache.get(jid);
-        }
-
-        return discoverInfoByUser;
     }
 
 }
