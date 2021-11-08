@@ -111,8 +111,8 @@ open class ForwardedVH(
             }
         setUpMessageBalloonBackground(messageBalloon, backgroundColor)
 
-        if (messageText.text.toString().trim { it <= ' ' }.isEmpty()) {
-            messageText.visibility = View.GONE
+        if (messageTextTv.text.toString().trim { it <= ' ' }.isEmpty()) {
+            messageTextTv.visibility = View.GONE
         }
 
     }

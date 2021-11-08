@@ -10,12 +10,12 @@ abstract class BasicMessageVH internal constructor(
     itemView: View, @StyleRes appearance: Int
 ) : RecyclerView.ViewHolder(itemView) {
 
-    val messageText: AppCompatTextView = itemView.findViewById(R.id.message_text)
+    val messageTextTv: AppCompatTextView = itemView.findViewById(R.id.message_text)
     var needDate = false
     var date: String? = null
 
     init {
-        messageText.setTextAppearance(itemView.context, appearance)
+        messageTextTv.setTextAppearance(itemView.context, appearance)
     }
 
 }

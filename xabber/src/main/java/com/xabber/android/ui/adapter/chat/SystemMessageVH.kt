@@ -1,6 +1,7 @@
 package com.xabber.android.ui.adapter.chat
 
 import android.content.Context
+import android.view.Gravity
 import android.view.View
 import androidx.annotation.StyleRes
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
@@ -17,7 +18,7 @@ class SystemMessageVH(
 
         when {
             messageRealmObject.chatAction != null -> {
-                messageText.text = messageRealmObject.chatAction.getText(
+                messageTextTv.text = messageRealmObject.chatAction.getText(
                     context,
                     RosterManager.getInstance().getBestContact(
                         messageRealmObject.account, messageRealmObject.user
@@ -26,12 +27,14 @@ class SystemMessageVH(
                 )
             }
             messageRealmObject.isGroupchatSystem -> {
-                messageText.text = messageRealmObject.text
+                messageTextTv.text = messageRealmObject.text
             }
             else -> {
                 LogManager.w(this, "Tried to bind system messages, but there are no implemented binds for current message")
             }
         }
+
+        messageTextTv.gravity = Gravity.CENTER_VERTICAL
 
         date = getDateStringForMessage(messageRealmObject.timestamp)
         this.needDate = needDate

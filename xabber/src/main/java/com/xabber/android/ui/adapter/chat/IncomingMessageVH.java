@@ -102,7 +102,7 @@ public class IncomingMessageVH  extends MessageVH {
                 }
             }
         } else if (messageRealmObject.hasImage() && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
-            if (getMessageText().getText().toString().trim().isEmpty()) {
+            if (getMessageTextTv().getText().toString().trim().isEmpty()) {
                 imageAttached = true;
                 needTail = false; //not using the tail for messages with *only* images
             } else {
@@ -148,7 +148,7 @@ public class IncomingMessageVH  extends MessageVH {
                     dipToPx(border, context),
                     dipToPx(border, context)
             );
-            if (getMessageText().getText().toString().trim().isEmpty()
+            if (getMessageTextTv().getText().toString().trim().isEmpty()
                     && messageRealmObject.isAttachmentImageOnly()
             ) {
                 getMessageTime().setTextColor(context.getResources().getColor(R.color.white));
@@ -190,8 +190,8 @@ public class IncomingMessageVH  extends MessageVH {
             }
         });
 
-        if (getMessageText().getText().toString().trim().isEmpty()) {
-            getMessageText().setVisibility(View.GONE);
+        if (getMessageTextTv().getText().toString().trim().isEmpty()) {
+            getMessageTextTv().setVisibility(View.GONE);
         }
     }
 

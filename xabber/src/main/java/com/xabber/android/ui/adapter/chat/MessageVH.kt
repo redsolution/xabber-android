@@ -140,9 +140,9 @@ open class MessageVH(
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
-                messageText.setTextColor(itemView.context.getColor(R.color.grey_200))
+                messageTextTv.setTextColor(itemView.context.getColor(R.color.grey_200))
             } else {
-                messageText.setTextColor(itemView.context.getColor(R.color.black))
+                messageTextTv.setTextColor(itemView.context.getColor(R.color.black))
             }
         }
 
@@ -171,20 +171,20 @@ open class MessageVH(
                 itemView.context.resources.displayMetrics,
                 color
             )
-            messageText.setText(spannable, TextView.BufferType.SPANNABLE)
+            messageTextTv.setText(spannable, TextView.BufferType.SPANNABLE)
         } else {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                messageText.setText(
+                messageTextTv.setText(
                     getDecodedSpannable(messageRealmObject.text.trim { it <= ' ' } + Character.MIN_VALUE.toString()),
                     TextView.BufferType.SPANNABLE
                 )
             } else {
-                messageText.text =
+                messageTextTv.text =
                     messageRealmObject.text.trim { it <= ' ' } + Character.MIN_VALUE.toString()
             }
         }
 
-        if (messageText.text.isNotEmpty()) {
+        if (messageTextTv.text.isNotEmpty()) {
             messageStatusLayout.visibility = View.GONE
         }
 
@@ -194,7 +194,7 @@ open class MessageVH(
             )
         }
 
-        messageText.movementMethod = CorrectlyTouchEventTextView.LocalLinkMovementMethod
+        messageTextTv.movementMethod = CorrectlyTouchEventTextView.LocalLinkMovementMethod
 
         // set unread status
         isUnread = vhExtraData.isUnread

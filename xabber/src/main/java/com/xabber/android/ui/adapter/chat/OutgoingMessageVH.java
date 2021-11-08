@@ -145,8 +145,8 @@ public class OutgoingMessageVH extends MessageVH {
             public void onViewDetachedFromWindow(View v) { unsubscribeAll(); }
         });
 
-        if (getMessageText().getText().toString().trim().isEmpty()) {
-            getMessageText().setVisibility(View.GONE);
+        if (getMessageTextTv().getText().toString().trim().isEmpty()) {
+            getMessageTextTv().setVisibility(View.GONE);
         }
     }
 
@@ -156,7 +156,7 @@ public class OutgoingMessageVH extends MessageVH {
         getProgressBar().setVisibility(View.GONE);
 
         if (messageRealmObject.getMessageStatus() == MessageStatus.UPLOADING) {
-            getMessageText().setText("");
+            getMessageTextTv().setText("");
             getStatusIcon().setVisibility(View.GONE);
             getBottomStatusIcon().setVisibility(View.GONE);
         } else {
