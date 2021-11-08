@@ -34,7 +34,7 @@ class SystemMessageVH(
             }
         }
 
-        messageTextTv.gravity = Gravity.CENTER_VERTICAL
+        messageTextTv.gravity = Gravity.CENTER_HORIZONTAL
 
         date = getDateStringForMessage(messageRealmObject.timestamp)
         this.needDate = needDate
