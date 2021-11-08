@@ -12,27 +12,25 @@
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
-package com.xabber.android.receiver;
+package com.xabber.android.receiver
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-
-import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.connection.NetworkManager;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import com.xabber.android.data.connection.NetworkManager
+import com.xabber.android.data.log.LogManager
 
 /**
  * Receiver for network events.
  *
  * @author alexander.ivanov
  */
-public class ConnectivityReceiver extends BroadcastReceiver {
+class ConnectivityReceiver : BroadcastReceiver() {
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        LogManager.i(this, "onReceive " + intent.getAction());
+    var isRegistered = false
 
-        NetworkManager.getInstance().onNetworkChange();
+    override fun onReceive(context: Context, intent: Intent) {
+        LogManager.i(this, "onReceive " + intent.action)
+        NetworkManager.getInstance().onNetworkChange()
     }
-
 }

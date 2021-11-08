@@ -60,16 +60,20 @@ public class  NetworkManager implements OnCloseListener, OnInitializedListener {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         Application.getInstance().registerReceiver(connectivityReceiver, filter);
+        connectivityReceiver.setRegistered(true);
         WakeLockManager.onWakeLockSettingsChanged();
         WakeLockManager.onWifiLockSettingsChanged();
     }
 
     @Override
     public void onClose() {
-        try {
-            Application.getInstance().unregisterReceiver(connectivityReceiver);
-        } catch (IllegalArgumentException e) {
-            LogManager.exception(LOG_TAG, e);
+        if (connectivityReceiver.isRegistered()) {
+            try {
+                Application.getInstance().unregisterReceiver(connectivityReceiver);
+                connectivityReceiver.setRegistered(false);
+            } catch (IllegalArgumentException e) {
+                LogManager.exception(LOG_TAG, e);
+            }
         }
     }
 
