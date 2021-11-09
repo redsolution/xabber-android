@@ -61,7 +61,7 @@ class MessagesAdapter(
 
             changeSet.insertionRanges.map { range ->
                 val isAddedToBottom = range.startIndex + range.length == messageRealmObjects.size
-                notifyItemRangeInserted(range.startIndex, range.length)
+                notifyItemRangeInserted(range.startIndex - 1, range.length)
                 if (isAddedToBottom && (isListAlreadyScrolledToBottom || isLastMessageIsOutgoing)) {
                     llm.scrollToPosition(llm.itemCount - 1)
                 }
@@ -263,7 +263,7 @@ class MessagesAdapter(
                     return if (user2 != null) groupMember.memberId != user2.memberId else true
                 }
                 viewType != VIEW_TYPE_SYSTEM_MESSAGE -> {
-                    return getMessageScreenSideByViewType(viewType) != getMessageScreenSideByViewType(getItemViewType(position + 1))
+                    return message.isIncoming xor nextMessage.isIncoming
                 }
                 else -> {
                     return true
@@ -558,14 +558,6 @@ class MessagesAdapter(
         }
     }
 
-    private fun getMessageScreenSideByViewType(type: Int): ScreenSide {
-        return when (type) {
-            VIEW_TYPE_INCOMING_MESSAGE, VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE, -> ScreenSide.COMPANION
-            VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE, VIEW_TYPE_OUTGOING_MESSAGE -> ScreenSide.OWN
-            else -> ScreenSide.SYSTEM
-        }
-    }
-
     fun release() {
         messageRealmObjects.removeChangeListener(realmListener)
     }
@@ -576,10 +568,6 @@ class MessagesAdapter(
         const val VIEW_TYPE_SAVED_SINGLE_OWN_MESSAGE = 3
         const val VIEW_TYPE_SAVED_SINGLE_COMPANION_MESSAGE = 4
         const val VIEW_TYPE_SYSTEM_MESSAGE = 5
-
-        enum class ScreenSide {
-            COMPANION, OWN, SYSTEM
-        }
     }
 
     interface AdapterListener {
