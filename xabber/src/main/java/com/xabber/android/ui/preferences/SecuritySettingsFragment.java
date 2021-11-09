@@ -53,7 +53,7 @@ public class SecuritySettingsFragment extends android.preference.PreferenceFragm
             for (AccountJid accountJid : enabledAccounts) {
                 AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
                 if (accountItem != null) {
-                    accountItem.recreateConnection();
+                    accountItem.recreateConnection(false);
                 }
             }
         }

@@ -163,7 +163,15 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-        checkIfConnectionIsOutdated();
+        if (!NetworkManager.isNetworkAvailable()) {
+            return false;
+        }
+        if (getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting
+                || connectionSettings.getXToken() != null) {
+            // if we wanted to connect during the disconnection process, we
+            // need to make sure our connection settings aren't outdated.
+            checkIfConnectionIsOutdated();
+        }
 
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
@@ -204,7 +212,7 @@ public abstract class ConnectionItem {
         thread.start();
     }
 
-    public void recreateConnection() {
+    public void recreateConnection(boolean enableAfterConnection) {
         LogManager.i(logTag, "recreateConnection");
 
         Thread thread = new Thread("Disconnection thread for " + connection) {
@@ -212,30 +220,15 @@ public abstract class ConnectionItem {
             public void run() {
                 updateState(ConnectionState.disconnecting);
                 connection.disconnect();
-                Application.getInstance().runOnUiThread(() -> createNewConnection());
-            }
-        };
-
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.setDaemon(true);
-        thread.start();
-    }
-
-    public void recreateConnectionWithEnable(final AccountJid account) {
-        LogManager.i(logTag, "recreateConnection");
-
-        Thread thread = new Thread("Disconnection thread for " + connection) {
-            @Override
-            public void run() {
-                updateState(ConnectionState.disconnecting);
-                connection.disconnect();
-
                 Application.getInstance().runOnUiThread(() -> {
                     createNewConnection();
-                    AccountManager.INSTANCE.setEnabled(account, true);
+                    if (enableAfterConnection) {
+                        AccountManager.INSTANCE.setEnabled(account, true);
+                    }
                 });
             }
         };
+
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
         thread.start();
@@ -300,8 +293,9 @@ public abstract class ConnectionItem {
 
     public void refreshPingFailedListener(boolean register) {
         PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
-        if (register)
+        if (register) {
             PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
+        }
     }
 
 }

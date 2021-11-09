@@ -443,10 +443,12 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     }
 
     fun updateAccountPassword(account: AccountJid?, pass: String?) {
-        val result = getAccount(account) ?: return
-        result.setPassword(pass)
-        result.recreateConnectionWithEnable(result.account)
-        AccountRepository.saveAccountToRealm(result)
+        getAccount(account)?.apply {
+            setPassword(pass)
+        }?.also {
+            it.recreateConnection(true)
+            AccountRepository.saveAccountToRealm(it)
+        }
     }
 
     /** Set x-token to account and remove password  */
@@ -583,7 +585,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
             }
             if (changed || reconnect) {
                 result.isSuccessfulConnectionHappened = false
-                result.recreateConnection()
+                result.recreateConnection(false)
             }
             if (changed && !enabled) {
                 if (result.rawStatusMode.isOnline) {

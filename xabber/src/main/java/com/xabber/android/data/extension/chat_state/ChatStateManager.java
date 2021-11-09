@@ -513,7 +513,7 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
                     if (chatState == ChatState.active || chatState == ChatState.composing) {
                         AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
                         if (accountItem != null) {
-                            accountItem.recreateConnection();
+                            accountItem.recreateConnection(false);
                         }
                         try {
                             ContactJid contactJid = ContactJid.from(message.getTo());

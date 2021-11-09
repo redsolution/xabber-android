@@ -50,7 +50,6 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
             it.counter++
             AccountManager.updateXToken(account.account, it)
         }
-        AccountRepository.saveAccountToRealm(account)
         LogManager.d("XToken", "onAuthentikated; new counter: ${connectionItem.connectionSettings.xToken.counter}")
     }
 
@@ -61,11 +60,14 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
 
     fun onAccountXTokenCounterOutOfSync(accountJid: AccountJid) {
         LogManager.e(this, "${this::class.java.simpleName}.onAccountXTokenCounterOutOfSync($accountJid)")
-        val accountItem = AccountManager.getAccount(accountJid)
-        accountItem?.connectionSettings?.xToken = null
-        accountItem?.recreateConnection()
-        AccountManager.setEnabled(accountJid, false)
-        AccountRepository.saveAccountToRealm(accountItem)
+        AccountManager.getAccount(accountJid)?.apply {
+            connectionSettings.xToken = null
+            recreateConnection(false)
+        }?.also {
+            AccountManager.setEnabled(accountJid, false)
+            AccountRepository.saveAccountToRealm(it)
+        }
+
         val accountErrorEvent = AccountErrorEvent(
             accountJid,
             AccountErrorEvent.Type.PASS_REQUIRED,
