@@ -1,5 +1,8 @@
 package com.xabber.android.ui.helper;
 
+import static com.xabber.android.ui.text.DatesUtilsKt.isToday;
+import static com.xabber.android.ui.text.DatesUtilsKt.isYesterday;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -18,11 +21,10 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
-import com.xabber.android.ui.text.StringUtilsKt;
-import com.xabber.xmpp.groups.GroupExtensionElement;
-import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
+import com.xabber.android.data.extension.iqlast.LastActivityManager;
+import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.message.ChatContact;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
@@ -37,11 +39,18 @@ import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
 import com.xabber.android.data.roster.StatusBadgeSetupHelper;
 import com.xabber.android.ui.color.ColorManager;
+import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.android.ui.widget.TypingDotsDrawable;
+import com.xabber.xmpp.groups.GroupExtensionElement;
 
 import org.jivesoftware.smack.packet.Presence;
 
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by valery.miller on 26.10.17.
@@ -316,12 +325,75 @@ public class NewContactTitleInflater {
     }
 
     private static String getLastActivity(AbstractContact contact) {
-//        if (contact instanceof RosterContact) {
-//            RosterContact rosterContact = (RosterContact) contact;
-//            if (!rosterContact.getStatusMode().isOnline())
-//                return rosterContact.getLastActivity();
-//        }
-        return "";
+        if (contact instanceof RosterContact) {
+            RosterContact rosterContact = (RosterContact) contact;
+            if (!rosterContact.getStatusMode().isOnline()) {
+                long lastActivity = LastActivityManager.INSTANCE.getOrRequestLastActivity(
+                        contact.getAccount(),
+                        contact.getContactJid()
+                );
+                if (lastActivity != 0) {
+                    return getLastActivityString(lastActivity);
+                }
+            }
+        }
+        return contact.getStatusText().trim();
+    }
+
+    public static String getLastActivityString(long lastActivityTime) {
+        if (lastActivityTime > 0) {
+            long timeAgo = System.currentTimeMillis()/1000 - lastActivityTime;
+            long time;
+            String sTime;
+            Date date = new Date(System.currentTimeMillis() - lastActivityTime * 1000);
+            Date today = new Date();
+            Locale locale = Application.getInstance().getResources().getConfiguration().locale;
+
+            if (timeAgo < 60) {
+               return Application.getInstance().getString(R.string.last_seen_now);
+
+            } else if (timeAgo < 3600) {
+                time = TimeUnit.SECONDS.toMinutes(timeAgo);
+                return Application.getInstance().getString(R.string.last_seen_minutes, String.valueOf(time));
+
+            } else if (timeAgo < 7200) {
+                return Application.getInstance().getString(R.string.last_seen_hours);
+
+            } else if (isToday(date)) {
+                SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_today, sTime);
+
+            } else if (isYesterday(date)) {
+                SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_yesterday, sTime);
+
+            } else if (timeAgo < TimeUnit.DAYS.toSeconds(7)) {
+                SimpleDateFormat pattern = new SimpleDateFormat("HH:mm", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_on_week,
+                        getDayOfWeek(date, locale), sTime);
+
+            } else if (date.getYear() == today.getYear()) {
+                SimpleDateFormat pattern = new SimpleDateFormat("d MMMM", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_date, sTime);
+
+            } else if (date.getYear() < today.getYear()) {
+                SimpleDateFormat pattern = new SimpleDateFormat("d MMMM yyyy", locale);
+                sTime = pattern.format(date);
+                return Application.getInstance().getString(R.string.last_seen_date, sTime);
+            }
+        }
+         return Application.getInstance().getString(R.string.unavailable);
+    }
+
+    private static String getDayOfWeek(Date date, Locale locale) {
+        DateFormatSymbols symbols = new DateFormatSymbols(locale);
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        return symbols.getWeekdays()[c.get(Calendar.DAY_OF_WEEK)];
     }
 
 }

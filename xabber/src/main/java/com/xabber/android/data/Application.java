@@ -49,7 +49,7 @@ import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.data.extension.iqlast.LastActivityManager;
 import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.sync.SyncManager;
@@ -384,7 +384,6 @@ public class Application extends android.app.Application {
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
         addManager(DelayedNotificationActionManager.getInstance());
-        addManager(LastActivityInteractor.getInstance());
         addManager(XTokenManager.INSTANCE);
         addManager(GroupsManager.INSTANCE);
         addManager(GroupMemberManager.INSTANCE);

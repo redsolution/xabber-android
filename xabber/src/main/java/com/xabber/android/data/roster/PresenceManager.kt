@@ -39,7 +39,7 @@ import com.xabber.android.data.extension.capability.CapabilitiesManager
 import com.xabber.android.data.extension.captcha.CaptchaManager
 import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupsManager
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor
+import com.xabber.android.data.extension.iqlast.LastActivityManager
 import com.xabber.android.data.extension.vcard.VCardManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageManager
@@ -346,7 +346,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
             CapabilitiesManager.getInstance().onPresence(account, presence)
         }
         if (presence.type == Presence.Type.unavailable) {
-            LastActivityInteractor.getInstance().setLastActivityTimeNow(account, from.bareUserJid)
+            account?.let { LastActivityManager.setLastActivity(it,  from.bareUserJid, System.currentTimeMillis() / 1000) }
         }
 
         Application.getInstance().getUIListeners(OnStatusChangeListener::class.java)

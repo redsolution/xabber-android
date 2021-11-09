@@ -22,7 +22,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.OnConnectedListener;
 import com.xabber.android.data.connection.OnDisconnectListener;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.database.realmobjects.VCardRealmObject;
@@ -32,7 +31,6 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.groups.GroupsManager;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.GroupChat;
@@ -141,12 +139,6 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
         }
     }
 
-    private void requestRosterLastActivity(AccountItem accountItem) {
-        AccountJid account = accountItem.getAccount();
-        Collection<RosterContact> accountRosterContacts = RosterManager.getInstance().getAccountRosterContacts(account);
-        LastActivityInteractor.getInstance().requestRosterLastActivity(account, accountRosterContacts);
-    }
-
     @Override
     public void onRosterReceived(AccountItem accountItem) {
         LogManager.d("VCardManager", "roster received");
@@ -156,7 +148,6 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
             requestRosterVCards(accountItem);
         } else {
             rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.ROSTER);
-            requestRosterLastActivity(accountItem);
         }
     }
 
@@ -178,7 +169,6 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
         if (accountItem != null) {
             rosterOrHistoryIsLoaded.remove(accountItem);
             vCardRequests.remove(accountJid);
-            LastActivityInteractor.getInstance().interruptLastActivityRequest(accountJid);
         }
     }
 

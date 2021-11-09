@@ -36,7 +36,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.data.extension.iqlast.LastActivityManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ChatContact;
@@ -250,9 +250,6 @@ public class RosterManager implements OnDisconnectListener, OnAccountEnabledList
                         contact.getContactJid().getBareJid().toString(), contact);
                 newContacts.add(contact);
 
-                if (VCardManager.getInstance().isRosterOrHistoryLoaded(account)) {
-                    LastActivityInteractor.getInstance().requestLastActivityAsync(account, ContactJid.from(jid));
-                }
                 //notify invite manager to delete invites if they exists
                 GroupInviteManager.INSTANCE.onContactAddedToRoster(account, ContactJid.from(jid));
             } catch (ContactJid.ContactJidCreateException e) {

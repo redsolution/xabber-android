@@ -37,7 +37,7 @@ import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
 import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.data.extension.iqlast.LastActivityManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.http.PatreonManager;
@@ -344,7 +344,6 @@ public class TestApplication extends android.app.Application {
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
         addManager(DelayedNotificationActionManager.getInstance());
-        addManager(LastActivityInteractor.getInstance());
     }
 
     /**
