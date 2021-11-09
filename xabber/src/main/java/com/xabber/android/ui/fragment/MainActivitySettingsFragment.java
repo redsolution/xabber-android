@@ -242,7 +242,7 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
                 }
             }
 
-            if (currentGoal != null) {
+            if (currentGoal != null && isAdded()) {
                 patreonTexts = new String[3];
                 patreonTexts[0] = patreon.getString();
                 patreonTexts[1] = getString(R.string.patreon_pledged, patreon.getPledged(), currentGoal.getGoal());
