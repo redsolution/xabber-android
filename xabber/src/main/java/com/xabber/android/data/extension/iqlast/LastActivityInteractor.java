@@ -106,8 +106,6 @@ public class LastActivityInteractor implements OnPacketListener {
             requestLastActivityAsync(account, contact.getContactJid());
         } else {
             rosterItemIterators.remove(account);
-            LogManager.d("timeCount/iterativeRequest", "finished getting last activity, time since connected = "
-                    + (System.currentTimeMillis() - VCardManager.getInstance().getStart()) + " ms");
         }
     }
 

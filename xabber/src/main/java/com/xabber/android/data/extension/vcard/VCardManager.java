@@ -74,7 +74,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * @author alexander.ivanov
  */
 public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
-        OnAccountRemovedListener, OnDisconnectListener, OnConnectedListener {
+        OnAccountRemovedListener, OnDisconnectListener {
 
     private static final String LOG_TAG = VCardManager.class.getSimpleName();
 
@@ -121,11 +121,6 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
         }
     }
 
-    @Override
-    public void onConnected(ConnectionItem connection) {
-        if (this.start == null) this.start = System.currentTimeMillis();
-    }
-
     private void requestRosterVCards(AccountItem accountItem) {
         AccountJid account = accountItem.getAccount();
         if (!accountRequested.contains(account) && SettingsManager.connectionLoadVCard()) {
@@ -155,8 +150,6 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
     @Override
     public void onRosterReceived(AccountItem accountItem) {
         LogManager.d("VCardManager", "roster received");
-        LogManager.d("timeCount", "roster received, time since connected = "
-                + (System.currentTimeMillis() - start) + " ms");
         RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(accountItem);
         if (loaded == RosterAndHistoryLoadState.HISTORY) {
             rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.BOTH);
@@ -169,24 +162,6 @@ public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
 
     @Override
     public void onDisconnect(ConnectionItem connection) { resetLoadedState(connection.getAccount()); }
-
-    private Long start;
-
-    public Long getStart() {
-        return start;
-    }
-
-    public void onHistoryLoaded(AccountItem accountItem) {
-        LogManager.d("VCardManager", "historyLoaded");
-        LogManager.d("timeCount", "history loaded, time since connected = " + (System.currentTimeMillis() - start) + " ms");
-        RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(accountItem);
-        if (loaded == RosterAndHistoryLoadState.ROSTER) {
-            rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.BOTH);
-            requestRosterVCards(accountItem);
-        } else {
-            rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.HISTORY);
-        }
-    }
 
     public boolean isRosterOrHistoryLoaded(AccountJid accountJid) {
         AccountItem account = AccountManager.INSTANCE.getAccount(accountJid);
