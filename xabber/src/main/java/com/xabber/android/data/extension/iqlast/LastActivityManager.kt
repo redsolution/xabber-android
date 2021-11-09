@@ -46,7 +46,7 @@ object LastActivityManager {
     }
 
     fun setLastActivity(account: AccountJid, user: ContactJid, time: Long) {
-        lastActivities[user] = time
+        lastActivities[user] = System.currentTimeMillis() - time * 1000
         RosterManager.onContactChanged(account, user)
     }
 

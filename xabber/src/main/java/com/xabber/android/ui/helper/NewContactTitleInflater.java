@@ -342,10 +342,10 @@ public class NewContactTitleInflater {
 
     public static String getLastActivityString(long lastActivityTime) {
         if (lastActivityTime > 0) {
-            long timeAgo = System.currentTimeMillis()/1000 - lastActivityTime;
+            long timeAgo = System.currentTimeMillis() - lastActivityTime;
             long time;
             String sTime;
-            Date date = new Date(System.currentTimeMillis() - lastActivityTime * 1000);
+            Date date = new Date(lastActivityTime);
             Date today = new Date();
             Locale locale = Application.getInstance().getResources().getConfiguration().locale;
 
