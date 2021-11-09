@@ -836,33 +836,29 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                 if (!skipOnTextChanges && stopTypingTimer != null) {
                     stopTypingTimer?.cancel()
                 }
+                setUpInputViewButtons()
             }
 
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(text: Editable) {
-                this@ChatFragment.afterTextChanged(text)
+                setUpInputViewButtons()
+                if (skipOnTextChanges) {
+                    return
+                }
+                ChatStateManager.getInstance().onComposing(accountJid, contactJid, text)
+                stopTypingTimer = Timer()
+                stopTypingTimer?.schedule(
+                    object : TimerTask() {
+                        override fun run() {
+                            Application.getInstance().runOnUiThread {
+                                    ChatStateManager.getInstance().onPaused(accountJid, contactJid)
+                            }
+                        }
+                    },
+                    STOP_TYPING_DELAY
+                )
             }
         })
-    }
-
-    private fun afterTextChanged(text: Editable) {
-        setUpInputViewButtons()
-        if (skipOnTextChanges) {
-            return
-        }
-        ChatStateManager.getInstance().onComposing(accountJid, contactJid, text)
-        stopTypingTimer = Timer()
-        stopTypingTimer?.schedule(
-            object : TimerTask() {
-                override fun run() {
-                    Application.getInstance()
-                        .runOnUiThread {
-                            ChatStateManager.getInstance().onPaused(accountJid, contactJid)
-                        }
-                }
-            },
-            STOP_TYPING_DELAY
-        )
     }
 
     private fun setUpIme() {
@@ -1060,9 +1056,9 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
     }
 
     private fun setUpInputViewButtons() {
-        var empty = inputEditText.text.toString().trim { it <= ' ' }.isEmpty()
+        var empty = inputEditText.text.toString().trim().isEmpty()
         if (empty) {
-            empty = bottomMessagesPanel != null
+            empty = bottomMessagesPanel == null
         }
         if (empty != isInputEmpty) {
             isInputEmpty = empty
@@ -1167,6 +1163,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
             activity?.tryToHideKeyboardIfNeed()
         }
         scrollDown()
+        setUpInputViewButtons()
     }
 
     fun updateContact() {
