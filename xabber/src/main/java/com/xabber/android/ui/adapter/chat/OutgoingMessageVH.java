@@ -97,7 +97,7 @@ public class OutgoingMessageVH extends MessageVH {
         layoutParams.setMargins(
                 dipToPx(0f, context),
                 dipToPx(haveForwarded ? 0f : 3f, context),
-                dipToPx(needTail ? 0f : 11f, context),
+                dipToPx(needTail ? 3f : 11f, context),
                 dipToPx(3f, context)
         );
         getMessageShadow().setLayoutParams(layoutParams);
