@@ -77,10 +77,11 @@ public class IncomingMessageVH  extends MessageVH {
             LinearLayout.LayoutParams forwardedParams = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
+            //todo there are problem with forward layouts
             forwardedParams.setMargins(
-                    dipToPx(12f, context),
-                    dipToPx(3f, context),
-                    dipToPx(1f, context),
+                    dipToPx(0f, context),
+                    dipToPx(0f, context),
+                    dipToPx(4f, context),
                     dipToPx(0f, context));
 
             getForwardedMessagesRV().setLayoutParams(forwardedParams);

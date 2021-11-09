@@ -58,9 +58,9 @@ public class OutgoingMessageVH extends MessageVH {
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
             forwardedParams.setMargins(
-                    dipToPx(1f, context),
-                    dipToPx(3f, context),
-                    dipToPx(12f, context),
+                    dipToPx(0f, context),
+                    dipToPx(0f, context),
+                    dipToPx(4f, context),
                     dipToPx(0f, context));
 
             getForwardedMessagesRV().setLayoutParams(forwardedParams);
