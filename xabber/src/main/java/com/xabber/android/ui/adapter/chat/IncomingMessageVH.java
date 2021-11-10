@@ -113,11 +113,11 @@ public class IncomingMessageVH  extends MessageVH {
 
             // setup BACKGROUND
         Drawable balloonDrawable = context.getResources().getDrawable(
-                haveForwarded ? (needTail ? R.drawable.fwd_in : R.drawable.fwd)
-                            : (needTail ? R.drawable.msg_in : R.drawable.msg));
+                (needTail ? R.drawable.msg_in : R.drawable.msg)
+        );
         Drawable shadowDrawable = context.getResources().getDrawable(
-                haveForwarded ? (needTail ? R.drawable.fwd_in_shadow : R.drawable.fwd_shadow)
-                            : (needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow));
+                (needTail ? R.drawable.msg_in_shadow : R.drawable.msg_shadow)
+        );
         shadowDrawable.setColorFilter(context.getResources().getColor(R.color.black),
                 PorterDuff.Mode.MULTIPLY);
         getMessageBalloon().setBackground(balloonDrawable);
