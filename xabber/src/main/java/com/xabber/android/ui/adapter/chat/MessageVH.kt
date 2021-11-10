@@ -28,6 +28,7 @@ import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager
 import com.xabber.android.data.log.LogManager
+import com.xabber.android.data.message.MessageStatus
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.adapter.FilesAdapter
@@ -214,6 +215,7 @@ open class MessageVH(
 
         if (messageRealmObject.text.isNullOrEmpty()
             && messageRealmObject.attachmentRealmObjects.none { it.isImage }
+            && messageRealmObject.messageStatus != MessageStatus.UPLOADING
         ) {
             messageStatusLayout.visibility = View.VISIBLE
         }  else {
