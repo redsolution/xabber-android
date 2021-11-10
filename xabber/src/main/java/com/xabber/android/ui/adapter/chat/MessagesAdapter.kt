@@ -61,7 +61,7 @@ class MessagesAdapter(
 
             changeSet.insertionRanges.map { range ->
                 val isAddedToBottom = range.startIndex + range.length == messageRealmObjects.size
-                notifyItemRangeInserted(range.startIndex - 1, range.length)
+                notifyItemRangeInserted(range.startIndex - 1, range.length + 1)
                 if (isAddedToBottom && (isListAlreadyScrolledToBottom || isLastMessageIsOutgoing)) {
                     llm.scrollToPosition(llm.itemCount - 1)
                 }
