@@ -66,6 +66,7 @@ open class ForwardedVH(
                     } else {
                         0.6f
                     }
+                visibility = View.VISIBLE
             }
         } else {
             forwardedMessagesRV.visibility = View.GONE

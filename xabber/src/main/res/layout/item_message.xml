@@ -34,6 +34,16 @@
             android:textSize="12sp"
             tools:text="nickname@example.com" />
 
+        <TextView
+            android:id="@+id/forwarded_count_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:visibility="gone"
+
+            tools:text="3 forwarded message"
+            android:textColor="@color/forwarded_background_color" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/forwardedRecyclerView"
             android:layout_width="wrap_content"

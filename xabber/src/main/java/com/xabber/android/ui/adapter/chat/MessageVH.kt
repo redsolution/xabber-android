@@ -511,7 +511,7 @@ open class MessageVH(
                     forwardedMessagesRV.apply {
                         layoutManager = LinearLayoutManager(itemView.context)
                         adapter = ForwardedAdapter(forwardedMessages, vhExtraData)
-                        val marginDecorator = object : RecyclerView.ItemDecoration() {
+                        forwardedMessagesRV.addItemDecoration(object : RecyclerView.ItemDecoration() {
                             override fun getItemOffsets(
                                 outRect: Rect,
                                 view: View,
@@ -523,8 +523,7 @@ open class MessageVH(
                                     outRect.top = 12
                                 }
                             }
-                        }
-                        forwardedMessagesRV.addItemDecoration(marginDecorator)
+                        })
                         visibility = View.VISIBLE
                     }
                 }

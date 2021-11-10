@@ -41,7 +41,7 @@ class ForwardedAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForwardedVH {
         return ForwardedVH(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.item_message_forwarded, parent, false
+                R.layout.item_message, parent, false
             ),
             this, this, listener, appearanceStyle
         )
