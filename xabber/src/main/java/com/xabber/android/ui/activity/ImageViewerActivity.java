@@ -268,8 +268,8 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     }
 
     private void downloadImage() {
-        int position = viewPager.getCurrentItem();
-        AttachmentRealmObject attachmentRealmObject = imageAttachmentRealmObjects.get(position);
+        AttachmentRealmObject attachmentRealmObject =
+                imageAttachmentRealmObjects.get(viewPager.getCurrentItem());
         DownloadManager.getInstance().downloadFile(attachmentRealmObject, accountJid, this);
     }
 

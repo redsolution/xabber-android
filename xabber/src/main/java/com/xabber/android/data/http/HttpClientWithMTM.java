@@ -19,22 +19,22 @@ public class HttpClientWithMTM {
     public static OkHttpClient getClient(AccountJid accountJid) {
 
         // create ssl verification factory
-        SSLSocketFactory sslSocketFactory = null;
-        MemorizingTrustManager mtm = CertificateManager.getInstance().getNewFileUploadManager(accountJid);
-
-        final SSLContext sslContext;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
-            sslSocketFactory = sslContext.getSocketFactory();
-        } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            return null;
-        }
+//        SSLSocketFactory sslSocketFactory;
+//        MemorizingTrustManager mtm = CertificateManager.getInstance().getNewFileUploadManager(accountJid);
+//
+//        final SSLContext sslContext;
+//        try {
+//            sslContext = SSLContext.getInstance("SSL");
+//            sslContext.init(null, new X509TrustManager[]{mtm}, new java.security.SecureRandom());
+//            sslSocketFactory = sslContext.getSocketFactory();
+//        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+//            return null;
+//        }
 
         // build http client
         final OkHttpClient client = new OkHttpClient().newBuilder()
-                .sslSocketFactory(sslSocketFactory, mtm)
-                .hostnameVerifier(mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()))
+//                .sslSocketFactory(sslSocketFactory, mtm)
+//                .hostnameVerifier(mtm.wrapHostnameVerifier(new org.apache.http.conn.ssl.StrictHostnameVerifier()))
                 .writeTimeout(5, TimeUnit.MINUTES)
                 .connectTimeout(5, TimeUnit.MINUTES)
                 .readTimeout(5, TimeUnit.MINUTES)
