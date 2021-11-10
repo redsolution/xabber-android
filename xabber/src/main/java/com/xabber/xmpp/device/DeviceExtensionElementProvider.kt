@@ -11,7 +11,7 @@ class DeviceExtensionElementProvider: ExtensionElementProvider<DeviceExtensionEl
                     if (DeviceExtensionElement.ELEMENT_NAME == parser.name) {
                         return DeviceExtensionElement(
                             parser.getAttributeValue(
-                                DeviceExtensionElement.NAMESPACE,
+                                null,
                                 DeviceExtensionElement.UID_ATTRIBUTE
                             )
                         )
