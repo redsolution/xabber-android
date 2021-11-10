@@ -531,9 +531,9 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             case R.id.drawer_header_action_xabber_account:
                 onXabberAccountClick();
                 break;
-            case R.id.drawer_action_patreon:
-                startActivity(PatreonAppealActivity.createIntent(this));
-                break;
+//            case R.id.drawer_action_patreon:
+//                startActivity(PatreonAppealActivity.createIntent(this));
+//                break;
         }
     }
 

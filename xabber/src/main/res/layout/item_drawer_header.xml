@@ -118,7 +118,7 @@
 
     </FrameLayout>
 
-    <include layout="@layout/item_patreon_campaign"
-        android:id="@+id/drawer_action_patreon"/>
+<!--    <include layout="@layout/item_patreon_campaign"-->
+<!--        android:id="@+id/drawer_action_patreon"/>-->
 
 </LinearLayout>
