@@ -44,6 +44,8 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import javax.net.ssl.SSLHandshakeException;
+
 
 public final class UserAvatarManager extends Manager {
 
@@ -194,6 +196,8 @@ public final class UserAvatarManager extends Manager {
 
             return  baos.toByteArray();
 
+        } catch (SSLHandshakeException e) {
+            //ignore
         } catch (Exception e) {
             LogManager.exception(LOG_TAG, e);
         }
