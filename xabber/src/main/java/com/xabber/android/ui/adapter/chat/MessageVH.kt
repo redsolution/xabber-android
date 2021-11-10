@@ -1,6 +1,7 @@
 package com.xabber.android.ui.adapter.chat
 
 import android.content.res.ColorStateList
+import android.graphics.Rect
 import android.os.Build
 import android.text.Html
 import android.text.SpannableStringBuilder
@@ -510,6 +511,20 @@ open class MessageVH(
                     forwardedMessagesRV.apply {
                         layoutManager = LinearLayoutManager(itemView.context)
                         adapter = ForwardedAdapter(forwardedMessages, vhExtraData)
+                        val marginDecorator = object : RecyclerView.ItemDecoration() {
+                            override fun getItemOffsets(
+                                outRect: Rect,
+                                view: View,
+                                parent: RecyclerView,
+                                state: RecyclerView.State
+                            ) {
+                                super.getItemOffsets(outRect, view, parent, state)
+                                if (parent.getChildLayoutPosition(view) != 0) {
+                                    outRect.top = 12
+                                }
+                            }
+                        }
+                        forwardedMessagesRV.addItemDecoration(marginDecorator)
                         visibility = View.VISIBLE
                     }
                 }
