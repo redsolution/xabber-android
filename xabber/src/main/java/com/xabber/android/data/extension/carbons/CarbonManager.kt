@@ -31,10 +31,6 @@ object CarbonManager : OnAuthenticatedListener {
         val carbonManager = SmackCarbonManager.getInstanceFor(connectionItem.connection)
         try {
             if (connectionItem.connection.user != null && carbonManager.isSupportedByServer) {
-                LogManager.d(
-                    this,
-                    "Smack reports that carbons are " + if (carbonManager.carbonsEnabled) "enabled" else "disabled"
-                )
                 changeCarbonsStateAsync(carbonManager, connectionItem.account)
             }
         } catch (e: NoResponseException) {
@@ -68,9 +64,6 @@ object CarbonManager : OnAuthenticatedListener {
             carbonManager.removeCarbonCopyReceivedListener(it)
         }
     }
-
-    fun isCarbonsEnabledForConnection(connection: ConnectionItem) =
-        SmackCarbonManager.getInstanceFor(connection.connection).carbonsEnabled
 
     /**
      * Marks the message as non-carbon-copied
