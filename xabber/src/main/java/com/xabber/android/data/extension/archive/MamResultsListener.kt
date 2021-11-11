@@ -32,10 +32,11 @@ class RegularMamResultsHandler(
             val chat = chatManager.getChat(accountJid, contactJid)
             if (chat is GroupChat
                 && packet.from.asBareJid().toString() == accountJid.bareJid.toString()
+                && listOfIgnoredGroups != null
             ) {
                 // If we received group message from local archive
                 // Don't save this message and request it from remote archive
-                listOfIgnoredGroups?.add(chat)
+                listOfIgnoredGroups.add(chat)
             } else if (forwardedElement != null && forwardedElement is Message) {
                 messagesHandler.handleMessageStanza(
                     accountJid,
