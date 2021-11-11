@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="email_hint">Email</string>
+    <string name="forgot_pass">NAKALIMUTAN ANG PASSWORD?</string>
+    <string name="settings_delete_success">Mga settings ay natanggal</string>
+    <string name="toast_no_internet">Walang koneksyon sa internet</string>
+    <string name="progress_message">Mangyaring maghintay</string>
+    <string name="progress_title_quit">Itigil</string>
+    <string name="progress_title_login">Mag Login</string>
+    <string name="progress_title_signup">Rehistrasyon</string>
+    <string name="progress_title_resend">Pinapadala muli ang email</string>
+    <string name="progress_title_delete_settings">Tanggalin ang mga settings</string>
+    <string name="title_xabber_account">Xabber Akawnt</string>
+</resources>

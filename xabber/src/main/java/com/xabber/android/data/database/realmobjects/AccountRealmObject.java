@@ -7,7 +7,7 @@ import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.mam.LoadHistorySettings;
+import com.xabber.android.data.extension.archive.LoadHistorySettings;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -23,9 +23,9 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Date;
 import java.util.UUID;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
@@ -42,12 +42,11 @@ public class AccountRealmObject extends RealmObject {
         public static final String MAM_DEFAULT_BEHAVIOR = "mamDefaultBehavior";
         public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";
         public static final String SUCCESSFUL_CONNECTION_HAPPENED = "successfulConnectionHappened";
-        public static final String PUSH_NODE = "pushNode";
-        public static final String PUSH_SERVICE_JID = "pushServiceJid";
-        public static final String PUSH_ENABLED = "pushEnabled";
-        public static final String PUSH_WAS_ENABLED = "pushWasEnabled";
         public static final String XTOKEN = "xToken";
         public static final String UPLOAD_SERVER = "uploadServer";
+        public static final String GROUP_SERVERS = "groupServers";
+        public static final String CUSTOM_GROUP_SERVERS = "customGroupServers";
+        public static final String RETRACT_VERSION = "retractVersion";
     }
 
     @PrimaryKey
@@ -59,6 +58,8 @@ public class AccountRealmObject extends RealmObject {
 
     private String serverName;
     private String uploadServer;
+    private RealmList<String> groupServers;
+    private RealmList<String> customGroupServers = new RealmList<>();
     private String userName;
     private String resource;
 
@@ -95,23 +96,24 @@ public class AccountRealmObject extends RealmObject {
     private byte[] publicKeyBytes;
     private byte[] privateKeyBytes;
 
-    private long lastSync;
     private String archiveMode;
 
     private boolean clearHistoryOnExit;
     private String mamDefaultBehavior;
     private String loadHistorySettings;
+    private String retractVersion;
+
+    /**
+     * First history (cold boot) loading timestamp
+     * Used to determine of read markers for messages from archive
+     */
+    private long startHistoryTimestamp;
 
     /**
      * Flag indication that successful connection and authorization
      * happen at least ones with current connection settings
      */
     private boolean successfulConnectionHappened;
-
-    private String pushNode;
-    private String pushServiceJid;
-    private boolean pushEnabled;
-    private boolean pushWasEnabled;
 
     public AccountRealmObject(String id) {
         this.id = id;
@@ -342,9 +344,7 @@ public class AccountRealmObject extends RealmObject {
     }
 
     public KeyPair getKeyPair() {
-        if (this.privateKeyBytes == null || this.publicKeyBytes == null) {
-            return null;
-        }
+        if (this.privateKeyBytes == null || this.publicKeyBytes == null) return null;
         X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKeyBytes);
         PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
         PublicKey publicKey;
@@ -374,18 +374,6 @@ public class AccountRealmObject extends RealmObject {
         }
     }
 
-    public Date getLastSync() {
-        return new Date(this.lastSync);
-    }
-
-    public void setLastSync(Date lastSync) {
-        if (lastSync == null) {
-            this.lastSync = 0;
-        } else {
-            this.lastSync = lastSync.getTime();
-        }
-    }
-
     public ArchiveMode getArchiveMode() {
         return ArchiveMode.valueOf(this.archiveMode);
     }
@@ -404,10 +392,7 @@ public class AccountRealmObject extends RealmObject {
 
     @Nullable
     public MamPrefsIQ.DefaultBehavior getMamDefaultBehavior() {
-        if (mamDefaultBehavior == null) {
-            return null;
-        }
-
+        if (mamDefaultBehavior == null) return null;
         return MamPrefsIQ.DefaultBehavior.valueOf(mamDefaultBehavior);
     }
 
@@ -417,9 +402,7 @@ public class AccountRealmObject extends RealmObject {
 
     @Nullable
     public LoadHistorySettings getLoadHistorySettings() {
-        if (loadHistorySettings == null) {
-            return null;
-        }
+        if (loadHistorySettings == null) return null;
 
         return LoadHistorySettings.valueOf(loadHistorySettings);
     }
@@ -436,38 +419,6 @@ public class AccountRealmObject extends RealmObject {
         this.successfulConnectionHappened = successfulConnectionHappened;
     }
 
-    public String getPushNode() {
-        return pushNode;
-    }
-
-    public void setPushNode(String pushNode) {
-        this.pushNode = pushNode;
-    }
-
-    public String getPushServiceJid() {
-        return pushServiceJid;
-    }
-
-    public void setPushServiceJid(String pushServiceJid) {
-        this.pushServiceJid = pushServiceJid;
-    }
-
-    public boolean isPushEnabled() {
-        return pushEnabled;
-    }
-
-    public void setPushEnabled(boolean pushEnabled) {
-        this.pushEnabled = pushEnabled;
-    }
-
-    public boolean isPushWasEnabled() {
-        return pushWasEnabled;
-    }
-
-    public void setPushWasEnabled(boolean pushWasEnabled) {
-        this.pushWasEnabled = pushWasEnabled;
-    }
-
     public XTokenRealmObject getXToken() {
         return xToken;
     }
@@ -477,6 +428,10 @@ public class AccountRealmObject extends RealmObject {
     }
 
     public void setUploadServer(String uploadServer) { this.uploadServer = uploadServer; }
+
+    public void setUploadServer(Jid server) {
+        this.uploadServer = server.toString();
+    }
 
     public AccountJid getAccountJid(){
         if (userName == null) return null;
@@ -498,7 +453,23 @@ public class AccountRealmObject extends RealmObject {
         }
     }
 
-    public void setUploadServer(Jid server) {
-        this.uploadServer = server.toString();
+    public RealmList<String> getGroupServers() { return groupServers; }
+    public void setGroupServers(RealmList<String> groupServers) { this.groupServers = groupServers; }
+
+    public RealmList<String> getCustomGroupServers() { return customGroupServers; }
+    public void addCustomGroupServer(String customGroupServer) {
+        customGroupServers.add(customGroupServer);
     }
+    public void removeCustomGroupServer(String customGroupServerToRemove){
+        customGroupServers.remove(customGroupServerToRemove);
+    }
+
+    public long getStartHistoryTimestamp() { return startHistoryTimestamp; }
+    public void setStartHistoryTimestamp(long startHistoryTimestamp) {
+        this.startHistoryTimestamp = startHistoryTimestamp;
+    }
+
+    public String getRetractVersion() { return retractVersion; }
+    public void setRetractVersion(String retractVersion) { this.retractVersion = retractVersion; }
+
 }

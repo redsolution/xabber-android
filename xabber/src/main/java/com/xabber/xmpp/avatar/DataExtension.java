@@ -14,11 +14,9 @@ public class DataExtension implements ExtensionElement {
     private final byte[] data;
     private String photoHash;
 
-
     public DataExtension(byte[] data) {
         this.data = data;
     }
-
 
     public DataExtension(String encodedString) {
         this.photoHash = StringUtils.requireNotNullOrEmpty(encodedString,
@@ -26,11 +24,9 @@ public class DataExtension implements ExtensionElement {
         this.data = Base64.decode(encodedString);
     }
 
-
     public byte[] getData() {
         return data.clone();
     }
-
 
     public String getDataAsString() {
         if (photoHash == null) {
@@ -57,4 +53,5 @@ public class DataExtension implements ExtensionElement {
         xml.closeElement(this);
         return xml;
     }
+
 }

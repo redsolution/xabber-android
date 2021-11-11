@@ -14,12 +14,14 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.AccountInfoEditFragment;
+
+import org.jetbrains.annotations.NotNull;
 
 public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.OnMenuItemClickListener, AccountInfoEditFragment.Listener {
 
@@ -30,17 +32,15 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     private Toolbar toolbar;
 
     public static Intent createIntent(Context context, AccountJid account, String vCard) {
-        Intent intent = new EntityIntentBuilder(context, AccountInfoEditActivity.class).setAccount(account).build();
+        Intent intent = createIntent(context, account);
         intent.putExtra(ARG_VCARD, vCard);
         return intent;
     }
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new EntityIntentBuilder(context, AccountInfoEditActivity.class).setAccount(account).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
+        return IntentHelpersKt.createAccountIntent(
+                context, AccountInfoEditActivity.class, account
+        );
     }
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +48,9 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
 
         setContentView(R.layout.activity_with_toolbar_and_container);
 
-        Intent intent = getIntent();
-        AccountJid account = getAccount(intent);
-        String vCard = intent.getStringExtra(ARG_VCARD);
+        AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
 
-        if (AccountManager.getInstance().getAccount(account) == null) {
+        if (AccountManager.INSTANCE.getAccount(account) == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             setResult(RESULT_CANCELED);
             finish();
@@ -90,7 +88,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(ARGUMENT_SAVE_BUTTON_ENABLED, toolbar.getMenu().findItem(R.id.action_save).isEnabled());
     }
@@ -109,13 +107,11 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                ((AccountInfoEditFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).saveVCard();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_save) {
+            ((AccountInfoEditFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).saveVCard();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -139,10 +135,6 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     @Override
     public void toggleSave(boolean value) {
         enableSave(value);
-    }
-
-    private void enableSave() {
-        enableSave(!toolbar.getMenu().findItem(R.id.action_save).isEnabled());
     }
 
     private void enableSave(boolean enable) {

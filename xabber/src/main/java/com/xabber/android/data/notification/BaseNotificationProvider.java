@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -14,14 +14,14 @@
  */
 package com.xabber.android.data.notification;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import android.media.AudioManager;
+import android.net.Uri;
 
 import com.xabber.android.data.SettingsManager;
 
-import android.media.AudioManager;
-import android.net.Uri;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Base provider for the notifications to be displayed.
@@ -35,11 +35,11 @@ public class BaseNotificationProvider<T extends NotificationItem> implements
     protected final Collection<T> items;
     private final int icon;
     private boolean canClearNotifications;
-    private String channelID;
+    private final String channelID;
 
     public BaseNotificationProvider(int icon) {
         super();
-        this.items = new ArrayList<T>();
+        this.items = new ArrayList<>();
         this.icon = icon;
         this.channelID = NotificationChannelUtils.EVENTS_CHANNEL_ID;
         canClearNotifications = true;
@@ -47,7 +47,7 @@ public class BaseNotificationProvider<T extends NotificationItem> implements
 
     public BaseNotificationProvider(int icon, String channelID) {
         super();
-        this.items = new ArrayList<T>();
+        this.items = new ArrayList<>();
         this.icon = icon;
         this.channelID = channelID;
         canClearNotifications = true;
@@ -56,7 +56,6 @@ public class BaseNotificationProvider<T extends NotificationItem> implements
     /**
      * Adds new or update existed notification item and update notification bar.
      *
-     * @param item
      * @param notify <code>null</code> if notification ticker should be shown only
      *               if such notification does exists yet.
      */
@@ -71,9 +70,6 @@ public class BaseNotificationProvider<T extends NotificationItem> implements
 
     /**
      * Removes notification and update notification bar.
-     *
-     * @param item
-     * @return
      */
     public boolean remove(T item) {
         boolean result = items.remove(item);

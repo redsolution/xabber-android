@@ -24,15 +24,13 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class BlockContactDialog extends DialogFragment implements BlockingManager.BlockContactListener, View.OnClickListener {
 
@@ -69,7 +67,7 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         account = args.getParcelable(ARGUMENT_ACCOUNT);
         user = args.getParcelable(ARGUMENT_USER);
         String contactName = RosterManager.getInstance().getBestContact(account, user).getName();
-        String accountName = AccountManager.getInstance().getVerboseName(account);
+        String accountName = AccountManager.INSTANCE.getVerboseName(account);
         int colorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(account);
         int buttonColor = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
@@ -114,7 +112,9 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
         if (andDelete){
             deleteContact();
         }
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onAction();
+        }
     }
 
     @Override
@@ -125,8 +125,8 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
     private void discardSubscription() {
         try {
             // discard subscription
-            PresenceManager.getInstance().discardSubscription(account, user);
-            PresenceManager.getInstance().unsubscribeFromPresence(account, user);
+            PresenceManager.INSTANCE.discardSubscription(account, user);
+            PresenceManager.INSTANCE.unsubscribeFromPresence(account, user);
         } catch (NetworkException e) {
             Application.getInstance().onError(R.string.CONNECTION_FAILED);
         }
@@ -143,9 +143,9 @@ public class BlockContactDialog extends DialogFragment implements BlockingManage
 
         // remove roster contact
         RosterManager.getInstance().removeContact(account, user);
-        if (chat != null) {
-            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted, false);
-        }
+//        if (chat != null) {
+//            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted);
+//        }//todo
 
         if (getActivity() instanceof ContactActivity) {
             startActivity(MainActivity.createIntent(getActivity()));

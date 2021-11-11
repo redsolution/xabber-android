@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -16,49 +16,45 @@ package com.xabber.android.data.message;
 
 import android.net.Uri;
 import android.os.Looper;
-import android.util.Pair;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
-import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.captcha.Captcha;
 import com.xabber.android.data.extension.captcha.CaptchaManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
+import com.xabber.android.data.extension.chat_markers.ChatMarkersElements;
+import com.xabber.android.data.extension.delivery.TimeElement;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.references.ReferencesManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
-import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.xmpp.sid.UniqStanzaHelper;
+import com.xabber.android.ui.OnChatUpdatedListener;
+import com.xabber.android.ui.OnNewMessageListener;
+import com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElement;
 
-import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.packet.ExtensionElement;
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.carbons.packet.CarbonExtension;
-import org.jivesoftware.smackx.muc.packet.MUCUser;
 import org.jxmpp.jid.Jid;
+import org.jxmpp.util.XmppDateTime;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -74,75 +70,62 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class MessageManager implements OnLoadListener, OnPacketListener {
+public class MessageManager implements OnPacketListener {
 
     private static MessageManager instance;
     private static final String LOG_TAG = MessageManager.class.getSimpleName();
 
     public static MessageManager getInstance() {
-        if (instance == null) {
-            instance = new MessageManager();
-        }
+        if (instance == null) instance = new MessageManager();
 
         return instance;
     }
 
-    @Override
-    public void onLoad() {
-        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-
-        RealmResults<MessageRealmObject> messagesToSend = realm.where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.SENT, false)
-                .findAll();
-
-        for (MessageRealmObject messageRealmObject : messagesToSend) {
-            AccountJid account = messageRealmObject.getAccount();
-            ContactJid user = messageRealmObject.getUser();
-
-            if (account != null && user != null) {
-                if (ChatManager.getInstance().getChat(account, user) == null) {
-                    ChatManager.getInstance().getOrCreateChat(account, user);
-                }
-            }
-        }
-
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-    }
-
     /**
      * Sends message. Creates and registers new chat if necessary.
-     *
-     * @param account
-     * @param user
-     * @param text
      */
     public void sendMessage(AccountJid account, ContactJid user, String text) {
         sendMessage(account, user, text, null);
     }
 
     public void sendMessage(AccountJid account, ContactJid user, String text, String markupText) {
-        EventBus.getDefault().post(new NewMessageEvent());
-
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
-        sendMessage(text, markupText, chat);
+        sendMessage(text, markupText, ChatManager.getInstance().getChat(account, user));
 
         // stop grace period
-        AccountManager.getInstance().stopGracePeriod(account);
+        AccountManager.INSTANCE.getAccount(account).stopGracePeriod();
+
+        for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+            listener.onAction();
+        }
     }
 
     private void sendMessage(final String text, final String markupText, final AbstractChat chat) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+
         realm.executeTransactionAsync(realm1 -> {
-            MessageRealmObject newMessageRealmObject = chat.createNewMessageItem(text);
-            if (markupText != null) newMessageRealmObject.setMarkupText(markupText);
-            realm1.copyToRealm(newMessageRealmObject);
-            if (chat.canSendMessage())
-                chat.sendMessages();
+            MessageRealmObject message = MessageRealmObject.createMessageRealmObjectWithOriginId(
+                    chat.getAccount(), chat.getContactJid(), UUID.randomUUID().toString()
+            );
+            message.setText(text.replaceAll("\0", ""));
+            message.setIncoming(false);
+            message.setForwarded(false);
+            message.setGroupchatSystem(false);
+            message.setTimestamp(new Date().getTime());
+            message.setMessageStatus(MessageStatus.NOT_SENT);
+            if (markupText != null) message.setMarkupText(markupText);
+
+            realm1.copyToRealm(message);
+
+            chat.sendMessages();
         });
+
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+
         // mark incoming messages as read
         chat.markAsReadAll(true);
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onAction();
+        }
     }
 
     public String createFileMessage(AccountJid account, ContactJid user, List<File> files) {
@@ -150,19 +133,19 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     }
 
     public String createFileMessageWithForwards(AccountJid account, ContactJid user, List<File> files, List<String> forwardIds) {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(files, null, null, forwardIds);
     }
 
     public String createVoiceMessageWithForwards(AccountJid account, ContactJid user, List<File> files, List<String> forwardIds) {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(files, null, "voice", forwardIds);
     }
 
     public String createFileMessageFromUrisWithForwards(AccountJid account, ContactJid user, List<Uri> uris, List<String> forwardIds) {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         chat.openChat();
         return chat.newFileMessageWithFwr(null, uris, null, forwardIds);
     }
@@ -170,15 +153,14 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     public void updateFileMessage(AccountJid account, ContactJid user, final String messageId,
                                   final HashMap<String, String> urls, final List<String> notUploadedFilesUrls) {
         final AbstractChat chat = ChatManager.getInstance().getChat(account, user);
-        if (chat == null) {
-            return;
-        }
+        if (chat == null) return;
+
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
         realm.executeTransaction(realm1 -> {
             MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                     .findFirst();
 
             if (messageRealmObject != null) {
@@ -199,9 +181,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 }
 
                 messageRealmObject.setText("");
-                messageRealmObject.setSent(false);
-                messageRealmObject.setInProgress(false);
-                messageRealmObject.setError(false);
+                messageRealmObject.setMessageStatus(MessageStatus.NOT_SENT);
                 messageRealmObject.setErrorDescription("");
             }
         });
@@ -215,7 +195,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.executeTransaction(realm1 ->  {
             MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                     .findFirst();
 
             if (messageRealmObject != null) {
@@ -235,8 +215,7 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                     attachmentRealmObject.setDuration((long) 0);
 
                     if (attachmentRealmObject.isImage()) {
-                        HttpFileUploadManager.ImageSize imageSize =
-                                HttpFileUploadManager.getImageSizes(file.getPath());
+                        HttpFileUploadManager.ImageSize imageSize = HttpFileUploadManager.getImageSizes(file.getPath());
                         attachmentRealmObject.setImageHeight(imageSize.getHeight());
                         attachmentRealmObject.setImageWidth(imageSize.getWidth());
                     }
@@ -249,76 +228,54 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
     }
 
     public void updateMessageWithError(final String messageId, final String errorDescription) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransactionAsync(realm1 -> {
-                updateMessageWithError(realm1, messageId, errorDescription);
-            });
-        } else {
-            Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-            realm.executeTransaction(realm1 ->  {
-                updateMessageWithError(realm1, messageId, errorDescription);
-            });
-            realm.close();
-        }
-    }
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        realm.executeTransactionAsync(realm1 -> {
+            MessageRealmObject messageRealmObject = realm1.where(MessageRealmObject.class)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
+                    .findFirst();
 
-    private void updateMessageWithError(Realm realm, final String messageId, final String errorDescription) {
-        MessageRealmObject messageRealmObject = realm.where(MessageRealmObject.class)
-                .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
-                .findFirst();
+            if (messageRealmObject != null) {
+                messageRealmObject.setMessageStatus(MessageStatus.ERROR);
+                messageRealmObject.setErrorDescription(errorDescription);
+            }
+        });
 
-        if (messageRealmObject != null) {
-            messageRealmObject.setError(true);
-            messageRealmObject.setErrorDescription(errorDescription);
-            messageRealmObject.setInProgress(false);
-        }
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
     }
 
     public void removeErrorAndResendMessage(AccountJid account, ContactJid user, final String messageId) {
         AbstractChat abstractChat = ChatManager.getInstance().getChat(account, user);
 
-        if (abstractChat == null) {
-            return;
-        }
+        if (abstractChat == null) return;
 
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.executeTransaction(realm1 -> {
             MessageRealmObject messageRealmObject = realm.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageId)
+                    .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                     .findFirst();
 
             if (messageRealmObject != null) {
-                messageRealmObject.setError(false);
-                messageRealmObject.setSent(false);
+                messageRealmObject.setMessageStatus(MessageStatus.NOT_SENT);
                 messageRealmObject.setErrorDescription("");
             }
         });
 
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+
         abstractChat.sendMessages();
     }
 
     /**
      * Removes all messages from chat.
-     *
-     * @param account
-     * @param user
      */
     public void clearHistory(final AccountJid account, final ContactJid user) {
-        final long startTime = System.currentTimeMillis();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
-        realm.executeTransactionAsync(realm1 -> {
-            realm1.where(MessageRealmObject.class)
-                    .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
-                    .equalTo(MessageRealmObject.Fields.USER, user.toString())
-                    .findAll().deleteAllFromRealm();
-            LogManager.d("REALM", Thread.currentThread().getName()
-                    + " clear history: " + (System.currentTimeMillis() - startTime));
-        });
+        realm.executeTransactionAsync(realm1 -> realm1.where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
+                .equalTo(MessageRealmObject.Fields.USER, user.toString())
+                .findAll().deleteAllFromRealm());
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-
     }
 
     /**
@@ -333,13 +290,15 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 realm.executeTransaction(realm1 -> {
                     MessageRealmObject messageRealmObject = realm1
                             .where(MessageRealmObject.class)
-                            .equalTo(MessageRealmObject.Fields.UNIQUE_ID, messageItemId)
+                            .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageItemId)
                             .findFirst();
                     if (messageRealmObject != null) messageRealmObject.deleteFromRealm();
                 });
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
-            } finally { if (realm != null) realm.close(); }
+            } finally {
+                if (realm != null) realm.close();
+            }
         });
     }
 
@@ -355,10 +314,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
                     RealmResults<MessageRealmObject> items = realm1.where(MessageRealmObject.class)
-                            .in(MessageRealmObject.Fields.UNIQUE_ID, ids).findAll();
+                            .in(MessageRealmObject.Fields.PRIMARY_KEY, ids).findAll();
 
-                    if (items != null && !items.isEmpty())
-                        items.deleteAllFromRealm();
+                    if (items != null && !items.isEmpty()) items.deleteAllFromRealm();
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
@@ -366,114 +324,106 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         });
     }
 
-
     /**
      * Called on action settings change.
      */
-    public void onSettingsChanged() {
-
-    }
+    public void onSettingsChanged() {}
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza stanza) {
-        if (stanza.getFrom() == null) {
-            return;
-        }
+        if (stanza.getFrom() == null) return;
+
         AccountJid account = connection.getAccount();
 
-        final ContactJid user;
+        final ContactJid contactJid;
         try {
-            user = ContactJid.from(stanza.getFrom()).getBareUserJid();
-        } catch (ContactJid.UserJidCreateException e) {
+            contactJid = ContactJid.from(stanza.getFrom()).getBareUserJid();
+        } catch (ContactJid.ContactJidCreateException e) {
             return;
         }
         boolean processed = false;
 
-        try {
-            List<AbstractChat> chatsCopy = new ArrayList<>(ChatManager.getInstance().getChats());
-            for (AbstractChat chat : chatsCopy) {
-                if (chat.onPacket(user, stanza, false)) {
-                    processed = true;
-                    break;
-                }
+        if (stanza.hasExtension(IncomingInviteExtensionElement.ELEMENT, IncomingInviteExtensionElement.NAMESPACE)
+                && !account.getBareJid().toString().equals(contactJid.getBareJid().toString())) {
+            IncomingInviteExtensionElement inviteElement = stanza.getExtension(IncomingInviteExtensionElement.ELEMENT,
+                    IncomingInviteExtensionElement.NAMESPACE);
+            long timestamp = 0;
+            if (stanza.hasExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE)) {
+                TimeElement timeElement = stanza.getExtension(TimeElement.ELEMENT, TimeElement.NAMESPACE);
+                try{
+                    timestamp = XmppDateTime.parseDate(timeElement.getTimeStamp()).getTime();
+                } catch (Exception ignored) { }
             }
-        } catch (Exception e) { LogManager.exception(LOG_TAG, e); }
+            GroupInviteManager.INSTANCE.processIncomingInvite(inviteElement, account, contactJid, timestamp);
+            return;
+        }
 
         if (!processed && stanza instanceof Message) {
             final Message message = (Message) stanza;
             final String body = message.getBody();
-            if (body == null) {
-                return;
-            }
+            if (body == null) return;
 
             //check for spam
             if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
-                    && RosterManager.getInstance().getRosterContact(account, user) == null ) {
+                    && RosterManager.getInstance().getRosterContact(account, contactJid) == null ) {
 
                 String thread = ((Message) stanza).getThread();
 
                 if (SettingsManager.spamFilterMode() == SettingsManager.SpamFilterMode.authCaptcha) {
                     // check if this message is captcha-answer
-                    Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, user);
+                    Captcha captcha = CaptchaManager.getInstance().getCaptcha(account, contactJid);
                     if (captcha != null) {
                         // attempt limit overhead
                         if (captcha.getAttemptCount() > CaptchaManager.CAPTCHA_MAX_ATTEMPT_COUNT) {
                             // remove this captcha
-                            CaptchaManager.getInstance().removeCaptcha(account, user);
+                            CaptchaManager.getInstance().removeCaptcha(account, contactJid);
                             // discard subscription
                             try {
-                                PresenceManager.getInstance().discardSubscription(account, user);
+                                PresenceManager.INSTANCE.discardSubscription(account, contactJid);
                             } catch (NetworkException e) {
-                                e.printStackTrace();
+                                LogManager.exception(getClass().getSimpleName(), e);
                             }
-                            sendMessageWithoutChat(user.getJid(), thread, account,
+                            sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_many_attempts));
                             return;
                         }
                         if (body.equals(captcha.getAnswer())) {
                             // captcha solved successfully
                             // remove this captcha
-                            CaptchaManager.getInstance().removeCaptcha(account, user);
+                            CaptchaManager.getInstance().removeCaptcha(account, contactJid);
 
                             // show auth
-                            PresenceManager.getInstance().handleSubscriptionRequest(account, user);
-                            sendMessageWithoutChat(user.getJid(), thread, account,
+                            PresenceManager.INSTANCE.handleSubscriptionRequest(account, contactJid);
+                            sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_correct));
-                            return;
                         } else {
                             // captcha solved unsuccessfully
                             // increment attempt count
                             captcha.setAttemptCount(captcha.getAttemptCount() + 1);
                             // send warning-message
-                            sendMessageWithoutChat(user.getJid(), thread, account,
+                            sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                     Application.getInstance().getResources().getString(R.string.spam_filter_captcha_incorrect));
-                            return;
                         }
                     } else {
                         // no captcha exist and user not from roster
-                        sendMessageWithoutChat(user.getJid(), thread, account,
+                        sendMessageWithoutChat(contactJid.getJid(), thread, account,
                                 Application.getInstance().getResources().getString(R.string.spam_filter_limit_message));
                         // and skip received message as spam
-                        return;
                     }
 
                 } else {
                     // if message from not-roster user
                     // send a warning message to sender
-                    sendMessageWithoutChat(user.getJid(), thread, account,
+                    sendMessageWithoutChat(contactJid.getJid(), thread, account,
                             Application.getInstance().getResources().getString(R.string.spam_filter_limit_message));
                     // and skip received message as spam
-                    return;
                 }
+                return;
             }
-
-            for (ExtensionElement packetExtension : message.getExtensions()) {
-                if (packetExtension instanceof MUCUser) {
-                    return;
-                }
-            }
-
-            ChatManager.getInstance().getOrCreateChat(account, user).onPacket(user, stanza, false);
+            if (account.getBareJid().toString().contains(contactJid.getBareJid().toString())) return;
+            MessageHandler.INSTANCE.handleMessageStanza(
+                    account, contactJid, (Message) stanza, null, true
+            );
         }
     }
 
@@ -486,123 +436,61 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
         message.setBody(text);
         message.setThread(threadId);
         // send auto-generated messages without carbons
-        CarbonManager.getInstance().setMessageToIgnoreCarbons(message);
+        CarbonManager.INSTANCE.setMessageToIgnoreCarbons(message);
         LogManager.d(LOG_TAG, "Message sent without chat. Invoke CarbonManager setMessageToIgnoreCarbons");
         try {
-            StanzaSender.sendStanza(account, message);
-        } catch (NetworkException e) {
-            e.printStackTrace();
+            AccountManager.INSTANCE.getAccount(account).getConnection().sendStanza(message);
+        } catch (InterruptedException | SmackException.NotConnectedException e) {
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 
     public void processCarbonsMessage(AccountJid account, final Message message, CarbonExtension.Direction direction) {
-        LogManager.d(LOG_TAG, "invoked processCarbonsMessage");
+        ContactJid companion = null;
         if (direction == CarbonExtension.Direction.sent) {
-            ContactJid companion;
             try {
                 companion = ContactJid.from(message.getTo()).getBareUserJid();
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
                 return;
             }
 
-            final String body = message.getBody();
-            if (body == null) {
-                LogManager.d(LOG_TAG, "... but message body is null!");
+            //check for spam
+            if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
+                    && RosterManager.getInstance().getRosterContact(account, companion) == null ) {
+                // just ignore carbons from not-authorized user
                 return;
             }
 
-            final AbstractChat finalChat = ChatManager.getInstance().getOrCreateChat(account, companion);
-
-            String text = body;
-            String uid = UUID.randomUUID().toString();
-            RealmList<ForwardIdRealmObject> forwardIdRealmObjects = finalChat.parseForwardedMessage(true, message, uid);
-            String originalStanza = message.toXML().toString();
-            String originalFrom = message.getFrom().toString();
-
-            // forward comment (to support previous forwarded xep)
-            String forwardComment = ForwardManager.parseForwardComment(message);
-            if (forwardComment != null) text = forwardComment;
-
-            // modify body with references
-            Pair<String, String> bodies = ReferencesManager.modifyBodyWithReferences(message, text);
-            text = bodies.first;
-            String markupText = bodies.second;
-
-            MessageRealmObject newMessageRealmObject = finalChat.createNewMessageItem(text);
-            newMessageRealmObject.setStanzaId(AbstractChat.getStanzaId(message));
-            newMessageRealmObject.setOriginId(UniqStanzaHelper.getOriginId(message));
-            if (ReliableMessageDeliveryManager.getInstance().isSupported(account))
-                newMessageRealmObject.setAcknowledged(true);
-            newMessageRealmObject.setSent(true);
-            newMessageRealmObject.setForwarded(true);
-            if (markupText != null) newMessageRealmObject.setMarkupText(markupText);
-
-            // forwarding
-            if (forwardIdRealmObjects != null) newMessageRealmObject.setForwardedIds(forwardIdRealmObjects);
-            newMessageRealmObject.setOriginalStanza(originalStanza);
-            newMessageRealmObject.setOriginalFrom(originalFrom);
-
-            // attachments
-            RealmList<AttachmentRealmObject> attachmentRealmObjects = HttpFileUploadManager.parseFileMessage(message);
-            if (attachmentRealmObjects.size() > 0)
-                newMessageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
-
-            // groupchat
-            GroupchatUserExtension groupchatUser = ReferencesManager.getGroupchatUserFromReferences(message);
-            if (groupchatUser != null) {
-                GroupchatUserManager.getInstance().saveGroupchatUser(groupchatUser);
-                newMessageRealmObject.setGroupchatUserId(groupchatUser.getId());
+            if (!message.hasExtension(
+                    ChatMarkersElements.ReceivedExtension.ELEMENT, ChatMarkersElements.NAMESPACE)
+            ) {
+                AccountManager.INSTANCE.getAccount(account).startGracePeriod();
+                try {
+                    ContactJid contactJid = ContactJid.from(message.getTo());
+                    AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
+                    chat.saveLastPosition(chat.getMessages().size());
+                } catch (ContactJid.ContactJidCreateException e) {
+                    LogManager.exception(this, e);
+                }
             }
 
-            BackpressureMessageSaver.getInstance().saveMessageItem(newMessageRealmObject);
+        } else if (direction == CarbonExtension.Direction.received) {
 
-            // mark incoming messages as read
-            finalChat.markAsReadAll(false);
-
-            // start grace period
-            AccountManager.getInstance().startGracePeriod(account);
-            return;
-        }
-
-        ContactJid companion = null;
-        try {
-            companion = ContactJid.from(message.getFrom()).getBareUserJid();
-        } catch (ContactJid.UserJidCreateException e) {
-            return;
-        }
-
-        //check for spam
-        if (SettingsManager.spamFilterMode() != SettingsManager.SpamFilterMode.disabled
-                && RosterManager.getInstance().getRosterContact(account, companion) == null ) {
-            // just ignore carbons from not-authorized user
-            return;
-        }
-
-        boolean processed = false;
-        for (AbstractChat chat : ChatManager.getInstance().getChats(account)) {
-            if (chat.onPacket(companion, message, true)) {
-                processed = true;
-                break;
+            try {
+                companion = ContactJid.from(message.getFrom()).getBareUserJid();
+            } catch (ContactJid.ContactJidCreateException e) {
+                LogManager.exception(LOG_TAG, e);
+                return;
             }
         }
-        if (ChatManager.getInstance().getOrCreateChat(account, companion) != null) {
-            return;
+        if (companion != null) {
+            MessageHandler.INSTANCE.handleMessageStanza(account, companion, message, null, true);
         }
-        if (processed) {
-            return;
-        }
-        final String body = message.getBody();
-        if (body == null) {
-            return;
-        }
-        ChatManager.getInstance().getOrCreateChat(account, companion).onPacket(companion, message, true);
-
     }
 
     public static void setAttachmentLocalPathToNull(final String uniqId) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-
         realm.executeTransactionAsync(realm1 -> {
             AttachmentRealmObject first = realm1.where(AttachmentRealmObject.class)
                     .equalTo(AttachmentRealmObject.Fields.UNIQUE_ID, uniqId)
@@ -611,6 +499,9 @@ public class MessageManager implements OnLoadListener, OnPacketListener {
                 first.setFilePath(null);
             }
         });
-        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            realm.close();
+        }
     }
+
 }

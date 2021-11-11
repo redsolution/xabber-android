@@ -4,24 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.Toolbar;
+
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.PhraseManager;
-import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.ToolbarHelper;
 
 public class PhraseAdder extends BasePhrasePreferences {
 
     public static Intent createIntent(Context context) {
-        return new SegmentIntentBuilder<>(context, PhraseAdder.class).build();
+        return new Intent(context, PhraseAdder.class);
     }
 
     @Override

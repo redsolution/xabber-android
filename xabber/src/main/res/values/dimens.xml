@@ -30,7 +30,7 @@
     <dimen name="chat_image_corner_radius">2dp</dimen>
     <dimen name="chat_image_border_radius">2dp</dimen>
     <dimen name="chat_image_border_width">1dp</dimen>
-    <dimen name="min_chat_image_size">48dp</dimen>
+    <dimen name="min_chat_image_size">100dp</dimen>
     <dimen name="max_chat_image_size">288dp</dimen>
     <dimen name="max_chat_image_height_size">400dp</dimen>
 

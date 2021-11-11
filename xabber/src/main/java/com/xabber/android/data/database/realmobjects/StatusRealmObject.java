@@ -29,4 +29,5 @@ public class StatusRealmObject extends RealmObject {
     public String getStatusMode() { return statusMode; }
 
     public String getStatusText() { return statusText; }
+
 }

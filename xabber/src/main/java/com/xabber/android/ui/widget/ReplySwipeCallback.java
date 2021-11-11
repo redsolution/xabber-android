@@ -1,5 +1,8 @@
 package com.xabber.android.ui.widget;
 
+import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -13,21 +16,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.ui.adapter.chat.ActionMessageVH;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.ui.adapter.chat.SystemMessageVH;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-import static androidx.recyclerview.widget.ItemTouchHelper.ACTION_STATE_SWIPE;
-
 public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View.OnTouchListener {
 
-    private SwipeAction swipeListener;
+    private final SwipeAction swipeListener;
     private ReplyArrowState currentReplyArrowState = ReplyArrowState.GONE;
 
     private static final Drawable replyIcon = Application.getInstance().getResources().getDrawable(R.drawable.ic_reply);
-    private static final int fullSize = Utils.dipToPx(24f, Application.getInstance());
-    private static final int paddingRight = Utils.dipToPx(12f, Application.getInstance());
+    private static final int fullSize = dipToPx(24f, Application.getInstance());
+    private static final int paddingRight = dipToPx(12f, Application.getInstance());
     private static final float MAX_SWIPE_DISTANCE_RATIO = 0.18f;
     private static final float ACTIVE_SWIPE_DISTANCE_RATIO = 0.13f;
 
@@ -37,7 +39,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
     private boolean swipeEnabled = true;
     private boolean swipeBack;
     private boolean isAnimating = false;
-    private ArrayList<Float> scaleAnimationSteps = new ArrayList<>(8);
+    private final ArrayList<Float> scaleAnimationSteps = new ArrayList<>(8);
     private int currentAnimationStep = 0;
 
     private int left;
@@ -49,7 +51,6 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
     private float dXReleasedAt;
     private float dXModified;
     private float dXReal;
-    private float dY;
     private int actionState;
     private boolean isCurrentlyActive;
 
@@ -64,7 +65,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        if (viewHolder instanceof ActionMessageVH) return 0;
+        if (viewHolder instanceof SystemMessageVH) return 0;
         return makeMovementFlags(0, swipeEnabled ? ItemTouchHelper.LEFT : 0);
     }
 
@@ -93,11 +94,9 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
     }
 
     @Override
-    public void onChildDraw(Canvas c,
-                            RecyclerView recyclerView,
-                            RecyclerView.ViewHolder viewHolder,
-                            float dX, float dY,
-                            int actionState, boolean isCurrentlyActive) {
+    public void onChildDraw(@NotNull Canvas c, @NotNull RecyclerView recyclerView,
+                            @NotNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState,
+                            boolean isCurrentlyActive) {
         setTouchListener(recyclerView);
 
         if (actionState == ACTION_STATE_SWIPE && isCurrentlyActive) {
@@ -105,7 +104,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         }
 
         updateViewHolderState(actionState, isCurrentlyActive);
-        updateTouchData(dX, dY);
+        updateTouchData(dX);
         currentItemViewHolder = viewHolder;
         super.onChildDraw(c, recyclerView, viewHolder, dXModified, dY, actionState, isCurrentlyActive);
     }
@@ -199,10 +198,9 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         this.isCurrentlyActive = isCurrentlyActive;
     }
 
-    private void updateTouchData(float dX, float dY) {
+    private void updateTouchData(float dX) {
         this.dXReal = dX;
         this.dXModified = updateModifiedTouchData(dX);
-        this.dY = dY;
     }
 
     private float updateModifiedTouchData(float dXReal) {
@@ -212,11 +210,7 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         if (isCurrentlyActive) {
             //View is being actively moved by the user.
 
-            if (dXReal < dXThreshold) {
-                dXModified = dXThreshold;
-            } else {
-                dXModified = dXReal;
-            }
+            dXModified = Math.max(dXReal, dXThreshold);
         } else {
             //View is in the restoration phase
 
@@ -267,7 +261,10 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
                         if (currentReplyArrowState == ReplyArrowState.GONE) {
                             currentReplyArrowState = ReplyArrowState.ANIMATING_IN;
                             currentAnimationStep = 0;
-                            Utils.performHapticFeedback(recyclerView, HapticFeedbackConstants.KEYBOARD_TAP);
+                            recyclerView.performHapticFeedback(
+                                    HapticFeedbackConstants.KEYBOARD_TAP,
+                                    HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+                            );
                             setItemsClickable(recyclerView, false);
                             //if (drawThread == null) {
                             //    Thread drawThread = new Thread(new DrawThread(), "drawThread");
@@ -315,4 +312,5 @@ public class ReplySwipeCallback extends ItemTouchHelper.Callback implements View
         VISIBLE,
         ANIMATING_OUT
     }
+
 }

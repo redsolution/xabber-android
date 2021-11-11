@@ -21,15 +21,13 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnChatUpdatedListener;
 import com.xabber.android.ui.activity.ContactActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
-
-import org.greenrobot.eventbus.EventBus;
 
 public class ContactDeleteDialog extends DialogFragment implements View.OnClickListener {
 
@@ -97,8 +95,8 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
             case R.id.delete:
                 try {
                     // discard subscription
-                    PresenceManager.getInstance().discardSubscription(account, user);
-                    PresenceManager.getInstance().unsubscribeFromPresence(account, user);
+                    PresenceManager.INSTANCE.discardSubscription(account, user);
+                    PresenceManager.INSTANCE.unsubscribeFromPresence(account, user);
                 } catch (NetworkException e) {
                     Application.getInstance().onError(R.string.CONNECTION_FAILED);
                 }
@@ -115,10 +113,13 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
                 // remove roster contact
                 RosterManager.getInstance().removeContact(account, user);
                 AbstractChat chat = ChatManager.getInstance().getChat(account, user);
-                if (chat != null && !deleteHistory.isChecked()) {
-                    chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted, false);
+//                if (chat != null && !deleteHistory.isChecked()) {
+//                    chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_deleted), ChatAction.contact_deleted);
+//                } //todo
+                for (OnChatUpdatedListener listener
+                        : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+                    listener.onAction();
                 }
-                EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
 
                 dismiss();
                 if (getActivity() instanceof ContactActivity) {
@@ -126,4 +127,5 @@ public class ContactDeleteDialog extends DialogFragment implements View.OnClickL
                 }
         }
     }
+
 }

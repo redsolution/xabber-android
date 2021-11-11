@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <include layout="@layout/contact_add_header"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCircles"
+        <com.xabber.android.ui.widget.AccountSpinner
+            android:id="@+id/contact_account"
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:drawSelectorOnTop="false" >
-        </androidx.recyclerview.widget.RecyclerView>
+            android:outlineProvider="bounds" />
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/except_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:orientation="vertical">
+
+            <include layout="@layout/contact_add_username_and_alias" />
+
+            <!-- Divider -->
+            <View
+                android:layout_marginTop="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"/>
+
+            <include layout="@layout/circles_list_layout"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
 </androidx.core.widget.NestedScrollView>

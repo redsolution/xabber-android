@@ -33,7 +33,7 @@ public class AccountShortcutVO {
         Drawable avatar = AvatarManager.getInstance().getAccountAvatar(accountJid);
         int statusLevel = 0;
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem != null) {
             statusLevel = accountItem.getDisplayStatusMode().getStatusLevel();
         }

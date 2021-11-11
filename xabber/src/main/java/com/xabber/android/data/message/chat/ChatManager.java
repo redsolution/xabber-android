@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  * <p>
  * This file is part of Xabber project; you can redistribute it and/or
@@ -16,31 +16,29 @@ package com.xabber.android.data.message.chat;
 
 import android.net.Uri;
 import android.os.Environment;
-
-import androidx.annotation.Nullable;
+import android.text.Html;
 
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountDisabledListener;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnDisconnectListener;
+import com.xabber.android.data.account.OnAccountDisabledListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.database.repositories.ChatRepository;
+import com.xabber.android.data.database.repositories.GroupchatRepository;
 import com.xabber.android.data.database.repositories.MessageRepository;
+import com.xabber.android.data.database.repositories.RegularChatRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.entity.NestedMap;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.utils.StringUtils;
-
-import org.greenrobot.eventbus.EventBus;
+import com.xabber.android.ui.OnChatUpdatedListener;
+import com.xabber.android.ui.text.DatesUtilsKt;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -49,8 +47,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 import io.realm.RealmResults;
 
@@ -59,11 +58,10 @@ import io.realm.RealmResults;
  *
  * @author alexander.ivanov
  */
-public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
-        OnRosterReceivedListener, OnAccountDisabledListener, OnDisconnectListener {
+public class ChatManager implements OnAccountRemovedListener, OnRosterReceivedListener,
+        OnAccountDisabledListener {
 
-    public static final Uri EMPTY_SOUND = Uri
-            .parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
+    public static final Uri EMPTY_SOUND = Uri.parse("com.xabber.android.data.message.ChatManager.EMPTY_SOUND");
 
     private static ChatManager instance;
 
@@ -88,106 +86,67 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         chats = new NestedMap<>();
         chatInputs = new NestedMap<>();
 
-        for (AbstractChat abstractChat : ChatRepository.getAllChatsFromRealm())
-            chats.put(abstractChat.getAccount().toString(),
-                    abstractChat.getUser().toString(),
-                    abstractChat);
+        for (RegularChat regularChat : RegularChatRepository.getAllRegularChatsFromRealm()){
+            chats.put(regularChat.getAccount().toString(), regularChat.getContactJid().toString(), regularChat);
+        }
 
+        for (GroupChat groupChat : GroupchatRepository.getAllGroupchatsFromRealm()){
+            chats.put(groupChat.getAccount().toString(), groupChat.getContactJid().toString(), groupChat);
+        }
     }
 
     public static ChatManager getInstance() {
-        if (instance == null) {
-            instance = new ChatManager();
-        }
-
+        if (instance == null) instance = new ChatManager();
         return instance;
     }
 
     @Override
-    public void onLoad() {
-
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
-
-        ChatRepository.clearUnusedNotificationStateFromRealm();
-    }
-
-    @Override
     public void onRosterReceived(AccountItem accountItem) {
-        for (AbstractChat chat : chats.getNested(accountItem.getAccount().toString()).values()) {
-            chat.onComplete();
-        }
+        for (AbstractChat chat : chats.getNested(accountItem.getAccount().toString()).values()) chat.onComplete();
     }
 
     @Override
     public void onAccountDisabled(AccountItem accountItem) {
         chats.clear(accountItem.getAccount().toString());
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
-    }
-
-    @Override
-    public void onDisconnect(ConnectionItem connection) {
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
-        AccountJid account = connection.getAccount();
-        for (AbstractChat chat : chats.getNested(account.toString()).values()) {
-            chat.onDisconnect();
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onAction();
         }
     }
 
     @Override
     public void onAccountRemoved(AccountItem accountItem) {
         chatInputs.clear(accountItem.getAccount().toString());
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onAction();
+        }
     }
 
     /**
-     * @param account
-     * @param user
      * @return typed but not sent message.
      */
     public String getTypedMessage(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
-        if (chat == null) {
-            return "";
-        }
-        return chat.getTypedMessage();
+        return chat == null ? "" : chat.getTypedMessage();
     }
 
     /**
-     * @param account
-     * @param user
      * @return Start selection position.
      */
     public int getSelectionStart(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
-        if (chat == null) {
-            return 0;
-        }
-        return chat.getSelectionStart();
+        return chat != null ? chat.getSelectionStart() : 0;
     }
 
     /**
-     * @param account
-     * @param user
      * @return End selection position.
      */
     public int getSelectionEnd(AccountJid account, ContactJid user) {
         ChatInput chat = chatInputs.get(account.toString(), user.toString());
-        if (chat == null) {
-            return 0;
-        }
-        return chat.getSelectionEnd();
+        return chat != null ? chat.getSelectionEnd() : 0;
     }
 
     /**
      * Sets typed message and selection options for specified chat.
-     *
-     * @param account
-     * @param user
-     * @param typedMessage
-     * @param selectionStart
-     * @param selectionEnd
      */
     public void setTyped(AccountJid account, ContactJid user, String typedMessage,
                          int selectionStart, int selectionEnd) {
@@ -199,18 +158,23 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         chat.setTyped(typedMessage, selectionStart, selectionEnd);
     }
 
-    void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
-        EventBus.getDefault().post(new ChatUpdatedEvent());
-        ChatRepository.saveOrUpdateChatRealmObject(chat.getAccount(), chat.getUser(), null,
-                chat.getLastPosition(), false, chat.isArchived(), chat.isHistoryRequestedAtStart(),
-                chat.isGroupchat(), chat.getUnreadMessageCount(), null);
+    public void saveOrUpdateChatDataToRealm(final AbstractChat chat) {
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onAction();
+        }
+
+        if (chat instanceof RegularChat){
+            RegularChatRepository.saveOrUpdateRegularChatRealmObject(chat.getAccount(), chat.getContactJid(), null,
+                    chat.getLastPosition(), false, chat.isArchived(), 0,
+                    chat.getNotificationState());
+        } else if (chat instanceof GroupChat) GroupchatRepository.saveOrUpdateGroupchatRealmObject((GroupChat) chat);
     }
 
     /**
      * Sets currently visible chat.
      */
     public void setVisibleChat(BaseEntity visibleChat) {
-        this.visibleChat = getOrCreateChat(visibleChat.getAccount(), visibleChat.getUser());
+        this.visibleChat = getChat(visibleChat.getAccount(), visibleChat.getContactJid());
     }
 
     /**
@@ -221,7 +185,6 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     }
 
     /**
-     * @param chat
      * @return Whether specified chat is currently visible.
      */
     public boolean isVisibleChat(AbstractChat chat) {
@@ -235,19 +198,13 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
     public AbstractChat getChat(AccountJid account, ContactJid user) {
         if (account != null && user != null) {
             return chats.get(account.toString(), user.getBareJid().toString());
-        } else {
-            return null;
-        }
+        } else return null;
     }
 
     public Collection<AbstractChat> getChatsOfEnabledAccounts() {
         List<AbstractChat> chats = new ArrayList<>();
 
-        HashSet<AccountJid> enabledAccounts = new HashSet<>();
-        enabledAccounts.addAll(AccountManager.getInstance().getEnabledAccounts());
-        enabledAccounts.addAll(AccountManager.getInstance().getCachedEnabledAccounts());
-
-        for (AccountJid accountJid : enabledAccounts) {
+        for (AccountJid accountJid : AccountManager.INSTANCE.getEnabledAccounts()) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
         return chats;
@@ -255,7 +212,7 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
 
     public Collection<AbstractChat> getChats() {
         List<AbstractChat> chats = new ArrayList<>();
-        for (AccountJid accountJid : AccountManager.getInstance().getAllAccounts()) {
+        for (AccountJid accountJid : AccountManager.INSTANCE.getAllAccounts()) {
             chats.addAll(this.chats.getNested(accountJid.toString()).values());
         }
         return chats;
@@ -269,139 +226,119 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         return chats.get(accountJid, contactJid) != null;
     }
 
+    public boolean hasChat(AccountJid accountJid, ContactJid contactJid){
+        return hasChat(accountJid.toString(), contactJid.toString());
+    }
+
     /**
      * Creates and adds new regular chat to be managed.
-     *
-     * @param account
-     * @param user
-     * @return
      */
-    private RegularChat createChat(AccountJid account, ContactJid user) {
+    public RegularChat createRegularChat(AccountJid account, ContactJid user) {
         RegularChat chat = new RegularChat(account, user);
         addChat(chat);
+        saveOrUpdateChatDataToRealm(chat);
+        return chat;
+    }
 
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
-
+    /**
+     * Creates and adds new group chat to be managed.
+     */
+    public GroupChat createGroupChat(AccountJid account, ContactJid groupJid) {
+        GroupChat chat = new GroupChat(account, groupJid);
+        addChat(chat);
+        saveOrUpdateChatDataToRealm(chat);
+        GroupMemberManager.INSTANCE.requestMe(account, groupJid);
         return chat;
     }
 
     /**
      * Adds chat to be managed.
      *
-     * @param chat
      */
     private void addChat(AbstractChat chat) {
-        if (getChat(chat.getAccount(), chat.getUser()) != null) {
-            return;
-        }
-        chats.put(chat.getAccount().toString(), chat.getUser().toString(), chat);
+        if (getChat(chat.getAccount(), chat.getContactJid()) != null) return;
 
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        chats.put(chat.getAccount().toString(), chat.getContactJid().toString(), chat);
+
+        for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+            listener.onAction();
+        }
     }
 
     /**
      * Removes chat from managed.
-     *
-     * @param chat
      */
     public void removeChat(AbstractChat chat) {
         chat.closeChat();
-        LogManager.i(this, "removeChat " + chat.getUser());
-        chats.remove(chat.getAccount().toString(), chat.getUser().toString());
-        EventBus.getDefault().post(new ChatManager.ChatUpdatedEvent());
+        LogManager.i(this, "removeChat " + chat.getContactJid());
+        //MessageManager.getInstance().clearHistory(chat.getAccount(), chat.getContactJid());
+
+        if (chat instanceof GroupChat){
+            GroupchatRepository.removeGroupChatFromRealm((GroupChat) chat);
+        } else if (chat instanceof RegularChat) RegularChatRepository.removeRegularChatFromRealm((RegularChat) chat);
+
+        chats.remove(chat.getAccount().toString(), chat.getContactJid().toString());
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnChatUpdatedListener listener :
+                    Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
+                listener.onAction();
+            }
+        });
+
     }
 
-    public AbstractChat getOrCreateChat(AccountJid account, ContactJid user,
-                                        MessageRealmObject lastMessage) {
-
-        AbstractChat chat = getOrCreateChat(account, user);
-        chat.setLastMessage(lastMessage);
-
-        return chat;
-    }
-
-    /**
-     * Returns existed chat or create new one.
-     *
-     */
-    public AbstractChat getOrCreateChat(AccountJid account, ContactJid user) {
-        AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            chat = createChat(account, user);
-        }
-        return chat;
-    }
+    public void removeChat(AccountJid accountJid, ContactJid contactJid){ removeChat(getChat(accountJid, contactJid)); }
 
     /**
      * Force open chat (make it active).
-     *
-     * @param account
-     * @param user
      */
     public void openChat(AccountJid account, ContactJid user) {
-        getOrCreateChat(account, user).openChat();
+        getChat(account, user).openChat();
     }
 
     /**
      * Closes specified chat (make it inactive).
-     *
-     * @param account
-     * @param user
      */
     public void closeChat(AccountJid account, ContactJid user) {
         AbstractChat chat = getChat(account, user);
-        if (chat == null) {
-            return;
-        }
+        if (chat == null) return;
         chat.closeChat();
     }
 
     /**
      * Export chat to file with specified name.
-     *
-     * @param account
-     * @param user
-     * @param fileName
-     * @throws NetworkException
      */
-    public File exportChat(AccountJid account, ContactJid user, String fileName)
-            throws NetworkException {
+    public File exportChat(AccountJid account, ContactJid user, String fileName) throws NetworkException {
 
         final File file = new File(Environment.getExternalStorageDirectory(), fileName);
 
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file));
-            final String titleName = RosterManager.getInstance().getName(account, user) + " ("
-                    + user + ")";
+            final String titleName = RosterManager.getInstance().getName(account, user) + " (" + user + ")";
             out.write("<html><head><title>");
-            out.write(StringUtils.escapeHtml(titleName));
+            out.write(Html.escapeHtml(titleName));
             out.write("</title></head><body>");
             final AbstractChat abstractChat = getChat(account, user);
             if (abstractChat != null) {
-                final String accountName = AccountManager.getInstance().getNickName(account);
+                final String accountName = AccountManager.INSTANCE.getNickName(account);
                 final String userName = RosterManager.getInstance().getName(account, user);
 
-                RealmResults<MessageRealmObject> messageRealmObjects = MessageRepository
-                        .getChatMessages(account, user);
+                RealmResults<MessageRealmObject> messageRealmObjects = MessageRepository.getChatMessages(account, user);
 
                 for (MessageRealmObject messageRealmObject : messageRealmObjects) {
-                    if (messageRealmObject.getAction() != null) {
-                        continue;
-                    }
+                    if (messageRealmObject.getAction() != null) continue;
+
                     final String name;
                     if (messageRealmObject.isIncoming()) {
                         name = userName;
-                    } else {
-                        name = accountName;
-                    }
+                    } else name = accountName;
 
                     out.write("<b>");
-                    out.write(StringUtils.escapeHtml(name));
+                    out.write(Html.escapeHtml(name));
                     out.write("</b>&nbsp;(");
-                    out.write(StringUtils.getDateTimeText(new
-                            Date(messageRealmObject.getTimestamp())));
+                    out.write(DatesUtilsKt.getDateTimeText(new Date(messageRealmObject.getTimestamp())));
                     out.write(")<br />\n<p>");
-                    out.write(StringUtils.escapeHtml(messageRealmObject.getText()));
+                    out.write(Html.escapeHtml(messageRealmObject.getText()));
                     out.write("</p><hr />\n");
                 }
 
@@ -414,6 +351,8 @@ public class ChatManager implements OnLoadListener, OnAccountRemovedListener,
         return file;
     }
 
-    public static class ChatUpdatedEvent {
+    public void resetLastPosition(AbstractChat abstractChat) {
+
     }
+
 }

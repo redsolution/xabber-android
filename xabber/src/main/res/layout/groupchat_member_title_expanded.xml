@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contact_title_expanded"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?android:attr/actionBarSize"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/contact_title_padding_left"
+    android:paddingRight="@dimen/contact_title_padding_left"
+    android:paddingBottom="@dimen/contact_title_padding_bottom"
+    tools:showIn="@layout/activity_contact_info">
+
+    <include
+        layout="@layout/avatar_view_extra_large"
+        tools:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/name_holder"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:minHeight="?attr/actionBarSize"
+        android:orientation="vertical"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
+            android:text="Lorem Ipsum"
+            android:textColor="@color/primary_text_default_material_dark"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/address_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:text="Lorem ipsum dolor sit amet"
+            android:textColor="@color/grey_200"
+            android:textSize="16sp" />
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="6dp"
+            android:background="@color/white"/>
+
+        <TextView
+            android:id="@+id/groupchat_member_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center_vertical"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:text="Lorem ipsum dolor sit amet"
+            android:textColor="@color/grey_200"
+            android:textSize="16sp"
+            />
+
+        <TextView
+            android:id="@+id/groupchat_member_this_is_you_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center_vertical"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:text="@string/groupchat_this_is_you"
+            android:visibility="gone"
+            android:textColor="@color/grey_200"
+            android:textSize="16sp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

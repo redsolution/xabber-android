@@ -1,5 +1,7 @@
 package com.xabber.android.ui.widget;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -17,7 +19,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.ui.adapter.chat.BasicMessageVH;
 import com.xabber.android.ui.adapter.chat.MessageVH;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,9 +31,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
 
-    @IntDef({DateState.SCROLL_ACTIVE, DateState.SCROLL_IDLE,
-            DateState.SCROLL_IDLE_NO_ANIMATION, DateState.INITIATED_ANIMATION,
-            DateState.ANIMATING, DateState.FINISHED_ANIMATING})
+    @IntDef({DateState.SCROLL_ACTIVE, DateState.SCROLL_IDLE, DateState.SCROLL_IDLE_NO_ANIMATION,
+            DateState.INITIATED_ANIMATION, DateState.ANIMATING, DateState.FINISHED_ANIMATING})
     @Retention(RetentionPolicy.SOURCE)
     @interface DateState {
         int SCROLL_ACTIVE = 0;
@@ -42,22 +43,22 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
         int FINISHED_ANIMATING = 5;
     }
 
-    private Paint paintFont;
-    private Drawable drawable;
-    private Handler handler;
+    private final Paint paintFont;
+    private final Drawable drawable;
+    private final Handler handler;
     private RecyclerView parent;
 
     private int headerViewXMargin;
-    private static final int backgroundDrawableHeight = Utils.dipToPx(24f, Application.getInstance());
-    private static final int backgroundDrawableXPadding = Utils.dipToPx(8f, Application.getInstance());
-    private static final int backgroundDrawableYMargin = Utils.dipToPx(3.64f, Application.getInstance());
+    private static final int backgroundDrawableHeight = dipToPx(24f, Application.getInstance());
+    private static final int backgroundDrawableXPadding = dipToPx(8f, Application.getInstance());
+    private static final int backgroundDrawableYMargin = dipToPx(3.64f, Application.getInstance());
     private static final int dateLayoutHeight = 2 * backgroundDrawableYMargin + backgroundDrawableHeight;
     private static final int alphaThreshold = dateLayoutHeight * 6 / 10;
     private static final int dateTextBaseline = backgroundDrawableHeight * 3 / 11;
     private static final String unread = Application.getInstance().getResources().getString(R.string.unread_messages);
 
-    private int stickyDrawableTopBound = 2 * backgroundDrawableYMargin;
-    private int stickyDrawableBottomBound = dateLayoutHeight;
+    private final int stickyDrawableTopBound = 2 * backgroundDrawableYMargin;
+    private final int stickyDrawableBottomBound = dateLayoutHeight;
 
     @DateState
     private int currentDateState;
@@ -69,20 +70,21 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     private long frameTime;
 
     public MessageHeaderViewDecoration() {
-        drawable = Application.getInstance().getResources()
-                .getDrawable(SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
-                        R.drawable.rounded_background_grey_transparent_dark : R.drawable.rounded_background_grey_transparent);
+        drawable = Application.getInstance().getResources().getDrawable(
+                SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark ?
+                        R.drawable.rounded_background_grey_transparent_dark
+                        : R.drawable.rounded_background_grey_transparent);
 
         paintFont = new Paint();
         paintFont.setColor(Application.getInstance().getResources().getColor(R.color.white));
-        paintFont.setTextSize(Utils.spToPxFloat(14f, Application.getInstance()) + 1f);
+        paintFont.setTextSize(AndroidUtilsKt.spToPxFloat(14f, Application.getInstance()) + 1f);
         paintFont.setTypeface(Typeface.DEFAULT_BOLD);
         paintFont.setAntiAlias(true);
 
         handler = new Handler();
     }
 
-    private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+    private final RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
@@ -103,7 +105,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
         }
     };
 
-    private Runnable runAlphaAnimation = new Runnable() {
+    private final Runnable runAlphaAnimation = new Runnable() {
         @Override
         public void run() {
             currentDateState = DateState.ANIMATING;
@@ -135,13 +137,13 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
             View child = parent.getChildAt(i);
             RecyclerView.ViewHolder holder = parent.getChildViewHolder(child);
             if (i != 0) {
-                if (holder instanceof BasicMessageVH && ((BasicMessageVH)holder).needDate) {
+                if (holder instanceof BasicMessageVH && ((BasicMessageVH)holder).getNeedDate()) {
                     // Draw a Date view for all visible messages that require one.
                     // Since the position is != 0, these dates will not behave in the same way
                     // as the sticky date, they will simply be directly tied to the message.
                     drawDateMessageHeader(c, parent, child, (BasicMessageVH) holder);
                 }
-                if (holder instanceof MessageVH && ((MessageVH)holder).isUnread) {
+                if (holder instanceof MessageVH && ((MessageVH)holder).isUnread()) {
                     drawUnreadMessageHeader(c, parent, child, (MessageVH) holder);
                 }
             }
@@ -166,7 +168,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
             if (nextHolder instanceof BasicMessageVH) {
                 // Check if the date of the originalChild is
                 // the same as the date of the nextChild
-                if (holder.date.equals(((BasicMessageVH) nextHolder).date)) {
+                if (holder.getDate().equals(((BasicMessageVH) nextHolder).getDate())) {
                     // if same, make sure we have enough space to draw the sticky header
                     if (checkIfStickyHeaderFitsAboveNextChild(nextChild)) {
                         drawDateStickyHeader(c, parent, originalChild, holder, true);
@@ -223,13 +225,13 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     }
 
     private boolean needToDrawUnreadHeader(BasicMessageVH holder) {
-        return holder instanceof MessageVH && ((MessageVH)holder).isUnread;
+        return holder instanceof MessageVH && ((MessageVH)holder).isUnread();
     }
 
     // Draws a date that appears at the top of chat window, either as a sticky date
     // that stays in one place, or a date of the partially visible message
     private void drawDateStickyHeader(Canvas c, RecyclerView parent, View child, BasicMessageVH holder, boolean forceDrawAsSticky) {
-        int width = measureText(paintFont, holder.date);
+        int width = measureText(paintFont, holder.getDate());
 
         headerViewXMargin = (parent.getMeasuredWidth() - width)/2;
 
@@ -310,13 +312,13 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
                 break;
         }
 
-        drawString(c, holder.date, drawableBounds, alpha);
+        drawString(c, holder.getDate(), drawableBounds, alpha);
     }
 
     // Draws a date that appears on top of the first message of the day.
     // This date nearly always stays directly tied to the message position.
     private void drawDateMessageHeader(Canvas c, RecyclerView parent, View child, BasicMessageVH holder) {
-        int width = measureText(paintFont, holder.date);
+        int width = measureText(paintFont, holder.getDate());
         // additional vertical offset for the Date header.
         int additionalOffset = 0;
 
@@ -344,7 +346,7 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
             drawableBounds.top = child.getTop() - backgroundDrawableHeight - backgroundDrawableYMargin - additionalOffset;
         }
 
-        drawString(c, holder.date, drawableBounds, 255);
+        drawString(c, holder.getDate(), drawableBounds, 255);
     }
 
     private void drawUnreadMessageHeader(Canvas c, RecyclerView parent, View child, MessageVH holder) {
@@ -402,10 +404,10 @@ public class MessageHeaderViewDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         RecyclerView.ViewHolder holder = parent.getChildViewHolder(view);
         int topOffset = 0;
-        if (holder instanceof BasicMessageVH && ((BasicMessageVH) holder).needDate) {
+        if (holder instanceof BasicMessageVH && ((BasicMessageVH) holder).getNeedDate()) {
             topOffset += dateLayoutHeight;
         }
-        if (holder instanceof MessageVH && ((MessageVH)holder).isUnread) {
+        if (holder instanceof MessageVH && ((MessageVH)holder).isUnread()) {
             topOffset += dateLayoutHeight;
         }
         outRect.set(0, topOffset, 0, 0);

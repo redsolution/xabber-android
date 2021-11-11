@@ -9,7 +9,7 @@ import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.extension.mam.NextMamManager;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
@@ -34,12 +34,9 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
         preferenceScreen.removePreference(preferenceScreen.findPreference(getString(R.string.debug_connection_errors_key)));
 
         Preference prefDownloadArchive = preferenceScreen.findPreference(getString(R.string.debug_download_all_messages_key));
-        prefDownloadArchive.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startMessageArchiveDownload();
-                return true;
-            }
+        prefDownloadArchive.setOnPreferenceClickListener(preference -> {
+            startMessageArchiveDownload();
+            return true;
         });
 
         if (!BuildConfig.DEBUG) {
@@ -63,47 +60,40 @@ public class DebugSettingsFragment extends android.preference.PreferenceFragment
     }
 
     private void closeDownloadArchiveDialog() {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (progressDialog != null)
-                    progressDialog.dismiss();
-            }
+        Application.getInstance().runOnUiThread(() -> {
+            if (progressDialog != null)
+                progressDialog.dismiss();
         });
     }
 
     private void setDownloadProgress(final int total, final int downloaded) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (progressDialog == null || !progressDialog.isShowing())
-                    showDownloadArchiveDialog();
-                progressDialog.setMessage("Downloading message archive " + downloaded + "/" + total);
-            }
+        Application.getInstance().runOnUiThread(() -> {
+            if (progressDialog == null || !progressDialog.isShowing())
+                showDownloadArchiveDialog();
+            progressDialog.setMessage("Downloading message archive " + downloaded + "/" + total);
         });
     }
 
     private void startMessageArchiveDownload() {
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                Collection<AbstractChat> chats = ChatManager.getInstance().getChats();
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            Collection<AbstractChat> chats = ChatManager.getInstance().getChats();
 
-                if (chats == null || chats.size() == 0) {
-                    closeDownloadArchiveDialog();
-                    return;
-                }
-
-                int downloadedArchives = 0;
-                int totalArchives = chats.size();
-
-                for (AbstractChat chat : chats) {
-                    setDownloadProgress(totalArchives, downloadedArchives);
-                    NextMamManager.getInstance().loadFullChatHistory(chat);
-                    downloadedArchives++;
-                }
+            if (chats == null || chats.size() == 0) {
                 closeDownloadArchiveDialog();
+                return;
             }
+
+            int downloadedArchives = 0;
+            int totalArchives = chats.size();
+
+            for (AbstractChat chat : chats) {
+                setDownloadProgress(totalArchives, downloadedArchives);
+                MessageArchiveManager.INSTANCE.loadAllMessagesInChat(chat); //may use sync blocking function to be
+                // more informative with progress bar
+                downloadedArchives++;
+            }
+            closeDownloadArchiveDialog();
         });
     }
+
 }

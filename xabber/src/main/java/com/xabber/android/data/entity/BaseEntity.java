@@ -15,6 +15,7 @@
 package com.xabber.android.data.entity;
 
 import androidx.annotation.NonNull;
+
 import org.jxmpp.jid.Jid;
 
 /**
@@ -26,38 +27,38 @@ public class BaseEntity extends AccountRelated implements
         Comparable<BaseEntity> {
 
     protected final @NonNull
-    ContactJid user;
+    ContactJid contactJid;
     private static int counter = 0;
 
-    protected BaseEntity(@NonNull AccountJid account, @NonNull ContactJid user) {
+    protected BaseEntity(@NonNull AccountJid account, @NonNull ContactJid contactJid) {
         super(account);
-        this.user = user;
+        this.contactJid = contactJid;
         counter++;
     }
 
     public BaseEntity(BaseEntity baseEntity) {
-        this(baseEntity.account, baseEntity.user);
+        this(baseEntity.account, baseEntity.contactJid);
     }
 
     @NonNull
-    public ContactJid getUser() {
-        return user;
+    public ContactJid getContactJid() {
+        return contactJid;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + (user.hashCode());
+        result = prime * result + (contactJid.hashCode());
         return result;
     }
 
     public boolean equals(AccountJid account, ContactJid user) {
-        return this.account.equals(account) && this.user.equals(user);
+        return this.account.equals(account) && this.contactJid.equals(user);
     }
 
     public boolean equals(AccountJid account, Jid jid) {
-        return this.account.equals(account) && this.user.equals(jid);
+        return this.account.equals(account) && this.contactJid.equals(jid);
     }
 
 
@@ -68,7 +69,7 @@ public class BaseEntity extends AccountRelated implements
         if (!super.equals(obj))
             return false;
         BaseEntity other = (BaseEntity) obj;
-        return user.equals(other.user);
+        return contactJid.equals(other.contactJid);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class BaseEntity extends AccountRelated implements
         if (accountResult != 0) {
             return accountResult;
         }
-        int userResult = user.compareTo(another.user);
+        int userResult = contactJid.compareTo(another.contactJid);
         if (userResult != 0) {
             return userResult;
         }
@@ -86,6 +87,6 @@ public class BaseEntity extends AccountRelated implements
 
     @Override
     public String toString() {
-        return account + ":" + user;
+        return account + ":" + contactJid;
     }
 }

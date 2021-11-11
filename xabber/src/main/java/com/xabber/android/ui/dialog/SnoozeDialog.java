@@ -16,6 +16,8 @@ import com.xabber.android.data.message.chat.AbstractChat;
 
 public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnClickListener {
 
+    public static final String TAG = "com.xabber.android.ui.dialog.SnoozeDialog";
+
     private OnSnoozeListener listener;
     private AbstractChat chat;
     private View view;
@@ -91,4 +93,5 @@ public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnCl
     public interface OnSnoozeListener {
         void onSnoozed();
     }
+
 }

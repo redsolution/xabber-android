@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Vibrator;
+
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 
@@ -33,19 +34,22 @@ import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionState;
+import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
+import com.xabber.android.data.extension.archive.OnMessageArchiveFetchingListener;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.activity.ClearNotificationsActivity;
 import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.StringUtils;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,7 +62,7 @@ import java.util.List;
  * @author alexander.ivanov
  */
 public class NotificationManager implements OnInitializedListener, OnAccountChangedListener,
-        OnCloseListener, OnLoadListener, Runnable, OnAccountRemovedListener {
+        OnCloseListener, OnLoadListener, Runnable, OnAccountRemovedListener, OnMessageArchiveFetchingListener {
 
     public static final int PERSISTENT_NOTIFICATION_ID = 1;
     private static final int BASE_NOTIFICATION_PROVIDER_ID = 0x10;
@@ -89,8 +93,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     /**
      * List of
      */
-    private NotificationCompat.Builder persistentNotificationBuilder;
-    private int persistentNotificationColor;
+    private final NotificationCompat.Builder persistentNotificationBuilder;
+    private final int persistentNotificationColor;
 
     public static NotificationManager getInstance() {
         if (instance == null) {
@@ -115,7 +119,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         handler = new Handler();
         providers = new ArrayList<>();
         clearNotifications = PendingIntent.getActivity(
-                application, 0, ClearNotificationsActivity.createIntent(application), 0);
+                application, 0, ClearNotificationsActivity.createIntent(application), 0
+        );
 
         stopVibration = new Runnable() {
             @Override
@@ -141,10 +146,15 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
             }
         };
 
-        persistentNotificationBuilder = new NotificationCompat.Builder(application,
-                NotificationChannelUtils.PERSISTENT_CONNECTION_CHANNEL_ID);
+        persistentNotificationBuilder = new NotificationCompat.Builder(
+                application, NotificationChannelUtils.PERSISTENT_CONNECTION_CHANNEL_ID
+        );
+
         initPersistentNotification();
-        persistentNotificationColor = application.getResources().getColor(R.color.persistent_notification_color);
+
+        persistentNotificationColor = application.getResources().getColor(
+                R.color.persistent_notification_color
+        );
     }
 
     private void initPersistentNotification() {
@@ -160,7 +170,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
     @Override
     public void onLoad() {
-        MessageNotificationManager.getInstance().onLoad();
+        MessageNotificationManager.INSTANCE.onLoad();
     }
 
     @Override
@@ -170,10 +180,11 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         updatePersistentNotification();
     }
 
+    @Override
+    public void onMessageArchiveFetching() { updatePersistentNotification(); }
+
     /**
      * Register new provider for notifications.
-     *
-     * @param provider
      */
     public void registerNotificationProvider(NotificationProvider<? extends NotificationItem> provider) {
         providers.add(provider);
@@ -182,8 +193,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     /**
      * Update notifications for specified provider.
      *
-     * @param <T>
-     * @param provider
      * @param notify   Ticker to be shown. Can be <code>null</code>.
      */
     public <T extends NotificationItem> void updateNotifications(
@@ -215,10 +224,14 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
 
         String channelID = provider.getChannelID();
-        if (channelID.equals(NotificationChannelUtils.DEFAULT_ATTENTION_CHANNEL_ID))
-            channelID = NotificationChannelUtils.getChannelID(NotificationChannelUtils.ChannelType.attention);
+        if (channelID.equals(NotificationChannelUtils.DEFAULT_ATTENTION_CHANNEL_ID)){
+            channelID = NotificationChannelUtils.getChannelID(
+                    NotificationChannelUtils.ChannelType.attention
+            );
+        }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(application, channelID);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(application, channelID);
 
         notificationBuilder.setSmallIcon(provider.getIcon());
         notificationBuilder.setTicker(ticker);
@@ -233,26 +246,34 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(application);
         taskStackBuilder.addNextIntentWithParentStack(top.getIntent());
 
-        notificationBuilder.setContentIntent(taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
+        notificationBuilder.setContentIntent(
+                taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        );
 
         if (ticker != null) {
-            setNotificationDefaults(notificationBuilder, SettingsManager.eventsLightning(), provider.getSound(), provider.getStreamType());
+            setNotificationDefaults(
+                    notificationBuilder,
+                    SettingsManager.eventsLightning(),
+                    provider.getSound(),
+                    provider.getStreamType()
+            );
         }
 
         notificationBuilder.setDeleteIntent(clearNotifications);
 
-        notificationBuilder.setColor(ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
+        notificationBuilder.setColor(
+                ColorManager.getInstance().getAccountPainter().getDefaultMainColor()
+        );
 
         notify(id, notificationBuilder.build());
     }
 
     /**
      * Sound, vibration and lightning flags.
-     *
-     * @param notificationBuilder
-     * @param streamType
      */
-    public void setNotificationDefaults(NotificationCompat.Builder notificationBuilder, boolean led, Uri sound, int streamType) {
+    public void setNotificationDefaults(
+            NotificationCompat.Builder notificationBuilder, boolean led, Uri sound, int streamType
+    ) {
         notificationBuilder.setSound(sound, streamType);
         notificationBuilder.setDefaults(0);
 
@@ -270,13 +291,17 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     private void updatePersistentNotification() {
-        if (XabberService.getInstance() == null) return;
+        if (XabberService.getInstance() == null) {
+            return;
+        }
 
         // we do not want to show persistent notification if there are no enabled accounts
         XabberService.getInstance().changeForeground();
-        if (!XabberService.getInstance().needForeground()) return;
+        if (!XabberService.getInstance().needForeground()) {
+            return;
+        }
 
-        Collection<AccountJid> accountList = AccountManager.getInstance().getEnabledAccounts();
+        Collection<AccountJid> accountList = AccountManager.INSTANCE.getEnabledAccounts();
         if (accountList.isEmpty()) {
             return;
         }
@@ -288,7 +313,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         for (AccountJid account : accountList) {
 
-            AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
             if (accountItem == null) {
                 continue;
             }
@@ -320,9 +345,8 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
 
         persistentIntent = MainActivity.createPersistentIntent(application);
 
-        if (SyncManager.getInstance().isSyncMode()) {
+        if (MessageArchiveManager.INSTANCE.isArchiveFetching()) {
             persistentNotificationBuilder.setColor(NotificationCompat.COLOR_DEFAULT);
-            persistentNotificationBuilder.setSmallIcon(R.drawable.ic_sync_white_24dp);
             persistentNotificationBuilder.setContentText(application.getString(R.string.connection_state_sync));
         } else {
             if (connected > 0) {
@@ -333,55 +357,32 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
                 persistentNotificationBuilder.setSmallIcon(R.drawable.ic_stat_offline);
             }
 
-            persistentNotificationBuilder.setContentText(getConnectionState(waiting, connecting, connected, accountList.size()));
+            persistentNotificationBuilder.setContentText(
+                    getConnectionState(waiting, connecting, connected, accountList.size())
+            );
         }
 
-        persistentNotificationBuilder.setContentIntent(PendingIntent.getActivity(application, 0, persistentIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT));
+        persistentNotificationBuilder.setContentIntent(PendingIntent.getActivity(
+                application, 0, persistentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        );
 
         notify(PERSISTENT_NOTIFICATION_ID, persistentNotificationBuilder.build());
     }
 
     private String getConnectionState(int waiting, int connecting, int connected, int accountCount) {
-
-        String accountQuantity;
-        String connectionState;
         if (connected > 0) {
-            accountQuantity = StringUtils.getQuantityString(
-                    application.getResources(), R.array.account_quantity, accountCount);
-
-            String connectionFormat = StringUtils.getQuantityString(
-                    application.getResources(), R.array.connection_state_connected, connected);
-
-            connectionState = String.format(connectionFormat, connected, accountCount, accountQuantity);
-
+            return application.getResources().getQuantityString(R.plurals.accounts_of_online, connected,
+                    connected, accountCount);
         } else if (connecting > 0) {
-
-            accountQuantity = StringUtils.getQuantityString(
-                    application.getResources(), R.array.account_quantity, accountCount);
-
-            String connectionFormat = StringUtils.getQuantityString(
-                    application.getResources(), R.array.connection_state_connecting, connecting);
-
-            connectionState = String.format(connectionFormat, connecting, accountCount, accountQuantity);
-
+            return application.getResources().getQuantityString(R.plurals.accounts_of_connecting,
+                    connecting, connecting, accountCount);
         } else if (waiting > 0 && application.isInitialized()) {
-
-            accountQuantity = StringUtils.getQuantityString(
-                    application.getResources(), R.array.account_quantity, accountCount);
-
-            String connectionFormat = StringUtils.getQuantityString(
-                    application.getResources(), R.array.connection_state_waiting, waiting);
-
-            connectionState = String.format(connectionFormat, waiting, accountCount, accountQuantity);
-
+            return application.getResources().getQuantityString(R.plurals.accounts_of_waiting_to_connect,
+                    waiting, waiting, accountCount);
         } else {
-            accountQuantity = StringUtils.getQuantityString(
-                    application.getResources(), R.array.account_quantity_offline, accountCount);
-            connectionState = application.getString(
-                    R.string.connection_state_offline, accountCount, accountQuantity);
+            return application.getResources().getQuantityString(R.plurals.accounts_offline, accountCount,
+                    accountCount);
         }
-        return connectionState;
     }
 
     private void notify(int id, Notification notification) {
@@ -395,42 +396,53 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         } catch (SecurityException e) {
             LogManager.exception(this, e);
             // If no access to ringtone - reset channel to default
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                NotificationChannelUtils.resetNotificationChannel(notificationManager, notification.getChannelId());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannelUtils.resetNotificationChannel(
+                        notificationManager, notification.getChannelId()
+                );
+            }
         }
     }
 
     public void onMessageNotification(MessageRealmObject messageRealmObject) {
-        MessageNotificationManager.getInstance().onNewMessage(messageRealmObject);
+        MessageNotificationManager.INSTANCE.onNewMessage(messageRealmObject);
+    }
+
+    public void onMessageNotification(
+            MessageRealmObject messageRealmObject, GroupMemberRealmObject groupMember
+    ) {
+        MessageNotificationManager.INSTANCE.onNewMessage(messageRealmObject, groupMember);
     }
 
     /**
      * Updates message notification.
      */
     public void onMessageNotification() {
-        MessageNotificationManager.getInstance().rebuildAllNotifications();
+        MessageNotificationManager.INSTANCE.rebuildAllNotifications();
     }
 
     public void removeMessageNotification(final AccountJid account, final ContactJid user) {
-        MessageNotificationManager.getInstance().removeChat(account, user);
+        MessageNotificationManager.INSTANCE.removeChat(account, user);
     }
 
     public void removeMessageNotificationsForAccount(final AccountJid account) {
-        MessageNotificationManager.getInstance().removeNotificationsForAccount(account);
+        MessageNotificationManager.INSTANCE.removeNotificationsForAccount(account);
     }
 
     /**
      * Called when notifications was cleared by user.
      */
     public void onClearNotifications() {
-        for (NotificationProvider<? extends NotificationItem> provider : providers)
-            if (provider.canClearNotifications())
+        for (NotificationProvider<? extends NotificationItem> provider : providers) {
+            if (provider.canClearNotifications()) {
                 provider.clearNotifications();
-        MessageNotificationManager.getInstance().removeAllMessageNotifications();
+            }
+        }
+        MessageNotificationManager.INSTANCE.removeAllMessageNotifications();
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
         handler.post(this);
     }
 
@@ -452,7 +464,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     @Override
     public void run() {
         handler.removeCallbacks(this);
-        //updateMessageNotification(null);
         updatePersistentNotification();
     }
 
@@ -461,8 +472,6 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
     }
 
     @Override
-    public void onClose() {
-        //notificationManager.cancelAll();
-        notificationManager.cancel(PERSISTENT_NOTIFICATION_ID);
-    }
+    public void onClose() { notificationManager.cancel(PERSISTENT_NOTIFICATION_ID); }
+
 }

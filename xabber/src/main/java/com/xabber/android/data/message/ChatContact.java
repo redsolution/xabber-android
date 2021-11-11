@@ -33,12 +33,12 @@ public class ChatContact extends AbstractContact {
     }
 
     public ChatContact(AbstractChat abstractChat) {
-        super(abstractChat.getAccount(), abstractChat.getUser());
+        super(abstractChat.getAccount(), abstractChat.getContactJid());
     }
 
     @Override
     public boolean isConnected() {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         return accountItem != null && accountItem.getState().isConnected();
     }
 

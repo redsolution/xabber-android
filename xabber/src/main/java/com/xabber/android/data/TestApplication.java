@@ -23,11 +23,11 @@ import androidx.multidex.MultiDex;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.ScreenManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.connection.ReconnectionManager;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.avatar.AvatarStorage;
@@ -35,11 +35,9 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.extension.otr.OTRManager;
+import com.xabber.android.data.extension.iqlast.LastActivityManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.http.PatreonManager;
@@ -51,14 +49,14 @@ import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
-import com.xabber.android.data.push.PushManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.BaseUIListener;
+import com.xabber.android.ui.OnErrorListener;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
@@ -313,21 +311,18 @@ public class TestApplication extends android.app.Application {
     }
 
     private void addManagers() {
-        addManager(SyncManager.getInstance());
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(AvatarStorage.getInstance());
-        addManager(OTRManager.getInstance());
         addManager(ConnectionManager.getInstance());
-        addManager(ScreenManager.getInstance());
-        addManager(AccountManager.getInstance());
+        addManager(AccountManager.INSTANCE);
         addManager(XabberAccountManager.getInstance());
         addManager(PatreonManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());
         addManager(VCardManager.getInstance());
         addManager(AvatarManager.getInstance());
-        addManager(PresenceManager.getInstance());
+        addManager(PresenceManager.INSTANCE);
         addManager(RosterManager.getInstance());
         addManager(CircleManager.getInstance());
         addManager(PhraseManager.getInstance());
@@ -339,18 +334,16 @@ public class TestApplication extends android.app.Application {
         addManager(NetworkManager.getInstance());
         addManager(ReconnectionManager.getInstance());
         addManager(ReceiptManager.getInstance());
-        addManager(ChatMarkerManager.getInstance());
+        addManager(ChatMarkerManager.INSTANCE);
         addManager(SSNManager.getInstance());
         addManager(AttentionManager.getInstance());
-        addManager(CarbonManager.getInstance());
+        addManager(CarbonManager.INSTANCE);
         addManager(HttpFileUploadManager.getInstance());
         addManager(BlockingManager.getInstance());
-        addManager(NextMamManager.getInstance());
+        addManager(MessageArchiveManager.INSTANCE);
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
-        addManager(PushManager.getInstance());
         addManager(DelayedNotificationActionManager.getInstance());
-        addManager(LastActivityInteractor.getInstance());
     }
 
     /**
@@ -507,12 +500,9 @@ public class TestApplication extends android.app.Application {
      * Notify about error.
      */
     public void onError(final int resourceId) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
-                    onErrorListener.onError(resourceId);
-                }
+        runOnUiThread(() -> {
+            for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
+                onErrorListener.onError(resourceId);
             }
         });
     }

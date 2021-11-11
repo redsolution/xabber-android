@@ -27,6 +27,7 @@
     <string name="xep_0048_bookmarks">XEP-0048: Bookmarks</string>
     <string name="xep_0rrr_retract">XEP-0RRR: Message delete and rewrite</string>
     <string name="xep_0xxx_reliable_message_delivery">XEP-0XXX: Reliable Message Delivery</string>
+    <string name="xep_0ggg_groupchat">XEP-0GGG: Group Chats</string>
 
     <string name="check_mark">✓</string>
     <string name="cross_mark">✗</string>
@@ -35,10 +36,4 @@
     <string name="features">Features:</string>
     <string name="items">Items:</string>
 
-    <string name="spam_filter_limit_message">This user has limited receiving messages from not-authorized users</string>
-    <string name="spam_filter_limit_subscription">This user has limited subscriptions. To request a subscription, solve captcha:</string>
-    <string name="spam_filter_ban_subscription">This user does not accept subscriptions. You can only chat with him if he adds you himself.</string>
-    <string name="spam_filter_captcha_correct">Correct answer. Subscription request showed to user.</string>
-    <string name="spam_filter_captcha_incorrect">Incorrect answer. You aren\'t a spambot, are you?</string>
-    <string name="spam_filter_captcha_many_attempts">To many attempts. Try request subscription again to generate new captcha</string>
 </resources>

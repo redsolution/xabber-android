@@ -26,7 +26,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.AuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.activity.MainActivity;
@@ -45,9 +44,7 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     private CheckBox chkUseTOR;
     private EditText edtUsername;
     private EditText edtPassword;
-    private Button btnLogin;
     private Button btnOptions;
-    private Button btnForgotPass;
     private ImageView imgQRcode;
     private ImageView imgClearText;
     private View optionsView;
@@ -66,13 +63,14 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
     }
 
     public static XAccountLoginFragment newInstance() {
-        XAccountLoginFragment fragment = new XAccountLoginFragment();
-        return fragment;
+        return new XAccountLoginFragment();
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState
+    ) {
         View view = inflater.inflate(R.layout.fragment_xaccount_login, container, false);
 
         storePasswordView = (CheckBox) view.findViewById(R.id.store_password);
@@ -90,15 +88,10 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         edtUsername = (EditText) view.findViewById(R.id.edtUsername);
         edtUsername.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void afterTextChanged(Editable editable) {
@@ -112,12 +105,10 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             }
         });
         edtPassword = (EditText) view.findViewById(R.id.edtPass);
-        btnLogin = view.findViewById(R.id.btnLogin);
-        btnLogin.setOnClickListener(this);
+        view.findViewById(R.id.btnLogin).setOnClickListener(this);
         btnOptions = view.findViewById(R.id.btnOptions);
         btnOptions.setOnClickListener(this);
-        btnForgotPass = view.findViewById(R.id.btnForgotPass);
-        btnForgotPass.setOnClickListener(this);
+        view.findViewById(R.id.btnForgotPass).setOnClickListener(this);
         imgQRcode = view.findViewById(R.id.imgQRcode);
         imgQRcode.setOnClickListener(this);
         imgClearText = view.findViewById(R.id.imgCross);
@@ -203,16 +194,13 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
                 .setPrompt("")
                 .setCameraId(0)
                 .setCaptureActivity(QRCodeScannerActivity.class)
-                .initiateScan(Collections.unmodifiableList(Collections.singletonList(IntentIntegrator.QR_CODE)));
+                .initiateScan(Collections.singletonList(IntentIntegrator.QR_CODE));
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
-            if (result.getContents() == null) {
-                Toast.makeText(getActivity(), "no-go", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(getActivity(), "Scanned = " + result.getContents(), Toast.LENGTH_LONG).show();
+            if (result.getContents() != null) {
                 if (result.getContents().length() > 5) {
                     String[] s = result.getContents().split(":");
                     if ((s[0].equals("xmpp") || s[0].equals("xabber")) && s.length>=2)
@@ -226,7 +214,9 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
 
     private void addAccount() {
         if (chkUseTOR.isChecked() && !OrbotHelper.isOrbotInstalled()) {
-            OrbotInstallerDialog.newInstance().show(getFragmentManager(), OrbotInstallerDialog.class.getName());
+            OrbotInstallerDialog.newInstance().show(
+                    getFragmentManager(), OrbotInstallerDialog.class.getName()
+            );
             return;
         }
 
@@ -234,9 +224,8 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             return;
         }
 
-        AccountJid account;
         try {
-            account = AccountManager.getInstance().addAccount(
+            AccountManager.INSTANCE.addAccount(
                     edtUsername.getText().toString().trim(),
                     edtPassword.getText().toString(),
                     "",
@@ -260,12 +249,20 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         contactString = contactString.trim();
 
         if (contactString.contains(" ")) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    getActivity(),
+                    getString(R.string.account_add__alert_incorrect_xmpp_id),
+                    Toast.LENGTH_LONG
+            ).show();
             return true;
         }
 
         if (TextUtils.isEmpty(contactString)) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    getActivity(),
+                    getString(R.string.account_add__alert_incorrect_xmpp_id),
+                    Toast.LENGTH_LONG
+            ).show();
             return true;
         }
 
@@ -278,7 +275,6 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
         //String resourceName;
 
         if (slashIndex > 0) {
-            //resourceName = contactString.substring(slashIndex + 1);
             if (atChar > 0 && atChar < slashIndex) {
                 localName = contactString.substring(0, atChar);
                 domainName = contactString.substring(atChar + 1, slashIndex);
@@ -287,7 +283,6 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
                 domainName = contactString.substring(0, slashIndex);
             }
         } else {
-            //resourceName = "";
             if (atChar > 0) {
                 localName = contactString.substring(0, atChar);
                 domainName = contactString.substring(atChar + 1);
@@ -297,26 +292,40 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             }
         }
 
-        if (domainName.isEmpty()) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+        if (domainName.equals("")) {
+            Toast.makeText(
+                    getActivity(),
+                    getString(R.string.account_add__alert_incorrect_xmpp_id),
+                    Toast.LENGTH_LONG
+            ).show();
             return true;
         }
 
         if (slashIndex != -1) {
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    getActivity(),
+                    getString(R.string.account_add__alert_incorrect_xmpp_id),
+                    Toast.LENGTH_LONG
+            ).show();
             return false;
         }
 
-        if (domainName.charAt(0)=='.' || domainName.charAt(domainName.length()-1)=='.'){
-            Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
+        if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
+            Toast.makeText(
+                    getActivity(),
+                    getString(R.string.account_add__alert_incorrect_xmpp_id),
+                    Toast.LENGTH_LONG
+            ).show();
             return true;
         }
 
-        if (localName.length() > 0) {
-            if (localName.charAt(0) == '.' || localName.charAt(localName.length()-1)=='.') {
-                Toast.makeText(getActivity(), getString(R.string.INCORRECT_USER_NAME), Toast.LENGTH_LONG).show();
-                return true;
-            }
+        if (localName.charAt(localName.length()-1)=='.' || localName.charAt(0)=='.'){
+            Toast.makeText(
+                    getActivity(),
+                    getString(R.string.account_add__alert_incorrect_xmpp_id),
+                    Toast.LENGTH_LONG
+            ).show();
+            return true;
         }
 
         return false;
@@ -333,4 +342,5 @@ public class XAccountLoginFragment extends Fragment implements View.OnClickListe
             btnOptions.setText(R.string.button_hide_options);
         }
     }
+
 }

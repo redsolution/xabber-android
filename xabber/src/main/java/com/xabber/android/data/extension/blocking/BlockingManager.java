@@ -2,23 +2,23 @@ package com.xabber.android.data.extension.blocking;
 
 import androidx.annotation.Nullable;
 
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.OnAuthenticatedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
-import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.ui.OnBlockedListChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.blocking.BlockingCommandManager;
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class BlockingManager {
+public class BlockingManager implements OnAuthenticatedListener {
 
     static final String LOG_TAG = BlockingManager.class.getSimpleName();
     private static BlockingManager instance;
@@ -45,13 +45,11 @@ public class BlockingManager {
     @SuppressWarnings("WeakerAccess")
     Map<AccountJid, UnblockedAllListener> unblockedAllListeners;
 
-    private Map<AccountJid, List<ContactJid>> cachedBlockedContacts;
+    private final Map<AccountJid, List<ContactJid>> cachedBlockedContacts;
 
     public static BlockingManager getInstance() {
-        if (instance == null) {
+        if (instance == null)
             instance = new BlockingManager();
-        }
-
         return instance;
     }
 
@@ -64,10 +62,12 @@ public class BlockingManager {
         cachedBlockedContacts = new ConcurrentHashMap<>();
     }
 
-    public void onAuthorized(final ConnectionItem connection) {
+    @Override
+    public void onAuthenticated(@NotNull ConnectionItem connection) {
         final AccountJid account = connection.getAccount();
 
-        BlockingCommandManager blockingCommandManager = BlockingCommandManager.getInstanceFor(connection.getConnection());
+        BlockingCommandManager blockingCommandManager =
+                BlockingCommandManager.getInstanceFor(connection.getConnection());
 
         try {
             boolean supportedByServer = blockingCommandManager.isSupportedByServer();
@@ -81,8 +81,8 @@ public class BlockingManager {
                         blockedContacts.add(ContactJid.from(jid));
                     }
 
-                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                        | InterruptedException | SmackException.NotConnectedException | ContactJid.UserJidCreateException e) {
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException
+                        | SmackException.NotConnectedException | ContactJid.ContactJidCreateException e) {
                     LogManager.exception(LOG_TAG, e);
                 }
                 // Cache block inside manager
@@ -142,25 +142,19 @@ public class BlockingManager {
     }
 
     static void notify(final AccountJid account) {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnBlockedListChangedListener onBlockedListChangedListener
-                        : Application.getInstance().getUIListeners(OnBlockedListChangedListener.class)) {
-                    onBlockedListChangedListener.onBlockedListChanged(account);
-                }
-
-                for (OnContactChangedListener onContactChangedListener
-                        : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
-                    onContactChangedListener.onContactsChanged(new ArrayList<RosterContact>());
-                }
+        Application.getInstance().runOnUiThread(() -> {
+            for (OnBlockedListChangedListener onBlockedListChangedListener
+                    : Application.getInstance().getUIListeners(OnBlockedListChangedListener.class)) {
+                onBlockedListChangedListener.onBlockedListChanged(account);
+            }
+            for (OnContactChangedListener onContactChangedListener
+                    : Application.getInstance().getUIListeners(OnContactChangedListener.class)) {
+                onContactChangedListener.onContactsChanged(new ArrayList<>());
             }
         });
     }
 
     /**
-     *
-     * @param account
      * @return true if supported, false if not supported and null if unknown yet
      */
     @Nullable
@@ -169,7 +163,6 @@ public class BlockingManager {
             supportForAccounts.remove(account);
             return null;
         }
-
         return supportForAccounts.get(account);
     }
 
@@ -220,8 +213,8 @@ public class BlockingManager {
                     blockedContacts.add(ContactJid.from(jid));
                 }
 
-            } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                    | InterruptedException | SmackException.NotConnectedException | ContactJid.UserJidCreateException e) {
+            } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException | InterruptedException
+                    | SmackException.NotConnectedException | ContactJid.ContactJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }
@@ -230,59 +223,51 @@ public class BlockingManager {
         return blockedContacts;
     }
 
-    public interface BlockContactListener {
-        void onSuccessBlock();
-        void onErrorBlock();
-    }
+    public void blockContact(final AccountJid account, final ContactJid contactJid,
+                             final BlockContactListener listener) {
 
-    public void blockContact(final AccountJid account, final ContactJid contactJid, final BlockContactListener listener) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                boolean success = false;
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            boolean success = false;
 
-                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+            BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
 
-                if (blockingCommandManager != null) {
-                    List<Jid> contactsToBlock = new ArrayList<>();
-                    contactsToBlock.add(contactJid.getJid());
+            if (blockingCommandManager != null) {
+                List<Jid> contactsToBlock = new ArrayList<>();
+                contactsToBlock.add(contactJid.getJid());
 
-                    try {
-                        blockingCommandManager.blockContacts(contactsToBlock);
-                        success = true;
-                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                            | InterruptedException | SmackException.NotConnectedException e) {
-                        LogManager.exception(LOG_TAG, e);
-                    }
+                try {
+                    blockingCommandManager.blockContacts(contactsToBlock);
+                    success = true;
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | InterruptedException | SmackException.NotConnectedException e) {
+                    LogManager.exception(LOG_TAG, e);
                 }
-
-                if (success) {
-                    PresenceManager.getInstance().clearSingleContactPresences(account, contactJid.getBareJid());
-                    AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
-                    if (chat != null) {
-                        chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_blocked), ChatAction.contact_blocked, false);
-                    }
-                }
-
-                final boolean finalSuccess = success;
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalSuccess) {
-                            listener.onSuccessBlock();
-                        } else {
-                            listener.onErrorBlock();
-                        }
-                    }
-                });
             }
+
+            if (success) {
+                PresenceManager.INSTANCE.clearSingleContactPresences(account, contactJid.getBareJid());
+                AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
+                if (chat != null) {
+//                    chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_blocked),
+//                            ChatAction.contact_blocked); //todo
+                }
+            }
+
+            final boolean finalSuccess = success;
+            Application.getInstance().runOnUiThread(() -> {
+                if (finalSuccess) {
+                    listener.onSuccessBlock();
+                } else {
+                    listener.onErrorBlock();
+                }
+            });
         });
     }
 
     @SuppressWarnings("WeakerAccess")
     @Nullable
     BlockingCommandManager getBlockingCommandManager(AccountJid account) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             return null;
         }
@@ -302,92 +287,89 @@ public class BlockingManager {
         NotificationManager.getInstance().removeMessageNotification(account, contactJid);
     }
 
-    public interface UnblockContactListener {
-        void onSuccessUnblock();
-        void onErrorUnblock();
-    }
+    public void unblockContacts(final AccountJid account, final List<ContactJid> contacts,
+                                final UnblockContactListener listener) {
 
-    public void unblockContacts(final AccountJid account, final List<ContactJid> contacts, final UnblockContactListener listener) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                boolean success = false;
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            boolean success = false;
 
-                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+            BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
 
-                if (blockingCommandManager != null) {
-                    List<Jid> jidsToUnblock = new ArrayList<>(contacts.size());
-                    for (ContactJid contactJid : contacts) {
-                        jidsToUnblock.add(contactJid.getJid());
-                    }
-
-
-                    try {
-                        blockingCommandManager.unblockContacts(jidsToUnblock);
-                        success = true;
-                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                            | SmackException.NotConnectedException | InterruptedException e) {
-                        LogManager.exception(LOG_TAG, e);
-                    }
+            if (blockingCommandManager != null) {
+                List<Jid> jidsToUnblock = new ArrayList<>(contacts.size());
+                for (ContactJid contactJid : contacts) {
+                    jidsToUnblock.add(contactJid.getJid());
                 }
 
-                if (success) {
-                    for (ContactJid contactJid : contacts) {
-                        AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
-                        if (chat != null) {
-                            chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_unblocked), ChatAction.contact_unblocked, false);
-                        }
-                    }
+
+                try {
+                    blockingCommandManager.unblockContacts(jidsToUnblock);
+                    success = true;
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | SmackException.NotConnectedException | InterruptedException e) {
+                    LogManager.exception(LOG_TAG, e);
                 }
-
-                final boolean finalSuccess = success;
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalSuccess) {
-                            listener.onSuccessUnblock();
-                        } else {
-                            listener.onErrorUnblock();
-                        }
-                    }
-                });
-
             }
+
+            if (success) {
+                for (ContactJid contactJid : contacts) {
+                    AbstractChat chat = ChatManager.getInstance().getChat(account, contactJid);
+//                    if (chat != null) {
+//                        chat.newSilentAction(null, Application.getInstance().getString(R.string.action_contact_unblocked), ChatAction.contact_unblocked);
+//                    } //todo
+                }
+            }
+
+            final boolean finalSuccess = success;
+            Application.getInstance().runOnUiThread(() -> {
+                if (listener != null) {
+                    if (finalSuccess) {
+                        listener.onSuccessUnblock();
+                    } else {
+                        listener.onErrorUnblock();
+                    }
+                }
+            });
+
         });
     }
 
     public void unblockAll(final AccountJid account, final UnblockContactListener listener) {
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                boolean success = false;
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
+            boolean success = false;
 
-                BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
+            BlockingCommandManager blockingCommandManager = getBlockingCommandManager(account);
 
-                if (blockingCommandManager != null) {
-                    try {
-                        blockingCommandManager.unblockAll();
-                        success = true;
-                    } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
-                            | SmackException.NotConnectedException | InterruptedException e) {
-                        LogManager.exception(LOG_TAG, e);
-                    }
+            if (blockingCommandManager != null) {
+                try {
+                    blockingCommandManager.unblockAll();
+                    success = true;
+                } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
+                        | SmackException.NotConnectedException | InterruptedException e) {
+                    LogManager.exception(LOG_TAG, e);
                 }
-
-                final boolean finalSuccess = success;
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalSuccess) {
-                            listener.onSuccessUnblock();
-                        } else {
-                            listener.onErrorUnblock();
-                        }
-                    }
-                });
-
             }
+
+            final boolean finalSuccess = success;
+            Application.getInstance().runOnUiThread(() -> {
+                if (finalSuccess) {
+                    listener.onSuccessUnblock();
+                } else {
+                    listener.onErrorUnblock();
+                }
+            });
+
         });
+    }
+
+    public interface BlockContactListener {
+        void onSuccessBlock();
+        void onErrorBlock();
+    }
+
+    public interface UnblockContactListener {
+        void onSuccessUnblock();
+        void onErrorUnblock();
     }
 
 }

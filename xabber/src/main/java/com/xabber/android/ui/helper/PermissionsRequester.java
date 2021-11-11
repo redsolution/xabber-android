@@ -12,6 +12,7 @@ import com.xabber.android.data.Application;
 
 public class PermissionsRequester {
 
+    public static final int REQUEST_PERMISSION_GALLERY = 4;
     public static final int REQUEST_PERMISSION_CAMERA = 5;
 
     public static boolean requestFileReadPermissionIfNeeded(Activity activity, int requestCode) {

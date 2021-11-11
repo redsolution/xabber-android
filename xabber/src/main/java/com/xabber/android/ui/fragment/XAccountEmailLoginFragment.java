@@ -43,21 +43,13 @@ public class XAccountEmailLoginFragment extends Fragment {
         edtEmail = view.findViewById(R.id.edtEmail);
         edtPass = view.findViewById(R.id.edtPass);
         btnLogin = view.findViewById(R.id.btnLogin);
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String email = edtEmail.getText().toString().trim();
-                String pass = edtPass.getText().toString().trim();
-                if (verifyFields(email, pass)) listener.onLoginClick(email, pass);
-            }
+        btnLogin.setOnClickListener(v -> {
+            String email = edtEmail.getText().toString().trim();
+            String pass = edtPass.getText().toString().trim();
+            if (verifyFields(email, pass)) listener.onLoginClick(email, pass);
         });
         btnForgotPass = view.findViewById(R.id.btnForgotPass);
-        btnForgotPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                forgotPassListener.onForgotPassClick();
-            }
-        });
+        btnForgotPass.setOnClickListener(v -> forgotPassListener.onForgotPassClick());
     }
 
     @Override

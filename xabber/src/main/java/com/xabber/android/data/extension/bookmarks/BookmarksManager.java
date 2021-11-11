@@ -5,9 +5,12 @@ import androidx.annotation.NonNull;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.OnAuthenticatedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smackx.bookmarks.BookmarkManager;
@@ -29,7 +32,7 @@ import java.util.List;
  * Created by valery.miller on 02.06.17.
  */
 
-public class BookmarksManager {
+public class BookmarksManager implements OnAuthenticatedListener {
 
     public static final String XABBER_NAME = "Xabber bookmark";
     public static final String XABBER_URL = "Required to correctly sync bookmarks";
@@ -45,7 +48,7 @@ public class BookmarksManager {
     public boolean isSupported(AccountJid accountJid) throws XMPPException.XMPPErrorException,
             SmackException.NotConnectedException, InterruptedException,
             SmackException.NoResponseException {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
             return bookmarkManager.isSupported();
@@ -53,7 +56,7 @@ public class BookmarksManager {
     }
 
     public List<BookmarkedURL> getUrlFromBookmarks(AccountJid accountJid) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         List<BookmarkedURL> urls = Collections.emptyList();
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
@@ -67,8 +70,33 @@ public class BookmarksManager {
         return urls;
     }
 
+    @Override
+    public void onAuthenticated(@NotNull ConnectionItem connectionItem) {
+        AccountJid account = connectionItem.getAccount();
+
+        if (!SettingsManager.syncBookmarksOnStart()) return;
+
+        cleanCache(account);
+
+        List<BookmarkedConference> conferences;
+
+        try {
+            conferences = getConferencesFromBookmarks(account);
+        } catch (SmackException.NoResponseException | InterruptedException |
+                SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
+            LogManager.exception(this, e);
+            return;
+        }
+
+        // Check bookmarks on first run new Xabber. Adding all conferences to bookmarks.
+        if (!isBookmarkCheckedByXabber(account)) {
+            // add url about check to bookmarks
+            addUrlToBookmarks(account, XABBER_URL, XABBER_NAME, false);
+        }
+    }
+
     public void addUrlToBookmarks(AccountJid accountJid, String url, String name, boolean isRSS) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
 
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
@@ -82,7 +110,7 @@ public class BookmarksManager {
     }
 
     public void removeUrlFromBookmarks(AccountJid accountJid, String url) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
             try {
@@ -97,7 +125,7 @@ public class BookmarksManager {
     public void addConferenceToBookmarks(AccountJid accountJid, String conferenceName,
                                          EntityBareJid conferenceJid, Resourcepart userNick) {
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
 
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
@@ -120,7 +148,7 @@ public class BookmarksManager {
             throws SmackException.NoResponseException, SmackException.NotConnectedException,
             InterruptedException, XMPPException.XMPPErrorException {
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         List<BookmarkedConference> conferences = Collections.emptyList();
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
@@ -130,7 +158,7 @@ public class BookmarksManager {
     }
 
     public void removeConferenceFromBookmarks(AccountJid accountJid, EntityBareJid conferenceJid) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
             try {
@@ -143,7 +171,7 @@ public class BookmarksManager {
     }
 
     public void removeBookmarks(AccountJid accountJid, ArrayList<BookmarkVO> bookmarks) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
             try {
@@ -166,32 +194,10 @@ public class BookmarksManager {
     }
 
     public void cleanCache(AccountJid accountJid) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem != null) {
             BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
             bookmarkManager.cleanCache();
-        }
-    }
-
-    public void onAuthorized(AccountJid account) {
-        if (!SettingsManager.syncBookmarksOnStart()) return;
-
-        cleanCache(account);
-
-        List<BookmarkedConference> conferences;
-
-        try {
-            conferences = getConferencesFromBookmarks(account);
-        } catch (SmackException.NoResponseException | InterruptedException |
-                SmackException.NotConnectedException | XMPPException.XMPPErrorException e) {
-            LogManager.exception(this, e);
-            return;
-        }
-
-        // Check bookmarks on first run new Xabber. Adding all conferences to bookmarks.
-        if (!isBookmarkCheckedByXabber(account)) {
-            // add url about check to bookmarks
-            addUrlToBookmarks(account, XABBER_URL, XABBER_NAME, false);
         }
     }
 
@@ -217,7 +223,7 @@ public class BookmarksManager {
         if (account == null) {
             return "";
         }
-        String nickname = AccountManager.getInstance().getNickName(account);
+        String nickname = AccountManager.INSTANCE.getNickName(account);
         String name = XmppStringUtils.parseLocalpart(nickname);
         if ("".equals(name)) {
             return nickname;

@@ -34,7 +34,9 @@ public class SubscriptionRequest extends BaseEntity implements EntityNotificatio
     @Override
     public Intent getIntent() {
         //return ContactListActivity.createContactSubscriptionIntent(Application.getInstance(), account, user);
-        return ChatActivity.createSpecificChatIntent(Application.getInstance(), account, user);
+        return ChatActivity.Companion.createSpecificChatIntent(
+                Application.getInstance(), account, contactJid
+        );
     }
 
     @Override
@@ -45,11 +47,11 @@ public class SubscriptionRequest extends BaseEntity implements EntityNotificatio
 
     @Override
     public String getTitle() {
-        return user.toString();
+        return contactJid.toString();
     }
 
     public String getConfirmation() {
-        String accountName = AccountManager.getInstance().getVerboseName(account);
+        String accountName = AccountManager.INSTANCE.getVerboseName(account);
         return Application.getInstance().getString(R.string.contact_subscribe_confirm, accountName);
     }
 

@@ -1,5 +1,7 @@
 package com.xabber.android.ui.activity;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,20 +17,20 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.roster.PresenceManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.Utils;
 
+import org.jetbrains.annotations.Nullable;
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -46,11 +48,7 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
     private AccountJid account;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, ConnectedDevicesActivity.class).setAccount(account).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
+        return IntentHelpersKt.createAccountIntent(context, ConnectedDevicesActivity.class, account);
     }
 
     @Override
@@ -58,8 +56,7 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connected_devices);
 
-        final Intent intent = getIntent();
-        account = getAccount(intent);
+        account = IntentHelpersKt.getAccountJid(getIntent());
         if (account == null) {
             finish();
             return;
@@ -111,15 +108,15 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
     }
 
     private void fillResourceList(List<View> resourcesList) {
-        List<Presence> allAccountPresences = PresenceManager.getInstance().getAvailableAccountPresences(account);
+        List<Presence> allAccountPresences = PresenceManager.INSTANCE.getAvailableAccountPresences(account);
 
         Resourcepart accountResource = null;
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem != null) {
             accountResource = accountItem.getConnection().getConfiguration().getResource();
         }
 
-        PresenceManager.sortPresencesByPriority(allAccountPresences);
+        PresenceManager.INSTANCE.sortPresencesByPriority(allAccountPresences);
         int thisDeviceIndex = processThisDevicePresence(allAccountPresences, resourcesList, accountResource);
         for (int i = 0; i < allAccountPresences.size(); i++) {
             if (i == thisDeviceIndex) continue;
@@ -180,7 +177,7 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
             thisDeviceIndicatorTextView.setText(R.string.contact_viewer_this_device);
             thisDeviceIndicatorTextView.setVisibility(View.VISIBLE);
             resourceView.setPadding(resourceView.getPaddingLeft(),
-                    Utils.dipToPx(8f, this),
+                    dipToPx(8f, this),
                     resourceView.getPaddingRight(),
                     resourceView.getPaddingBottom());
         }
@@ -255,9 +252,12 @@ public class ConnectedDevicesActivity extends ManagedActivity implements OnAccou
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts != null && accounts.size() > 0 && accounts.contains(account)) {
-            showOnlineAccounts();
-        }
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> {
+            if (accounts != null && accounts.size() > 0 && accounts.contains(account)) {
+                showOnlineAccounts();
+            }
+        });
     }
+
 }

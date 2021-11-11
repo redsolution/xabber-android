@@ -5,8 +5,8 @@ import com.xabber.android.data.entity.ContactJid;
 
 public class FullAction extends Action {
 
-    private AccountJid accountJid;
-    private ContactJid contactJid;
+    private final AccountJid accountJid;
+    private final ContactJid contactJid;
 
     public FullAction(Action action, AccountJid accountJid, ContactJid contactJid) {
         super(action.getNotificationID(), action.getReplyText(), action.getActionType());

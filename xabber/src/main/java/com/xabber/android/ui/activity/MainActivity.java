@@ -27,7 +27,6 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -35,17 +34,16 @@ import androidx.fragment.app.FragmentTransaction;
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
+import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.notification.MessageNotificationManager;
@@ -54,6 +52,8 @@ import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnMessageUpdatedListener;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.color.StatusBarPainter;
 import com.xabber.android.ui.dialog.AccountChooseDialogFragment;
@@ -66,13 +66,12 @@ import com.xabber.android.ui.fragment.DiscoverFragment;
 import com.xabber.android.ui.fragment.MainActivitySettingsFragment;
 import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
 import com.xabber.android.ui.fragment.contactListFragment.ContactListFragment;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 import com.xabber.android.ui.widget.bottomnavigation.BottomBar;
 import com.xabber.xmpp.uri.XMPPUri;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,18 +87,17 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class MainActivity extends ManagedActivity implements OnAccountChangedListener,
         View.OnClickListener, OnChooseListener, ContactListFragment.ContactListFragmentListener,
-        ChatListFragment.ChatListFragmentListener,
+        ChatListFragment.ChatListFragmentListener, OnMessageUpdatedListener,
         MainActivitySettingsFragment.ContactListDrawerListener, BottomBar.OnClickListener {
 
     /**
      * Select contact to be invited to the room was requested.
      */
-    private static final int CODE_OPEN_CHAT = 301;
+    public static final int CODE_OPEN_CHAT = 301;
 
     private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
     private static final int DIALOG_CLOSE_APPLICATION_ID = 0x57;
-
     private static final String ACTION_CONTACT_SUBSCRIPTION = "com.xabber.android.ui.activity.SearchActivity.ACTION_CONTACT_SUBSCRIPTION";
     private static final String ACTION_CLEAR_STACK = "com.xabber.android.ui.activity.SearchActivity.ACTION_CLEAR_STACK";
 
@@ -146,14 +144,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         return intent;
     }
 
-    private static AccountJid getRoomInviteAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static ContactJid getRoomInviteUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -163,7 +153,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             return;
         }
 
-        setContentView(R.layout.activity_contact_list);
+        setContentView(R.layout.activity_main);
         getWindow().setBackgroundDrawable(null);
 
         action = getIntent().getAction();
@@ -216,7 +206,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         ContactJid bareAddress = user.getBareUserJid();
         ArrayList<BaseEntity> entities = new ArrayList<>();
         for (AbstractChat check : ChatManager.getInstance().getChats()) {
-            if (check.isActive() && check.getUser().equals(bareAddress)) {
+            if (check.isActive() && check.getContactJid().equals(bareAddress)) {
                 entities.add(check);
             }
         }
@@ -226,7 +216,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         }
         entities.clear();
 
-        Collection<AccountJid> enabledAccounts = AccountManager.getInstance().getEnabledAccounts();
+        Collection<AccountJid> enabledAccounts = AccountManager.INSTANCE.getEnabledAccounts();
         RosterManager rosterManager = RosterManager.getInstance();
 
         for (AccountJid accountJid : enabledAccounts) {
@@ -260,23 +250,22 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
      */
     private void openChat(AccountJid account, ContactJid user, String text) {
         if (text == null) {
-            startActivity(ChatActivity.createSendIntent(this, account, user, null));
+            startActivity(ChatActivity.Companion.createSendIntent(this, account, user, null));
         } else {
-            startActivity(ChatActivity.createSendIntent(this, account, user, text));
+            startActivity(ChatActivity.Companion.createSendIntent(this, account, user, text));
         }
         finish();
     }
 
     private void openChat(BaseEntity entity, String text) {
-        openChat(entity.getAccount(), entity.getUser(), text);
+        openChat(entity.getAccount(), entity.getContactJid(), text);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        if (!(AccountManager.getInstance().hasAccountsInRealm()
-                || AccountManager.getInstance().hasAccounts())
+        if (!(AccountRepository.hasAccountsInRealm() || AccountManager.INSTANCE.hasAccounts())
                 && XabberAccountManager.getInstance().getAccount() == null) {
             startActivity(TutorialActivity.createIntent(this));
             finish();
@@ -284,6 +273,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         }
 
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
+        Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
 
         if (action != null) {
             switch (action) {
@@ -307,7 +297,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
                             ContactJid user = null;
                             try {
                                 user = ContactJid.from(xmppUri.getPath());
-                            } catch (ContactJid.UserJidCreateException e) {
+                            } catch (ContactJid.ContactJidCreateException e) {
                                 LogManager.exception(this, e);
                             }
 
@@ -342,13 +332,10 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         showPassDialogs();
 
         // remove all message notifications
-        MessageNotificationManager.getInstance().removeAllMessageNotifications();
+        MessageNotificationManager.INSTANCE.removeAllMessageNotifications();
         showBottomNavigation();
         showSavedOrCurrentFragment(currentActiveFragmentType);
         setStatusBarColor();
-
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this);
 
         updateUnreadCount();
     }
@@ -372,18 +359,22 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
                         if (item.getToken() != null && !item.getToken().isEmpty()) {
                             // create account if exist token
                             try {
-                                AccountJid accountJid = AccountManager.getInstance()
-                                        .addAccount(item.getJid(), "", item.getToken(),
+                                AccountJid accountJid = AccountManager.INSTANCE.addAccount(
+                                        item.getJid(), "", item.getToken(),
                                                 false, true, true,
-                                                false, false, true, false);
-                                AccountManager.getInstance().setColor(accountJid,
-                                        ColorManager.getInstance().convertColorNameToIndex(item.getColor()));
+                                                false, false, true, false
+                                );
+                                AccountManager.INSTANCE.setColor(
+                                        accountJid,
+                                        ColorManager.getInstance().convertColorNameToIndex(item.getColor())
+                                );
 
-                                AccountManager.getInstance().setOrder(accountJid, item.getOrder());
-                                AccountManager.getInstance().setTimestamp(accountJid,
-                                        item.getTimestamp());
+                                AccountManager.INSTANCE.setOrder(accountJid, item.getOrder());
+                                AccountManager.INSTANCE.setTimestamp(
+                                        accountJid, item.getTimestamp()
+                                );
 
-                                AccountManager.getInstance().onAccountChanged(accountJid);
+                                AccountManager.INSTANCE.onAccountChanged(accountJid);
                             } catch (NetworkException e) {
                                 Application.getInstance().onError(e);
                             }
@@ -401,18 +392,9 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     protected void onPause() {
         super.onPause();
-        hideKeyboard();
+        AndroidUtilsKt.tryToHideKeyboardIfNeed(this);
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-        if (EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().unregister(this);
-    }
-
-    private void hideKeyboard() {
-        if (getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager =
-                    (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
+        Application.getInstance().removeUIListener(OnMessageUpdatedListener.class, this);
     }
 
     @Override
@@ -482,13 +464,13 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     public void onContactClick(AbstractContact abstractContact) {
         if (action == null) {
-            startActivityForResult(ChatActivity.createSendIntent(this,
-                    abstractContact.getAccount(), abstractContact.getUser(), null),
+            startActivityForResult(ChatActivity.Companion.createSendIntent(this,
+                    abstractContact.getAccount(), abstractContact.getContactJid(), null),
                     CODE_OPEN_CHAT);
             return;
         }
-        startActivityForResult(ChatActivity.createSpecificChatIntent(this,
-                abstractContact.getAccount(), abstractContact.getUser()), CODE_OPEN_CHAT);
+        startActivityForResult(ChatActivity.Companion.createSpecificChatIntent(this,
+                abstractContact.getAccount(), abstractContact.getContactJid()), CODE_OPEN_CHAT);
     }
 
     @Override
@@ -501,14 +483,16 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        getBottomBarFragment().setColoredButton(currentActiveFragmentType);
-        setStatusBarColor();
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> {
+            getBottomBarFragment().setColoredButton(currentActiveFragmentType);
+            setStatusBarColor();
+        });
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageChangedEvent(MessageUpdateEvent chatUpdatedEvent) {
-        updateUnreadCount();
+    @Override
+    public void onAction() {
+        Application.getInstance().runOnUiThread(this::updateUnreadCount);
     }
 
     private void updateUnreadCount() {
@@ -517,6 +501,11 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             if (abstractChat.notifyAboutMessage() && !abstractChat.isArchived())
                 unreadMessagesCount += abstractChat.getUnreadMessageCount();
         getBottomBarFragment().setUnreadMessages(unreadMessagesCount);
+    }
+
+    @Override
+    public void onChatListUpdated() {
+        updateUnreadCount();
     }
 
     @Override
@@ -542,9 +531,9 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             case R.id.drawer_header_action_xabber_account:
                 onXabberAccountClick();
                 break;
-            case R.id.drawer_action_patreon:
-                startActivity(PatreonAppealActivity.createIntent(this));
-                break;
+//            case R.id.drawer_action_patreon:
+//                startActivity(PatreonAppealActivity.createIntent(this));
+//                break;
         }
     }
 
@@ -573,22 +562,22 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         }
 
         /* Show recent if archived displayed */
-        if (currentChatListState == ChatListFragment.ChatListState.archived) {
-            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+        if (currentChatListState == ChatListFragment.ChatListState.ARCHIVED) {
+            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.RECENT);
             return;
         }
 
         /* Toggle between recent and unread when has unread */
         if (unreadMessagesCount > 0 && getChatListFragment().getCurrentChatsState()
-                != ChatListFragment.ChatListState.unread)
-            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.unread);
-        else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.recent);
+                != ChatListFragment.ChatListState.UNREAD)
+            getChatListFragment().onStateSelected(ChatListFragment.ChatListState.UNREAD);
+        else getChatListFragment().onStateSelected(ChatListFragment.ChatListState.RECENT);
     }
 
     @Override
     public void onContactsClick() {
         showContactListFragment();
-        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         if (currentActiveFragmentType == ActiveFragmentType.CONTACTS)
             getContactListFragment().scrollTo(0);
     }
@@ -596,25 +585,25 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     @Override
     public void onSettingsClick() {
         showMenuFragment();
-        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         setStatusBarColor();
     }
 
     @Override
     public void onCallsClick() {
         showCallsFragment();
-        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         setStatusBarColor();
     }
 
     @Override
     public void onDiscoverClick() {
         showDiscoverFragment();
-        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.recent);
+        getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         setStatusBarColor();
 
         if (currentActiveFragmentType.equals(ActiveFragmentType.DISCOVER))
-            startActivity(SearchActivity.createSearchIntent(getApplicationContext()));
+            startActivity(SearchActivity.Companion.createSearchIntent(this));
 
     }
 
@@ -638,7 +627,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
     private ChatListFragment getChatListFragment() {
         if (getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG) != null) {
             return (ChatListFragment) getSupportFragmentManager().findFragmentByTag(CHAT_LIST_TAG);
-        } else return ChatListFragment.newInstance(null);
+        } else return new ChatListFragment();
     }
 
     private DiscoverFragment getDiscoverFragment() {
@@ -750,8 +739,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
 
     private void showContactSubscriptionDialog() {
         Intent intent = getIntent();
-        AccountJid account = getRoomInviteAccount(intent);
-        ContactJid user = getRoomInviteUser(intent);
+        AccountJid account = IntentHelpersKt.getAccountJid(intent);
+        ContactJid user = IntentHelpersKt.getContactJid(intent);
         if (account != null && user != null) {
             ContactSubscriptionDialog.newInstance(account, user).show(getFragmentManager(),
                     ContactSubscriptionDialog.class.getName());

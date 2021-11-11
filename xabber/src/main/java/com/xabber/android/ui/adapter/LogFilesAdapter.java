@@ -13,6 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.ui.text.StringUtilsKt;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Arrays;
@@ -34,6 +37,7 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    @NotNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new FileViewHolder(LayoutInflater.from(parent.getContext())
@@ -46,7 +50,15 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         final File file = files[position];
 
-        fileHolder.fileName.setText(file.getName());
+        fileHolder.fileName.setText(
+                file.getName()
+                        .concat(" ")
+                        .concat(
+                                StringUtilsKt.getHumanReadableFileSize(
+                                        file.length()
+                                )
+                        )
+        );
 
         TypedValue typedValue = new TypedValue();
         holder.itemView.getContext().getTheme().resolveAttribute(R.attr.contact_list_background, typedValue, true);
@@ -104,7 +116,6 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static class FileViewHolder extends RecyclerView.ViewHolder {
         TextView fileName;
 
-
         FileViewHolder(View itemView) {
             super(itemView);
             fileName = (TextView) itemView.findViewById(android.R.id.text1);
@@ -112,7 +123,8 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             fileName.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
             fileName.setHeight(28);
             fileName.setMaxLines(1);
-            fileName.setTextSize(TypedValue.COMPLEX_UNIT_DIP,16);
+            fileName.setTextSize(TypedValue.COMPLEX_UNIT_DIP,12);
         }
     }
+
 }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar_default"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:titleTextAppearance="@style/ToolbarTitle"
+        app:popupTheme="?attr/toolbar_popup_theme"
+        android:elevation="8dp"
+        tools:ignore="RedundantNamespace">
+
+        <ImageView
+            android:id="@+id/toolbar_arrow_back_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="?attr/standard_arrow_left_icon"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:layout_gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:fontFamily="sans-serif-medium"
+            tools:text="@string/motivating_oneliner"
+            android:textColor="?attr/contact_list_contact_name_text_color"
+            android:textSize="18sp" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <include layout="@layout/fragment_container" />
+
+</LinearLayout>

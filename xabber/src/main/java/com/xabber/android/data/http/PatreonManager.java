@@ -10,7 +10,6 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.PatreonGoalRealmObject;
 import com.xabber.android.data.database.realmobjects.PatreonRealmObject;
-import com.xabber.android.data.log.LogManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,16 +103,12 @@ public class PatreonManager implements OnLoadListener {
         patreonRealmObject.setString(patreon.getString());
         patreonRealmObject.setGoals(patreonGoals);
 
-        // TODO: 13.03.18 ANR - WRITE
-        final long startTime = System.currentTimeMillis();
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.beginTransaction();
         PatreonRealmObject resultRealm = realm.copyToRealmOrUpdate(patreonRealmObject);
         realm.commitTransaction();
         XabberComClient.Patreon result = patreonRealmToDTO(resultRealm);
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
-        LogManager.d("REALM", Thread.currentThread().getName()
-                + " save patreon data: " + (System.currentTimeMillis() - startTime));
 
         Log.d(LOG_TAG, "Patreon was saved to Realm");
         if (Looper.myLooper() != Looper.getMainLooper()) realm.close();

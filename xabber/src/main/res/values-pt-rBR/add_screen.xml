@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_contact" comment="dialog_add__label_add_contact">Adicionar contato</string>
+    <string name="create_group" comment="dialog_add__label_create_group">Criar Grupo</string>
+    <string name="create_incognito_group" comment="dialog_add__label_create_incognito_group">Criar Grupo Anônimo</string>
+    <string name="choose_account" comment="dialog_add__label_select_account">Selecionar conta</string>
+    <string name="add_to" comment="dialog_add__label_add_to">Adicionar para</string>
+    <string name="create_to" comment="dialog_add__label_create_to">Criar para</string>
+    <string name="motivating_oneliner" comment="IMPORTANT NOTICE:&#10;&#10;This list is not meant to be translated directly line by line. Just some random memorable lines that are understood by user to create a lighthearted easy mood. &#10;&#10;It can be memes, movie quotes, game quotes, famous words, jokes, etc, easily understandable by a native speaker. This may differ in different countries and in different languages. &#10;&#10;They should not be offensive and should not put anyone in bad mood. &#10;&#10;The interface picks a random line out of this block and presents it to the user. On Android you can see it after pressing the + button, on web - after clicking several times on text input field in chat.&#10;&#10;Lines should not be too long, ideally no longer than 30 symbols. ">Pronto para arrasar?\n
+Legal!\n
+Seja a mudança!\n
+Acredite em si mesmo!\n
+Mudar é bom!\n
+Carpe Diem!\n
+Concentre-se e vença!\n
+A especiaria deve fluir!\n
+Conhecimento é poder!\n
+Viva seu potencial!\n
+Faça acontecer!\n
+Nunca desista!\n
+O sucesso é seu!\n
+Sim, você pode!\n
+Trilhas felizes!\n
+Fique atento!\n
+Mantenha a simplicidade!\n
+Felicidade é escolha!\n
+Amigos são tesouros!\n
+Citius, Altius, Fortius!\n
+Mire alto!\n
+Seja você mesmo!\n
+Sonhe grande!\n
+Haverá dragões!\n
+Olá linda!\n
+Possibilidades infinitas!\n
+Impressionante!v
+Levante-se!v
+Woo hoo!\n
+Agora ou nunca!\n
+Sem amarras!\n
+O tempo cura tudo!\n
+Palavras podem machucar!\n
+Experimente coisas novas!\n
+Menos é mais!\n
+Confie na sua intuição!\n
+Você é linda!\n
+Direto para o sucesso!\n
+Faça isso!\n
+Por que não agora?\n
+Teve um sonho?\n
+Continue!\n
+Eles vivem! 😎\n
+Quebre a rotina!\n
+Olá!\n
+A paixão nunca falha!\n
+Mais café, por favor!\n
+Espere grandes coisas!\n
+Flexione aquele sorriso)\n
+Lembre-se de viver!\n
+Veja o mundo!\n
+Um novo começo!\n
+O real é raro!\n
+Ouse falhar!\n
+Aqui e agora!\n
+Apenas seja feliz!\n
+Com ❤️\n
+Siga esse sonho!\n
+Isso é bom.\n
+Tudo bem, eu ainda te amo 💖\n
+Use sua imaginação!\n
+Porque você pode!\n
+Faça valer a pena!\n
+Que dia!\n
+Abrace o amor!\n
+Atitude é tudo!\n
+Flutue como uma borboleta!\n
+Pique como uma abelha!\n
+Normal é chato!\n
+A vida é boa!\n
+Aqui está olhando para você, garoto!\n
+Sempre teremos Paris!\n
+Toque, Sam!\n
+Você não pode tirar o céu de mim!\n
+TANSTAAFL\n
+Livre como em liberdade!\n
+Sempre tem terreno elevado!\n
+Zed está morto, baby.\n
+É uma oferta irrecusável!\n
+Irradie vibrações positivas!\n
+A hora é agora!\n
+Inconcebível!\n
+En Taro Adun, Executor!\n
+Minha vida por Auir!\n
+Eu faço isso por Aiur!\n
+Relatório Kirov!\n
+Você é quem bate!\n
+Deve ser feito!\n
+Isso deve ser bom!\n
+Vá em frente, comandante!\n
+Parece divertido!\n
+Depósitos de suprimentos adicionais necessários!\n
+Minerais insuficientes!\n
+Relatório de todas as equipes!\n
+Apertem os cintos!\n
+Transmita pedidos!\n
+Reportando para o dever!\n
+Transmita coordenadas!\n
+Seria um prazer!\n
+Qual é a tua ordem, meu mestre?\n
+Nós somos os Borgs!\n
+Prepare-se para ser assimilado!\n
+É apenas uma ferida superficial!\n
+Tudo mudou quando a Nação do Fogo atacou!\n
+Eu costumava ser um usuário como você!\n
+O Boulder parece estar em conflito!\n
+Tudo está conectado!\n
+Siga o Coelho Branco!\n
+Pílula vermelha ou azul?\n
+Acorde, Neo!\n
+Stannis é um verdadeiro rei!\n
+O adormecido deve despertar!\n
+O medo é o assassino da mente!\n
+Abalado, não mexido!\n
+Nosso objetivo é agradar!\n
+Aproveite enquanto dura!\n
+Desabafar!\n
+Vejo você na festa!\n
+Fim de jogo homem! Fim do jogo!\n
+Francamente, minha querida, não dou a mínima!\n
+Vá em frente, faça meu dia!\n
+Que a Força esteja com você!\n
+Você está falando comigo?\n
+Rosebud.\n
+E.T. telefone para casa!\n
+Você consegue lidar com a verdade?\n
+Amanhã é outro dia!\n
+Eu volto!\n
+Está vivo! Está vivo!\n
+Bem, ninguém é perfeito!\n
+Houston, tivemos um problema!\n
+Tivemos uma subtensão do barramento B principal!\n
+Você me teve em \'olá!\n
+Aqui está Johnny!\n
+Soylent Green é gente!\n
+Abra as portas do compartimento do pod, HAL!\n
+Sinto muito, Dave, infelizmente não posso fazer isso!\n
+Quem entra primeiro?\n
+Ninguém coloca o bebê em um canto!\n
+Não fale sobre o Fight Club!\n
+Por que tão sério?\n
+Para o infinito e além!\n
+Deixe a arma. Pegue o cannoli!\n
+Isso vai para onze!\n
+É perigoso ir sozinho. Pegue isso!\n
+Bolo é uma mentira!\n
+Nossa princesa está em outro castelo!\n
+Faça um rolo de barril!\n
+Guerra. A guerra nunca muda.\n
+Esta unidade tem alma?\n
+Dany meio que se esqueceu da Frota de Ferro!\n
+Este é o principal Tom para o controle de solo!\n
+Precisaremos de um barco maior!\n
+Meu precioso!\n
+Este é SPARTA !!!\n
+Eu terei o que ela está tendo!\n
+Todos nós ficamos um pouco loucos às vezes!\n
+Você não está se divertindo?\n
+Viva muito e prospere 🖖\n
+Vingadores, reúnam-se!\n
+Quer saber como consegui essas cicatrizes?\n
+A noite é mais escura antes do amanhecer\n
+Que tal outra piada, Murray?\n
+Eu, por exemplo, gosto de algarismos romanos\n
+Vamos bater, ok?\n
+Jogue-o fora da eclusa de ar\n
+Eu não preciso de sorte. Eu tenho munição.</string>
+    <string name="dialog_add__label_add_account">Adicionar Conta</string>
+    <string name="toolbar__button_add_tooltip">Adicionar grupo, contato ou conta</string>
+    <string name="dialog_add_contact__error__text_no_accounts">Nenhuma conta conectada foi encontrada.</string>
+    <string name="dialog_add_contact__error__text_input_username">Usuário de entrada!</string>
+    <string name="dialog_add_contact__error__text_can_not_add_youself">Não é possível adicionar você mesmo aos contatos!</string>
+    <string name="dialog_add_contact__error__text_invalid_jid">Jid inválido</string>
+    <string name="dialog_add_contact__error__text_already_in_roster">O contato já está em sua lista</string>
+</resources>

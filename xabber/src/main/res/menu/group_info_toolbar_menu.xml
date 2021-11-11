@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_search_members"
+        android:orderInCategory="90"
+        android:title="@string/groupchat_search_members"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_group_settings"
+        android:orderInCategory="90"
+        android:title="@string/groupchat_settings"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_group_default_restrictions"
+        android:orderInCategory="90"
+        android:title="@string/groupchat_default_restrictions"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_group_invitations"
+        android:orderInCategory="90"
+        android:title="@string/groupchat_invitations"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_group_blocked"
+        android:orderInCategory="90"
+        android:title="@string/groupchat_blocked"
+        app:showAsAction="never" />
+
+</menu>

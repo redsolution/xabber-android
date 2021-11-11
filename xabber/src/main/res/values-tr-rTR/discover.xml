@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quick_contacts">Hızlı kişiler</string>
+    <string name="recent_searches">Son aramalar</string>
+    <string name="type_here_to_search">Aramak için bir kelime yaz</string>
+    <string name="nothing_was_searched">Sonuç yok</string>
+</resources>

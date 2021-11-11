@@ -6,8 +6,8 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.OnConnectedListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.privatestorage.PrivateStorageManager;
@@ -84,23 +84,23 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
         XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
         AccountJid accountJid = connection.getAccount();
         if (xabberAccount == null) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
             if (accountItem != null && accountItem.isXabberAutoLoginEnabled()) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 if (PrivateStorageManager.getInstance().haveXabberAccountBinding(accountJid))
                     requestXMPPAuthCode(accountJid);
             }
 
         } else if (xabberAccount.getFullUsername()
-                .equals(AccountManager.getInstance().getVerboseName(accountJid))) {
+                .equals(AccountManager.INSTANCE.getVerboseName(accountJid))) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
             PrivateStorageManager.getInstance().setXabberAccountBinding(accountJid, true);
         }
@@ -135,7 +135,7 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
                     LogManager.d(LOG_TAG, "xabber account authorized successfully");
                     //updateRemoteSettings();
                     updateLocalSettings();
-                    AccountManager.getInstance().setAllAccountAutoLoginToXabber(true);
+                    AccountManager.INSTANCE.setAllAccountAutoLoginToXabber(true);
                 }
             }, new Action1<Throwable>() {
                 @Override
@@ -205,9 +205,9 @@ public class XMPPAuthManager implements OnPacketListener, OnConnectedListener {
 
             RosterManager.getInstance().createContact(account, user,
                     "xabber", Collections.EMPTY_LIST);
-            PresenceManager.getInstance().requestSubscription(account, user, false);
+            PresenceManager.INSTANCE.requestSubscription(account, user, false);
 
-        } catch (ContactJid.UserJidCreateException | XmppStringprepException | InterruptedException |
+        } catch (ContactJid.ContactJidCreateException | XmppStringprepException | InterruptedException |
                 SmackException | NetworkException | XMPPException.XMPPErrorException e) {
             LogManager.exception(this, e);
             return;

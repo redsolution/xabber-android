@@ -23,7 +23,8 @@ import java.util.HashMap;
 public class ColorManager {
 
     private static ColorManager instance = null;
-    private ColorStateList[] chatIncomingBalloonColorStateLists;
+    private ColorStateList[] chatIncomingRegularBalloonColorStateLists;
+    private ColorStateList[] chatIncomingForwardedBalloonColorStateLists;
     private int[] unreadMessagesBackground;
     private int themeId;
     private AccountPainter accountPainter;
@@ -34,16 +35,6 @@ public class ColorManager {
     private int colorContactSecondLine;
 
     private int colorMain;
-    private int activeChatTextColor;
-    private int activeChatBackgroundColor;
-    private int contactBackground;
-    private int contactSeparatorColor;
-    private int activeChatSeparatorColor;
-    private int contactLargeClientIconColor;
-    private int activeChatLargeClientIconColor;
-
-    private int contactListBackgroundColor;
-    private int archivedContactBackgroundColor;
 
     private int chatBackgroundColor;
     private int chatInputBackgroundColor;
@@ -77,41 +68,49 @@ public class ColorManager {
         final Context context = Application.getInstance().getApplicationContext();
         final Resources resources = context.getResources();
 
-        int[] chatIncomingBalloonColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon));
-        int[] chatIncomingBalloonPressedColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon_pressed));
+        int[] chatIncomingRegularBalloonColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon));
+        int[] chatIncomingRegularBalloonPressedColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_balloon_pressed));
+
+        int[] chatIncomingForwardedBalloonColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_forwarded_balloon));
+        int[] chatIncomingForwardedBalloonPressedColors = resources.getIntArray(getThemeResource(context, R.attr.chat_incoming_forwarded_balloon_pressed));
+
         unreadMessagesBackground = resources.getIntArray(getThemeResource(context, R.attr.chat_unread_messages_background));
 
-        final int length = chatIncomingBalloonColors.length;
+        final int length = chatIncomingRegularBalloonColors.length;
 
-        chatIncomingBalloonColorStateLists = new ColorStateList[length];
+        chatIncomingRegularBalloonColorStateLists = new ColorStateList[length];
+        chatIncomingForwardedBalloonColorStateLists = new ColorStateList[length];
 
         for (int i = 0; i < length; i++) {
-            chatIncomingBalloonColorStateLists[i] = new ColorStateList(
+            chatIncomingRegularBalloonColorStateLists[i] = new ColorStateList(
                     new int[][]{
                             new int[]{android.R.attr.state_pressed},
                             new int[]{},
 
                     },
                     new int[] {
-                            chatIncomingBalloonPressedColors[i],
-                            chatIncomingBalloonColors[i],
+                            chatIncomingRegularBalloonPressedColors[i],
+                            chatIncomingRegularBalloonColors[i],
+                    }
+            );
+        }
+
+        for (int i = 0; i < length; i++) {
+            chatIncomingForwardedBalloonColorStateLists[i] = new ColorStateList(
+                    new int[][]{
+                            new int[]{android.R.attr.state_pressed},
+                            new int[]{},
+
+                    },
+                    new int[] {
+                            chatIncomingForwardedBalloonPressedColors[i],
+                            chatIncomingForwardedBalloonColors[i],
                     }
             );
         }
 
         colorContactSecondLine = getThemeColor(context, R.attr.contact_list_contact_second_line_text_color);
         colorMain = getThemeColor(context, R.attr.contact_list_contact_name_text_color);
-        activeChatTextColor = getThemeColor(context, R.attr.contact_list_active_chat_text_color);
-        activeChatBackgroundColor = getThemeColor(context, R.attr.contact_list_active_chat_background);
-        contactBackground = getThemeColor(context, R.attr.contact_list_contact_background);
-        contactSeparatorColor = getThemeColor(context, R.attr.contact_list_contact_separator);
-        activeChatSeparatorColor = getThemeColor(context, R.attr.contact_list_active_chat_separator);
-        contactLargeClientIconColor = getThemeColor(context, R.attr.contact_list_contact_client_large_icon_color);
-        activeChatLargeClientIconColor = getThemeColor(context, R.attr.contact_list_active_chat_client_large_icon_color);
-        archivedContactBackgroundColor = getThemeColor(context, R.attr.contact_list_contact_archived_background);
-
-        contactListBackgroundColor = getThemeColor(context, R.attr.contact_list_background);
-
         chatBackgroundColor = getThemeColor(context, R.attr.chat_background);
         chatInputBackgroundColor = getThemeColor(context, R.attr.chat_input_background);
 
@@ -132,8 +131,12 @@ public class ColorManager {
         return color;
     }
 
-    public ColorStateList getChatIncomingBalloonColorsStateList(AccountJid account) {
-        return chatIncomingBalloonColorStateLists[getAccountColorLevel(account)];
+    public ColorStateList getChatIncomingRegularBalloonColorsStateList(AccountJid account) {
+        return chatIncomingRegularBalloonColorStateLists[getAccountColorLevel(account)];
+    }
+
+    public ColorStateList getChatIncomingForwardedBalloonColorsStateList(AccountJid account) {
+        return chatIncomingForwardedBalloonColorStateLists[getAccountColorLevel(account)];
     }
 
     public int getUnreadMessageBackground(AccountJid account) {
@@ -141,7 +144,7 @@ public class ColorManager {
     }
 
     public static int getAccountColorLevel(AccountJid account) {
-        return AccountManager.getInstance().getColorLevel(account);
+        return AccountManager.INSTANCE.getColorLevel(account);
     }
 
 
@@ -153,34 +156,6 @@ public class ColorManager {
         return colorMain;
     }
 
-    public int getActiveChatTextColor() {
-        return activeChatTextColor;
-    }
-
-    public int getActiveChatBackgroundColor() {
-        return activeChatBackgroundColor;
-    }
-
-    public int getContactBackground() {
-        return contactBackground;
-    }
-
-    public int getContactSeparatorColor() {
-        return contactSeparatorColor;
-    }
-
-    public int getActiveChatSeparatorColor() {
-        return activeChatSeparatorColor;
-    }
-
-    public int getContactLargeClientIconColor() {
-        return contactLargeClientIconColor;
-    }
-
-    public int getActiveChatLargeClientIconColor() {
-        return activeChatLargeClientIconColor;
-    }
-
     public int getChatBackgroundColor() {
         return chatBackgroundColor;
     }
@@ -189,20 +164,12 @@ public class ColorManager {
         return chatInputBackgroundColor;
     }
 
-    public int getContactListBackgroundColor() {
-        return contactListBackgroundColor;
-    }
-
     public int getNavigationDrawerBackgroundColor() {
         return navigationDrawerBackgroundColor;
     }
 
     public int getColorContactSecondLine() {
         return colorContactSecondLine;
-    }
-
-    public int getArchivedContactBackgroundColor() {
-        return archivedContactBackgroundColor;
     }
 
     public int convertColorNameToId(String colorName) {
@@ -228,9 +195,11 @@ public class ColorManager {
         colors.put("brown", R.color.brown_500);
 
         Integer colorId = colors.get(colorName);
-        if (colorId != null)
+        if (colorId != null) {
             return ContextCompat.getColor(context, colors.get(colorName));
-        else return ContextCompat.getColor(context, R.color.grey_800);
+        } else {
+            return ContextCompat.getColor(context, R.color.grey_800);
+        }
     }
 
     public int convertColorNameToIndex(String colorName) {

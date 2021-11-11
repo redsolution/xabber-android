@@ -1,35 +1,34 @@
-/**
- * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
- * This file is part of Xabber project; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License, Version 3.
- *
- * Xabber is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License,
- * along with this program. If not, see http://www.gnu.org/licenses/.
+/*
+  Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+  This file is part of Xabber project; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License, Version 3.
+
+  Xabber is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License,
+  along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.widget.Toast;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.OnErrorListener;
 import com.xabber.android.ui.activity.AboutActivity;
-import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.LoadActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.TutorialActivity;
 
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ import java.util.WeakHashMap;
 public class ActivityManager implements OnUnloadListener {
 
     private static final String EXTRA_TASK_INDEX = "com.xabber.android.data.ActivityManager.EXTRA_TASK_INDEX";
-    private static final long START_SERVICE_DELAY = 1000;
 
     private static final boolean LOG = true;
     private static ActivityManager instance;
@@ -114,20 +112,7 @@ public class ActivityManager implements OnUnloadListener {
     }
 
     /**
-     * @return Whether contact list is in the activity stack.
-     */
-    public boolean hasContactList(Context context) {
-        rebuildStack();
-        for (Activity activity : activities)
-            if (activity instanceof MainActivity)
-                return true;
-        return false;
-    }
-
-    /**
      * Apply theme settings.
-     *
-     * @param activity
      */
     private void applyTheme(Activity activity) {
         activity.setTheme(R.style.Theme);
@@ -142,9 +127,7 @@ public class ActivityManager implements OnUnloadListener {
     /**
      * Push activity to stack.
      * <p/>
-     * Must be called from {@link Activity#onCreate(Bundle)}.
-     *
-     * @param activity
+     * Must be called from {@link Activity@onCreate(Bundle)}.
      */
     public void onCreate(Activity activity) {
         if (LOG) {
@@ -165,9 +148,7 @@ public class ActivityManager implements OnUnloadListener {
     /**
      * Pop activity from stack.
      * <p/>
-     * Must be called from {@link Activity#onDestroy()}.
-     *
-     * @param activity
+     * Must be called from {@link Activity@onDestroy()}.
      */
     public void onDestroy(Activity activity) {
         if (LOG)
@@ -178,9 +159,7 @@ public class ActivityManager implements OnUnloadListener {
     /**
      * Pause activity.
      * <p/>
-     * Must be called from {@link Activity#onPause()}.
-     *
-     * @param activity
+     * Must be called from {@link Activity@onPause()}.
      */
     public void onPause(Activity activity) {
         if (LOG)
@@ -189,78 +168,46 @@ public class ActivityManager implements OnUnloadListener {
         CertificateManager.getInstance().unregisterActivity(activity);
 
         if (onErrorListener != null)
-            application
-                    .removeUIListener(OnErrorListener.class, onErrorListener);
+            application.removeUIListener(OnErrorListener.class, onErrorListener);
         onErrorListener = null;
     }
 
     /**
      * Resume activity.
      * <p/>
-     * Must be called from {@link Activity#onResume()}.
-     *
-     * @param activity
+     * Must be called from {@link Activity@onResume()}.
      */
     public void onResume(final Activity activity) {
         if (LOG) {
             LogManager.i(activity, "onResume");
         }
-        if((!application.isInitialized() || SyncManager.getInstance().isSyncMode())
-                && !Application.getInstance().isClosing()) {
+        if(!application.isInitialized() && !Application.getInstance().isClosing()) {
 
             if (LOG) {
                 LogManager.i(this, "Wait for loading");
             }
-            AccountManager.getInstance().onPreInitialize();
             RosterManager.getInstance().onPreInitialize();
-            // TODO
-            //  check if we need to do the convoluted
-            //  backgroundThread -> sleep -> uiThread before starting service
-            //  or if simple uiThreadDelay is sufficient
-            Application.getInstance().runOnUiThreadDelay(() ->
-                    activity.startService(XabberService.createIntent(activity)),
-                    START_SERVICE_DELAY);
-            // Application.getInstance().runInBackground(new Runnable() {
-            //     @Override
-            //     public void run() {
-            //         try {
-            //             Thread.sleep(START_SERVICE_DELAY);
-            //         } catch (InterruptedException e) {
-            //             e.printStackTrace();
-            //         }
-            //         Application.getInstance().runOnUiThread(new Runnable() {
-            //             @Override
-            //             public void run() {
-            //                 activity.startService(XabberService.createIntent(activity));
-            //             }
-            //         });
-            //     }
-            // });
+            Application.getInstance().runOnUiThread(
+                    () -> activity.startService(XabberService.createIntent(activity))
+            );
         }
         if (onErrorListener != null) {
             application.removeUIListener(OnErrorListener.class, onErrorListener);
         }
-        onErrorListener = new OnErrorListener() {
-            @Override
-            public void onError(final int resourceId) {
-                Toast.makeText(activity, activity.getString(resourceId),
-                        Toast.LENGTH_LONG).show();
-            }
-        };
+        onErrorListener = resourceId -> Toast.makeText(activity, activity.getString(resourceId), Toast.LENGTH_LONG).show();
         application.addUIListener(OnErrorListener.class, onErrorListener);
 
         CertificateManager.getInstance().registerActivity(activity);
-        AccountManager.getInstance().stopGracePeriod();
-        SyncManager.getInstance().onActivityResume();
+        for (AccountJid accountItem: AccountManager.INSTANCE.getEnabledAccounts()) {
+            AccountManager.INSTANCE.getAccount(accountItem).stopGracePeriod();
+        }
     }
 
     /**
      * New intent received.
      * <p/>
-     * Must be called from {@link Activity#onNewIntent(Intent)}.
+     * Must be called from {@link Activity@onNewIntent(Intent)}.
      *
-     * @param activity
-     * @param intent
      */
     public void onNewIntent(Activity activity, Intent intent) {
         if (LOG)
@@ -270,18 +217,10 @@ public class ActivityManager implements OnUnloadListener {
     /**
      * Result has been received.
      * <p/>
-     * Must be called from {@link Activity#onActivityResult(int, int, Intent)}.
-     *
-     * @param activity
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * Must be called from {@link Activity@onActivityResult(int, int, Intent)}.
      */
-    public void onActivityResult(Activity activity, int requestCode,
-                                 int resultCode, Intent data) {
-        if (LOG)
-            LogManager.i(activity, "onActivityResult: " + requestCode + ", "
-                    + resultCode + ", " + data);
+    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+        if (LOG) LogManager.i(activity, "onActivityResult: " + requestCode + ", " + resultCode + ", " + data);
     }
 
     /**
@@ -290,9 +229,6 @@ public class ActivityManager implements OnUnloadListener {
      * Must be used when source activity starts new own activity from
      * {@link Activity#startActivity(Intent)} and
      * {@link Activity#startActivityForResult(Intent, int)}.
-     *
-     * @param source
-     * @param intent
      */
     public void updateIntent(Activity source, Intent intent) {
         Integer index = taskIndexes.get(source);
@@ -303,8 +239,6 @@ public class ActivityManager implements OnUnloadListener {
 
     /**
      * Mark activity to be in separate activity stack.
-     *
-     * @param activity
      */
     public void startNewTask(Activity activity) {
         taskIndexes.put(activity, nextTaskIndex);
@@ -314,8 +248,6 @@ public class ActivityManager implements OnUnloadListener {
 
     /**
      * Either move main task to back, either close all activities in subtask.
-     *
-     * @param activity
      */
     public void cancelTask(Activity activity) {
         Integer index = taskIndexes.get(activity);
@@ -333,9 +265,6 @@ public class ActivityManager implements OnUnloadListener {
 
     /**
      * Fetch task index from the intent and mark specified activity.
-     *
-     * @param activity
-     * @param intent
      */
     private void fetchTaskIndex(Activity activity, Intent intent) {
         int index = intent.getIntExtra(EXTRA_TASK_INDEX, -1);
@@ -347,12 +276,7 @@ public class ActivityManager implements OnUnloadListener {
 
     @Override
     public void onUnload() {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                clearStack(true);
-            }
-        });
+        Application.getInstance().runOnUiThread(() -> clearStack(true));
     }
 
 }

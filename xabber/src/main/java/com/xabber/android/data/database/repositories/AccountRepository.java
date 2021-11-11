@@ -7,28 +7,33 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.connection.ConnectionSettings;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
-import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.database.realmobjects.XTokenRealmObject;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 
+import org.jxmpp.jid.Jid;
+import org.jxmpp.jid.impl.JidCreate;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import io.realm.Realm;
-import io.realm.RealmResults;
+import io.realm.RealmList;
 
 public class AccountRepository {
 
-    public static ArrayList<AccountRealmObject> getEnabledAccountsFromRealm(){
-        ArrayList<AccountRealmObject> accounts = new ArrayList<>();
+    private static final String LOG_TAG = AccountRepository.class.getSimpleName();
+
+    public static boolean hasAccountsInRealm() {
+        boolean result = false;
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-        RealmResults<AccountRealmObject> results = realm
-                .where(AccountRealmObject.class)
-                .findAll();
-        for (AccountRealmObject accountRealmObject : results)
-            if (accountRealmObject.isEnabled())
-                accounts.add(accountRealmObject);
-        if (Looper.getMainLooper() != Looper.myLooper())
+        result = !realm.where(AccountRealmObject.class).findAll().isEmpty();
+        if (Looper.myLooper() != Looper.getMainLooper()) {
             realm.close();
-        return accounts;
+        }
+        return result;
     }
 
     public static void saveAccountToRealm(AccountItem accountItem) {
@@ -71,8 +76,13 @@ public class AccountRepository {
                     }
                     accountRealmObject.setPassword(password);
 
-                    if (connectionSettings.getXToken() != null)
-                        accountRealmObject.setXToken(XTokenManager.tokenToXTokenRealm(connectionSettings.getXToken()));
+                    if (connectionSettings.getXToken() != null){
+                        accountRealmObject.setXToken(
+                                XTokenRealmObject.createFromXToken(connectionSettings.getXToken())
+                        );
+                    } else {
+                        accountRealmObject.setXToken(null);
+                    }
                     accountRealmObject.setToken(connectionSettings.getToken());
                     accountRealmObject.setOrder(accountItem.getOrder());
                     accountRealmObject.setSyncNotAllowed(accountItem.isSyncNotAllowed());
@@ -95,24 +105,26 @@ public class AccountRepository {
                     accountRealmObject.setSyncable(accountItem.isSyncable());
                     accountRealmObject.setStorePassword(accountItem.isStorePassword());
                     accountRealmObject.setKeyPair(accountItem.getKeyPair());
-                    accountRealmObject.setLastSync(accountItem.getLastSync());
                     accountRealmObject.setArchiveMode(accountItem.getArchiveMode());
                     accountRealmObject.setClearHistoryOnExit(accountItem.isClearHistoryOnExit());
                     accountRealmObject.setMamDefaultBehavior(accountItem.getMamDefaultBehaviour());
                     accountRealmObject.setLoadHistorySettings(accountItem.getLoadHistorySettings());
                     accountRealmObject.setSuccessfulConnectionHappened(accountItem.isSuccessfulConnectionHappened());
-                    accountRealmObject.setPushNode(accountItem.getPushNode());
-                    accountRealmObject.setPushServiceJid(accountItem.getPushServiceJid());
-                    accountRealmObject.setPushEnabled(accountItem.isPushEnabled());
-                    accountRealmObject.setPushWasEnabled(accountItem.isPushWasEnabled());
+                    if (accountItem.getStartHistoryTimestamp() != null){
+                        accountRealmObject.setStartHistoryTimestamp(accountItem.getStartHistoryTimestamp().getTime());
+                    }
+                    if (accountItem.getRetractVersion() != null) {
+                        accountRealmObject.setRetractVersion(accountItem.getRetractVersion());
+                    }
 
                     realm1.copyToRealmOrUpdate(accountRealmObject);
-                    LogManager.d("AccountTable", "Account " + accountItem.getAccount().getBareJid() + " has been successfully saved with new settings");
+                    LogManager.d(LOG_TAG, "Account " + accountItem.getAccount().getBareJid() + " has been successfully " +
+                            "saved with new settings");
                 });
             } catch (Exception e) {
-                LogManager.exception("AccountTable", e);
+                LogManager.exception(LOG_TAG, e);
             } finally {
-                if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close();
+                if (realm != null) realm.close();
             }
         });
     }
@@ -122,14 +134,12 @@ public class AccountRepository {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    realm1.where(AccountRealmObject.class)
-                            .findAll()
-                            .deleteAllFromRealm();
-                });
+                realm.executeTransaction(realm1 -> realm1.where(AccountRealmObject.class)
+                        .findAll()
+                        .deleteAllFromRealm());
             } catch (Exception e){
-                LogManager.exception("AccountRepository", e);
-            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
         });
     }
 
@@ -150,8 +160,134 @@ public class AccountRepository {
                     }
                 });
             } catch (Exception e) {
-                LogManager.exception("AccountTable", e);
+                LogManager.exception(LOG_TAG, e);
             } finally { if (realm != null) realm.close(); }
         });
     }
+
+    public static void saveOrUpdateGroupServers(final AccountJid accountJid, final List<Jid> servers){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    AccountRealmObject item = realm1.where(AccountRealmObject.class)
+                            .equalTo(AccountRealmObject.Fields.USERNAME,
+                                    accountJid.getBareJid().getLocalpartOrNull().toString())
+                            .equalTo(AccountRealmObject.Fields.SERVERNAME,
+                                    accountJid.getBareJid().getDomain().toString())
+                            .findFirst();
+                    if (item == null) {
+                        return;
+                    }
+                    RealmList<String> srvs = new RealmList<>();
+                    for (Jid jid : servers){
+                        srvs.add(jid.toString());
+                    }
+                    item.setGroupServers(srvs);
+                    realm1.copyToRealmOrUpdate(item);
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
+        });
+    }
+
+    public static Map<AccountJid, List<Jid>> getGroupServers() {
+        Map<AccountJid, List<Jid>> result = new HashMap<>();
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            for (AccountRealmObject item : realm.where(AccountRealmObject.class).findAll()) {
+                if (item.getGroupServers() != null) {
+                    List<Jid> srvs = new ArrayList<>();
+                    for (String server : item.getGroupServers()){
+                        srvs.add(JidCreate.from(server));
+                    }
+                    result.put(item.getAccountJid(), srvs);
+                }
+            }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally {
+            if (realm != null && Looper.myLooper() != Looper.getMainLooper())
+                realm.close();
+        }
+        return result;
+    }
+
+    public static Map<AccountJid, List<String>> getCustomGroupServers() {
+        Map<AccountJid, List<String>> result = new HashMap<>();
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            for (AccountRealmObject item : realm.where(AccountRealmObject.class).findAll()) {
+                if (item.getCustomGroupServers() != null) {
+                    List<String> srvrs = new ArrayList<>(item.getCustomGroupServers());
+                    result.put(item.getAccountJid(), srvrs);
+                }
+            }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally {
+            if (realm != null && Looper.myLooper() != Looper.getMainLooper())
+                realm.close();
+        }
+        return result;
+    }
+
+    public static void saveCustomGroupServer(AccountJid accountJid, String customGroupServer){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    AccountRealmObject item = realm1.where(AccountRealmObject.class)
+                            .equalTo(AccountRealmObject.Fields.USERNAME,
+                                    accountJid.getBareJid().getLocalpartOrNull().toString())
+                            .equalTo(AccountRealmObject.Fields.SERVERNAME,
+                                    accountJid.getBareJid().getDomain().toString())
+                            .findFirst();
+                    if (item == null) {
+                        return;
+                    }
+                    item.addCustomGroupServer(customGroupServer);
+                    realm1.copyToRealmOrUpdate(item);
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
+        });
+    }
+
+    public static void removeCustomGroupServer(AccountJid accountJid, String customGroupServerToRemove){
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    AccountRealmObject item = realm1.where(AccountRealmObject.class)
+                            .equalTo(AccountRealmObject.Fields.USERNAME,
+                                    accountJid.getBareJid().getLocalpartOrNull().toString())
+                            .equalTo(AccountRealmObject.Fields.SERVERNAME,
+                                    accountJid.getBareJid().getDomain().toString())
+                            .findFirst();
+                    if (item == null) {
+                        return;
+                    }
+                    item.removeCustomGroupServer(customGroupServerToRemove);
+                    realm1.copyToRealmOrUpdate(item);
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally {
+                if (realm != null) realm.close();
+            }
+        });
+    }
+
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -16,14 +16,15 @@ package com.xabber.android.ui.preferences;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.widget.Toolbar;
+
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.intent.SegmentIntentBuilder;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.ui.color.BarPainter;
@@ -35,11 +36,13 @@ public class PhraseEditor extends BasePhrasePreferences implements ConfirmDialog
     private Integer index;
 
     public static Intent createIntent(Context context, Integer phraseIndex) {
-        SegmentIntentBuilder<?> builder = new SegmentIntentBuilder<>(
-                context, PhraseEditor.class);
-        if (phraseIndex != null)
-            builder.addSegment(phraseIndex.toString());
-        return builder.build();
+        Intent intent = new Intent(context, PhraseEditor.class);
+        Uri.Builder builder = new Uri.Builder();
+        builder.appendPath(phraseIndex.toString());
+        Uri uri = builder.build();
+        uri = Uri.parse(uri.toString()); // Workaround for android 1.5
+        intent.setData(uri);
+        return intent;
     }
 
     @Override
@@ -67,12 +70,7 @@ public class PhraseEditor extends BasePhrasePreferences implements ConfirmDialog
         Toolbar toolbar = ToolbarHelper.setUpDefaultToolbar(this, title);
         toolbar.inflateMenu(R.menu.toolbar_delete);
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                return onOptionsItemSelected(item);
-            }
-        });
+        toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.setDefaultColor();
@@ -102,8 +100,8 @@ public class PhraseEditor extends BasePhrasePreferences implements ConfirmDialog
     protected void onPause() {
         super.onPause();
 
-        ((PhraseEditorFragment) getFragmentManager()
-                .findFragmentById(R.id.fragment_container)).saveChanges();
+        ((PhraseEditorFragment) getFragmentManager().findFragmentById(R.id.fragment_container))
+                .saveChanges();
     }
 
     @Override
@@ -113,11 +111,12 @@ public class PhraseEditor extends BasePhrasePreferences implements ConfirmDialog
     }
 
     private Integer getPhraseIndex(Intent intent) {
-        String value = SegmentIntentBuilder.getSegment(intent, 0);
-        if (value == null)
+        String value = intent.getData().getPathSegments().get(0);
+        if (value == null) {
             return null;
-        else
+        } else {
             return Integer.valueOf(value);
+        }
     }
 
     private String getRemoveConfirmationText(Integer actionWith) {

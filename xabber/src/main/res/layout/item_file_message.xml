@@ -8,12 +8,6 @@
     android:maxWidth="280dp"
     android:orientation="vertical"
     android:paddingRight="4dp">
-    <!--
-    prev attributes of ^^^^^^^^^
-    android:background="?android:attr/selectableItemBackground"
-    android:layout_width="280dp"
-    android:maxWidth was not specified
-    -->
 
     <RelativeLayout
         android:id="@+id/iconLayout"
@@ -31,7 +25,6 @@
             android:paddingRight="11dp"
             app:srcCompat="@drawable/ic_file"
             android:tint="?attr/shevron_file_icons_color" />
-
 
         <ProgressBar
             android:id="@+id/uploadProgressBar"

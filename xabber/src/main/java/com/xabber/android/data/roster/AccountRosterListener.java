@@ -16,7 +16,7 @@ import java.util.Collection;
 
 public class AccountRosterListener implements RosterListener, RosterLoadedListener {
 
-    private AccountJid account;
+    private final AccountJid account;
 
     public AccountJid getAccount() {
         return account;
@@ -47,7 +47,7 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
     public void entriesUpdated(Collection<Jid> addresses) {
         LogManager.i(getLogTag(), "entriesUpdated " + addresses);
         RosterManager.getInstance().onContactsUpdated(account, addresses);
-        PresenceManager.getInstance().onRosterEntriesUpdated(account, addresses);
+        PresenceManager.INSTANCE.onRosterEntriesUpdated(account, addresses);
     }
 
     @Override
@@ -58,20 +58,20 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
 
     @Override
     public void presenceChanged(Presence presence) {
-        PresenceManager.getInstance().onPresenceChanged(account, presence);
+        PresenceManager.INSTANCE.onPresenceChanged(account, presence);
     }
 
     @Override
     public void onRosterLoaded(Roster roster) {
         LogManager.i(getLogTag(), "onRosterLoaded");
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(AccountRosterListener.this.account);
+        final AccountItem accountItem = AccountManager.INSTANCE.getAccount(AccountRosterListener.this.account);
 
         if (accountItem != null) {
             for (OnRosterReceivedListener listener : Application.getInstance().getManagers(OnRosterReceivedListener.class)) {
                 listener.onRosterReceived(accountItem);
             }
         }
-        AccountManager.getInstance().onAccountChanged(AccountRosterListener.this.account);
+        AccountManager.INSTANCE.onAccountChanged(AccountRosterListener.this.account);
     }
 
     @Override
@@ -79,4 +79,5 @@ public class AccountRosterListener implements RosterListener, RosterLoadedListen
         LogManager.e(getLogTag(), "onRosterLoadingFailed");
         LogManager.exception(getLogTag(), e);
     }
+
 }

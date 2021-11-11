@@ -21,12 +21,7 @@ public class ContactListGroupUtils {
 
     static {
         Collection<Circle> circles = new ArrayList<>(1);
-        circles.add(new Circle() {
-            @Override
-            public String getName() {
-                return CircleManager.NO_GROUP;
-            }
-        });
+        circles.add(() -> CircleManager.NO_GROUP);
         NO_CIRCLE_LIST = Collections.unmodifiableCollection(circles);
     }
 
@@ -73,20 +68,10 @@ public class ContactListGroupUtils {
             if (showGroups) {
                 GroupConfiguration groupConfiguration
                         = getGroupConfiguration(accountConfiguration, group);
-//                if (accountConfiguration.isExpanded()) {
-//                    groupConfiguration.setNotEmpty();
-//                    if (groupConfiguration.isExpanded()) {
-//                        groupConfiguration.addAbstractContact(abstractContact);
-//                    }
-//                }
                 groupConfiguration.setNotEmpty();
                 groupConfiguration.addAbstractContact(abstractContact);
-
                 groupConfiguration.increment(online);
             } else {
-//                if (accountConfiguration.isExpanded()) {
-//                    accountConfiguration.addAbstractContact(abstractContact);
-//                }
                 accountConfiguration.addAbstractContact(abstractContact);
             }
             accountConfiguration.increment(online);
@@ -94,9 +79,6 @@ public class ContactListGroupUtils {
             if (showGroups) {
                 GroupConfiguration groupConfiguration = getGroupConfiguration(groups, group);
                 groupConfiguration.setNotEmpty();
-//                if (groupConfiguration.isExpanded()) {
-//                    groupConfiguration.addAbstractContact(abstractContact);
-//                }
                 groupConfiguration.addAbstractContact(abstractContact);
                 groupConfiguration.increment(online);
             } else {
@@ -141,12 +123,6 @@ public class ContactListGroupUtils {
                         // account N | + | ? | -
                         // ....... E | + | - | -
                         hasVisible = true;
-//                        if (accountConfiguration.isExpanded()) {
-//                            groupConfiguration.setNotEmpty();
-//                            if (groupConfiguration.isExpanded()) {
-//                                groupConfiguration.addAbstractContact(abstractContact);
-//                            }
-//                        }
                         groupConfiguration.setNotEmpty();
                         groupConfiguration.addAbstractContact(abstractContact);
                     }
@@ -156,9 +132,6 @@ public class ContactListGroupUtils {
                 if (online || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
                         || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.normal && showOffline)) {
                     hasVisible = true;
-//                    if (accountConfiguration.isExpanded()) {
-//                        accountConfiguration.addAbstractContact(abstractContact);
-//                    }
                     accountConfiguration.addAbstractContact(abstractContact);
                 }
             }
@@ -176,9 +149,6 @@ public class ContactListGroupUtils {
                             || (groupConfiguration.getShowOfflineMode() == ShowOfflineMode.normal && showOffline)) {
                         groupConfiguration.setNotEmpty();
                         hasVisible = true;
-//                        if (groupConfiguration.isExpanded()) {
-//                            groupConfiguration.addAbstractContact(abstractContact);
-//                        }
                         groupConfiguration.addAbstractContact(abstractContact);
                     }
                     groupConfiguration.increment(online);

@@ -1,24 +1,21 @@
-/**
- * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- * <p>
- * This file is part of Xabber project; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License, Version 3.
- * <p>
- * Xabber is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- * <p>
- * You should have received a copy of the GNU General Public License,
- * along with this program. If not, see http://www.gnu.org/licenses/.
+/*
+  Copyright (c) 2013, Redsolution LTD. All rights reserved.
+  <p>
+  This file is part of Xabber project; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License, Version 3.
+  <p>
+  Xabber is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+  <p>
+  You should have received a copy of the GNU General Public License,
+  along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -33,12 +30,12 @@ import com.squareup.leakcanary.LeakCanary;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.ScreenManager;
 import com.xabber.android.data.connection.CertificateManager;
 import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.connection.NetworkManager;
 import com.xabber.android.data.connection.ReconnectionManager;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.avatar.AvatarStorage;
@@ -46,18 +43,18 @@ import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.carbons.CarbonManager;
 import com.xabber.android.data.extension.chat_markers.ChatMarkerManager;
-import com.xabber.android.data.extension.cs.ChatStateManager;
-import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
+import com.xabber.android.data.extension.delivery.DeliveryManager;
+import com.xabber.android.data.extension.groups.GroupInviteManager;
+import com.xabber.android.data.extension.groups.GroupMemberManager;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
-import com.xabber.android.data.extension.mam.NextMamManager;
-import com.xabber.android.data.extension.otr.OTRManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
-import com.xabber.android.data.extension.rrr.RrrManager;
+import com.xabber.android.data.extension.iqlast.LastActivityManager;
+import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.extension.ssn.SSNManager;
+import com.xabber.android.data.extension.sync.SyncManager;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.xtoken.XTokenManager;
-import com.xabber.android.data.groupchat.GroupchatUserManager;
 import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -67,37 +64,29 @@ import com.xabber.android.data.message.phrase.PhraseManager;
 import com.xabber.android.data.notification.DelayedNotificationActionManager;
 import com.xabber.android.data.notification.NotificationManager;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
-import com.xabber.android.data.push.PushManager;
-import com.xabber.android.data.push.SyncManager;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.xaccount.XMPPAuthManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.service.XabberService;
+import com.xabber.android.ui.BaseUIListener;
+import com.xabber.android.ui.OnErrorListener;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.AppBlockCanaryContext;
-import com.xabber.android.utils.ExternalAPIs;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Base entry point.
@@ -107,7 +96,6 @@ import java.util.concurrent.TimeUnit;
 public class Application extends android.app.Application {
 
     private static final String LOG_TAG = Application.class.getSimpleName();
-    private static final long backgroundTaskTimeout = 1000;
     private static final ThreadFactory backgroundThreadFactory = r -> {
         Thread thread = new Thread(r);
         thread.setPriority(Thread.MIN_PRIORITY);
@@ -120,7 +108,6 @@ public class Application extends android.app.Application {
      * Thread to execute tasks in background..
      */
     private final ExecutorService backgroundExecutor;
-    //private static ThreadPoolExecutor fallbackNetworkExecutor;
     private final ExecutorService backgroundNetworkExecutor;
     private final ExecutorService backgroundExecutorForUserActions;
     private final ExecutorService backgroundNetworkExecutorForUserActions;
@@ -132,8 +119,8 @@ public class Application extends android.app.Application {
      * Unmodifiable collections of managers that implement some common
      * interface.
      */
-    private Map<Class<? extends BaseManagerInterface>, Collection<? extends BaseManagerInterface>> managerInterfaces;
-    private Map<Class<? extends BaseUIListener>, Collection<? extends BaseUIListener>> uiListeners;
+    private final Map<Class<? extends BaseManagerInterface>, Collection<? extends BaseManagerInterface>> managerInterfaces;
+    private final Map<Class<? extends BaseUIListener>, Collection<? extends BaseUIListener>> uiListeners;
     /**
      * Where data load was requested.
      */
@@ -156,18 +143,6 @@ public class Application extends android.app.Application {
      */
     private boolean closed;
 
-    /*
-    private final RejectedExecutionHandler onExecutionReject =
-            new RejectedExecutionHandler() {
-                public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-                    if (fallbackNetworkExecutor == null) {
-                        fallbackNetworkExecutor = createFallbackExecutor();
-                    }
-                    fallbackNetworkExecutor.execute(r);
-                    // LogManager.d("BackgroundTest/fallback_ExecutorInfo", fallbackNetworkExecutor.toString());
-                }
-            };
-            */
     private final Runnable timerRunnable = new Runnable() {
 
         @Override
@@ -181,6 +156,7 @@ public class Application extends android.app.Application {
         }
 
     };
+
     /**
      * Future for loading process.
      */
@@ -227,43 +203,9 @@ public class Application extends android.app.Application {
         });
     }
 
-    private ExecutorService createMultiThreadCacheExecutor() {
-        return new ThreadPoolExecutor(1, Integer.MAX_VALUE,
-                60L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                backgroundThreadFactory);
-    }
-
-    /*private ExecutorService createFlexibleCacheExecutor() {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                1, 20,
-                30L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                backgroundThreadFactory);
-        threadPoolExecutor.setRejectedExecutionHandler(onExecutionReject);
-        return threadPoolExecutor;
-    }*/
-
-    private ThreadPoolExecutor createFallbackExecutor() {
-        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                5, 5,
-                10L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(),
-                backgroundThreadFactory);
-        threadPoolExecutor.allowCoreThreadTimeOut(true);
-        return threadPoolExecutor;
-    }
-
-    private ExecutorService createFixedThreadPoolWithTimeout() {
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) createMultiThreadFixedPoolExecutor();
-        executor.setKeepAliveTime(60L, TimeUnit.SECONDS);
-        executor.allowCoreThreadTimeOut(true);
-        return executor;
-    }
-
     private ExecutorService createMultiThreadFixedPoolExecutor() {
         return Executors.newFixedThreadPool(
-                Math.max(2, Runtime.getRuntime().availableProcessors() / 2),
+                64,
                 backgroundThreadFactory);
     }
 
@@ -283,6 +225,10 @@ public class Application extends android.app.Application {
         }
     }
 
+    private void onApplicationStarted() {
+        AccountManager.INSTANCE.onLoad();
+    }
+
     private void onInitialized() {
         for (OnInitializedListener listener : getManagers(OnInitializedListener.class)) {
             LogManager.i(listener, "onInitialized");
@@ -295,10 +241,8 @@ public class Application extends android.app.Application {
 
     private void onClose() {
         LogManager.i(LOG_TAG, "onClose1");
-        for (Object manager : registeredManagers) {
-            if (manager instanceof OnCloseListener) {
-                ((OnCloseListener) manager).onClose();
-            }
+        for (OnCloseListener manager : getManagers(OnCloseListener.class)) {
+            manager.onClose();
         }
         closed = true;
         LogManager.i(LOG_TAG, "onClose2");
@@ -336,27 +280,21 @@ public class Application extends android.app.Application {
         }
         serviceStarted = true;
         LogManager.i(this, "onStart");
-        loadFuture = backgroundExecutor.submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                try {
-                    onLoad();
-                } finally {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Throw exceptions in UI thread if any.
-                            try {
-                                loadFuture.get();
-                            } catch (InterruptedException | ExecutionException e) {
-                                throw new RuntimeException(e);
-                            }
-                            onInitialized();
-                        }
-                    });
-                }
-                return null;
+        loadFuture = backgroundExecutor.submit(() -> {
+            try {
+                onLoad();
+            } finally {
+                runOnUiThread(() -> {
+                    // Throw exceptions in UI thread if any.
+                    try {
+                        loadFuture.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+                    onInitialized();
+                });
             }
+            return null;
         });
     }
 
@@ -382,7 +320,7 @@ public class Application extends android.app.Application {
         super.onCreate();
 
         if (BuildConfig.DEBUG) {
-            /** Leak Canary */
+            /* Leak Canary */
             if (LeakCanary.isInAnalyzerProcess(this)) {
                 // This process is dedicated to LeakCanary for heap analysis.
                 // You should not init your app in this process.
@@ -390,13 +328,13 @@ public class Application extends android.app.Application {
             }
             LeakCanary.install(this);
 
-            /** Block Canary */
+            /* Block Canary */
             BlockCanary.install(this, new AppBlockCanaryContext()).start();
 
-            /** Android Dev Metrics */
+            /* Android Dev Metrics */
             AndroidDevMetrics.initWith(this);
 
-            /** Strict Mode */
+            /* Strict Mode */
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                     .detectDiskWrites()
                     .detectNetwork()
@@ -404,8 +342,7 @@ public class Application extends android.app.Application {
                     .build());
         }
 
-        /** Crashlytics */
-        ExternalAPIs.enableCrashlyticsIfNeed(this);
+        onApplicationStarted();
 
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         addManagers();
@@ -413,12 +350,11 @@ public class Application extends android.app.Application {
     }
 
     private void addManagers() {
-        addManager(SyncManager.getInstance());
         addManager(SettingsManager.getInstance());
         addManager(LogManager.getInstance());
         addManager(DatabaseManager.getInstance());
         addManager(ConnectionManager.getInstance());
-        addManager(AccountManager.getInstance());
+        addManager(AccountManager.INSTANCE);
         addManager(XabberAccountManager.getInstance());
         addManager(MessageManager.getInstance());
         addManager(ChatManager.getInstance());
@@ -426,10 +362,8 @@ public class Application extends android.app.Application {
         addManager(ColorManager.getInstance());
         addManager(AvatarStorage.getInstance());
         addManager(AvatarManager.getInstance());
-        addManager(ScreenManager.getInstance());
-        addManager(PresenceManager.getInstance());
+        addManager(PresenceManager.INSTANCE);
         addManager(RosterManager.getInstance());
-        addManager(OTRManager.getInstance());
         addManager(CircleManager.getInstance());
         addManager(PhraseManager.getInstance());
         addManager(NotificationManager.getInstance());
@@ -440,23 +374,24 @@ public class Application extends android.app.Application {
         addManager(NetworkManager.getInstance());
         addManager(ReconnectionManager.getInstance());
         addManager(ReceiptManager.getInstance());
-        addManager(ChatMarkerManager.getInstance());
+        addManager(ChatMarkerManager.INSTANCE);
         addManager(SSNManager.getInstance());
         addManager(AttentionManager.getInstance());
-        addManager(CarbonManager.getInstance());
+        addManager(CarbonManager.INSTANCE);
         addManager(HttpFileUploadManager.getInstance());
         addManager(BlockingManager.getInstance());
-        addManager(NextMamManager.getInstance());
+        addManager(MessageArchiveManager.INSTANCE);
         addManager(CertificateManager.getInstance());
         addManager(XMPPAuthManager.getInstance());
-        addManager(PushManager.getInstance());
         addManager(DelayedNotificationActionManager.getInstance());
-        addManager(LastActivityInteractor.getInstance());
-        addManager(XTokenManager.getInstance());
-        addManager(GroupchatUserManager.getInstance());
-        addManager(RrrManager.getInstance());
-        addManager(ReliableMessageDeliveryManager.getInstance());
+        addManager(XTokenManager.INSTANCE);
+        addManager(GroupsManager.INSTANCE);
+        addManager(GroupMemberManager.INSTANCE);
+        addManager(RetractManager.INSTANCE);
+        addManager(DeliveryManager.getInstance());
         addManager(PatreonManager.getInstance());
+        addManager(GroupInviteManager.INSTANCE);
+        addManager(SyncManager.INSTANCE);
     }
 
     /**
@@ -468,7 +403,7 @@ public class Application extends android.app.Application {
 
     @Override
     public void onLowMemory() {
-        LogManager.e(LOG_TAG, "Warning! Low memory!");
+        LogManager.w(LOG_TAG, "Warning! Low memory!");
         for (OnLowMemoryListener listener : getManagers(OnLowMemoryListener.class)) {
             listener.onLowMemory();
         }
@@ -489,12 +424,7 @@ public class Application extends android.app.Application {
 
         // use new thread instead of run in background to exit immediately
         // without waiting for possible other threads in executor
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                onUnload();
-            }
-        });
+        Thread thread = new Thread(this::onUnload);
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
         thread.start();
@@ -506,27 +436,11 @@ public class Application extends android.app.Application {
         super.onTerminate();
     }
 
-    public void onScreenPowerOn() {
-        for (Object manager : registeredManagers) {
-            if (manager instanceof OnScreenListener) {
-                ((OnScreenListener) manager).onScreenStateChanged(OnScreenListener.ScreenState.ON);
-            }
-        }
-    }
-
-    public void onScreenPowerOff() {
-        for (Object manager : registeredManagers) {
-            if (manager instanceof OnScreenListener) {
-                ((OnScreenListener) manager).onScreenStateChanged(OnScreenListener.ScreenState.OFF);
-            }
-        }
-    }
-
     /**
      * Start periodically callbacks.
      */
     private void startTimer() {
-        runOnUiThreadDelay(timerRunnable, OnTimerListener.DELAY);
+        runOnUiThreadDelay(OnTimerListener.DELAY, timerRunnable);
     }
 
     /**
@@ -556,12 +470,7 @@ public class Application extends android.app.Application {
      * Request to clear application data.
      */
     public void requestToClear() {
-        runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                clear();
-            }
-        });
+        runInBackground(this::clear);
     }
 
     private void clear() {
@@ -588,7 +497,7 @@ public class Application extends android.app.Application {
     private <T extends BaseUIListener> Collection<T> getOrCreateUIListeners(Class<T> cls) {
         Collection<T> collection = (Collection<T>) uiListeners.get(cls);
         if (collection == null) {
-            collection = new ArrayList<T>();
+            collection = new ArrayList<>();
             uiListeners.put(cls, collection);
         }
         return collection;
@@ -608,7 +517,7 @@ public class Application extends android.app.Application {
     /**
      * Register new listener.
      * <p/>
-     * Should be called from {@link Activity#onResume()}.
+     * Should be called from {@link Activity@onResume()}.
      */
     public <T extends BaseUIListener> void addUIListener(Class<T> cls, T listener) {
         getOrCreateUIListeners(cls).add(listener);
@@ -617,7 +526,7 @@ public class Application extends android.app.Application {
     /**
      * Unregister listener.
      * <p/>
-     * Should be called from {@link Activity#onPause()}.
+     * Should be called from {@link Activity@onPause()}.
      */
     public <T extends BaseUIListener> void removeUIListener(Class<T> cls, T listener) {
         getOrCreateUIListeners(cls).remove(listener);
@@ -627,12 +536,9 @@ public class Application extends android.app.Application {
      * Notify about error.
      */
     public void onError(final int resourceId) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
-                    onErrorListener.onError(resourceId);
-                }
+        runOnUiThread(() -> {
+            for (OnErrorListener onErrorListener : getUIListeners(OnErrorListener.class)) {
+                onErrorListener.onError(resourceId);
             }
         });
     }
@@ -646,20 +552,9 @@ public class Application extends android.app.Application {
     }
 
     public void runInBackground(final Runnable runnable) {
-        // long start = System.currentTimeMillis();
-        // Throwable testThrowable = new Throwable();
         backgroundExecutor.submit(() -> {
             try {
-                // long qTime = System.currentTimeMillis() - start;
-                // LogManager.d("BackgroundTest/bg", "time in q = " + qTime + " ms");
                 runnable.run();
-                // long taskTime = System.currentTimeMillis() - start - qTime;
-                // LogManager.d("BackgroundTest/bg", "time on run() = " + taskTime + " ms");
-                // if (taskTime > backgroundTaskTimeout) {
-                //     LogManager.d("BackgroundTest/bg_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // } else if (qTime > backgroundTaskTimeout){
-                //     LogManager.d("BackgroundTest/bg_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // }
             } catch (Exception e) {
                 LogManager.exception(runnable, e);
             }
@@ -667,72 +562,33 @@ public class Application extends android.app.Application {
     }
 
     public void runInBackgroundNetwork(final Runnable runnable) {
-        // long start = System.currentTimeMillis();
-        // Throwable testThrowable = new Throwable();
         backgroundNetworkExecutor.submit(() -> {
             try {
-                // long qTime = System.currentTimeMillis() - start;
-                // LogManager.d("BackgroundTest/Net", "time in q = " + qTime + " ms");
                 runnable.run();
-                // long taskTime = System.currentTimeMillis() - start - qTime;
-                // LogManager.d("BackgroundTest/Net", "time on run() = " + taskTime + " ms");
-                // if (taskTime > backgroundTaskTimeout) {
-                //     LogManager.d("BackgroundTest/Net_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // } else if (qTime > backgroundTaskTimeout){
-                //     LogManager.d("BackgroundTest/Net_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // }
-                // LogManager.d("BackgroundTest/Net_ExecutorInfo_completedTask", backgroundNetworkExecutor.toString());
             } catch (Exception e) {
                 LogManager.exception(runnable, e);
             }
         });
-        // LogManager.d("BackgroundTest/Net_ExecutorInfo_queuedTask", backgroundNetworkExecutor.toString());
     }
 
     public void runInBackgroundUserRequest(final Runnable runnable) {
-        // long start = System.currentTimeMillis();
-        // Throwable testThrowable = new Throwable();
         backgroundExecutorForUserActions.submit(() -> {
             try {
-                // long qTime = System.currentTimeMillis() - start;
-                // LogManager.d("BackgroundTest/UserAction", "time in q = " + qTime + " ms");
                 runnable.run();
-                // long taskTime = System.currentTimeMillis() - start - qTime;
-                // LogManager.d("BackgroundTest/UserAction", "time on run() = " + taskTime + " ms");
-                // if (taskTime > backgroundTaskTimeout) {
-                //     LogManager.d("BackgroundTest/UserAction_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // } else if (qTime > backgroundTaskTimeout){
-                //     LogManager.d("BackgroundTest/UserAction_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // }
-                // LogManager.d("BackgroundTest/UserAction_ExecutorInfo_completedTask", backgroundExecutorForUserActions.toString());
             } catch (Exception e) {
                 LogManager.exception(runnable, e);
             }
         });
-        // LogManager.d("BackgroundTest/UserAction_ExecutorInfo_queuedTask", backgroundExecutorForUserActions.toString());
     }
 
     public void runInBackgroundNetworkUserRequest(final Runnable runnable) {
-        // long start = System.currentTimeMillis();
-        // Throwable testThrowable = new Throwable();
         backgroundNetworkExecutorForUserActions.submit(() -> {
             try {
-                // long qTime = System.currentTimeMillis() - start;
-                // LogManager.d("BackgroundTest/Net-UserAction", "time in q = " + qTime + " ms");
                 runnable.run();
-                // long taskTime = System.currentTimeMillis() - start - qTime;
-                // LogManager.d("BackgroundTest/Net-UserAction", "time on run() = " + taskTime + " ms");
-                // if (taskTime > backgroundTaskTimeout) {
-                //     LogManager.d("BackgroundTest/Net-UserAction_TASK-TOO-LONG", taskTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // } else if (qTime > backgroundTaskTimeout){
-                //     LogManager.d("BackgroundTest/Net-UserAction_QUEUE-TOO-LONG", qTime + " ms\n" + Log.getStackTraceString(testThrowable));
-                // }
-                // LogManager.d("BackgroundTest/Net-UserAction_ExecutorInfo_completedTask", backgroundNetworkExecutorForUserActions.toString());
             } catch (Exception e) {
                 LogManager.exception(runnable, e);
             }
         });
-        // LogManager.d("BackgroundTest/Net-UserAction_ExecutorInfo_queuedTask", backgroundNetworkExecutorForUserActions.toString());
     }
 
     /**
@@ -745,12 +601,12 @@ public class Application extends android.app.Application {
     /**
      * Submits request to be executed in UI thread.
      */
-    public void runOnUiThreadDelay(final Runnable runnable, long delayMillis) {
+    public void runOnUiThreadDelay(long delayMillis, final Runnable runnable) {
         handler.postDelayed(runnable, delayMillis);
     }
 
-    public boolean isServiceStarted() {
-        return serviceStarted;
+    public boolean isServiceNotStarted() {
+        return !serviceStarted;
     }
 
     public String getVersionName() {
@@ -762,53 +618,5 @@ public class Application extends android.app.Application {
         }
         return "";
     }
-
-    public void resetApplication() {
-
-        try {
-
-            requestToWipe();
-            //Deleting all user files
-            File cacheDirectory = getCacheDir();
-            if (cacheDirectory.getParent() != null) {
-                File applicationDirectory = new File(cacheDirectory.getParent());
-                if (applicationDirectory.exists() && applicationDirectory.list() != null) {
-                    String[] fileNames = applicationDirectory.list();
-                    for (String fileName : fileNames) {
-                        if (!fileName.equals("lib")) {
-                            FileManager.getInstance()
-                                    .deleteFile(new File(applicationDirectory, fileName));
-                        }
-                    }
-                }
-            }
-
-            //Deleting all custom prefs
-            SettingsManager.resetCustomPrefs();
-
-            //Restart app
-            Context c = getApplicationContext();
-            if (c != null) {
-                PackageManager pm = c.getPackageManager();
-                if (pm != null) {
-                    Intent mStartActivity = pm.getLaunchIntentForPackage(c.getPackageName());
-                    if (mStartActivity != null) {
-                        mStartActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        int mPendingIntentId = 223344;
-                        PendingIntent mPendingIntent = PendingIntent
-                                .getActivity(c, mPendingIntentId, mStartActivity,
-                                        PendingIntent.FLAG_CANCEL_CURRENT);
-                        AlarmManager mgr = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
-                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000,
-                                mPendingIntent);
-                        System.exit(0);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            LogManager.e(LOG_TAG, "Was not able to reset application");
-        }
-    }
-
 
 }

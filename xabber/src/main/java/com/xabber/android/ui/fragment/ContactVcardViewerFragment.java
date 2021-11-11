@@ -22,20 +22,20 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.extension.capability.ClientInfo;
-import com.xabber.android.data.extension.vcard.OnVCardListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.extension.vcard.VcardMaps;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
+import com.xabber.android.ui.OnVCardListener;
 import com.xabber.android.ui.activity.AccountInfoEditActivity;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.xmpp.vcard.AddressProperty;
@@ -46,6 +46,7 @@ import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardCustomProvider;
 import com.xabber.xmpp.vcard.VCardProperty;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
@@ -94,7 +95,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public static ContactVcardViewerFragment newInstance(AccountJid account) {
         try {
             return newInstance(account, ContactJid.from(account.getFullJid().asBareJid()));
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             throw new IllegalStateException("Cannot convert account to user. Account: " + account, e);
         }
     }
@@ -157,15 +158,16 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
         View view = inflater.inflate(R.layout.fragment_contact_vcard, container, false);
 
-        xmppItems = (LinearLayout) view.findViewById(R.id.xmpp_items);
-        contactInfoItems = (LinearLayout) view.findViewById(R.id.contact_info_items);
+        xmppItems = view.findViewById(R.id.xmpp_items);
+        contactInfoItems = view.findViewById(R.id.contact_info_items);
         progressBar = view.findViewById(R.id.contact_info_progress_bar);
 
-        editButton = (Button) view.findViewById(R.id.contact_info_edit_button);
+        editButton = view.findViewById(R.id.contact_info_edit_button);
         editButton.setOnClickListener(v -> {
             if (vCard != null) {
-                Intent intent = AccountInfoEditActivity.createIntent(getActivity(), account,
-                        vCard.getChildElementXML().toString());
+                Intent intent = AccountInfoEditActivity.createIntent(
+                        getActivity(), account, vCard.getChildElementXML().toString()
+                );
 
                 startActivityForResult(intent, REQUEST_CODE_EDIT_VCARD);
             }
@@ -179,7 +181,7 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void onResume() {
         super.onResume();
 
-        if (AccountManager.getInstance().getAccount(account) == null) {
+        if (AccountManager.INSTANCE.getAccount(account) == null) {
             // in case if account was removed
             return;
         }
@@ -202,13 +204,10 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     public void requestVCard() {
         progressBar.setVisibility(View.VISIBLE);
         VCardManager.getInstance().requestByUser(account, user.getJid());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (vCard == null && !vCardError) {
-                    progressBar.setVisibility(View.GONE);
-                    LogManager.i(LOG_TAG, "Automatically stopped progress bar for " + user.toString());
-                }
+        handler.postDelayed(() -> {
+            if (vCard == null && !vCardError) {
+                progressBar.setVisibility(View.GONE);
+                LogManager.i(LOG_TAG, "Automatically stopped progress bar for " + user.toString());
             }
         }, 30000);
     }
@@ -240,47 +239,53 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
 
     @Override
     public void onVCardReceived(AccountJid account, Jid bareAddress, VCard vCard) {
-        if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
-            return;
-        }
-        this.vCard = vCard;
-        this.vCardError = false;
-        updateVCard();
-        listener.onVCardReceived();
-        progressBar.setVisibility(View.GONE);
+        Application.getInstance().runOnUiThread(() -> {
+            if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
+                return;
+            }
+            this.vCard = vCard;
+            this.vCardError = false;
+            updateVCard();
+            listener.onVCardReceived();
+            progressBar.setVisibility(View.GONE);
+        });
     }
 
     @Override
     public void onVCardFailed(AccountJid account, Jid bareAddress) {
-        if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
-            return;
-        }
-        this.vCard = null;
-        this.vCardError = true;
-        progressBar.setVisibility(View.GONE);
+        Application.getInstance().runOnUiThread(() -> {
+            if (!this.account.equals(account) || !this.user.equals(bareAddress)) {
+                return;
+            }
+            this.vCard = null;
+            this.vCardError = true;
+            progressBar.setVisibility(View.GONE);
+        });
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, user)) {
-                updateContact(account, user);
+                Application.getInstance().runOnUiThread(() -> updateContact(account, user));
                 break;
             }
         }
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts.contains(account)) {
-            updateContact(account, user);
-            if (account.getFullJid().asBareJid().equals(user.getJid().asBareJid())) {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
-                if (accountItem != null && accountItem.getFactualStatusMode().isOnline()) {
-                    VCardManager.getInstance().request(this.account, this.account.getFullJid().asBareJid());
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> {
+            if (accounts.contains(account)) {
+                updateContact(account, user);
+                if (account.getFullJid().asBareJid().equals(user.getJid().asBareJid())) {
+                    AccountItem accountItem = AccountManager.INSTANCE.getAccount(this.account);
+                    if (accountItem != null && accountItem.getFactualStatusMode().isOnline()) {
+                        VCardManager.getInstance().request(this.account, this.account.getFullJid().asBareJid());
+                    }
                 }
             }
-        }
+        });
     }
 
     /**
@@ -337,19 +342,20 @@ public class ContactVcardViewerFragment extends Fragment implements OnContactCha
     }
 
     private void fillResourceList(AccountJid account, Jid bareAddress, List<View> resourcesList) {
-        final List<Presence> allPresences = RosterManager.getInstance().getPresences(account, bareAddress);
+        final List<Presence> allPresences =
+                RosterManager.getInstance().getPresences(account, bareAddress);
 
         boolean isAccount = account.getFullJid().asBareJid().equals(user.getBareJid());
         Resourcepart accountResource = null;
         if (isAccount) {
             // TODO: probably not the best way to get own resource
-            AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
             if (accountItem != null) {
                 accountResource = accountItem.getConnection().getConfiguration().getResource();
             }
         }
 
-        PresenceManager.sortPresencesByPriority(allPresences);
+        PresenceManager.INSTANCE.sortPresencesByPriority(allPresences);
 
         for (Presence presence : allPresences) {
             Jid fromJid = presence.getFrom();

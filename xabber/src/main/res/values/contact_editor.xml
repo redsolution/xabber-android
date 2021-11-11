@@ -4,7 +4,6 @@
     <string name="contact_account">Account</string>
     <string name="contact_group">Select groups</string>
     <string name="contact_circle">Circles</string>
-    <string name="contact_select_circles">Select circles</string>
     <string name="contact_name">Alias (optional)</string>
     <string name="contact_subscribe_confirm">Share your %1$s account status with contact?</string>
     <string name="contact_user">Contact username</string>
@@ -18,9 +17,7 @@
     <string name="group_name">Group name</string>
     <string name="circle_is_empty">Set circle name</string>
     <string name="circle_name">Circle name</string>
-    <string name="choose_account">Choose an account</string>
     <string name="EMPTY_ACCOUNT">Please select an account</string>
-    <string name="add_new_group">Add new group…</string>
     <string name="add_new_circle">Add new circle…</string>
     <string name="accept_contact">Authorize</string>
     <string name="decline_contact">Discard</string>
@@ -29,7 +26,17 @@
     <string name="error_during_image_processing">Error during image processing</string>
     <string name="account_server_info">Server info</string>
     <string name="account_server_info_description">List of server capabilities</string>
-
     <string name="conference_private_chat_invitation">%1$s from %2$s wants to start private chat with you</string>
     <string name="accept_muc_private_chat">Accept</string>
+    <string name="input_widget__button_rename">Rename</string>
+    <string name="dialog_add_contact__label_jid">Contact XMPP ID</string>
+    <string name="dialog_add_contact__button_add">Add</string>
+    <string name="dialog_add_contact__button_cancel">Cancel</string>
+    <string name="dialog_add_contact__header">Add Contact</string>
+    <string name="contact_settings__button_request_authorization">Request authorization</string>
+    <string name="contact_settings__button_show_qr_code">Show QR-code</string>
+    <string name="button_esc">Esc</string>
+    <string name="dialog_show_qr_code__header">QR-code</string>
+    <string name="dialog_show_qr_code__button_copy">copy</string>
+    <string name="contact_settings__hint_set_name">Set contact name</string>
 </resources>

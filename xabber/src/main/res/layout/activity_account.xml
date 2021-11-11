@@ -53,7 +53,7 @@
                     tools:visibility="visible" />
 
                 <include
-                    layout="@layout/contact_title_expanded_new"
+                    layout="@layout/contact_title_expanded"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"

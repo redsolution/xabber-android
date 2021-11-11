@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="spam_filter_limit_message">Dieser Benutzer hat das Empfangen von Nachrichten von nicht autorisierten Benutzern eingeschränkt</string>
+    <string name="spam_filter_limit_subscription">Dieser Benutzer hat Kontaktanfragen begrenzt. Um eine Anfrage anzufordern, lösen Sie das Captcha:</string>
+    <string name="spam_filter_ban_subscription">Dieser Benutzer akzeptiert keine Kontaktanfragen. Du kannst nur mit ihm chatten, wenn er dich selbst hinzufügt.</string>
+    <string name="spam_filter_captcha_correct">Richtige Antwort. Kontaktanfragen wurde dem Benutzer angezeigt.</string>
+    <string name="spam_filter_captcha_incorrect">Falsche Antwort. Du bist doch kein Spambot, oder?</string>
+    <string name="spam_filter_captcha_many_attempts">Zu vielen Versuche. Versuchen Sie erneut eine Kontaktanfragen anzufordern, um ein neues Captcha zu generieren</string>
+</resources>

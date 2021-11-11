@@ -74,7 +74,7 @@ public class ChatExportDialogFragment extends DialogFragment implements View.OnC
         nameView = (EditText) layout.findViewById(R.id.name);
         sendView = (CheckBox) layout.findViewById(R.id.send);
         nameView.setText(getString(R.string.export_chat_mask,
-                AccountManager.getInstance().getVerboseName(account),
+                AccountManager.INSTANCE.getVerboseName(account),
                 RosterManager.getInstance().getName(account, user)));
 
         ((Button) layout.findViewById(R.id.export)).setTextColor(colorIndicator);

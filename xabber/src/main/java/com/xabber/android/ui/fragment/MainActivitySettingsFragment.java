@@ -27,13 +27,13 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.http.PatreonManager;
 import com.xabber.android.data.http.XabberComClient;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.AccountAddActivity;
 import com.xabber.android.ui.activity.AccountListActivity;
@@ -66,10 +66,10 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
     private TextView tvAccountEmail;
     private ImageView ivSync;
 
-    private TextView tvPatreonTitle;
-    private ProgressBar pbPatreon;
-    private TextViewFadeAnimator animator;
-    private String[] patreonTexts;
+//    private TextView tvPatreonTitle;
+//    private ProgressBar pbPatreon;
+//    private TextViewFadeAnimator animator;
+//    private String[] patreonTexts;
 
     private AccountListPreferenceAdapter accountListAdapter;
     private ImageView ivReorder;
@@ -133,9 +133,9 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
         tvAccountName = view.findViewById(R.id.tvAccountName);
         tvAccountEmail = view.findViewById(R.id.tvAccountEmail);
 
-        tvPatreonTitle = view.findViewById(R.id.tvPatreonTitle);
-        pbPatreon = view.findViewById(R.id.pbPatreon);
-        view.findViewById(R.id.drawer_action_patreon).setOnClickListener(this);
+//        tvPatreonTitle = view.findViewById(R.id.tvPatreonTitle);
+//        pbPatreon = view.findViewById(R.id.pbPatreon);
+//        view.findViewById(R.id.drawer_action_patreon).setOnClickListener(this);
 
         view.findViewById(R.id.drawer_action_settings).setOnClickListener(this);
         view.findViewById(R.id.drawer_action_about).setOnClickListener(this);
@@ -170,7 +170,7 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
     public void onPause() {
         super.onPause();
         Application.getInstance().removeUIListener(OnAccountChangedListener.class, this);
-        stopPatreonAnim();
+        //stopPatreonAnim();
         compositeSubscription.clear();
     }
 
@@ -199,15 +199,15 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     private void update() {
         drawerHeaderImage.setImageResource(
                 headerImageResources[AccountPainter.getDefaultAccountColorLevel()]);
 
-        setupPatreonView();
+        //setupPatreonView();
         setupAccountList();
     }
 
@@ -231,50 +231,50 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
         }
     }
 
-    private void setupPatreonView() {
-        XabberComClient.Patreon patreon = PatreonManager.getInstance().getPatreon();
-        if (patreon != null) {
-            XabberComClient.PatreonGoal currentGoal = null;
-            for (XabberComClient.PatreonGoal goal : patreon.getGoals()) {
-                if (goal.getGoal() > patreon.getPledged()) {
-                    currentGoal = goal;
-                    break;
-                }
-            }
+//    private void setupPatreonView() {
+//        XabberComClient.Patreon patreon = PatreonManager.getInstance().getPatreon();
+//        if (patreon != null) {
+//            XabberComClient.PatreonGoal currentGoal = null;
+//            for (XabberComClient.PatreonGoal goal : patreon.getGoals()) {
+//                if (goal.getGoal() > patreon.getPledged()) {
+//                    currentGoal = goal;
+//                    break;
+//                }
+//            }
+//
+//            if (currentGoal != null && isAdded()) {
+//                patreonTexts = new String[3];
+//                patreonTexts[0] = patreon.getString();
+//                patreonTexts[1] = getString(R.string.patreon_pledged, patreon.getPledged(), currentGoal.getGoal());
+//                patreonTexts[2] = getString(R.string.patreon_current_goal, currentGoal.getTitle());
+//
+//                tvPatreonTitle.setSelected(true);
+//                pbPatreon.setMax(currentGoal.getGoal());
+//                pbPatreon.setProgress(patreon.getPledged());
+//
+//                animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
+//                startPatreonAnim();
+//            }
+//        }
+//    }
 
-            if (currentGoal != null) {
-                patreonTexts = new String[3];
-                patreonTexts[0] = patreon.getString();
-                patreonTexts[1] = getString(R.string.patreon_pledged, patreon.getPledged(), currentGoal.getGoal());
-                patreonTexts[2] = getString(R.string.patreon_current_goal, currentGoal.getTitle());
+//    public void startPatreonAnim() {
+//        if (patreonTexts != null && patreonTexts.length > 0) {
+//            animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
+//            animator.startAnimation();
+//        }
+//    }
 
-                tvPatreonTitle.setSelected(true);
-                pbPatreon.setMax(currentGoal.getGoal());
-                pbPatreon.setProgress(patreon.getPledged());
-
-                animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
-                startPatreonAnim();
-            }
-        }
-    }
-
-    public void startPatreonAnim() {
-        if (patreonTexts != null && patreonTexts.length > 0) {
-            animator = new TextViewFadeAnimator(tvPatreonTitle, patreonTexts);
-            animator.startAnimation();
-        }
-    }
-
-    public void stopPatreonAnim() {
-        if (animator != null)
-            animator.stopAnimation();
-        if (patreonTexts != null && patreonTexts.length > 0)
-            tvPatreonTitle.setText(patreonTexts[0]);
-    }
+//    public void stopPatreonAnim() {
+//        if (animator != null)
+//            animator.stopAnimation();
+//        if (patreonTexts != null && patreonTexts.length > 0)
+//            tvPatreonTitle.setText(patreonTexts[0]);
+//    }
 
     private void setupAccountList() {
         List<AccountItem> accountItems = new ArrayList<>();
-        for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
+        for (AccountItem accountItem : AccountManager.INSTANCE.getAllAccountItems()) {
             accountItems.add(accountItem);
         }
         accountListAdapter.setAccountItems(accountItems);
@@ -300,8 +300,10 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
 
     @Override
     public void onDeleteAccount(AccountItem accountItem) {
-        AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getFragmentManager(),
-                AccountDeleteDialog.class.getName());
+        AccountDeleteDialog.Companion.newInstance(accountItem.getAccount()).show(
+                getFragmentManager(),
+                AccountDeleteDialog.class.getName()
+        );
     }
 
     private void changeTheme() {

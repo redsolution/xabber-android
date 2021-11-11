@@ -89,7 +89,7 @@ public class NotifyPrefsRealm extends RealmObject {
         if (user == null) return null;
         try {
             return ContactJid.from(user);
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }

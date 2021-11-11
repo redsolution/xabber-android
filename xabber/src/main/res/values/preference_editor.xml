@@ -3,12 +3,10 @@
     <string name="battery_optimization">Battery optimization</string>
     <string name="battery_optimization_disabled">Battery optimization disabled. To enable it go to device settings</string>
     <string name="battery_optimization_enabled">Battery optimization enabled (default)</string>
-
     <string name="cache_clear">Clear cache\nClear all local data. This can free up some space.</string>
     <string name="cache_clear_warning">Do you really want to remove chat history and other local data?\nAccount and roster data are not affected. The app will close.</string>
     <string name="chats_send_by_enter">Send on Enter\nMessage can be sent by pressing the Enter button</string>
     <string name="connection_go_away">Auto-away\nAutomatically set away status on screen lock</string>
-
     <string name="contacts_order">Sort contacts</string>
     <string name="contacts_order_alphabet">Alphabetic</string>
     <string name="contacts_order_status">By status</string>
@@ -20,7 +18,6 @@
     <string name="contacts_show_groups">Show groups\nShow groups in contact list</string>
     <string name="contacts_show_circles">Show circles\nShow circles in contact list</string>
     <string name="contacts_show_offline">Show offline contacts</string>
-
     <string name="debug_log">Write message text to log\nWarning: enabling this option carries a probable privacy risk. Message text will be stored in debug log. Do not let this log fall into the wrong hands.</string>
     <string name="debug_file_log_title">Write file log\nWrite debug log to local file (you can share it).</string>
     <string name="debug_log_files_title">Log files\nList of written log files.</string>
@@ -29,14 +26,12 @@
     <string name="debug_log_files_activity_title">Log files</string>
     <string name="debug_connection_errors_title">Show connection errors\nDisplay connection exceptions pop-ups</string>
     <string name="debug_crash_reports_title">Share crash and diagnostics data\nHelp app developers improve Xabber by allowing to share crash and diagnostics data with them (please restart application to apply changes).</string>
-    <string name="debug_use_develop_api_title">Use development Xabber API\nChanges will be applied after restart</string>
+    <string name="debug_use_develop_api_title" comment="Xabber API is a custom API by Redsolution that helps sync data between devices. Currently it's rather bare-bones, syncs mostly list of configured user accounts and their colors (but not passwords!). Very handy If you frequently reinstall Xabber or if you log in via Web version and want to have all accounts configured immediately, user just needs to enter passwords. ">Use development Xabber API\nChanges will be applied after restart</string>
     <string name="debug_sync_bookmarks_on_start_title">Sync bookmarks on start</string>
     <string name="debug_fetch_crowdfunding_feed_title">Fetch crowdfunding feed now</string>
-
     <string name="debug_crash_reports_dialog_title">Crash and diagnostics data</string>
     <string name="debug_crash_reports_dialog_message">Xabber gathers anonymous bug reports. You may disable it in debug settings, but it will hinder our ability to provide reliable messaging experience to Xabber users.</string>
     <string name="debug_crash_reports_dialog_settings_button">Settings</string>
-
     <string name="events_lightning">Light indication</string>
     <string name="events_lightning_summary">Blink LED on notification</string>
     <string name="events_lightning_muc">Light indication</string>
@@ -48,14 +43,12 @@
     <string name="events_use_custom">Use custom notification preferences</string>
     <string name="events_use_custom_summary">Custom notification preferences ignore all other notification settings</string>
     <string name="events_use_custom_not_allowed_summary">You must first save the phrase</string>
-
     <string name="interface_theme">Theme</string>
     <string name="interface_theme_dark">Dark</string>
     <string name="interface_theme_light">Light</string>
     <string name="interface_smiles">Emoticons</string>
     <string name="interface_smiles_android">Android emoticons</string>
     <string name="interface_smiles_none">No graphical emoticons</string>
-
     <string name="preference_connection">Connection settings\nConnection settings</string>
     <string name="preference_contacts">Contact list\nCustomize contact list appearance</string>
     <string name="preference_chat_summary">Customize chat appearance</string>
@@ -66,14 +59,11 @@
     <string name="preference_spam_filter">Spam filter settings</string>
     <string name="preference_presence">Presence\nPresence settings</string>
     <string name="preference_privacy">Privacy\nPrivacy settings</string>
-
     <string name="spam_filter_1">No spam filter</string>
     <string name="spam_filter_2">Messages only from roster</string>
     <string name="spam_filter_3">Messages only from roster. Auth requests only with captcha</string>
     <string name="spam_filter_4">Messages only from roster. No auth requests</string>
-
     <string name="about_viewer">About</string>
-
     <string name="chats_show_background">Show background\nDisabling may increase performance</string>
     <string name="chats_font_size">Font size</string>
     <string name="chats_font_size_large">Large</string>
@@ -87,7 +77,6 @@
     <string name="chats_show_status_change">Show status changes</string>
     <string name="chats_show_status_change_muc">In conferences</string>
     <string name="chats_state_notification">Send typing notifications\nNotify the other user that you are typing a message to them</string>
-
     <string name="connection_adjust_priority">Adjust priority\nSet priority according to selected status. Account priority will be overridden.</string>
     <string name="connection_go_away_immediately">Immediately on screen lock</string>
     <string name="connection_go_xa">"Extended away" when idle\nSet "Extended away" on screen lock</string>
@@ -95,12 +84,10 @@
     <string name="connection_start_at_boot">Start when Android boots\nStart the application when Android boots. This doesn\'t work when Xabber is installed on SD card.</string>
     <string name="connection_wake_lock">Prevent sleep mode\nPrevent the device from sleeping. This will increase battery usage.</string>
     <string name="connection_wifi_lock">Keep WiFi awake\nKeep WiFi active on standby. This will increase battery usage</string>
-
     <string name="contacts_reset_offline">Reset offline settings\nClear individual settings for groups and accounts</string>
     <string name="contacts_reset_offline_warning">Do you really want to clear individual settings for groups and accounts?</string>
-    <string name="contacts_reset_offline_circle">Reset offline settings\nClear individual settings for circles and accounts</string>
+    <string name="contacts_reset_offline_circle" comment="contacts_reset_offline_circle">Reset offline settings\nClear individual settings for circles and accounts</string>
     <string name="contacts_reset_offline_warning_circle">Do you really want to clear individual settings for circles and accounts?</string>
-
     <string name="events_first_only">Alert on first message</string>
     <string name="events_first_only_summary">Notify only on the first message in a chat</string>
     <string name="events_show_text">Message preview</string>
@@ -112,31 +99,24 @@
     <string name="preference_accounts">XMPP accounts\nManage accounts</string>
     <string name="preference_security">Security\nSecurity settings</string>
     <string name="security_check_certificate">Check server certificate\nNotify for certificate problems on encrypted connections</string>
-    <string name="security_otr_mode">OTR mode</string>
     <string name="chats_attention">Attention</string>
     <string name="chats_attention_summary">React for incoming attention requests</string>
     <string name="chats_attention_sound">Attention sound</string>
     <string name="chats_attention_sound_summary">Choose ringtoneHolder</string>
-
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
     <string name="connection_load_images">Load images\nLoad images from file URL automatically. Disable to reduce traffic usage.</string>
-    <string name="connection_use_carbons">Carbon-copied mode\nWill share sessions for the same account on this client. Disable to reduce traffic usage.</string>
     <string name="connection_compress_image_on_upload_title">Compress images\nCompress images on upload to reduce traffic usage. Some servers may have upload size restrictions, use this option to avoid it.</string>
     <string name="connection_auto_download_voice_message">Download media files\nAutomatically download media files to local storage</string>
     <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>
     <string name="connection_dns_resolver_type_mini_dns_resolver">MiniDNSResolver (experimental)</string>
-
     <string name="events_phrases">Key phrases</string>
     <string name="events_phrase">Key phrase</string>
     <string name="events_phrases_summary">Create custom notifications for received messages that contain specific phrases</string>
     <string name="events_phrases_error">You must fill at least one field</string>
-
     <string name="account_error_settings">Settings</string>
-
     <string name="category_interface">Interface</string>
     <string name="category_settings">Settings</string>
     <string name="category_about">About</string>
-
     <string name="category_appearance">Appearance</string>
     <string name="category_behavior">Behavior</string>
     <string name="category_contact_list">Contact list</string>
@@ -151,17 +131,14 @@
     <string name="category_key_phrase">Key phrases</string>
     <string name="custom_notifications">Custom notifications</string>
     <string name="category_other">Other</string>
-
     <string name="events_on_chat_title">Alert</string>
     <string name="events_on_chat_summary">Alert about new messages in chats</string>
     <string name="events_on_muc_title">Alert</string>
     <string name="events_on_muc_summary">Alert about new messages in conferences</string>
-
     <string name="vibro_default">Default</string>
     <string name="vibro_short">Short vibration</string>
     <string name="vibro_long">Long vibration</string>
     <string name="vibro_if_silent">Only in silent mode</string>
-
     <string name="events_in_app_sounds_title">In-app sounds</string>
     <string name="events_in_app_sounds_summary">Play sounds on message in another chat</string>
     <string name="events_in_app_vibrate_title">In-app vibrate</string>
@@ -170,15 +147,74 @@
     <string name="events_in_app_preview_summary">Show preview on message in another chat</string>
     <string name="events_in_chat_sounds_title">In-chat sounds</string>
     <string name="events_in_chat_sounds_summary">Play sound on receiving and sending message in current chat</string>
-
     <string name="events_reset_title">Reset</string>
     <string name="events_reset_summary">All notification settings would be set to default values</string>
     <string name="events_reset_alert">Reset notification settings?</string>
     <string name="events_reset_toast">Settings were reset</string>
     <string name="events_remove_all_custom_title">Remove all custom notifications</string>
     <string name="events_remove_all_custom_summary">All custom notification settings (for contacts, roster groups and accounts) would be removed</string>
-
     <string name="events_ringtone_not_available">Ringtone not available</string>
     <string name="events_ringtone_not_available_summary">Please select another ringtone</string>
-    <string name="events_ringtone_not_available_summary_permission">Xabber need permission for read storage to access this ringtone\nPlease grant a permission or select another ringtone</string>
+    <string name="events_ringtone_not_available_summary_permission">Xabber requires a permission to read storage to access this ringtone\nPlease grant a permission or select another ringtone</string>
+    <string name="settings__menu_item__xabber_account">Xabber Account</string>
+    <string name="settings__menu_item__xmpp_account">XMPP Accounts</string>
+    <string name="settings__menu_item__keyboard">Keyboard</string>
+    <string name="settings__menu_item__notifications">Notifications</string>
+    <string name="settings__menu_item__sounds">Sounds</string>
+    <string name="settings__menu_item__appearance">Appearance</string>
+    <string name="settings__section_xmpp_accounts__table_header_xmpp_id">XMPP ID</string>
+    <string name="settings__section_xmpp_accounts__table_header_sync">Sync</string>
+    <string name="settings__section_xmpp_accounts__table_header_enabled">Enabled</string>
+    <string name="settings__section_xmpp_accounts__text_no_accounts">No accounts</string>
+    <string name="settings__section_keyboard__label_send_on_enter">Send message on Enter</string>
+    <string name="settings__section_keyboard__label_send_on_ctrlenter">Send message on Ctrl+Enter</string>
+    <string name="settings__section_contact_list__offline_contacts__label_show">Always show</string>
+    <string name="settings__section_contact_list__offline_contacts__label_hide">Always hide</string>
+    <string name="settings__section_contact_list__header_offline_contacts">Show offline contacts</string>
+    <string name="settings__section_contact_list__header_sorting">Sorting contacts</string>
+    <string name="settings__section_contact_list__sorting__label_online_first">Online first</string>
+    <string name="settings__section_contact_list__sorting__label_alphabet">Alphabet order (A -&gt; Z)</string>
+    <string name="settings__section_notifications__toggle_desktop_notifications">Desktop notifications</string>
+    <string name="settings__section_notifications__toggle_message_preview">Message preview</string>
+    <string name="settings__section_notifications__toggle_call_attention">Call attention</string>
+    <string name="settings__section_appearance__header_background">Background</string>
+    <string name="settings__section_appearance__background__label_default">Default</string>
+    <string name="settings__section_appearance__background__label_pattern">Repeating pattern</string>
+    <string name="settings__section_appearance__background__label_image">Image</string>
+    <string name="settings__section_appearance__background__button_update">Update</string>
+    <string name="settings__section_appearance__background__checkbox_vignette">Vignette</string>
+    <string name="settings__section_appearance__background__checkbox_blur">Blur</string>
+    <string name="settings__section_appearance__header_toolbar_icons_color">Toolbar icons color</string>
+    <string name="settings__section_appearance__header_main_color">Main color</string>
+    <string name="settings__section_appearance__header_side_panel">Contacts side panel</string>
+    <string name="settings__section_appearance__side_panel__label_dark">Dark</string>
+    <string name="settings__section_appearance__side_panel__label_light">Light</string>
+    <string name="settings__section_appearance__side_panel__checkbox_transparency">Transparency</string>
+    <string name="settings__dialog_background__menu_item_library">Library</string>
+    <string name="settings__dialog_background__menu_item_upload">Upload</string>
+    <string name="settings__dialog_background__menu_item_url">Web address (URL)</string>
+    <string name="settings__dialog_background__header_pattern">Select Background Pattern</string>
+    <string name="settings__dialog_background__header_image">Select Background Image</string>
+    <string name="settings__dialog_background__section_upload__button_upload">Choose image to upload</string>
+    <string name="settings__dialog_background__section_upload__text">Drag image here\nor</string>
+    <string name="settings__dialog_background__section_url__label">Enter image URL:</string>
+    <string name="settings__dialog_background__section_url__placeholder_preview">If you entered the correct URL, a thumbnail image will appear here. It may take a few minutes for a large image to load.</string>
+    <string name="settings_account__dialog_change_password__header">Set password</string>
+    <string name="settings__section_appearance__hint_custom_color">Custom color</string>
+    <string name="settings__dialog_quit_client__confirm">Do you really want to quit %s? You will quit from all currently logged in XMPP accounts.</string>
+    <string name="settings__menu_item__interface_language">Interface language</string>
+    <string name="settings__dialog_change_language__header">Change Interface Language</string>
+    <string name="settings__dialog_change_language__confirm">Page must be reloaded to update the interface language</string>
+    <string name="settings__section_interface_language__text_description_no_translations">%1$s is not translated to the language used on this device. Translations are provided by the community, it means that you can help us translate %2$s to your native language!</string>
+    <string name="settings__section_interface_language__text_description_translation_platform">We use CrowdIn Localisation Management Platform. If you wish to join our translation team, follow this %s and apply as a translator to your native language.</string>
+    <string name="settings__section_interface_language__text_description__text_link">link</string>
+    <string name="settings__section_interface_language__text_description___link">https://crowdin.com/project/xabber</string>
+    <string name="settings__languages_list___item_default">Default (%s)</string>
+    <string name="settings__section_interface_language__translation_progress">%s translated</string>
+    <string name="settings__section_interface_language__translation_progress_fully">Fully translated</string>
+    <string name="settings__dialog_change_language__button_change">Change &amp; reload</string>
+    <string name="settings__interface_language__text_description_full_translation">%1$s is already fully translated to the language used on this device. Translations are provided by the community. If you feel that the translation is imperfect, you can join our translation team and help us make %2$s better.</string>
+    <string name="settings__interface_language__text_description_unfull_translation">%1$s is only partially translated to the language used on this device. Translations are provided by the community, it means that you can help us translate %2$s to your native language!</string>
+    <string name="settings__interface_language__text_description_full_translation_platform">We use Crowdin Localisation Management Platform. If you wish to participate, follow this %s and apply as a translator to your native language.</string>
+    <string name="settings__interface_language__text_description_no_translation_platform">We use Crowdin Localisation Management Platform. If you wish to join our translation team, follow this %1$s, email us %2$s and we will add your native language to the list of target languages. Then you will be able to apply as a translator to your native language.</string>
 </resources>

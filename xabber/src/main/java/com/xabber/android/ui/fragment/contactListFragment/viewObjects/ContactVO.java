@@ -1,6 +1,6 @@
 package com.xabber.android.ui.fragment.contactListFragment.viewObjects;
 
-/**
+/*
  * Created by valery.miller on 02.02.18.
  */
 
@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.TypedValue;
@@ -19,30 +20,36 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageStatus;
+import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatAction;
-import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.notification.custom_notification.CustomNotifyPrefsManager;
 import com.xabber.android.data.notification.custom_notification.Key;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.SearchActivity;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.ui.fragment.chatListFragment.ChatListFragment;
-import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
+import com.xabber.android.ui.text.DatesUtilsKt;
+import com.xabber.android.ui.text.StringUtilsKt;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,8 +68,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
     private final String id;
 
-    private int accountColorIndicator;
-    private int accountColorIndicatorBack;
+    private final int accountColorIndicator;
+    private final int accountColorIndicatorBack;
 
     private final String name;
     private final String status;
@@ -84,9 +91,9 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     private final boolean isCustomNotification;
     protected boolean archived;
     protected int forwardedCount;
-    private boolean isGroupchat;
-    private boolean isServer;
-    private boolean isBlocked;
+    private final boolean isGroupchat;
+    private final boolean isServer;
+    private final boolean isBlocked;
 
     protected final ContactClickListener listener;
 
@@ -96,14 +103,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         void onContactButtonClick(int adapterPosition);
     }
 
-    protected ContactVO(int accountColorIndicator, int accountColorIndicatorBack,
-                        String name,
-                        String status, int statusId, int statusLevel, Drawable avatar,
-                        int mucIndicatorLevel, ContactJid contactJid, AccountJid accountJid, int unreadCount,
-                        boolean mute, NotificationState.NotificationMode notificationMode, String messageText,
-                        boolean isOutgoing, Date time, int messageStatus, String messageOwner,
-                        boolean archived, String lastActivity, ContactClickListener listener,
-                        int forwardedCount, boolean isCustomNotification, boolean isGroupchat, boolean isServer, boolean isBlocked) {
+    protected ContactVO(int accountColorIndicator, int accountColorIndicatorBack, String name, String status,
+                        int statusId, int statusLevel, Drawable avatar, int mucIndicatorLevel, ContactJid contactJid,
+                        AccountJid accountJid, int unreadCount, boolean mute,
+                        NotificationState.NotificationMode notificationMode, String messageText, boolean isOutgoing,
+                        Date time, int messageStatus, String messageOwner, boolean archived, String lastActivity,
+                        ContactClickListener listener, int forwardedCount, boolean isCustomNotification,
+                        boolean isGroupchat, boolean isServer, boolean isBlocked) {
         this.id = UUID.randomUUID().toString();
         this.accountColorIndicator = accountColorIndicator;
         this.accountColorIndicatorBack = accountColorIndicatorBack;
@@ -139,13 +145,11 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int accountColorIndicatorBack;
         Drawable avatar;
         int statusLevel;
-        int mucIndicatorLevel;
         boolean isOutgoing = false;
         Date time = null;
         int messageStatus = 0;
         int unreadCount = 0;
         int forwardedCount = 0;
-        String messageOwner = null;
 
         accountColorIndicator = ColorManager.getInstance().getAccountPainter()
                 .getAccountMainColor(contact.getAccount());
@@ -155,7 +159,12 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 .getAccountIndicatorBackColor(contact.getAccount());
         avatar = contact.getAvatar();
 
-        String name = contact.getName();
+        String name;
+        AbstractChat chat = ChatManager.getInstance().getChat(contact.getAccount(), contact.getContactJid());
+        if (chat instanceof GroupChat && !"".equals(((GroupChat)chat).getName())) {
+            name = ((GroupChat)chat).getName();
+        } else name = contact.getName();
+
 
         statusLevel = contact.getStatusMode().getStatusLevel();
         String messageText;
@@ -163,35 +172,41 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int statusId = contact.getStatusMode().getStringID();
 
         String lastActivity = "";
-//        if (contact instanceof RosterContact)
-//             lastActivity = ((RosterContact) contact).getLastActivity(); //TODO REALM UPDATE
 
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(contact.getAccount(), contact.getUser());
+        if (chat == null) {
+            chat = ChatManager.getInstance().createRegularChat(contact.getAccount(), contact.getContactJid());
+        }
         MessageRealmObject lastMessage = chat.getLastMessage();
 
         if (lastMessage == null || lastMessage.getText() == null) {
             messageText = statusText;
             if (chat.getLastActionTimestamp() != null) time = new Date(chat.getLastActionTimestamp());
         } else {
-            if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser()) != null) {
-                String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getUser());
-                messageText = StringUtils.getColoredText(chatState, accountColorIndicatorLight);
-            } else if (lastMessage.haveAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
+            if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid()) != null) {
+                String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid());
+                messageText = StringUtilsKt.wrapWithColorTag(chatState, accountColorIndicatorLight);
+            } else if (lastMessage.hasAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
                 AttachmentRealmObject attachmentRealmObject = lastMessage.getAttachmentRealmObjects().get(0);
                 if (attachmentRealmObject.isVoice()) {
                     StringBuilder voiceText = new StringBuilder();
                     voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
                     if (attachmentRealmObject.getDuration() != null && attachmentRealmObject.getDuration() != 0) {
-                        voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())));
+                        voiceText.append(
+                                String.format(
+                                        Locale.getDefault(),
+                                        ", %s",
+                                        DatesUtilsKt.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())
+                                )
+                        );
                     }
-                    messageText = StringUtils.getColoredText(voiceText.toString(), accountColorIndicator);
-                } else messageText = StringUtils.getColoredText(attachmentRealmObject.getTitle().trim(), accountColorIndicator);
+                    messageText = StringUtilsKt.wrapWithColorTag(voiceText.toString(), accountColorIndicator);
+                } else messageText = StringUtilsKt.wrapWithColorTag(attachmentRealmObject.getTitle().trim(), accountColorIndicator);
             } else if (lastMessage.getAttachmentRealmObjects() != null
                     && lastMessage.getAttachmentRealmObjects().size() !=0
                     && lastMessage.getAttachmentRealmObjects().get(0).getFilePath() != null) {
                 messageText = new File(lastMessage.getAttachmentRealmObjects().get(0).getFilePath()).getName();
             } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
-                messageText = StringUtils.getColoredText(lastMessage.getText().trim(), accountColorIndicator);
+                messageText = StringUtilsKt.wrapWithColorTag(lastMessage.getText().trim(), accountColorIndicator);
             } else {
                 messageText = lastMessage.getText().trim();
             }
@@ -202,22 +217,23 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
             // message status
             if (isOutgoing) {
-                if (!MessageRealmObject.isUploadFileMessage(lastMessage) && !lastMessage.isSent()
+                if ( !lastMessage.getMessageStatus().equals(MessageStatus.UPLOADING)
+                        && !lastMessage.getMessageStatus().equals(MessageStatus.SENT)
                         && System.currentTimeMillis() - lastMessage.getTimestamp() > 1000) {
                     messageStatus = 5;
-                } else if (lastMessage.isDisplayed() || lastMessage.isReceivedFromMessageArchive()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.DISPLAYED)) {
                     messageStatus = 1;
-                } else if (lastMessage.isDelivered()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.RECEIVED)) {
                     messageStatus = 2;
-                } else if (lastMessage.isError()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.ERROR)) {
                     messageStatus = 4;
-                } else if (lastMessage.isAcknowledged() || lastMessage.isForwarded()) {
+                } else if (lastMessage.getMessageStatus().equals(MessageStatus.DELIVERED) || lastMessage.isForwarded()) {
                     messageStatus = 3;
                 } else messageStatus = 5;
             }
 
             // forwarded
-            if (lastMessage.haveForwardedMessages()) {
+            if (lastMessage.hasForwardedMessages()) {
                 forwardedCount = lastMessage.getForwardedIds().size();
                 if (messageText.isEmpty()) {
                     String forwardText = lastMessage.getFirstForwardedMessageText(accountColorIndicator);
@@ -229,21 +245,20 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         if (!isOutgoing) unreadCount = chat.getUnreadMessageCount();
 
         // notification icon
-        NotificationState.NotificationMode mode =
-                chat.getNotificationState().determineModeByGlobalSettings();
+        NotificationState.NotificationMode mode = chat.getNotificationState().determineModeByGlobalSettings();
 
         // custom notification
-        boolean isCustomNotification = CustomNotifyPrefsManager.getInstance().
-                isPrefsExist(Key.createKey(contact.getAccount(), contact.getUser()));
+        boolean isCustomNotification =
+                CustomNotifyPrefsManager.getInstance().isPrefsExist(
+                        Key.createKey(contact.getAccount(), contact.getContactJid()));
 
-        boolean isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.getAccount(), contact.getUser());
+        boolean isBlocked = BlockingManager.getInstance().contactIsBlockedLocally(contact.getAccount(), contact.getContactJid());
 
-        return new ContactVO(accountColorIndicator, accountColorIndicatorBack,
-                name, statusText, statusId,
-                statusLevel, avatar, 0, contact.getUser(), contact.getAccount(),
-                unreadCount, !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time,
-                messageStatus, messageOwner, chat.isArchived(), lastActivity, listener, forwardedCount,
-                isCustomNotification, chat.isGroupchat(), contact.getUser().getJid().isDomainBareJid(), isBlocked);
+        return new ContactVO(accountColorIndicator, accountColorIndicatorBack, name, statusText, statusId, statusLevel,
+                avatar, 0, contact.getContactJid(), contact.getAccount(), unreadCount,
+                !chat.notifyAboutMessage(), mode, messageText, isOutgoing, time, messageStatus, null,
+                chat.isArchived(), lastActivity, listener, forwardedCount, isCustomNotification,
+                chat instanceof GroupChat, contact.getContactJid().getJid().isDomainBareJid(), isBlocked);
     }
 
     public static ArrayList<IFlexible> convert(Collection<AbstractContact> contacts, ContactClickListener listener) {
@@ -277,8 +292,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, ViewHolder viewHolder, int position, List<Object> payloads) {
         Context context = viewHolder.itemView.getContext();
 
-        /** set up ACCOUNT COLOR indicator */
-        if (AccountManager.getInstance().getEnabledAccounts().size() > 1){
+        /* set up ACCOUNT COLOR indicator */
+        if (AccountManager.INSTANCE.getEnabledAccounts().size() > 1){
             viewHolder.accountColorIndicator.setBackgroundColor(getAccountColorIndicator());
             viewHolder.accountColorIndicatorBack.setBackgroundColor(getAccountColorIndicatorBack());
         } else {
@@ -286,7 +301,17 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             viewHolder.accountColorIndicatorBack.setBackgroundColor(context.getResources().getColor(R.color.transparent));
         }
 
-        /** set up AVATAR */
+        if (viewHolder.itemView.getBackground() != null){
+            if (adapter.isSelected(position)) {
+                LogManager.d("ListSelection", "item at pos = " + position + " is selected");
+                viewHolder.itemView.getBackground().setColorFilter(
+                        new PorterDuffColorFilter(Color.parseColor("#75757575"), PorterDuff.Mode.SRC_IN));
+            } else {
+                viewHolder.itemView.getBackground().setColorFilter(null);
+            }
+        }
+
+        /* set up AVATAR */
         boolean showAvatars = SettingsManager.contactsShowAvatars();
         if (showAvatars) {
             viewHolder.ivAvatar.setVisibility(View.VISIBLE);
@@ -301,7 +326,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
         int displayedStatus = getStatusLevel();
         if (isBlocked) displayedStatus = 11;
         else if (isServer) displayedStatus = 10;
-        else if (isGroupchat) displayedStatus = 9;
+        else if (isGroupchat) displayedStatus += StatusMode.PUBLIC_GROUP_OFFSET;
 
         viewHolder.ivStatus.setImageLevel(displayedStatus);
         viewHolder.ivOnlyStatus.setImageLevel(displayedStatus);
@@ -320,9 +345,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
 
             switch (displayedStatus) {
                 case 6:
-                    if (!getLastActivity().isEmpty()) {
-                        viewHolder.tvStatus.setText(getLastActivity());
-                    }
+                    if (!getLastActivity().isEmpty()) viewHolder.tvStatus.setText(getLastActivity());
                     break;
                 case 10:
                     viewHolder.tvStatus.setText("Server");
@@ -333,62 +356,62 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                     if (viewHolder.ivAvatar.getVisibility() == View.VISIBLE) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                             viewHolder.ivAvatar.setImageAlpha(128);
-                        } else {
-                            viewHolder.ivAvatar.setAlpha(0.5f);
-                        }
+                        } else viewHolder.ivAvatar.setAlpha(0.5f);
                     }
-                    viewHolder.tvContactName.setTextColor(Utils.getAttrColor(viewHolder.tvContactName.getContext(), R.attr.contact_list_contact_second_line_text_color));
+                    viewHolder.tvContactName.setTextColor(
+                            AndroidUtilsKt.getAttrColor(
+                                    R.attr.contact_list_contact_second_line_text_color,
+                                    viewHolder.tvContactName.getContext()
+                            )
+                    );
                     break;
             }
             if (displayedStatus != 11) {
-                viewHolder.tvContactName.setTextColor(Utils.getAttrColor(viewHolder.tvContactName.getContext(), R.attr.contact_list_contact_name_text_color));
+                viewHolder.tvContactName.setTextColor(
+                        AndroidUtilsKt.getAttrColor(
+                                R.attr.contact_list_contact_name_text_color,
+                                viewHolder.tvContactName.getContext()
+                        )
+                );
                 if (viewHolder.ivAvatar.getVisibility() == View.VISIBLE) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                         viewHolder.ivAvatar.setImageAlpha(128);
-                    } else {
-                        viewHolder.ivAvatar.setAlpha(0.5f);
-                    }
+                    } else viewHolder.ivAvatar.setAlpha(0.5f);
                 }
             }
         }
 
         /* Show grey jid instead of status in SearchActivity */
-        if (listener instanceof ChatListFragment
-                && ((ChatListFragment) listener).getActivity() instanceof SearchActivity
+        if (listener instanceof Fragment &&
+                ((Fragment) listener).getActivity() instanceof SearchActivity
                 && viewHolder.tvStatus != null){
             viewHolder.tvStatus.setTextColor(ColorManager.getInstance().getColorContactSecondLine());
             viewHolder.tvStatus.setText(contactJid.toString());
         }
 
-        /** set up CONTACT/MUC NAME */
+        /* set up CONTACT/MUC NAME */
         viewHolder.tvContactName.setText(getName());
 
-        /** set up NOTIFICATION MUTE */
+        /* set up NOTIFICATION MUTE */
         Resources resources = context.getResources();
         int resID = 0;
         NotificationState.NotificationMode mode = getNotificationMode();
         if (mode == NotificationState.NotificationMode.enabled) resID = R.drawable.ic_unmute;
         else if (mode == NotificationState.NotificationMode.disabled) resID = R.drawable.ic_mute;
-        else if (mode != NotificationState.NotificationMode.bydefault) resID = R.drawable.ic_snooze_mini;
-        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                resID != 0 ? resources.getDrawable(resID) : null, null);
+        else if (mode != NotificationState.NotificationMode.byDefault) resID = R.drawable.ic_snooze_mini;
+        viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
+                null, null, resID != 0 ? ResourcesCompat.getDrawable(resources, resID, null) : null, null);
 
-        /** set up CUSTOM NOTIFICATION */
+        /* set up CUSTOM NOTIFICATION */
         if (isCustomNotification() && (mode == NotificationState.NotificationMode.enabled
-                || mode == NotificationState.NotificationMode.bydefault))
-            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    resources.getDrawable(R.drawable.ic_notif_custom), null);
+                || mode == NotificationState.NotificationMode.byDefault))
+            viewHolder.tvContactName.setCompoundDrawablesWithIntrinsicBounds(
+                    null, null, ResourcesCompat.getDrawable(resources, R.drawable.ic_notif_custom, null), null);
 
-        //if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
         viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
         viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.white));
-//        } else {
-//            viewHolder.tvUnreadCount.getBackground().mutate().setColorFilter(
-//                    resources.getColor(R.color.grey_700), PorterDuff.Mode.SRC_IN);
-//            viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
-//        }
 
-        /** set up UNREAD COUNT */
+        /* set up UNREAD COUNT */
         if (getUnreadCount() > 0) {
             viewHolder.tvUnreadCount.setText(String.valueOf(getUnreadCount()));
             viewHolder.tvUnreadCount.setVisibility(View.VISIBLE);
@@ -406,11 +429,13 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         PorterDuff.Mode.SRC_IN);
                 viewHolder.tvUnreadCount.setTextColor(context.getResources().getColor(R.color.black));
             }
-        else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+        else if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             viewHolder.tvUnreadCount.getBackground().mutate().clearColorFilter();
+        }
 
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark)
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.dark) {
             viewHolder.tvContactName.setTextColor(context.getResources().getColor(R.color.grey_200));
+        }
     }
 
     public String getId() {
@@ -599,9 +624,7 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 listener.onContactAvatarClick(getAdapterPosition());
             } else if (view.getId() == R.id.btnListAction) {
                 listener.onContactButtonClick(getAdapterPosition());
-            } else {
-                super.onClick(view);
-            }
+            } else super.onClick(view);
         }
     }
 
@@ -609,4 +632,5 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
     public void setArchived(boolean archived) {
         this.archived = archived;
     }
+
 }

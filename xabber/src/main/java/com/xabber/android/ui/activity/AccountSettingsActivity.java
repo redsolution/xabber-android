@@ -4,24 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.dialog.OrbotInstallerDialog;
 import com.xabber.android.ui.preferences.AccountEditorFragment;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -33,16 +34,10 @@ public class AccountSettingsActivity extends ManagedActivity
     private static final String LOG_TAG = AccountSettingsActivity.class.getSimpleName();
     private AccountJid account;
     private AccountItem accountItem;
-    private Toolbar toolbar;
-    private BarPainter barPainter;
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
 
     @NonNull
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, AccountSettingsActivity.class).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(context, AccountSettingsActivity.class, account);
     }
 
     @Override
@@ -51,31 +46,26 @@ public class AccountSettingsActivity extends ManagedActivity
         setContentView(R.layout.activity_account_settings);
 
 
-        account = getAccount(getIntent());
-        accountItem = AccountManager.getInstance().getAccount(this.account);
+        account = IntentHelpersKt.getAccountJid(getIntent());
+        accountItem = AccountManager.INSTANCE.getAccount(this.account);
         if (accountItem == null) {
             LogManager.e(LOG_TAG, "Account item is null " + account);
             finish();
             return;
         }
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
         else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.setTitle(R.string.account_connection_settings);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         toolbar.inflateMenu(R.menu.toolbar_account_connection_settings);
         //toolbar.setOnMenuItemClickListener(this);
         toolbar.getMenu().findItem(R.id.action_remove_account).setVisible(false);
 
-        barPainter = new BarPainter(this, toolbar);
+        BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
 
         if (savedInstanceState == null) {
@@ -119,7 +109,10 @@ public class AccountSettingsActivity extends ManagedActivity
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_remove_account) {
-            AccountDeleteDialog.newInstance(account).show(getSupportFragmentManager(), AccountDeleteDialog.class.getSimpleName());
+            AccountDeleteDialog.Companion.newInstance(account).show(
+                    getSupportFragmentManager(),
+                    AccountDeleteDialog.class.getSimpleName()
+            );
             return true;
         }
 
@@ -127,13 +120,16 @@ public class AccountSettingsActivity extends ManagedActivity
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts.contains(account)) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
-            if (accountItem == null) {
-                // in case if account was removed
-                finish();
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() -> {
+            if (accounts.contains(account)) {
+                AccountItem accountItem = AccountManager.INSTANCE.getAccount(this.account);
+                if (accountItem == null) {
+                    // in case if account was removed
+                    finish();
+                }
             }
-        }
+        });
     }
+
 }

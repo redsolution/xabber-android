@@ -27,14 +27,15 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.activity.ContactAddActivity;
-import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.color.ColorManager;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
@@ -111,9 +112,6 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ivAvatar:
-                startActivity(StatusEditActivity.createIntent(getActivity()));
-                break;
             case R.id.tvTitle:
                 break;
         }
@@ -125,7 +123,7 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_add_contact) {
-            startActivity(ContactAddActivity.createIntent(getActivity()));
+            startActivity(ContactAddActivity.Companion.createIntent(getContext()));
             return true;
         }
         return false;
@@ -138,12 +136,12 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
         setupToolbarLayout();
         /* Update avatar and status ImageViews via current settings and main user */
         if (SettingsManager.contactsShowAvatars()
-                && AccountManager.getInstance().getEnabledAccounts().size() != 0) {
+                && AccountManager.INSTANCE.getEnabledAccounts().size() != 0) {
 
             toolbarAvatarIv.setVisibility(View.VISIBLE);
             toolbarStatusIv.setVisibility(View.VISIBLE);
-            AccountJid mainAccountJid = AccountManager.getInstance().getFirstAccount();
-            AccountItem mainAccountItem = AccountManager.getInstance().getAccount(mainAccountJid);
+            AccountJid mainAccountJid = AccountManager.INSTANCE.getFirstAccount();
+            AccountItem mainAccountItem = AccountManager.INSTANCE.getAccount(mainAccountJid);
             Drawable mainAccountAvatar = AvatarManager.getInstance().getAccountAvatar(mainAccountJid);
             int mainAccountStatusMode = mainAccountItem.getDisplayStatusMode().getStatusLevel();
             toolbarAvatarIv.setImageDrawable(mainAccountAvatar);
@@ -155,9 +153,9 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
 
         /* Update background color via current main user and theme; */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light &&
-                AccountManager.getInstance().getFirstAccount() != null)
+                AccountManager.INSTANCE.getFirstAccount() != null)
             toolbarRelativeLayout.setBackgroundColor(ColorManager.getInstance().getAccountPainter().
-                    getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+                    getAccountRippleColor(AccountManager.INSTANCE.getFirstAccount()));
         else {
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getContext().getTheme();
@@ -167,7 +165,7 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
 
         /* Update left color indicator via current main user */
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light
-                && AccountManager.getInstance().getEnabledAccounts().size() > 1) {
+                && AccountManager.INSTANCE.getEnabledAccounts().size() > 1) {
             toolbarAccountColorIndicator.setBackgroundColor(
                     ColorManager.getInstance().getAccountPainter().getDefaultMainColor());
             toolbarAccountColorIndicatorBack.setBackgroundColor(
@@ -201,12 +199,13 @@ public class CallsFragment extends Fragment implements View.OnClickListener,
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
+    public void onAccountsChanged(@org.jetbrains.annotations.Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
-        update();
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
+        Application.getInstance().runOnUiThread(this::update);
     }
+
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_jingle_message__header">Chamada de voz %s</string>
+    <string name="jingle__error__call_in_progress">Chamada de voz em andamento</string>
+    <string name="dialog_jingle_message__status_calling">Chamando…</string>
+    <string name="dialog_jingle_message__status_network_error">Falha de rede: </string>
+    <string name="dialog_jingle_message__status_search">Procurar…</string>
+    <string name="jingle__text_body_message">Você recebeu uma chamada de voz. Se estiver vendo isto, sua plantaforma provavelmente não suporta esta funcionalidade. Para obter mais informações, consulte https://xabber.com/voice/</string>
+    <string name="dialog_jingle_message__status_connecting">Conectando...</string>
+    <string name="jingle__system_message__outgoing_call">Chamada realizada, %s</string>
+    <string name="jingle__system_message__incoming_call">Chamada recebida, %s</string>
+    <string name="jingle__system_message__cancelled_call">Chamada Cancelada</string>
+    <string name="jingle__system_message__no_devices_to_answer">Chamada recebida. Você não tem dispositivos necessários para atender</string>
+    <string name="jingle__error__audio_not_supported">Este tipo de áudio não é suportado em seu navegador</string>
+    <string name="dialog_jingle_message__status_busy">Linha ocupada</string>
+    <string name="dialog_jingle_message__status_disconnected">Desconectado</string>
+    <string name="dialog_jingle_message__button_switch_video__tooltip">Ligar/desligar vídeo</string>
+    <string name="dialog_jingle_message__button_mute_microphone__tooltip">Silenciar microfone</string>
+    <string name="dialog_jingle_message__button_mute__tooltip">Mudo</string>
+    <string name="dialog_jingle_message__button_share_screen__tooltip">Compartilhar tela</string>
+    <string name="dialog_jingle_message__button_accept_call__tooltip">Aceitar chamada</string>
+    <string name="dialog_jingle_message__button_decline_call__tooltip">Recusar chamada</string>
+</resources>

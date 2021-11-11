@@ -1,7 +1,7 @@
 package com.xabber.xmpp.chat_markers;
 
 import com.xabber.android.data.extension.chat_markers.ChatMarkersElements;
-import com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdElement;
+import com.xabber.xmpp.sid.StanzaIdElement;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.xmlpull.v1.XmlPullParser;

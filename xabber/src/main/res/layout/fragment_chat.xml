@@ -12,14 +12,20 @@
      You should have received a copy of the GNU General Public License,
      along with this program. If not, see http://www.gnu.org/licenses/.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:id="@+id/root_view"
-    android:elevation="24dp">
+    android:id="@+id/root_view">
+
+    <FrameLayout
+        android:id="@+id/topPanelContainer"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_messages_recycler_view"
@@ -30,20 +36,10 @@
         android:listSelector="@android:color/transparent"
         android:scrollbars="vertical"
         tools:listitem="@layout/item_message_incoming"
-        android:paddingBottom="4dp"
         android:paddingTop="4dp"
         android:clipToPadding="false"
-        android:layout_above="@+id/secondBottomPanel"
-        android:layout_below="@+id/toolbar_default"
-        />
-
-    <ViewStub
-        android:id="@+id/stubNewContact"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_alignTop="@id/chat_messages_recycler_view"
-        android:inflatedId="@+id/new_contact_chat_panel"
-        android:layout="@layout/layout_chat_new_contact" />
+        android:layout_above="@+id/secondBottomContainer"
+        android:layout_below="@+id/topPanelContainer"/>
 
     <ViewStub
         android:id="@+id/stubNotify"
@@ -51,45 +47,37 @@
         android:layout="@layout/layout_chat_notify"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/secondBottomPanel"
-        />
+        android:layout_above="@+id/secondBottomContainer" />
 
     <ViewStub
-        android:id="@+id/stubIntro"
+        android:id="@+id/stubInvite"
+        android:inflatedId="@+id/invite_layout"
+        android:layout="@layout/item_message_incoming"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:inflatedId="@+id/chat_intro"
-        android:layout="@layout/chat_intro_helper_view" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:layout_above="@id/secondBottomPanel"
-        android:background="@drawable/bottom_view_shadow"/>
+        android:layout_above="@+id/secondBottomContainer" />
 
     <FrameLayout
-        android:id="@+id/secondBottomPanel"
+        android:id="@+id/secondBottomContainer"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/bottomPanel"
-        />
+        android:layout_above="@id/bottomContainer" />
 
     <FrameLayout
-        android:id="@+id/bottomPanel"
+        android:id="@+id/bottomContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:elevation="1dp">
 
-        <include layout="@layout/view_chat_input" />
+        <include layout="@layout/view_chat_input"/>
 
-        <include layout="@layout/view_chat_interaction"
+        <include layout="@layout/view_bottom_chat_interaction"
             android:visibility="gone"/>
 
         <include layout="@layout/view_chat_record"
             android:visibility="gone"/>
-
 
     </FrameLayout>
 
@@ -97,11 +85,10 @@
         android:id="@+id/btnScrollDown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/secondBottomPanel"
+        android:layout_above="@id/secondBottomContainer"
         android:layout_alignParentRight="true"
         android:clickable="true"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -110,8 +97,7 @@
             android:backgroundTint="?attr/chat_input_background"
             app:srcCompat="@drawable/ic_arrow_down"
             android:tint="?attr/chat_input_button_color"
-            app:borderWidth="0dp"
-            />
+            app:borderWidth="0dp" />
 
         <TextView
             android:id="@+id/tvNewReceivedCount"
@@ -128,42 +114,19 @@
             android:textSize="12sp"
             android:textStyle="bold"
             android:elevation="6dp"
-            android:visibility="gone"
-            />
+            android:visibility="gone" />
 
     </RelativeLayout>
-
-    <ViewStub
-        android:id="@+id/stubJoin"
-        android:inflatedId="@+id/joinLayout"
-        android:layout="@layout/layout_chat_join"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        />
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/chat_previous_history_progress_bar"
-        android:layout_below="@+id/toolbar_default"
-        android:indeterminate="true"
-        android:elevation="8dp"
-        android:layout_marginTop="-8dp"
-        android:visibility="gone"
-        />
 
     <ProgressBar
         style="?android:attr/progressBarStyleHorizontal"
         android:id="@+id/chat_last_history_progress_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/secondBottomPanel"
+        android:layout_above="@id/secondBottomContainer"
         android:indeterminate="true"
         android:layout_marginBottom="-8dp"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/record_lock_view"
@@ -210,16 +173,5 @@
         android:visibility="invisible"
         app:fabCustomSize="78dp"
         app:srcCompat="@drawable/ic_microphone" />
-
-    <LinearLayout
-        android:id="@+id/placeholder"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:focusable="true"
-        android:clickable="true"
-        android:elevation="8dp"
-        android:visibility="gone"
-        />
 
 </RelativeLayout>

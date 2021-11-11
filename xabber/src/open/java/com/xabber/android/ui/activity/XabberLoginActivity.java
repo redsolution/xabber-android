@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,8 +28,9 @@ import com.xabber.android.ui.fragment.XAccountSignUpFragment1;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment2;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment3;
 import com.xabber.android.ui.fragment.XAccountSignUpFragment4;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
 import com.xabber.android.ui.helper.SignUpRepo;
-import com.xabber.android.utils.RetrofitErrorConverter;
+import com.xabber.android.data.http.RetrofitErrorConverter;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -184,7 +184,7 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         currentFragment = FRAGMENT_SIGNUP_STEP3;
 
         setupToolbar(false);
-        hideKeyboard();
+        AndroidUtilsKt.tryToHideKeyboardIfNeed(this);
     }
 
     public void showSignUpStep4Fragment() {
@@ -237,15 +237,6 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
         startActivity(intent);
-    }
-
-    public void hideKeyboard() {
-        // Check if no view has focus
-        View view = getCurrentFocus();
-        if (view != null) {
-            InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (inputManager != null) inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
     }
 
     @Override

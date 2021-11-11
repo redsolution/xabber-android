@@ -32,7 +32,7 @@ import rx.subjects.PublishSubject;
 public class BackpressureMessageReader {
 
     private static BackpressureMessageReader instance;
-    private Map<AbstractContact, PublishSubject<MessageDataHolder>> queriesNew = new HashMap<>();
+    private final Map<AbstractContact, PublishSubject<MessageDataHolder>> queriesNew = new HashMap<>();
 
     public static BackpressureMessageReader getInstance() {
         if (instance == null) {
@@ -42,13 +42,17 @@ public class BackpressureMessageReader {
     }
 
     public void markAsRead(MessageRealmObject messageRealmObject, boolean trySendDisplayed) {
-        PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(messageRealmObject.getAccount(), messageRealmObject.getUser());
+        PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(messageRealmObject.getAccount(),
+                messageRealmObject.getUser());
         subject.onNext(new MessageDataHolder(messageRealmObject, trySendDisplayed));
     }
 
-    public void markAsRead(String messageId, @Nullable ArrayList<String> stanzaId, AccountJid accountJid, ContactJid contactJid, boolean trySendDisplayed) {
+    public void markAsRead(String messageId, @Nullable ArrayList<String> stanzaId, AccountJid accountJid,
+                           ContactJid contactJid, boolean trySendDisplayed) {
+
         PublishSubject<MessageDataHolder> subject = createSubjectIfNeeded(accountJid, contactJid);
-        subject.onNext(new MessageDataHolder(messageId, null, stanzaId, accountJid, contactJid, trySendDisplayed));
+        subject.onNext(new MessageDataHolder(messageId, null, stanzaId, accountJid, contactJid,
+                trySendDisplayed));
     }
 
     private PublishSubject<MessageDataHolder> createSubjectIfNeeded(AccountJid accountJid, ContactJid contactJid) {
@@ -62,7 +66,7 @@ public class BackpressureMessageReader {
         PublishSubject<MessageDataHolder> subject = PublishSubject.create();
         subject.debounce(2000, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(holder -> { // TODO maybe move to background network
+                .subscribe(holder -> {
                     Application.getInstance().runInBackground(() -> {
                         Realm realm = null;
                         try {
@@ -70,13 +74,13 @@ public class BackpressureMessageReader {
                             realm.executeTransaction(realm1 -> {
                                 MessageRealmObject message = getMessageById(realm1, holder);
                                 if (message != null) {
-                                    if (holder.trySendDisplayed)
-                                        ChatMarkerManager.getInstance().sendDisplayed(message);
+                                    if (holder.trySendDisplayed){
+                                        ChatMarkerManager.INSTANCE.sendDisplayed(message);
+                                    }
 
-                                    RealmResults<MessageRealmObject> messages = getPreviousUnreadMessages(realm1, message);
-                                    int debugSize = messages.size();
+                                    RealmResults<MessageRealmObject> messages = getPreviousUnreadMessages(realm1,
+                                            message);
                                     messages.setBoolean(MessageRealmObject.Fields.READ, true);
-                                    LogManager.d("BackpressureReader", "Finished setting the 'read' state to " + debugSize + " messages");
                                 }
                             });
                         } catch (Exception e) {
@@ -100,14 +104,16 @@ public class BackpressureMessageReader {
         return getMessageById(realm, data.messageId, data.uniqueId, data.stanzaId, data.account);
     }
 
-    private MessageRealmObject getMessageById(Realm realm, String id, String uniqueId, ArrayList<String> stanzaIds, AccountJid accountJid) {
+    private MessageRealmObject getMessageById(Realm realm, String id, String uniqueId, ArrayList<String> stanzaIds,
+                                              AccountJid accountJid) {
+
         MessageRealmObject message;
         RealmQuery<MessageRealmObject> realmQuery = realm.where(MessageRealmObject.class);
         realmQuery.equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString());
         int queryFieldCounter = 0;
         realmQuery.beginGroup();
         if (uniqueId != null && !uniqueId.isEmpty()) {
-            realmQuery.equalTo(MessageRealmObject.Fields.UNIQUE_ID, uniqueId);
+            realmQuery.equalTo(MessageRealmObject.Fields.PRIMARY_KEY, uniqueId);
             queryFieldCounter++;
         }
         if (id != null && !id.isEmpty()) {
@@ -133,7 +139,8 @@ public class BackpressureMessageReader {
         }
     }
 
-    private RealmResults<MessageRealmObject> getPreviousUnreadMessages(Realm realm, MessageRealmObject messageRealmObject) {
+    private RealmResults<MessageRealmObject> getPreviousUnreadMessages(Realm realm,
+                                                                       MessageRealmObject messageRealmObject) {
         return realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, messageRealmObject.getAccount().toString())
                 .equalTo(MessageRealmObject.Fields.USER, messageRealmObject.getUser().toString())
@@ -152,7 +159,7 @@ public class BackpressureMessageReader {
 
         MessageDataHolder(MessageRealmObject messageRealmObject, boolean trySendDisplayed) {
             this.messageId = messageRealmObject.getOriginId();
-            this.uniqueId = messageRealmObject.getUniqueId();
+            this.uniqueId = messageRealmObject.getPrimaryKey();
             this.stanzaId = getStanzaIds(messageRealmObject);
             this.account = messageRealmObject.getAccount();
             this.user = messageRealmObject.getUser();
@@ -171,13 +178,10 @@ public class BackpressureMessageReader {
 
         private ArrayList<String> getStanzaIds(MessageRealmObject messageRealmObject) {
             ArrayList<String> stanzaIds = new ArrayList<>();
-            if (messageRealmObject.getStanzaId() != null) {
-                stanzaIds.add(messageRealmObject.getStanzaId());
-            }
-            if (messageRealmObject.getArchivedId() != null && !messageRealmObject.getArchivedId().equals(messageRealmObject.getStanzaId())) {
-                stanzaIds.add(messageRealmObject.getArchivedId());
-            }
+            if (messageRealmObject.getStanzaId() != null) stanzaIds.add(messageRealmObject.getStanzaId());
             return stanzaIds;
         }
+
     }
+
 }

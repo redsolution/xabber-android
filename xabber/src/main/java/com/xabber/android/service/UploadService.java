@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.ResultReceiver;
 import android.webkit.MimeTypeMap;
 
@@ -15,16 +14,16 @@ import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.extension.cs.ChatStateManager;
+import com.xabber.android.data.extension.chat_state.ChatStateManager;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.file.FileUtils;
 import com.xabber.android.data.extension.file.UriUtils;
 import com.xabber.android.data.extension.httpfileupload.ImageCompressor;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
-import com.xabber.android.utils.HttpClientWithMTM;
+import com.xabber.android.data.http.HttpClientWithMTM;
 import com.xabber.xmpp.httpfileupload.Slot;
-import com.xabber.xmpp.uuu.ChatStateSubtype;
+import com.xabber.xmpp.chat_state.ChatStateSubtype;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
@@ -177,7 +176,7 @@ public class UploadService extends IntentService {
                            CharSequence uploadServerUrl, String existMessageId, String messageAttachmentType) {
 
         // get account item
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             publishError(null, "Account not found");
             return;
@@ -343,29 +342,23 @@ public class UploadService extends IntentService {
         else throw new IOException("Upload failed: failed to create httpclient");
     }
 
-    private static String getCompressedDirPath() {
-        return Environment.getExternalStorageDirectory().getPath()
-                + File.separator + XABBER_COMPRESSED_DIR;
-        //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-        //        + File.separator + XABBER_COMPRESSED_DIR;
+    private String getCompressedDirPath() {
+        return this.getExternalFilesDir(null).getPath() + File.separator + XABBER_COMPRESSED_DIR;
     }
 
-    private static String getDownloadDirPath() {
-        return Environment.getExternalStorageDirectory().getPath()
-                + File.separator + XABBER_DIR;
-        //return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-        //        + File.separator + XABBER_DIR;
+    private String getDownloadDirPath() {
+        return this.getExternalFilesDir(null).getPath() + File.separator + XABBER_DIR;
     }
 
-    private static String getAudioDownloadDirPath() {
+    private String getAudioDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
     }
 
-    private static String getDocumentsDownloadDirPath() {
+    private String getDocumentsDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_DOCUMENTS_DIR;
     }
 
-    private static String getImagesDownloadDirPath() {
+    private String getImagesDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
     }
 

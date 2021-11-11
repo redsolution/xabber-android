@@ -39,57 +39,35 @@ public class ChannelSettingsFragment extends BaseSoundPrefFragment<ChannelRingto
 
         Preference resetPreference = getPreferenceScreen().findPreference(getString(R.string.events_reset_key));
         if (resetPreference != null) {
-            resetPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage(R.string.events_reset_alert)
-                            .setPositiveButton(R.string.category_reset, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getActivity(), R.string.events_reset_toast, Toast.LENGTH_SHORT).show();
-                                    SettingsManager.resetPreferences(getActivity(), NOTIFICATION_PREFERENCES);
-                                    NotificationChannelUtils.resetMessageChannels(notificationManager);
-                                    ((NotificationsSettings) getActivity()).restartFragment();
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    builder.create().show();
-                    return true;
-                }
+            resetPreference.setOnPreferenceClickListener(preference -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.events_reset_alert)
+                        .setPositiveButton(R.string.category_reset, (dialog, which) -> {
+                            Toast.makeText(getActivity(), R.string.events_reset_toast, Toast.LENGTH_SHORT).show();
+                            SettingsManager.resetPreferences(getActivity(), NOTIFICATION_PREFERENCES);
+                            NotificationChannelUtils.resetMessageChannels(notificationManager);
+                            ((NotificationsSettings) getActivity()).restartFragment();
+                        })
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+                builder.create().show();
+                return true;
             });
         }
 
         Preference removeCustomNotifPreference = getPreferenceScreen()
                 .findPreference(getString(R.string.events_remove_all_custom_key));
         if (removeCustomNotifPreference != null) {
-            removeCustomNotifPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage(R.string.events_remove_all_custom_summary)
-                            .setPositiveButton(R.string.remove, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getActivity(), R.string.events_reset_toast, Toast.LENGTH_SHORT).show();
-                                    CustomNotifyPrefsManager.getInstance().deleteAllNotifyPrefs(notificationManager);
-                                    ((NotificationsSettings) getActivity()).restartFragment();
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    builder.create().show();
-                    return true;
-                }
+            removeCustomNotifPreference.setOnPreferenceClickListener(preference -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.events_remove_all_custom_summary)
+                        .setPositiveButton(R.string.remove, (dialog, which) -> {
+                            Toast.makeText(getActivity(), R.string.events_reset_toast, Toast.LENGTH_SHORT).show();
+                            CustomNotifyPrefsManager.getInstance().deleteAllNotifyPrefs(notificationManager);
+                            ((NotificationsSettings) getActivity()).restartFragment();
+                        })
+                        .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+                builder.create().show();
+                return true;
             });
         }
     }
@@ -106,14 +84,11 @@ public class ChannelSettingsFragment extends BaseSoundPrefFragment<ChannelRingto
 
     private void loadVibro(@StringRes int resid, final NotificationChannelUtils.ChannelType type) {
         ListPreference preference = (ListPreference) getPreferenceScreen().findPreference(getString(resid));
-        preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                NotificationChannelUtils.updateMessageChannel(notificationManager, type, null,
-                        MessageNotificationCreator.getVibroValue(((String)newValue), getActivity()),
-                        null);
-                return true;
-            }
+        preference.setOnPreferenceChangeListener((preference1, newValue) -> {
+            NotificationChannelUtils.updateMessageChannel(notificationManager, type, null,
+                    MessageNotificationCreator.getVibroValue(((String)newValue), getActivity()),
+                    null);
+            return true;
         });
     }
 
@@ -122,12 +97,7 @@ public class ChannelSettingsFragment extends BaseSoundPrefFragment<ChannelRingto
         RingtonePreference preference = (RingtonePreference) getPreferenceScreen().findPreference(getString(resid));
 
         preference.setSummary(getSoundTitle(channel));
-        preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                return trySetNewRingtone(new ChannelRingtoneHolder(newValue.toString(), type));
-            }
-        });
+        preference.setOnPreferenceChangeListener((preference1, newValue) -> trySetNewRingtone(new ChannelRingtoneHolder(newValue.toString(), type)));
     }
 
     private String getSoundTitle(NotificationChannel channel) {

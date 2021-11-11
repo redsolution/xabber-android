@@ -14,7 +14,6 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         app:civ_circle_background_color="@color/white"
-        tools:src="@tools:sample/avatars"
-        />
+        tools:src="@tools:sample/avatars" />
 
 </RelativeLayout>

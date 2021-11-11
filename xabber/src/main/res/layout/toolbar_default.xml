@@ -10,5 +10,4 @@
     app:titleTextAppearance="@style/ToolbarTitle"
     app:popupTheme="?attr/toolbar_popup_theme"
     android:elevation="8dp"
-    app:contentInsetStartWithNavigation="0dp"
-    />
+    app:contentInsetStartWithNavigation="0dp" />

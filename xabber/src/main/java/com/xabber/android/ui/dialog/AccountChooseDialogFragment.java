@@ -63,7 +63,7 @@ public class AccountChooseDialogFragment extends DialogFragment implements Dialo
         public Adapter(Activity activity) {
             super(activity);
             ArrayList<AccountJid> available = new ArrayList<>();
-            Collection<AccountJid> enabledAccounts = AccountManager.getInstance().getEnabledAccounts();
+            Collection<AccountJid> enabledAccounts = AccountManager.INSTANCE.getEnabledAccounts();
 
             RosterManager rosterManager = RosterManager.getInstance();
 

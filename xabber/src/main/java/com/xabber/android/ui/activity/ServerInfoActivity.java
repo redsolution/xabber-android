@@ -12,17 +12,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.archive.MessageArchiveManager;
 import com.xabber.android.data.extension.bookmarks.BookmarksManager;
+import com.xabber.android.data.extension.delivery.DeliveryManager;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
-import com.xabber.android.data.extension.rrr.RrrManager;
-import com.xabber.android.data.intent.AccountIntentBuilder;
+import com.xabber.android.data.extension.retract.RetractManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.PushManager;
 import com.xabber.android.ui.adapter.ServerInfoAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
@@ -35,7 +36,6 @@ import org.jivesoftware.smackx.csi.ClientStateIndicationManager;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
 import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 import org.jivesoftware.smackx.disco.packet.DiscoverItems;
-import org.jivesoftware.smackx.mam.MamManager;
 import org.jivesoftware.smackx.pep.PEPManager;
 import org.jxmpp.jid.DomainBareJid;
 
@@ -50,28 +50,21 @@ public class ServerInfoActivity extends ManagedActivity {
     View progressBar;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, ServerInfoActivity.class).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(context, ServerInfoActivity.class, account);
     }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_server_info);
 
-        final Intent intent = getIntent();
-
-        AccountJid account = getAccount(intent);
+        AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
         if (account == null) {
             finish();
             return;
         }
 
-        accountItem = AccountManager.getInstance().getAccount(account);
+        accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             Application.getInstance().onError(R.string.NO_SUCH_ACCOUNT);
             finish();
@@ -153,13 +146,13 @@ public class ServerInfoActivity extends ManagedActivity {
             boolean sm = connection.isSmAvailable();
             boolean rosterVersioning = Roster.getInstanceFor(connection).isRosterVersioningSupported();
             boolean carbons = org.jivesoftware.smackx.carbons.CarbonManager.getInstanceFor(connection).isSupportedByServer();
-            boolean mam = MamManager.getInstanceFor(connection).isSupportedByServer();
+            boolean mam = MessageArchiveManager.INSTANCE.isSupported(accountItem);
             boolean csi = ClientStateIndicationManager.isSupported(connection);
-            boolean push = PushManager.getInstance().isSupport(connection);
             boolean fileUpload = HttpFileUploadManager.getInstance().isFileUploadSupported(accountItem.getAccount());
             boolean bookmarks = BookmarksManager.getInstance().isSupported(accountItem.getAccount());
-            boolean rewrite = RrrManager.getInstance().isSupported(connection);
-            boolean reliable = ReliableMessageDeliveryManager.getInstance().isSupported(connection);
+            boolean rewrite = RetractManager.INSTANCE.isSupported(connection);
+            boolean reliable = DeliveryManager.getInstance().isSupported(connection);
+            boolean groupchats = GroupsManager.INSTANCE.isSupported(connection);
 
             serverInfoList.add(getString(R.string.xep_0163_pep) + " " + getCheckOrCross(pep));
             serverInfoList.add(getString(R.string.xep_0191_blocking) + " " + getCheckOrCross(blockingCommand));
@@ -168,11 +161,11 @@ public class ServerInfoActivity extends ManagedActivity {
             serverInfoList.add(getString(R.string.xep_0280_carbons) + " " + getCheckOrCross(carbons));
             serverInfoList.add(getString(R.string.xep_0313_mam) + " " + getCheckOrCross(mam));
             serverInfoList.add(getString(R.string.xep_0352_csi) + " " + getCheckOrCross(csi));
-            serverInfoList.add(getString(R.string.xep_0357_push) + " " + getCheckOrCross(push));
             serverInfoList.add(getString(R.string.xep_0363_file_upload) + " " + getCheckOrCross(fileUpload));
             serverInfoList.add(getString(R.string.xep_0048_bookmarks) + " " + getCheckOrCross(bookmarks));
             serverInfoList.add(getString(R.string.xep_0rrr_retract) + " " + getCheckOrCross(rewrite));
             serverInfoList.add(getString(R.string.xep_0xxx_reliable_message_delivery) + " " + getCheckOrCross(reliable));
+            serverInfoList.add(getString(R.string.xep_0ggg_groupchat) + " " + getCheckOrCross(groupchats));
             serverInfoList.add("");
 
         } catch (InterruptedException | SmackException.NoResponseException
@@ -221,7 +214,7 @@ public class ServerInfoActivity extends ManagedActivity {
         }
 
         if (serverInfoList.isEmpty()) {
-            serverInfoList.add(getString(R.string.SERVER_INFO_ERROR));
+            serverInfoList.add(getString(R.string.account_add__alert_no_server_info));
         }
 
         return serverInfoList;

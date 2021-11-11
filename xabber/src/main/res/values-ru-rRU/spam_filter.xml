@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="spam_filter_limit_message">Этот пользователь ограничил получение сообщений от не авторизированных контактов.</string>
+    <string name="spam_filter_limit_subscription">Этот пользователь ограничил запросы подписки. Чтобы запросить запрос подписки, решите капчу:</string>
+    <string name="spam_filter_ban_subscription">Этот пользователь ограничил запросы подписки. Вы сможете общаться с ним только если он сам инициирует переписку.</string>
+    <string name="spam_filter_captcha_correct">Правильный ответ. Запрос на подписку показан пользователю.</string>
+    <string name="spam_filter_captcha_incorrect">Неправильный ответ. А вы точно не спамбот?</string>
+    <string name="spam_filter_captcha_many_attempts">Слишком много попыток ввода. Чтобы сгенерировать новую капчу попробуйте ещё раз сделать запрос подписки</string>
+</resources>

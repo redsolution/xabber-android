@@ -2,11 +2,14 @@ package com.xabber.android.data.database.realmobjects;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.groups.GroupPrivacyType;
 import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
 import java.util.UUID;
+
+import javax.annotation.Nullable;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
@@ -23,6 +26,7 @@ public class NotificationChatRealmObject extends RealmObject {
         public static final String CHAT_TITLE = "chatTitle";
         public static final String IS_GROUP_CHAT = "isGroupChat";
         public static final String MESSAGES = "messages";
+        public static final String PRIVACY_TYPE = "privacyType";
     }
 
     @PrimaryKey
@@ -34,11 +38,11 @@ public class NotificationChatRealmObject extends RealmObject {
     private String chatTitle;
     private boolean isGroupChat;
     private RealmList<NotificationMessageRealmObject> messages;
+    private String privacyType = null;
 
     public NotificationChatRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
-
     public NotificationChatRealmObject(String id) {
         this.id = id;
     }
@@ -55,7 +59,6 @@ public class NotificationChatRealmObject extends RealmObject {
             throw new IllegalStateException();
         }
     }
-
     public void setAccount(AccountJid account) {
         this.account = account.toString();
     }
@@ -63,12 +66,11 @@ public class NotificationChatRealmObject extends RealmObject {
     public ContactJid getUser() {
         try {
             return ContactJid.from(user);
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }
     }
-
     public void setUser(ContactJid user) {
         this.user = user.toString();
     }
@@ -76,7 +78,6 @@ public class NotificationChatRealmObject extends RealmObject {
     public int getNotificationID() {
         return notificationID;
     }
-
     public void setNotificationID(int notificationID) {
         this.notificationID = notificationID;
     }
@@ -84,7 +85,6 @@ public class NotificationChatRealmObject extends RealmObject {
     public String getChatTitle() {
         return chatTitle;
     }
-
     public void setChatTitle(String chatTitle) {
         this.chatTitle = chatTitle;
     }
@@ -92,7 +92,6 @@ public class NotificationChatRealmObject extends RealmObject {
     public boolean isGroupChat() {
         return isGroupChat;
     }
-
     public void setGroupChat(boolean groupChat) {
         isGroupChat = groupChat;
     }
@@ -100,8 +99,13 @@ public class NotificationChatRealmObject extends RealmObject {
     public RealmList<NotificationMessageRealmObject> getMessages() {
         return messages;
     }
-
     public void setMessages(RealmList<NotificationMessageRealmObject> messages) {
         this.messages = messages;
     }
+
+    public void setPrivacyType(@Nullable GroupPrivacyType privacyType) {
+        if (privacyType != null) this.privacyType = privacyType.toString();
+    }
+    public GroupPrivacyType getPrivacyType() { return GroupPrivacyType.fromString(privacyType); }
+
 }

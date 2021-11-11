@@ -1,14 +1,14 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -37,7 +36,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -49,80 +47,72 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
-import com.xabber.android.data.intent.AccountIntentBuilder;
-import com.xabber.android.data.intent.EntityIntentBuilder;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnBlockedListChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.color.AccountPainter;
 import com.xabber.android.ui.color.ColorManager;
 import com.xabber.android.ui.dialog.BlockContactDialog;
+import com.xabber.android.ui.dialog.GroupchatLeaveDialog;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.fragment.ContactVcardViewerFragment;
+import com.xabber.android.ui.fragment.groups.GroupchatInfoFragment;
 import com.xabber.android.ui.helper.BlurTransformation;
 import com.xabber.android.ui.helper.ContactTitleInflater;
 import com.xabber.android.ui.widget.ContactBarAutoSizingLayout;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
 
 public class ContactActivity extends ManagedActivity implements
-        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener, View.OnClickListener,
-        View.OnLongClickListener, SnoozeDialog.OnSnoozeListener, BlockingManager.UnblockContactListener, OnBlockedListChangedListener {
+        OnContactChangedListener, OnAccountChangedListener, ContactVcardViewerFragment.Listener,
+        View.OnClickListener, View.OnLongClickListener, SnoozeDialog.OnSnoozeListener,
+        BlockingManager.UnblockContactListener, OnBlockedListChangedListener {
 
     private static final String LOG_TAG = ContactActivity.class.getSimpleName();
+    public int orientation;
     private AccountJid account;
     private ContactJid user;
     private AbstractChat chat;
     private Toolbar toolbar;
     private View contactTitleView;
-    private TextView contactAddress;
-    private TextView contactName;
     private AbstractContact bestContact;
     private CollapsingToolbarLayout collapsingToolbar;
-    private AppBarLayout appBarLayout;
-    private ImageView background;
-    private ImageView QRgen;
-    private ImageButton chatButton;
-    private ImageButton callsButton;
-    private ImageButton blockButton;
-    private ImageButton notifyButton;
+    private ImageButton firstButton;
+    private ImageButton secondButton;
+    private ImageButton thirdButton;
+    private ImageButton fourthButton;
     private int accountMainColor;
     private boolean coloredBlockText;
-    private TextView chatButtonText;
-    private TextView callsButtonText;
-    private TextView blockButtonText;
-    private TextView notifyButtonText;
+    private TextView firstButtonText;
+    private TextView secondButtonText;
+    private TextView thirdButtonText;
+    private TextView fourthButtonText;
     private ContactBarAutoSizingLayout contactBarLayout;
-
-    public int orientation;
     private boolean blocked;
+    protected boolean isGroupchat;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        return new EntityIntentBuilder(context, ContactActivity.class)
-                .setAccount(account).setUser(user).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
-    private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
+        return IntentHelpersKt.createContactIntent(context, ContactActivity.class, account, user);
     }
 
     protected Toolbar getToolbar() {
@@ -133,10 +123,10 @@ public class ContactActivity extends ManagedActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        account = getAccount(getIntent());
-        user = getUser(getIntent());
+        account = IntentHelpersKt.getAccountJid(getIntent());
+        user = IntentHelpersKt.getContactJid(getIntent());
 
-        AccountItem accountItem = AccountManager.getInstance().getAccount(this.account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(this.account);
         if (accountItem == null) {
             LogManager.e(LOG_TAG, "Account item is null " + account);
             finish();
@@ -146,7 +136,7 @@ public class ContactActivity extends ManagedActivity implements
         if (user != null && user.getBareJid().equals(account.getFullJid().asBareJid())) {
             try {
                 user = ContactJid.from(accountItem.getRealJid().asBareJid());
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(this, e);
             }
         }
@@ -177,56 +167,56 @@ public class ContactActivity extends ManagedActivity implements
             win.setStatusBarColor(Color.TRANSPARENT);
         }
 
-        setContentView(R.layout.activity_contact_new);
+        setContentView(R.layout.activity_contact_info);
 
         if (savedInstanceState == null) {
-            Fragment fragment = ContactVcardViewerFragment.newInstance(account, user);
+            Fragment fragment;
+            AbstractChat chat = ChatManager.getInstance().getChat(account, user);
+            if (chat instanceof GroupChat) {
+                fragment = GroupchatInfoFragment.newInstance(account, user);
+            } else {
+                fragment = ContactVcardViewerFragment.newInstance(account, user);
+            }
             getSupportFragmentManager().beginTransaction().add(R.id.scrollable_container, fragment).commit();
         }
 
         bestContact = RosterManager.getInstance().getBestContact(account, user);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
+        chat = ChatManager.getInstance().getChat(account, user);
+        isGroupchat = chat instanceof GroupChat;
         contactBarLayout = findViewById(R.id.contact_bar_layout);
+        if (isGroupchat) contactBarLayout.setForGroupchat();
+        else contactBarLayout.setForContact();
 
-        chatButton = findViewById(R.id.chat_button);
-        chatButtonText = findViewById(R.id.chat_button_text);
-        chatButton.setOnClickListener(this);
+        firstButton = findViewById(R.id.first_button);
+        firstButtonText = findViewById(R.id.first_button_text);
+        firstButton.setOnClickListener(this);
 
-        callsButton = findViewById(R.id.call_button);
-        callsButtonText = findViewById(R.id.call_button_text);
-        callsButton.setOnClickListener(this);
+        secondButton = findViewById(R.id.second_button);
+        secondButtonText = findViewById(R.id.second_button_text);
+        secondButton.setOnClickListener(this);
 
-        blockButton = findViewById(R.id.block_button);
-        blockButtonText = findViewById(R.id.block_text);
-        blockButton.setOnClickListener(this);
+        thirdButton = findViewById(R.id.fourth_button);
+        thirdButtonText = findViewById(R.id.fourth_button_text);
+        thirdButton.setOnClickListener(this);
 
-        notifyButton = findViewById(R.id.notify_button);
-        notifyButtonText = findViewById(R.id.notification_text);
-        notifyButton.setOnClickListener(this);
+        fourthButton = findViewById(R.id.third_button);
+        fourthButtonText = findViewById(R.id.third_button_text);
+        fourthButton.setOnClickListener(this);
 
         int colorLevel = AccountPainter.getAccountColorLevel(account);
         accountMainColor = ColorManager.getInstance().getAccountPainter().getAccountMainColor(account);
         final int accountDarkColor = ColorManager.getInstance().getAccountPainter().getAccountDarkColor(account);
-        if (colorLevel == 0 || colorLevel == 1 || colorLevel == 3) {
-            coloredBlockText = true;
-        } else
-            coloredBlockText = false;
+        coloredBlockText = colorLevel == 0 || colorLevel == 1 || colorLevel == 3;
 
-        contactTitleView = findViewById(R.id.contact_title_expanded_new);
-        contactAddress = (TextView) findViewById(R.id.address_text);
+        contactTitleView = findViewById(R.id.contact_title_expanded);
+        TextView contactAddress = findViewById(R.id.address_text);
         contactAddress.setText(user.getBareJid().toString());
-        contactName = (TextView) findViewById(R.id.name);
 
-        chat = ChatManager.getInstance().getOrCreateChat(account, user);
         checkForBlockedStatus();
 
         orientation = getResources().getConfiguration().orientation;
@@ -242,14 +232,14 @@ public class ContactActivity extends ManagedActivity implements
             orientationLandscape();
         }
 
-        background = findViewById(R.id.backgroundView);
-        Drawable backgroundSource = bestContact.getAvatar(false);
+        ImageView background = findViewById(R.id.backgroundView);
+        Drawable backgroundSource = bestContact.getAvatar(isGroupchat);
         if (backgroundSource == null)
             backgroundSource = getResources().getDrawable(R.drawable.about_backdrop);
         Glide.with(this)
                 .load(backgroundSource)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .transform(new MultiTransformation<Bitmap>(new CenterCrop(), new BlurTransformation(25, 8, /*this,*/ accountMainColor)))
+                .transform(new MultiTransformation<>(new CenterCrop(), new BlurTransformation(25, 8, /*this,*/ accountMainColor)))
                 .into(background);
 
     }
@@ -261,7 +251,6 @@ public class ContactActivity extends ManagedActivity implements
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnBlockedListChangedListener.class, this);
         ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
-        appBarResize();
     }
 
     @Override
@@ -277,23 +266,9 @@ public class ContactActivity extends ManagedActivity implements
         super.onDestroy();
     }
 
-    private void appBarResize() {
-        ImageView avatar = findViewById(R.id.ivAvatar);
-        ImageView avatarQR = findViewById(R.id.ivAvatarQR);
-        if (avatar.getDrawable() == null) {
-            if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                avatar.setVisibility(View.GONE);
-                avatarQR.setVisibility(View.GONE);
-            } else {
-                QRgen.setVisibility(View.GONE);
-                avatarQR.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
     private void orientationPortrait() {
-        collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;
             int scrollRange = -1;
@@ -318,7 +293,7 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     private void orientationLandscape() {
-        final LinearLayout nameHolderView = (LinearLayout) findViewById(R.id.name_holder);
+        final LinearLayout nameHolderView = findViewById(R.id.name_holder);
 
         toolbar.setTitle("");
         toolbar.setBackgroundColor(Color.TRANSPARENT);
@@ -330,12 +305,10 @@ public class ContactActivity extends ManagedActivity implements
         if (toolbar.getOverflowIcon() != null)
             toolbar.getOverflowIcon().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
 
-        QRgen = findViewById(R.id.generate_qrcode);
+        ImageView QRgen = findViewById(R.id.generate_qrcode);
         QRgen.setOnClickListener(this);
 
-        final NestedScrollView scrollView = findViewById(R.id.scroll_v_card);
         final LinearLayout ll = findViewById(R.id.scroll_v_card_child);
-        //final int actionBarSize = getActionBarSize();
 
         nameHolderView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -348,22 +321,6 @@ public class ContactActivity extends ManagedActivity implements
             }
         });
 
-        //final View divider = findViewById(R.id.divider);
-        /*if (scrollView != null) {
-            scrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                @Override
-                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                    int i = v.getChildAt(0).getPaddingTop();
-                    if (scrollY >= (v.getChildAt(0).getPaddingTop())) {
-                        divider.setVisibility(View.VISIBLE);
-                        contactName.setMaxLines(1);
-                    } else if (divider.getVisibility() != View.INVISIBLE) {
-                        divider.setVisibility(View.INVISIBLE);
-                        contactName.setMaxLines(2);
-                    }
-                }
-            });
-        }*/
     }
 
     private void setContactBar(int color, int orientation) {
@@ -371,52 +328,58 @@ public class ContactActivity extends ManagedActivity implements
         if (chat != null) {
             chat.enableNotificationsIfNeed();
             if (chat.notifyAboutMessage() && !blocked)
-                notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
+                fourthButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
             else {
                 notify = false;
                 NotificationState notificationState = chat.getNotificationState();
                 switch (notificationState.getMode()) {
                     case disabled:
-                        notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
+                        fourthButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
                         break;
                     case snooze1d:
                     case snooze2h:
                     case snooze1h:
                     case snooze15m:
                     default:
-                        if (blocked) notifyButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
-                        else notifyButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
+                        if (blocked)
+                            fourthButton.setImageDrawable((getResources().getDrawable(R.drawable.ic_snooze_forever)));
+                        else
+                            fourthButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_snooze));
                         break;
                 }
             }
         }
-        chatButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
-        callsButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
-        notifyButton.setColorFilter(blocked || !notify ? getResources().getColor(R.color.grey_500) : color);
-        blockButton.setColorFilter(getResources().getColor(R.color.red_900));
+        firstButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
+        secondButton.setColorFilter(blocked ? getResources().getColor(R.color.grey_500) : color);
+        fourthButton.setColorFilter(blocked || !notify ? getResources().getColor(R.color.grey_500) : color);
+        thirdButton.setColorFilter(getResources().getColor(R.color.red_900));
 
-        callsButton.setEnabled(!blocked);
-        notifyButton.setEnabled(!blocked);
+        secondButton.setEnabled(!blocked);
+        fourthButton.setEnabled(!blocked);
 
-        blockButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
-        blockButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
-                R.color.red_900 :
-                SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light ?
-                R.color.grey_600 :
-                R.color.grey_400));
+        if (!isGroupchat) {
+            thirdButtonText.setText(blocked ? R.string.contact_bar_unblock : R.string.contact_bar_block);
+            thirdButtonText.setTextColor(getResources().getColor(blocked || coloredBlockText ?
+                    R.color.red_900 :
+                    SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light ?
+                            R.color.grey_600 :
+                            R.color.grey_400));
+
+        }
 
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            chatButtonText.setVisibility(View.GONE);
-            callsButtonText.setVisibility(View.GONE);
-            blockButtonText.setVisibility(View.GONE);
-            notifyButtonText.setVisibility(View.GONE);
+            firstButtonText.setVisibility(View.GONE);
+            secondButtonText.setVisibility(View.GONE);
+            thirdButtonText.setVisibility(View.GONE);
+            fourthButtonText.setVisibility(View.GONE);
         } else {
-            chatButtonText.setVisibility(View.VISIBLE);
-            callsButtonText.setVisibility(View.VISIBLE);
-            blockButtonText.setVisibility(View.VISIBLE);
-            notifyButtonText.setVisibility(View.VISIBLE);
+            firstButtonText.setVisibility(View.VISIBLE);
+            secondButtonText.setVisibility(View.VISIBLE);
+            thirdButtonText.setVisibility(View.VISIBLE);
+            fourthButtonText.setVisibility(View.VISIBLE);
             contactBarLayout.redrawText();
         }
+
     }
 
     public void manageAvailableUsernameSpace() {
@@ -444,20 +407,18 @@ public class ContactActivity extends ManagedActivity implements
 
     public void generateQR() {
         RosterContact rosterContact = RosterManager.getInstance().getRosterContact(getAccount(), getUser());
-        Intent intent = QRCodeActivity.createIntent(this, getAccount());
         String textName = rosterContact != null ? rosterContact.getName() : "";
-        intent.putExtra("account_name", textName);
-        String textAddress = getUser().toString();
-        intent.putExtra("account_address", textAddress);
+        Intent intent = QRCodeActivity.createIntentForXmppEntity(this, textName, getUser().getBareJid());
         intent.putExtra("caller", "ContactViewerActivity");
         startActivity(intent);
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
         for (BaseEntity entity : entities) {
             if (entity.equals(account, user)) {
-                ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
+                Application.getInstance().runOnUiThread(() ->
+                        ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true));
                 break;
             }
         }
@@ -468,10 +429,9 @@ public class ContactActivity extends ManagedActivity implements
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts.contains(account)) {
-            ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true);
-        }
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(() ->
+                ContactTitleInflater.updateTitle(contactTitleView, this, bestContact, true));
     }
 
     protected AccountJid getAccount() {
@@ -494,24 +454,36 @@ public class ContactActivity extends ManagedActivity implements
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.chat_button:
-                startActivity(ChatActivity.createSpecificChatIntent(this, account, user));
+            case R.id.first_button:
+                startActivity(ChatActivity.Companion.createSpecificChatIntent(this, account, user));
                 finish();
                 break;
-            case R.id.call_button:
-                Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
+            case R.id.second_button:
+                if (isGroupchat) {
+                    startActivity(
+                            GroupInviteContactActivity.Companion.createIntent(
+                                    ContactActivity.this, account, user
+                            )
+                    );
+                } else {
+                    Snackbar.make(view, "Feature is coming in future updates!", Snackbar.LENGTH_LONG).show();
+                }
                 break;
-            case R.id.notify_button:
+            case R.id.third_button:
                 if (chat.notifyAboutMessage())
                     showSnoozeDialog(chat);
                 else
                     removeSnooze(chat);
                 break;
-            case R.id.block_button:
-                if (blocked)
-                    removeBlock();
-                else
-                    showBlockDialog();
+            case R.id.fourth_button:
+                if (isGroupchat) {
+                    leaveGroupchat();
+                } else {
+                    if (blocked)
+                        removeBlock();
+                    else
+                        showBlockDialog();
+                }
                 break;
             case R.id.generate_qrcode:
                 generateQR();
@@ -531,6 +503,13 @@ public class ContactActivity extends ManagedActivity implements
                     new NotificationState(NotificationState.NotificationMode.enabled,
                             0), true);
         onSnoozed();
+    }
+
+    private void leaveGroupchat() {
+        if (chat instanceof GroupChat) {
+            GroupchatLeaveDialog.newInstance(chat.getAccount(), chat.getContactJid())
+                    .show(getSupportFragmentManager(), GroupchatLeaveDialog.class.getSimpleName());
+        }
     }
 
     public void showBlockDialog() {
@@ -555,60 +534,25 @@ public class ContactActivity extends ManagedActivity implements
     @Override
     public void onBlockedListChanged(AccountJid account) {
         if (account.getFullJid().asBareJid().equals(getAccount().getFullJid().asBareJid())) {
-            checkForBlockedStatus();
-            setContactBar(accountMainColor, orientation);
+            Application.getInstance().runOnUiThread(() -> {
+                checkForBlockedStatus();
+                setContactBar(accountMainColor, orientation);
+            });
         }
     }
+
     @Override
     public void onSuccessUnblock() {
         blocked = false;
         setContactBar(accountMainColor, orientation);
     }
+
     @Override
-    public void onErrorUnblock() { }
+    public void onErrorUnblock() {
+    }
 
     @Override
     public boolean onLongClick(View view) {
-        /*int[] location = new int[2];
-        LayoutInflater inflater = getLayoutInflater();
-        View layout = inflater.inflate(R.layout.toast_message_square, (ViewGroup) findViewById(R.id.message));
-        TextView description = (TextView) layout.findViewById(R.id.description);
-        String desc = "";
-        if (view.getContentDescription()!=null)
-             desc = view.getContentDescription().toString();
-        description.setText(desc);
-        switch (view.getId()) {
-            case R.id.chat_button:
-            case R.id.call_button:
-            case R.id.video_button:
-            case R.id.notify_button:
-                view.getLocationOnScreen(location);
-                final Toast toast = new Toast(getApplicationContext());
-                int offset = calculateOffset(view, layout, description);
-                toast.setGravity(Gravity.START|Gravity.TOP , location[0] + offset, location[1]);
-                toast.setDuration(Toast.LENGTH_SHORT);
-                toast.setView(layout);
-                toast.show();
-
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toast.cancel();
-                    }
-                }, 500);
-                break;
-        }*/
         return true;
     }
-
-
-    /*private int calculateOffset(View buttonView, View toastView, TextView desc) {
-     *//*int I = desc.getWidth();
-        int II = desc.getMeasuredWidth();
-        Rect rect = new Rect();
-        desc.getWindowVisibleDisplayFrame(rect);
-        int III = rect.right - rect.left;*//*
-        return (buttonView.getWidth()  / 4);
-    }*/
 }

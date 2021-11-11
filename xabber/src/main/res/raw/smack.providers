@@ -9,12 +9,82 @@
         <className>com.xabber.xmpp.vcardupdate.VCardUpdateProvider</className>
     </extensionProvider>
 
+    <!-- XEP-DEVICE Device Management -->
+    <extensionProvider>
+        <elementName>device</elementName>
+        <namespace>https://xabber.com/protocol/devices</namespace>
+        <className>com.xabber.xmpp.device.DeviceExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!-- XEP-TOKEN Token Management -->
+    <extensionProvider>
+        <elementName>revoke</elementName>
+        <namespace>https://xabber.com/protocol/auth-tokens</namespace>
+        <className>com.xabber.xmpp.xtoken.providers.XTokenRevokeExtensionElementProvider</className>
+    </extensionProvider>
+
+
     <!-- XEP-0GGG Group Chat -->
     <extensionProvider>
         <elementName>x</elementName>
-        <namespace>http://xabber.com/protocol/groupchat</namespace>
-        <className>com.xabber.android.data.extension.groupchat.GroupchatProvider</className>
+        <namespace>https://xabber.com/protocol/groups</namespace>
+        <className>com.xabber.xmpp.groups.GroupchatProvider</className>
     </extensionProvider>
+
+    <extensionProvider>
+        <elementName>invite</elementName>
+        <namespace>https://xabber.com/protocol/groups#invite</namespace>
+        <className>com.xabber.xmpp.groups.invite.incoming.IncomingInviteExtensionElementProvider</className>
+    </extensionProvider>
+
+    <iqProvider>
+            <elementName>query</elementName>
+            <namespace>https://xabber.com/protocol/groups</namespace>
+            <className>com.xabber.xmpp.groups.settings.GroupSettingsRequestDataFormResultProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#status</namespace>
+        <className>com.xabber.xmpp.groups.status.GroupStatusDataFormIqProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#create</namespace>
+        <className>com.xabber.xmpp.groups.create.GroupchatCreateIqResultProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#rights</namespace>
+        <className>com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIqProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#default-rights</namespace>
+        <className>com.xabber.xmpp.groups.restrictions.GroupDefaultRestrictionsResultIqProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#members</namespace>
+        <className>com.xabber.xmpp.groups.members.GroupchatMembersResultProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#invite</namespace>
+        <className>com.xabber.xmpp.groups.invite.outgoing.GroupchatInviteListResultProvider</className>
+    </iqProvider>
+
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/groups#block</namespace>
+        <className>com.xabber.xmpp.groups.block.blocklist.GroupchatBlocklistResultProvider</className>
+    </iqProvider>
+
 
     <!-- Stanza Session Negotiation -->
     <extensionProvider>
@@ -23,12 +93,14 @@
         <className>com.xabber.xmpp.ssn.FeatureProvider</className>
     </extensionProvider>
 
+
     <!-- HTTP File Upload -->
     <iqProvider>
         <elementName>slot</elementName>
         <namespace>urn:xmpp:http:upload</namespace>
         <className>com.xabber.xmpp.httpfileupload.SlotProvider</className>
     </iqProvider>
+
 
     <!-- Avatar Data -->
     <extensionProvider>
@@ -44,11 +116,20 @@
         <className>com.xabber.xmpp.avatar.MetadataProvider</className>
     </extensionProvider>
 
+
     <!-- Custom vCard Provider -->
     <iqProvider>
         <elementName>vCard</elementName>
         <namespace>vcard-temp</namespace>
         <className>com.xabber.xmpp.vcard.VCardCustomProvider</className>
+    </iqProvider>
+
+
+    <!-- XEP-SYNC(0CCC) -->
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/synchronization</namespace>
+        <className>com.xabber.xmpp.sync.IncomingSetSyncIqProvider</className>
     </iqProvider>
 
 
@@ -87,31 +168,31 @@
     <extensionProvider>
         <elementName>active</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>composing</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>paused</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>inactive</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>gone</elementName>
         <namespace>http://jabber.org/protocol/chatstates</namespace>
-        <className>com.xabber.xmpp.uuu.ChatStateExtensionProvider</className>
+        <className>com.xabber.xmpp.chat_state.ChatStateExtensionProvider</className>
     </extensionProvider>
 
 
@@ -120,21 +201,103 @@
     <extensionProvider>
         <elementName>stanza-id</elementName>
         <namespace>urn:xmpp:sid:0</namespace>
-        <className>com.xabber.android.data.extension.reliablemessagedelivery.StanzaIdProvider</className>
+        <className>com.xabber.xmpp.sid.StanzaIdProvider</className>
     </extensionProvider>
 
     <extensionProvider>
         <elementName>origin-id</elementName>
         <namespace>urn:xmpp:sid:0</namespace>
-        <className>com.xabber.android.data.extension.reliablemessagedelivery.OriginIdProvider</className>
+        <className>com.xabber.xmpp.sid.OriginIdProvider</className>
     </extensionProvider>
 
 
+    <!--                XEP-0313 MAM                -->
+    <!--       Mam result extension element         -->
+    <extensionProvider>
+        <elementName>result</elementName>
+        <namespace>urn:xmpp:mam:2</namespace>
+        <className>com.xabber.xmpp.mam.MamResultExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!--       Archived ID extension element        -->
+    <extensionProvider>
+        <elementName>archived</elementName>
+        <namespace>urn:xmpp:mam:tmp</namespace>
+        <className>com.xabber.xmpp.mam.ArchivedIdProvider</className>
+    </extensionProvider>
+
+    <!--                Fin IQ                    -->
+    <iqProvider>
+        <elementName>fin</elementName>
+        <namespace>urn:xmpp:mam:2</namespace>
+        <className>com.xabber.xmpp.mam.MamFinIqProvider</className>
+    </iqProvider>
+
+
+    <!--              XEP-RETRACT               -->
+    <!--            Replaced element            -->
+    <extensionProvider>
+        <elementName>replaced</elementName>
+        <namespace>https://xabber.com/protocol/rewrite</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.ReplacedExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!--           Invalidate message element            -->
+    <extensionProvider>
+        <elementName>invalidate</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingInvalidateExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!--            Retract message element            -->
+    <extensionProvider>
+        <elementName>retract-message</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingRetractExtensionProvider</className>
+    </extensionProvider>
+
+    <!--            Retract all element            -->
+    <extensionProvider>
+        <elementName>retract-all</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingRetractAllExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!--            Retract user element            -->
+    <extensionProvider>
+        <elementName>retract-user</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingRetractUserExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!--            Replace message element            -->
+    <extensionProvider>
+        <elementName>replace</elementName>
+        <namespace>https://xabber.com/protocol/rewrite#notify</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.IncomingReplaceExtensionElementProvider</className>
+    </extensionProvider>
+
+    <!--            Retracts result iq            -->
+    <iqProvider>
+        <elementName>query</elementName>
+        <namespace>https://xabber.com/protocol/rewrite</namespace>
+        <className>com.xabber.xmpp.retract.incoming.providers.RetractResultIqProvider</className>
+    </iqProvider>
+
+
+    <!--              XEP-DELIVERY               -->
     <!--           Time element provider         -->
     <extensionProvider>
         <elementName>time</elementName>
-        <namespace>http://xabber.com/protocol/delivery</namespace>
-        <className>com.xabber.android.data.extension.reliablemessagedelivery.TimeProvider</className>
+        <namespace>https://xabber.com/protocol/delivery</namespace>
+        <className>com.xabber.android.data.extension.delivery.TimeProvider</className>
+    </extensionProvider>
+
+    <!--           Received element provider         -->
+    <extensionProvider>
+        <elementName>received</elementName>
+        <namespace>https://xabber.com/protocol/delivery</namespace>
+        <className>com.xabber.android.data.extension.delivery.ReceivedExtensionElementProvider</className>
     </extensionProvider>
 
 </smackProviders>

@@ -2,14 +2,15 @@ package com.xabber.android.data.notification;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.connection.OnConnectedListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class DelayedNotificationActionManager implements OnConnectedListener {
 
     private static DelayedNotificationActionManager instance;
-    private List<FullAction> delayedActions = new ArrayList<>();
+    private final List<FullAction> delayedActions = new ArrayList<>();
 
     public static DelayedNotificationActionManager getInstance() {
         if (instance == null)
@@ -19,29 +20,12 @@ public class DelayedNotificationActionManager implements OnConnectedListener {
 
     @Override
     public void onConnected(ConnectionItem connection) {
-        /*Application.getInstance().runInBackground(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        onLoaded();
-                    }
-                });
-            }
-        });*/ // TODO check if swapping this/\ for this\/ breaks anything
-        Application.getInstance().runOnUiThreadDelay(this::onLoaded, 3000);
+        Application.getInstance().runOnUiThreadDelay(3000, this::onLoaded);
     }
 
     private void onLoaded() {
         for (FullAction action : delayedActions) {
-            MessageNotificationManager.getInstance().performAction(action);
+            MessageNotificationManager.INSTANCE.performAction(action);
         }
         delayedActions.clear();
     }

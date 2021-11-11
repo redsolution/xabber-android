@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -24,9 +24,10 @@ import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.repositories.AccountRepository;
-import com.xabber.android.data.extension.mam.LoadHistorySettings;
+import com.xabber.android.data.extension.archive.LoadHistorySettings;
 import com.xabber.android.data.extension.xtoken.XToken;
 
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
 import org.jivesoftware.smack.packet.Presence.Type;
 import org.jivesoftware.smackx.mam.element.MamPrefsIQ;
@@ -46,7 +47,7 @@ import java.util.UUID;
 public class AccountItem extends ConnectionItem implements Comparable<AccountItem> {
 
     public static final String UNDEFINED_PASSWORD = "";
-    private static final long GRACE_PERIOD = 150000;
+    private static final long GRACE_PERIOD = 45000;
 
     /**
      * Id in database.
@@ -88,11 +89,6 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
      */
     private KeyPair keyPair;
 
-    /**
-     * Last history synchronization.
-     */
-    private Date lastSync;
-
     private ArchiveMode archiveMode;
 
     /**
@@ -120,30 +116,27 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     private long gracePeriodEndTime = 0L;
 
-    private boolean pushEnabled;
-    private boolean pushWasEnabled;
-    private String pushNode;
-    private String pushServiceJid;
-
     /** Timestamp начала работы приложения,
      *  сообщения с timestamp раньше этого считаются прочитанными,
      *  позднее - непрочитанными.
      *  */
-    private long startHistoryTimestamp;
+    private Date startHistoryTimestamp;
 
-    public AccountItem(boolean custom, String host,
-                       int port, DomainBareJid serverName, Localpart userName, Resourcepart resource,
-                       boolean storePassword, String password, String token, XToken xToken,
-                       int colorIndex, int order, boolean syncNotAllowed, int timestamp,
-                       int priority, StatusMode statusMode, String statusText,
-                       boolean enabled, boolean saslEnabled, TLSMode tlsMode,
-                       boolean compression, ProxyType proxyType, String proxyHost,
-                       int proxyPort, String proxyUser, String proxyPassword,
-                       boolean syncable, KeyPair keyPair, Date lastSync,
-                       ArchiveMode archiveMode, boolean xabberAutoLoginEnabled) {
-        super(custom, host, port, serverName, userName, resource,
-                storePassword, password, token, xToken, saslEnabled, tlsMode, compression,
-                proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
+    private String retractVersion;
+
+    public AccountItem(boolean custom, String host, int port, DomainBareJid serverName,
+                       Localpart userName, Resourcepart resource, boolean storePassword,
+                       String password, String token, XToken xToken, int colorIndex, int order,
+                       boolean syncNotAllowed, int timestamp, int priority, StatusMode statusMode,
+                       String statusText, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
+                       boolean compression, ProxyType proxyType, String proxyHost, int proxyPort,
+                       String proxyUser, String proxyPassword, boolean syncable, KeyPair keyPair,
+                       ArchiveMode archiveMode, boolean xabberAutoLoginEnabled,
+                       String retractVersion) {
+        super(custom, host, port, serverName, userName, resource, storePassword, password, token,
+                xToken, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort,
+                proxyUser, proxyPassword);
+
         this.id = UUID.randomUUID().toString();
         this.colorIndex = colorIndex;
         this.order = order;
@@ -158,12 +151,12 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         this.syncable = syncable;
         this.storePassword = storePassword;
         this.keyPair = keyPair;
-        this.lastSync = lastSync;
         this.archiveMode = archiveMode;
         this.clearHistoryOnExit = false;
         this.mamDefaultBehaviour = MamPrefsIQ.DefaultBehavior.always;
         this.loadHistorySettings = LoadHistorySettings.all;
         this.successfulConnectionHappened = false;
+        this.retractVersion = retractVersion;
     }
 
     /**
@@ -225,16 +218,14 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     }
 
     /**
-     * @return Whether roster contacts can be synchronized with system contact
-     * list.
+     * @return Whether roster contacts can be synchronized with system contact list.
      */
     public boolean isSyncable() {
         return syncable;
     }
 
     /**
-     * Sets whether roster contacts can be synchronized with system contact
-     * list.
+     * Sets whether roster contacts can be synchronized with system contact list.
      */
     void setSyncable(boolean syncable) {
         this.syncable = syncable;
@@ -262,25 +253,15 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         this.keyPair = keyPair;
     }
 
-    public Date getLastSync() {
-        return lastSync;
-    }
-
     public ArchiveMode getArchiveMode() {
         return archiveMode;
     }
-
     void setArchiveMode(ArchiveMode archiveMode) {
         this.archiveMode = archiveMode;
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    void setPriority(int priority) {
-        this.priority = getValidPriority(priority);
-    }
+    public int getPriority() { return priority; }
+    void setPriority(int priority) { this.priority = getValidPriority(priority); }
 
     void setStatus(StatusMode statusMode, String statusText) {
         this.statusMode = statusMode;
@@ -317,62 +298,48 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         ConnectionState state = getState();
         if (state.isConnected()) {
             return statusMode;
-        } else {
-            return StatusMode.unavailable;
-        }
+        } else return StatusMode.unavailable;
     }
 
     /**
-     * @return Status mode or {@link StatusMode#unavailable} if account was not
-     * authenticated to be used in status editor.
+     * @return Status mode or {@link StatusMode#unavailable} if account was not authenticated to be used in status
+     * editor.
      */
     public StatusMode getFactualStatusMode() {
-        if (getState().isConnected()) {
-            return statusMode;
-        } else {
-            return StatusMode.unavailable;
-        }
+//        if (getState().isConnected()) { //todo check this temp fix
+//            return statusMode;
+//        } else return StatusMode.unavailable;
+        return statusMode;
     }
 
     /**
      * @return {@link Presence} to be send.
-     * @throws NetworkException
      */
     public Presence getPresence() throws NetworkException {
         StatusMode statusMode = getFactualStatusMode();
-        if (statusMode == StatusMode.unsubscribed)
-            throw new IllegalStateException();
-        if (statusMode == StatusMode.unavailable)
-            throw new NetworkException(R.string.NOT_CONNECTED);
-        if (statusMode == StatusMode.invisible)
-            return new Presence(Type.unavailable);
-        else {
-            int priority;
-            if (statusMode != StatusMode.dnd) {
-                if (AccountManager.getInstance().isXa())
-                    statusMode = StatusMode.xa;
-                else if (AccountManager.getInstance().isAway())
-                    statusMode = StatusMode.away;
-            }
-            if (SettingsManager.connectionAdjustPriority()) {
-                if (statusMode == StatusMode.available)
-                    priority = SettingsManager.connectionPriorityAvailable();
-                else if (statusMode == StatusMode.away)
-                    priority = SettingsManager.connectionPriorityAway();
-                else if (statusMode == StatusMode.chat)
-                    priority = SettingsManager.connectionPriorityChat();
-                else if (statusMode == StatusMode.dnd)
-                    priority = SettingsManager.connectionPriorityDnd();
-                else if (statusMode == StatusMode.xa)
-                    priority = SettingsManager.connectionPriorityXa();
-                else
-                    throw new IllegalStateException();
-            } else {
-                priority = this.priority;
-            }
+        switch (statusMode){
+            case unsubscribed: throw new IllegalStateException();
+            case unavailable: throw new NetworkException(R.string.NOT_CONNECTED);
+            case invisible: return new Presence(Type.unavailable);
+            default:
+                int priority;
+                if (SettingsManager.connectionAdjustPriority()) {
+                    switch (statusMode){
+                        case available: priority = SettingsManager.connectionPriorityAvailable(); break;
+                        case away: priority = SettingsManager.connectionPriorityAway(); break;
+                        case chat: priority = SettingsManager.connectionPriorityChat(); break;
+                        case dnd: priority = SettingsManager.connectionPriorityDnd(); break;
+                        case xa: priority = SettingsManager.connectionPriorityXa(); break;
+                        default: throw new IllegalStateException();
+                    }
+                } else priority = this.priority;
 
-            return new Presence(Type.available, statusText, AccountItem.getValidPriority(priority),
-                    statusMode.getMode());
+                return new Presence(
+                        Type.available,
+                        statusText,
+                        AccountItem.getValidPriority(priority),
+                        statusMode.getMode()
+                );
         }
     }
 
@@ -386,52 +353,39 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
     void setEnabled(boolean enabled) {
         if (!this.enabled && enabled) {
             connect();
-        } else if (this.enabled && !enabled) {
-            disconnect();
-        }
+        } else if (this.enabled && !enabled) disconnect();
 
         this.enabled = enabled;
     }
 
-    public void setStreamError(boolean error) {
-        streamError = error;
-    }
+    public void setStreamError(boolean error) { streamError = error; }
 
-    public boolean getStreamError() {
-        return streamError;
-    }
+    public boolean getStreamError() { return streamError; }
 
     /**
      * Update connection options
      */
-    void updateConnectionSettings(boolean custom, String host, int port,
-                                  String password, boolean saslEnabled, TLSMode tlsMode,
-                                  boolean compression, ProxyType proxyType, String proxyHost,
+    void updateConnectionSettings(boolean custom, String host, int port, String password, boolean saslEnabled,
+                                  TLSMode tlsMode, boolean compression, ProxyType proxyType, String proxyHost,
                                   int proxyPort, String proxyUser, String proxyPassword) {
-        getConnectionSettings().update(custom, host, port, password,
-                saslEnabled, tlsMode, compression, proxyType, proxyHost,
-                proxyPort, proxyUser, proxyPassword);
-        AccountManager.getInstance().removePasswordRequest(getAccount());
+        getConnectionSettings().update(custom, host, port, password, saslEnabled, tlsMode, compression, proxyType,
+                proxyHost, proxyPort, proxyUser, proxyPassword);
+        AccountManager.INSTANCE.removePasswordRequest(getAccount());
     }
 
     void setPassword(String password) {
         getConnectionSettings().setPassword(password);
-        AccountManager.getInstance().removePasswordRequest(getAccount());
+        AccountManager.INSTANCE.removePasswordRequest(getAccount());
     }
 
-    void setXToken(XToken token) {
-        getConnectionSettings().setXToken(token);
-    }
+    void setXToken(XToken token) { getConnectionSettings().setXToken(token); }
 
     /**
-     * Remove password and update notification if {@link #storePassword} is
-     * disabled.
+     * Remove password and update notification if {@link #storePassword} is disabled.
      */
     void clearPassword() {
-        if (storePassword) {
-            return;
-        }
-        AccountManager.getInstance().removePasswordRequest(getAccount());
+        if (storePassword) return;
+        AccountManager.INSTANCE.removePasswordRequest(getAccount());
         getConnectionSettings().setPassword(UNDEFINED_PASSWORD);
     }
 
@@ -441,100 +395,47 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         AccountRepository.saveAccountToRealm(this);
     }
 
+    @NotNull
     @Override
-    public String toString() {
-        return super.toString() + ":" + getAccount();
-    }
+    public String toString() { return super.toString() + ":" + getAccount(); }
 
-    public boolean isClearHistoryOnExit() {
-        return clearHistoryOnExit;
-    }
+    public boolean isClearHistoryOnExit() { return clearHistoryOnExit; }
 
-    void setClearHistoryOnExit(boolean clearHistoryOnExit) {
-        this.clearHistoryOnExit = clearHistoryOnExit;
-    }
+    void setClearHistoryOnExit(boolean clearHistoryOnExit) { this.clearHistoryOnExit = clearHistoryOnExit; }
 
-    public MamPrefsIQ.DefaultBehavior getMamDefaultBehaviour() {
-        return mamDefaultBehaviour;
-    }
+    public MamPrefsIQ.DefaultBehavior getMamDefaultBehaviour() { return mamDefaultBehaviour; }
 
     void setMamDefaultBehaviour(@NonNull MamPrefsIQ.DefaultBehavior mamDefaultBehaviour) {
         this.mamDefaultBehaviour = mamDefaultBehaviour;
     }
 
-    public LoadHistorySettings getLoadHistorySettings() {
-        return loadHistorySettings;
-    }
+    public LoadHistorySettings getLoadHistorySettings() { return loadHistorySettings; }
 
     public void setLoadHistorySettings(LoadHistorySettings loadHistorySettings) {
         this.loadHistorySettings = loadHistorySettings;
     }
 
-    public boolean isSuccessfulConnectionHappened() {
-        return successfulConnectionHappened;
-    }
+    public boolean isSuccessfulConnectionHappened() { return successfulConnectionHappened; }
 
     void setSuccessfulConnectionHappened(boolean successfulConnectionHappened) {
         this.successfulConnectionHappened = successfulConnectionHappened;
     }
 
     @Override
-    public int compareTo(@NonNull AccountItem accountItem) {
-        return order - accountItem.order;
-    }
+    public int compareTo(@NonNull AccountItem accountItem) { return order - accountItem.order; }
 
-    public void startGracePeriod() {
-        gracePeriodEndTime = System.currentTimeMillis() + GRACE_PERIOD;
-    }
+    public void startGracePeriod() { gracePeriodEndTime = System.currentTimeMillis() + GRACE_PERIOD; }
 
-    public void stopGracePeriod() {
-        gracePeriodEndTime = 0L;
-    }
+    public void stopGracePeriod() { gracePeriodEndTime = 0L; }
 
-    public boolean inGracePeriod() {
-        return gracePeriodEndTime > System.currentTimeMillis();
-    }
+    public boolean inGracePeriod() { return gracePeriodEndTime > System.currentTimeMillis(); }
 
-    public String getPushNode() {
-        return pushNode;
-    }
-
-    public void setPushNode(String pushNode) {
-        this.pushNode = pushNode;
-    }
-
-    public String getPushServiceJid() {
-        return pushServiceJid;
-    }
-
-    public void setPushServiceJid(String pushServiceJid) {
-        this.pushServiceJid = pushServiceJid;
-    }
-
-    public boolean isPushWasEnabled() {
-        return pushWasEnabled;
-    }
-
-    public void setPushWasEnabled(boolean pushWasEnabled) {
-        boolean changed = false;
-        if (this.pushWasEnabled != pushWasEnabled) changed = true;
-        this.pushWasEnabled = pushWasEnabled;
-        if (changed) AccountManager.getInstance().onAccountChanged(getAccount());
-    }
-
-    public void setPushEnabled(boolean enabled) {
-        this.pushEnabled = enabled;
-    }
-
-    public boolean isPushEnabled() {
-        return pushEnabled;
-    }
-
-    public long getStartHistoryTimestamp() {
-        return startHistoryTimestamp;
-    }
-
-    public void setStartHistoryTimestamp(long startHistoryTimestamp) {
+    public Date getStartHistoryTimestamp() { return startHistoryTimestamp; }
+    public void setStartHistoryTimestamp(Date startHistoryTimestamp) {
         this.startHistoryTimestamp = startHistoryTimestamp;
     }
+
+    public String getRetractVersion() { return retractVersion; }
+    public void setRetractVersion(String retractVersion) { this.retractVersion = retractVersion; }
+
 }

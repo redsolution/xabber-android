@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.log.LogManager;
@@ -95,7 +94,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
         XabberAccount xabberAccount = XabberAccountManager.getInstance().getAccount();
         if (xabberAccount == null || !xabberAccount.getFullUsername()
-                .equals(AccountManager.getInstance().getVerboseName(accountItem.getAccount())))
+                .equals(AccountManager.INSTANCE.getVerboseName(accountItem.getAccount())))
             accountHolder.avatarBorder
                     .setBorderColor(activity.getResources().getColor(R.color.transparent));
 
@@ -106,7 +105,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             accountHolder.avatar.setColorFilter(filter);
         } else accountHolder.avatar.clearColorFilter();
 
-        accountHolder.name.setText(AccountManager.getInstance()
+        accountHolder.name.setText(AccountManager.INSTANCE
                 .getVerboseName(accountItem.getAccount()));
         accountHolder.name.setTextColor(accountItem.isEnabled()
                 ? ColorManager.getInstance().getAccountPainter()
@@ -114,15 +113,8 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
                 : defaultAccountNameColor);
 
         accountHolder.status.setText(accountItem.getState().getStringId());
-        // push state
-        boolean pushEnabled = accountItem.getState().equals(ConnectionState.connected)
-                && accountItem.isPushWasEnabled();
-        accountHolder.tvAccountPushStatus.setVisibility(pushEnabled ? View.VISIBLE : View.GONE);
-        if (pushEnabled)
-            accountHolder.tvAccountPushStatus.setText(R.string.account_push_state_enabled);
 
         accountHolder.enabledSwitch.setChecked(accountItem.isEnabled());
-
     }
 
     @Override
@@ -147,7 +139,6 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
         TextView name;
         TextView status;
         SwitchCompat enabledSwitch;
-        TextView tvAccountPushStatus;
 
 
         AccountViewHolder(View itemView) {
@@ -157,7 +148,6 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             name = itemView.findViewById(R.id.item_account_name);
             status = itemView.findViewById(R.id.item_account_status);
             enabledSwitch = itemView.findViewById(R.id.item_account_switch);
-            tvAccountPushStatus = itemView.findViewById(R.id.tvAccountPushStatus);
 
             // I used on click listener instead of on checked change listener to avoid callback in onBindViewHolder
             enabledSwitch.setOnClickListener(this);
@@ -178,8 +168,9 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
             switch (v.getId()) {
                 case R.id.item_account_switch:
-                    AccountManager.getInstance()
-                            .setEnabled(accountItem.getAccount(), enabledSwitch.isChecked());
+                    AccountManager.INSTANCE.setEnabled(
+                            accountItem.getAccount(), enabledSwitch.isChecked()
+                    );
                     break;
                 default:
                     if (listener != null) {
@@ -202,8 +193,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             MenuInflater inflater = activity.getMenuInflater();
             inflater.inflate(R.menu.item_account, menu);
 
-            menu.setHeaderTitle(AccountManager.getInstance()
-                    .getVerboseName(accountItem.getAccount()));
+            menu.setHeaderTitle(AccountManager.INSTANCE.getVerboseName(accountItem.getAccount()));
             menu.findItem(R.id.action_account_edit_status).setVisible(accountItem.isEnabled());
 
             menu.findItem(R.id.action_account_edit_status).setOnMenuItemClickListener(this);

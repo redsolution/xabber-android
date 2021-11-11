@@ -1,25 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:minLevel="0" android:maxLevel="0"
-        android:drawable="@drawable/ic_status_chat"/>
-    <item android:minLevel="1" android:maxLevel="1"
-        android:drawable="@drawable/ic_status_online"/>
-    <item android:minLevel="2" android:maxLevel="2"
-        android:drawable="@drawable/ic_status_away"/>
-    <item android:minLevel="3" android:maxLevel="3"
-        android:drawable="@drawable/ic_status_xa"/>
-    <item android:minLevel="4" android:maxLevel="4"
-        android:drawable="@drawable/ic_status_dnd"/>
-    <item android:minLevel="5" android:maxLevel="5"
-        android:drawable="@drawable/ic_status_invisible_18dp"/>
-    <item android:minLevel="6" android:maxLevel="6"
-        android:drawable="@drawable/ic_status_unavailable"/>
-    <item android:minLevel="8" android:maxLevel="8"
-        android:drawable="@drawable/ic_status_unsubscribed_18dp"/>
-    <item android:minLevel="9" android:maxLevel="9"
-        android:drawable="@drawable/ic_groupchat_14_border"/>
-    <item android:minLevel="10" android:maxLevel="10"
-        android:drawable="@drawable/ic_server_14_border"/>
-    <item android:minLevel="11" android:maxLevel="11"
-        android:drawable="@drawable/ic_blocked_border"/>
+
+    <!-- Regular chat -->
+    <item android:minLevel="0" android:maxLevel="0" android:drawable="@drawable/ic_status_chat"/>
+    <item android:minLevel="1" android:maxLevel="1" android:drawable="@drawable/ic_status_online"/>
+    <item android:minLevel="2" android:maxLevel="2" android:drawable="@drawable/ic_status_away"/>
+    <item android:minLevel="3" android:maxLevel="3" android:drawable="@drawable/ic_status_xa"/>
+    <item android:minLevel="4" android:maxLevel="4" android:drawable="@drawable/ic_status_dnd"/>
+    <item android:minLevel="5" android:maxLevel="5" android:drawable="@drawable/ic_status_invisible_18dp"/>
+    <item android:minLevel="6" android:maxLevel="6" android:drawable="@drawable/ic_status_unavailable"/>
+
+    <!-- Public group -->
+    <item android:minLevel="20" android:maxLevel="20" android:drawable="@drawable/ic_status_public_group_chat"/>
+    <item android:minLevel="21" android:maxLevel="21" android:drawable="@drawable/ic_status_public_group_online"/>
+    <item android:minLevel="22" android:maxLevel="22" android:drawable="@drawable/ic_status_public_group_away"/>
+    <item android:minLevel="23" android:maxLevel="23" android:drawable="@drawable/ic_status_public_group_xa"/>
+    <item android:minLevel="24" android:maxLevel="24" android:drawable="@drawable/ic_status_public_group_dnd"/>
+    <item android:minLevel="25" android:maxLevel="25" android:drawable="@drawable/ic_status_public_group_unavailable"/>
+
+    <!-- Incognito group -->
+    <item android:minLevel="30" android:maxLevel="30" android:drawable="@drawable/ic_status_incognito_group_chat"/>
+    <item android:minLevel="31" android:maxLevel="31" android:drawable="@drawable/ic_status_incognito_group_online"/>
+    <item android:minLevel="32" android:maxLevel="32" android:drawable="@drawable/ic_status_incognito_group_away"/>
+    <item android:minLevel="33" android:maxLevel="33" android:drawable="@drawable/ic_status_incognito_group_xa"/>
+    <item android:minLevel="34" android:maxLevel="34" android:drawable="@drawable/ic_status_incognito_group_dnd"/>
+    <item android:minLevel="35" android:maxLevel="35" android:drawable="@drawable/ic_status_incognito_group_unavailable"/>
+
+    <!-- Private group -->
+    <item android:minLevel="40" android:maxLevel="40" android:drawable="@drawable/ic_status_private_group_chat"/>
+    <item android:minLevel="41" android:maxLevel="41" android:drawable="@drawable/ic_status_private_group_online"/>
+    <item android:minLevel="42" android:maxLevel="42" android:drawable="@drawable/ic_status_private_group_away"/>
+    <item android:minLevel="43" android:maxLevel="43" android:drawable="@drawable/ic_status_private_group_xa"/>
+    <item android:minLevel="44" android:maxLevel="44" android:drawable="@drawable/ic_status_private_group_dnd"/>
+    <item android:minLevel="45" android:maxLevel="45" android:drawable="@drawable/ic_status_private_group_unavailable"/>
+
+    <!-- Channel -->
+    <item android:minLevel="50" android:maxLevel="50" android:drawable="@drawable/ic_status_channel_chat"/>
+    <item android:minLevel="51" android:maxLevel="51" android:drawable="@drawable/ic_status_channel_online"/>
+    <item android:minLevel="52" android:maxLevel="52" android:drawable="@drawable/ic_status_channel_away"/>
+    <item android:minLevel="53" android:maxLevel="53" android:drawable="@drawable/ic_status_channel_xa"/>
+    <item android:minLevel="54" android:maxLevel="54" android:drawable="@drawable/ic_status_channel_dnd"/>
+    <item android:minLevel="55" android:maxLevel="55" android:drawable="@drawable/ic_status_channel_unavailable"/>
+
+    <!-- Bot -->
+    <item android:minLevel="60" android:maxLevel="60" android:drawable="@drawable/ic_status_bot_chat"/>
+    <item android:minLevel="61" android:maxLevel="61" android:drawable="@drawable/ic_status_bot_online"/>
+    <item android:minLevel="62" android:maxLevel="62" android:drawable="@drawable/ic_status_bot_away"/>
+    <item android:minLevel="63" android:maxLevel="63" android:drawable="@drawable/ic_status_bot_xa"/>
+    <item android:minLevel="64" android:maxLevel="64" android:drawable="@drawable/ic_status_bot_dnd"/>
+    <item android:minLevel="65" android:maxLevel="65" android:drawable="@drawable/ic_status_bot_unavailable"/>
+
+    <!-- Rss -->
+    <item android:minLevel="70" android:maxLevel="70" android:drawable="@drawable/ic_status_rss_chat"/>
+    <item android:minLevel="71" android:maxLevel="71" android:drawable="@drawable/ic_status_rss_online"/>
+    <item android:minLevel="72" android:maxLevel="72" android:drawable="@drawable/ic_status_rss_away"/>
+    <item android:minLevel="73" android:maxLevel="73" android:drawable="@drawable/ic_status_rss_xa"/>
+    <item android:minLevel="74" android:maxLevel="74" android:drawable="@drawable/ic_status_rss_dnd"/>
+    <item android:minLevel="75" android:maxLevel="75" android:drawable="@drawable/ic_status_rss_unavailable"/>
+
+    <!-- Mobile -->
+    <item android:minLevel="80" android:maxLevel="80" android:drawable="@drawable/ic_status_mobile_chat"/>
+    <item android:minLevel="81" android:maxLevel="81" android:drawable="@drawable/ic_status_mobile_online"/>
+    <item android:minLevel="82" android:maxLevel="82" android:drawable="@drawable/ic_status_mobile_away"/>
+    <item android:minLevel="83" android:maxLevel="83" android:drawable="@drawable/ic_status_mobile_xa"/>
+    <item android:minLevel="84" android:maxLevel="84" android:drawable="@drawable/ic_status_mobile_dnd"/>
+    <item android:minLevel="85" android:maxLevel="85" android:drawable="@drawable/ic_status_mobile_unavailable"/>
+
+    <!-- Server -->
+    <item android:minLevel="90" android:maxLevel="90" android:drawable="@drawable/ic_status_server_online"/>
+    <item android:minLevel="95" android:maxLevel="95" android:drawable="@drawable/ic_status_server_unavailable"/>
+
+    <item android:minLevel="11" android:maxLevel="11" android:drawable="@drawable/ic_blocked_border"/>
+
+
+    <!-- Redmine -->
+    <item android:minLevel="100" android:maxLevel="100" android:drawable="@drawable/ic_status_task_chat"/>
+    <item android:minLevel="101" android:maxLevel="101" android:drawable="@drawable/ic_status_task_online"/>
+    <item android:minLevel="102" android:maxLevel="102" android:drawable="@drawable/ic_status_task_away"/>
+    <item android:minLevel="103" android:maxLevel="103" android:drawable="@drawable/ic_status_task_xa"/>
+    <item android:minLevel="104" android:maxLevel="104" android:drawable="@drawable/ic_status_task_dnd"/>
+    <item android:minLevel="105" android:maxLevel="105" android:drawable="@drawable/ic_status_task_unavailable"/>
+
 </level-list>

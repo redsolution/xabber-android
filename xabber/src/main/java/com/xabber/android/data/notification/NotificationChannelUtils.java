@@ -8,6 +8,7 @@ import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 
@@ -136,10 +137,11 @@ public class NotificationChannelUtils {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static String createSilentChannel(NotificationManager notifManager) {
-        @SuppressLint("WrongConstant") NotificationChannel channel =
-                new NotificationChannel(SILENT_CHANNEL_ID,
-                        getString(R.string.channel_silent_title),
-                        NotificationManager.IMPORTANCE_LOW);
+        @SuppressLint("WrongConstant") NotificationChannel channel = new NotificationChannel(
+                SILENT_CHANNEL_ID,
+                getString(R.string.channel_silent_title),
+                NotificationManager.IMPORTANCE_LOW
+        );
         channel.setDescription(getString(R.string.channel_silent_description));
         channel.setShowBadge(true);
         notifManager.createNotificationChannel(channel);
@@ -206,8 +208,13 @@ public class NotificationChannelUtils {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static void resetNotificationChannel(NotificationManager notifManager, String channelID) {
-        if (getChannelID(ChannelType.privateChat).equals(channelID)) resetMessageChannel(notifManager, ChannelType.privateChat);
-        else if (getChannelID(ChannelType.groupChat).equals(channelID)) resetMessageChannel(notifManager, ChannelType.groupChat);
-        else if (getChannelID(ChannelType.attention).equals(channelID)) resetMessageChannel(notifManager, ChannelType.attention);
+        if (getChannelID(ChannelType.privateChat).equals(channelID)) {
+            resetMessageChannel(notifManager, ChannelType.privateChat);
+        } else if (getChannelID(ChannelType.groupChat).equals(channelID)){
+            resetMessageChannel(notifManager, ChannelType.groupChat);
+        } else if (getChannelID(ChannelType.attention).equals(channelID)) {
+            resetMessageChannel(notifManager, ChannelType.attention);
+        }
     }
+
 }

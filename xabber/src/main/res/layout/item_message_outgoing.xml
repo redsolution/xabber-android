@@ -4,27 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/message_padding"
-    android:paddingStart="@dimen/message_padding"
-    >
+    android:paddingStart="@dimen/message_padding">
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        >
+        android:layout_alignParentTop="true">
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right">
-
-            <include
-                android:id="@+id/forwardLayout"
-                layout="@layout/forwarded_layout"
-                android:visibility="gone" />
 
             <include layout="@layout/item_message" />
 
@@ -43,8 +36,7 @@
             android:indeterminateTint="@color/white"
             android:layout_centerInParent="true"
             android:visibility="gone"
-            android:elevation="1dp"
-            />
+            android:elevation="1dp" />
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -57,8 +49,7 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:visibility="gone"
-            android:elevation="1dp"
-            />
+            android:elevation="1dp" />
 
     </RelativeLayout>
 

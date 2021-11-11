@@ -34,12 +34,14 @@ public class AttentionRequest extends BaseEntity implements
 
     @Override
     public Intent getIntent() {
-        return ChatActivity.createAttentionRequestIntent(Application.getInstance(), account, user);
+        return ChatActivity.Companion.createAttentionRequestIntent(
+                Application.getInstance(), account, contactJid
+        );
     }
 
     @Override
     public String getTitle() {
-        return RosterManager.getInstance().getBestContact(account, user)
+        return RosterManager.getInstance().getBestContact(account, contactJid)
                 .getName();
     }
 

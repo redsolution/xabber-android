@@ -5,13 +5,10 @@ import androidx.annotation.NonNull;
 import com.xabber.android.data.OnTimerListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
-import com.xabber.android.data.connection.listeners.OnConnectedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.extension.reliablemessagedelivery.ReliableMessageDeliveryManager;
+import com.xabber.android.data.extension.delivery.DeliveryManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.push.SyncManager;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -53,20 +50,14 @@ public class ReconnectionManager implements OnConnectedListener,
         tenSecondsCounter++;
         if (tenSecondsCounter >= 10){
             tenSecondsCounter = 0;
-            ReliableMessageDeliveryManager.getInstance().resendMessagesWithoutReceipt();
+            DeliveryManager.getInstance().resendMessagesWithoutReceipt();
         }
-        Collection<AccountJid> allAccounts = AccountManager.getInstance().getAllAccounts();
-//        checkCarbonStatus();
+        Collection<AccountJid> allAccounts = AccountManager.INSTANCE.getAllAccounts();
         for (AccountJid accountJid : allAccounts) {
-            checkConnection(AccountManager.getInstance().getAccount(accountJid),
-                    getReconnectionInfo(accountJid));
-        }
-    }
-
-    private void checkCarbonStatus(){
-        Collection<AccountItem> accountItems = AccountManager.getInstance().getAllAccountItems();
-        for (AccountItem accountItem : accountItems){
-            LogManager.d(LOG_TAG, "For account " + accountItem.getAccount().toString() + " carbons status is: " + CarbonManager.getInstance().isCarbonsEnabledForConnection((ConnectionItem) accountItem));
+            checkConnection(
+                    AccountManager.INSTANCE.getAccount(accountJid),
+                    getReconnectionInfo(accountJid)
+            );
         }
     }
 
@@ -122,8 +113,7 @@ public class ReconnectionManager implements OnConnectedListener,
 
     private boolean isAccountNeedConnection(AccountItem accountItem) {
         return accountItem.isEnabled() && accountItem.getRawStatusMode().isOnline()
-                && !accountItem.getConnection().isAuthenticated()
-                && SyncManager.getInstance().isAccountNeedConnection(accountItem);
+                && !accountItem.getConnection().isAuthenticated();
     }
 
     /**

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="omemo__alert_enable__link_text">Միացնել</string>
+    <string name="omemo__alert_enable__tooltip">Օգտագործելով մատնահետքերը Ձեր և Ձեր կոնտակտների զրույցները ապահով և գաղտնագրված կլինեն։ Հիշեք, որ պետք է ստուգեք Ձեր և խոսակիցների սարքերի թվային մատնահետքերը։</string>
+    <string name="omemo__dialog_fingerprints__button_ignore">Արհամարհել</string>
+    <string name="omemo__dialog_fingerprints__button_trust">Վստահել</string>
+    <string name="omemo__dialog_fingerprints__button_delete">Ջնջել</string>
+    <string name="omemo__dialog_fingerprints__button_error">Սխալ</string>
+    <string name="omemo__dialog_fingerprints__button_unknown">Անհայտ</string>
+    <string name="omemo__settings__section_header">OMEMO-ի կարգավորումներ</string>
+    <string name="omemo__settings__menu_item">OMEMO</string>
+    <string name="omemo__dialog_delete_device__header">Ջնջել սարքը</string>
+    <string name="omemo__dialog_delete_device__button_delete">Ջնջել</string>
+    <string name="omemo__chat_settings__button_open_regular_chat">Բացել սովորական զրույց</string>
+</resources>

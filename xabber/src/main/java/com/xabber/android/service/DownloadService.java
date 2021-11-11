@@ -3,10 +3,8 @@ package com.xabber.android.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Looper;
 import android.os.ResultReceiver;
-import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
@@ -17,7 +15,7 @@ import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.utils.HttpClientWithMTM;
+import com.xabber.android.data.http.HttpClientWithMTM;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -71,8 +69,9 @@ public class DownloadService extends IntentService {
         OkHttpClient client = HttpClientWithMTM.getClient(accountJid);
 
         // start download
-        if (client != null) requestFileDownload(fileName, fileSize, url, client);
-        else publishError("Downloading not started");
+        if (client != null) {
+            requestFileDownload(fileName, fileSize, url, client);
+        } else publishError("Downloading not started");
     }
 
     @Override
@@ -86,7 +85,7 @@ public class DownloadService extends IntentService {
         try {
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
-                Log.d(LOG_TAG, "download onFailure " + response.toString());
+                LogManager.e(LOG_TAG, "download onFailure " + response.toString());
                 publishError(response.toString());
                 return;
             }
@@ -175,7 +174,7 @@ public class DownloadService extends IntentService {
             } else publishError("File not created");
 
         } catch (IOException e) {
-            Log.d(LOG_TAG, "download onFailure " + e.getMessage());
+           LogManager.exception(LOG_TAG, e);
             publishError(e.getMessage());
         }
     }
@@ -217,20 +216,20 @@ public class DownloadService extends IntentService {
         receiver.send(ERROR_CODE, resultData);
     }
 
-    private static String getDownloadDirPath() {
-        return Environment.getExternalStorageDirectory().getPath()
-                + File.separator + XABBER_DIR;
+    private String getDownloadDirPath() {
+        return this.getExternalFilesDir(null).getPath() + File.separator + XABBER_DIR;
     }
 
-    private static String getAudioDownloadDirPath() {
+    private String getAudioDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
     }
 
-    private static String getDocumentsDownloadDirPath() {
+    private String getDocumentsDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_DOCUMENTS_DIR;
     }
 
-    private static String getImagesDownloadDirPath() {
+    private String getImagesDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
     }
+
 }

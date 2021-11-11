@@ -2,13 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/action_invite_to_chat"
-        android:orderInCategory="90"
-        android:title="@string/muc_invite"
-        android:visible="false"
-        app:showAsAction="never"
-    />
-
     <item
         android:id="@+id/action_add_contact"
         android:title="@string/contact_add"

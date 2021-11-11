@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/interactionView"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/input_view_height"
+    android:background="?attr/chat_input_background">
+
+    <ImageView
+        android:id="@+id/reply_iv"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="12dp"
+        app:srcCompat="@drawable/ic_message_forwarded_14dp" />
+
+    <TextView
+        android:id="@+id/reply_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@id/reply_iv"
+        android:layout_toRightOf="@id/reply_iv"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        app:fontFamily="sans-serif-condensed"
+        android:alpha="0.9"
+        android:text="@string/chat_reply"/>
+
+    <TextView
+        android:id="@+id/forward_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toStartOf="@id/forward_iv"
+        android:layout_toLeftOf="@id/forward_iv"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        app:fontFamily="sans-serif-condensed"
+        android:alpha="0.9"
+        android:text="@string/chat_froward"/>
+
+    <ImageView
+        android:id="@+id/forward_iv"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="12dp"
+        app:srcCompat="@drawable/ic_forward"/>
+
+</RelativeLayout>

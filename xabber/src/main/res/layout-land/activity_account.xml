@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/contact_title_expanded_new"
+    android:id="@+id/contact_title_expanded"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:background="?attr/bottom_navigation_background"
@@ -154,7 +154,7 @@
                         android:layout_marginEnd="3dp"
                         android:layout_marginBottom="15dp"
                         android:visibility="gone"
-                        app:srcCompat="@drawable/ic_groupchat_14_border"
+                        app:srcCompat="@drawable/ic_status_combined"
                         tools:visibility="visible" />
                 </FrameLayout>
             </LinearLayout>

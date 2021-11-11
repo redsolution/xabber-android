@@ -5,7 +5,7 @@ import org.jivesoftware.smack.util.XmlStringBuilder;
 
 public abstract class ReferenceElement implements ExtensionElement {
 
-    public static final String NAMESPACE = "https://xabber.com/protocol/reference";
+    public static final String NAMESPACE = "https://xabber.com/protocol/references";
     public static final String ELEMENT = "reference";
     public static final String ATTRIBUTE_TYPE = "type";
     public static final String ATTRIBUTE_BEGIN = "begin";

@@ -36,10 +36,6 @@ class EntityCapsCache implements EntityCapsPersistentCache {
                 LogManager.exception("EntityCapsCache", e);
             } finally { if (realm != null) realm.close(); }
         });
-
-        LogManager.d("REALM", Thread.currentThread().getName()
-                + " save discover info: " + (System.currentTimeMillis() - startTime));
-
     }
 
     @Override
@@ -62,23 +58,16 @@ class EntityCapsCache implements EntityCapsPersistentCache {
 
     @Override
     public void emptyCache() {
-        final long startTime = System.currentTimeMillis();
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> {
-                    realm1.where(DiscoveryInfoRealmObject.class)
-                            .findAll()
-                            .deleteAllFromRealm();
-                });
+                realm.executeTransaction(realm1 -> realm1.where(DiscoveryInfoRealmObject.class)
+                        .findAll()
+                        .deleteAllFromRealm());
             } catch (Exception e) {
                 LogManager.exception("EntityCapsCache", e);
             } finally { if (realm != null) realm.close(); }
-
         });
-
-        LogManager.d("REALM", Thread.currentThread().getName()
-                + " delete discover cache: " + (System.currentTimeMillis() - startTime));
     }
 }

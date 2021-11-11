@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="omemo__alert_enable__link_text">Habilitar</string>
+    <string name="omemo__alert_enable__tooltip">Isso permitirá que você e seus contatos troquem mensagens privadas usando bate-papos criptografados. Lembre-se de sempre verificar a identidade dos seus parceiros do chat verificando impressões digitais de seus dispositivos.</string>
+    <string name="omemo__alert_enable__text">criptografia de ponta a ponta para conta <b>%s</b>?</string>
+    <string name="omemo__dialog_fingerprints__button_ignore">Ignorar</string>
+    <string name="omemo__dialog_fingerprints__button_trust">Confiar</string>
+    <string name="omemo__dialog_fingerprints__button_delete">Apagar</string>
+    <string name="omemo__dialog_fingerprints__button_error">Erro</string>
+    <string name="omemo__dialog_fingerprints__button_unknown">Desconhecido</string>
+    <string name="omemo__dialog_fingerprints__text_description">Você deve verificar cuidadosamente se as impressões digitais deste dispositivo correspondem ao que já foi visível para o seu parceiro de bate-papo. Para segurança máxima, isso deve ser feito por meio de outro canal de comunicação. De preferência, pessoalmente.</string>
+    <string name="omemo__dialog_fingerprints__text_learn_more">Saiba mais sobre criptografia e troca de chave segura</string>
+    <string name="omemo__dialog_fingerprints__link_learn_more">https://www.xabber.com/encryption/</string>
+    <string name="omemo__dialog_fingerprints__text_this_device">este dispositivo</string>
+    <string name="omemo__dialog_fingerprints__textfield_device_id_tooltip">ID do dispositivo: %s\nMarcador: %s\nID do dispositivo é um identificador exclusivo para o seu dispositivo de contato. Você mantém a sessão de criptografia separada com cada dispositivo.</string>
+    <string name="omemo__dialog_fingerprints__label_set_label">definir etiqueta</string>
+    <string name="omemo__dialog_fingerprints__label_device_id">ID do dispositivo</string>
+    <string name="omemo__alert_new_device__button_manage_devices">Gerenciar dispositivos</string>
+    <string name="omemo__settings__section_header">Configurações OMEMO</string>
+    <string name="omemo__settings__toggle_enable_encryption">Criptografia OMEMO</string>
+    <string name="omemo__settings__toggle_send_typing_notifications">Enviar notificações de digitação</string>
+    <string name="omemo__settings__button_manage_devices">Gerenciar dispositivos</string>
+    <string name="omemo__settings__button_purge_keys">Limpar chaves</string>
+    <string name="omemo__settings__menu_item">OMEMO</string>
+    <string name="omemo__alert_new_device_yours__text_new_device">O novo dispositivo publicou chaves de criptografia para sua conta. Se não foi você, parece que você tem um problema.</string>
+    <string name="omemo__alert_keys_changed_yours__text_keys_changed">As chaves públicas do seu dispositivo em que você confiava foram alteradas. Isso <i>não deveria</i> estar acontecendo, nunca. Provavelmente você está sendo hackeado ou seu software está com defeito grave.</string>
+    <string name="omemo__alert_keys_changed_partner__text_keys_changed">As chaves públicas do seu dispositivo em que você confiava foram alteradas. Isso <i>não deveria</i> estar acontecendo, nunca. Provavelmente você está sendo hackeado ou seu software está com defeito grave.</string>
+    <string name="omemo__alert_new_device_partner__text_new_device">Seu parceiro de chat tem dispositivos não verificados com chaves de criptografia publicadas. Por favor, revise a lista de dispositivos e realize a verificação de impressões digitais <u>. É muito</u> importante.</string>
+    <string name="omemo__dialog_fingerprints__text_no_fingerprints">Nenhuma impressão digital ainda</string>
+    <string name="omemo__chat__placeholder_encryption_disabled">A criptografia OMEMO está desativada</string>
+    <string name="omemo__dialog_fingerprints__header">%s impressões digitais</string>
+    <plurals name="omemo__dialog_fingerprints__text_devices_count">
+        <item quantity="one">%s, %d dispositivo</item>
+        <item quantity="other">%s, %d dispositivos</item>
+    </plurals>
+    <string name="omemo__dialog_purge_keys__header">Limpar chaves de criptografia</string>
+    <string name="omemo__dialog_purge_keys__text">Isto irá cancelar a publicação de todas as chaves de criptografia e removê-las do seu servidor e deste dispositivo. Todos os chats descriptografados serão permanentemente excluídos, você não poderá recuperá-los no futuro. Para retomar a mensagem criptografada, você terá que executar os procedimentos de verificação de impressão digital novamente, com cada um dos seus contatos.\n\nUse esta medida apenas como um último recurso.</string>
+    <string name="omemo__dialog_purge_keys__button_purge_keys">Limpar chaves</string>
+    <string name="omemo__dialog_delete_device__header">Excluir dispositivo</string>
+    <string name="omemo__dialog_delete_device__text">Você realmente deseja excluir o dispositivo %s?</string>
+    <string name="omemo__dialog_delete_device__button_delete">Apagar</string>
+    <string name="omemo__chat_settings__button_start_encrypted_chat">Iniciar conversa criptografada</string>
+    <string name="omemo__chat_settings__button_open_encrypted_chat">Iniciar conversa criptografada</string>
+    <string name="omemo__chat_settings__button_open_regular_chat">Abrir bate-papo normal</string>
+</resources>

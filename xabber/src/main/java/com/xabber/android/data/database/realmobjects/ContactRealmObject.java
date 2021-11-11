@@ -21,13 +21,12 @@ public class ContactRealmObject extends RealmObject {
         public static final String CIRCLES = "circles";
     }
 
-    //TODO REALM UPDATE add status link
     @PrimaryKey
     private String id;
     private String accountJid;
     private String contactJid;
     private String bestName;
-    private RealmList<ChatRealmObject> chats;
+    private RealmList<RegularChatRealmObject> chats;
     private RealmList<AvatarRealmObject> avatars;
     private RealmList<ResourceRealmObject> resources;
     private RealmList<CircleRealmObject> circles;
@@ -48,7 +47,7 @@ public class ContactRealmObject extends RealmObject {
     public String getBestName() { return bestName; }
     public void setBestName(String bestName) { this.bestName = bestName; }
 
-    public RealmList<ChatRealmObject> getChats() { return chats; }
+    public RealmList<RegularChatRealmObject> getChats() { return chats; }
 
     public RealmList<AvatarRealmObject> getAvatars() { return avatars; }
 

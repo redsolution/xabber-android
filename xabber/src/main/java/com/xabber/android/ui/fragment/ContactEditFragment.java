@@ -17,26 +17,29 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.RosterManager.SubscriptionState;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.color.ColorManager;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class ContactEditFragment extends GroupEditorFragment implements OnContactChangedListener {
+public class ContactEditFragment extends CircleEditorFragment implements OnContactChangedListener {
 
-    private static final String SAVED_CONTACT_NICKNAME = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_CONTACT_NICKNAME";
-    private static final String SAVED_SEND_PRESENCE = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_SEND_PRESENCE";
-    private static final String SAVED_RECEIVE_PRESENCE = "com.xabber.android.ui.fragment.GroupEditorFragment.SAVED_RECEIVE_PRESENCE";
+    private static final String SAVED_CONTACT_NICKNAME = "com.xabber.android.ui.fragment.CircleEditorFragment.SAVED_CONTACT_NICKNAME";
+    private static final String SAVED_SEND_PRESENCE = "com.xabber.android.ui.fragment.CircleEditorFragment.SAVED_SEND_PRESENCE";
+    private static final String SAVED_RECEIVE_PRESENCE = "com.xabber.android.ui.fragment.CircleEditorFragment.SAVED_RECEIVE_PRESENCE";
 
     private EditText contactEditNickname;
     private TextView userJid;
@@ -51,7 +54,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     private boolean receiveChecked;
     private boolean saveNickname;
     private SubscriptionState subscriptionState;
-    private ArrayList<String> contactGroups = new ArrayList<>();
+    private ArrayList<String> contactCircles = new ArrayList<>();
 
     public static ContactEditFragment newInstance(AccountJid account, ContactJid user) {
         ContactEditFragment fragment = new ContactEditFragment();
@@ -75,7 +78,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         int accountColor = ColorManager.getInstance().getAccountPainter().getAccountSendButtonColor(getAccount());
         ((TextView) view.findViewById(R.id.tvNickname)).setTextColor(accountColor);
         ((TextView) view.findViewById(R.id.tvSubInfo)).setTextColor(accountColor);
-        ((TextView) view.findViewById(R.id.tvCircles)).setTextColor(accountColor);
+        ((TextView) view.findViewById(R.id.select_circles_text_view)).setTextColor(accountColor);
         return view;
     }
 
@@ -105,16 +108,16 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     }
 
     private void updateContact() {
-        AbstractContact abstractContact = RosterManager.getInstance().getBestContact(getAccount(), getUser());
+        AbstractContact abstractContact = RosterManager.getInstance().getBestContact(getAccount(), getContactJid());
 
         avatar.setImageDrawable(abstractContact.getAvatar());
-        userJid.setText(getUser().getBareJid().toString());
+        userJid.setText(getContactJid().getBareJid().toString());
         contactEditNickname.setHint(abstractContact.getName());
         if (abstractContact instanceof RosterContact) {
             contactEditNickname.setText(((RosterContact) abstractContact).getNickname());
         }
 
-        subscriptionState = RosterManager.getInstance().getSubscriptionState(getAccount(), getUser());
+        subscriptionState = RosterManager.getInstance().getSubscriptionState(getAccount(), getContactJid());
 
         setPresenceSettings();
 
@@ -130,14 +133,13 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
             enableSaveIfNeeded();
         });
 
-        contactGroups = new ArrayList<String>(RosterManager.getInstance().getGroups(getAccount(), getUser()));
+        contactCircles = new ArrayList<>(RosterManager.getInstance().getCircles(getAccount(), getContactJid()));
     }
 
     // Either set or restore checkbox values
     // and the text of TextViews paired with them.
     private void setPresenceSettings() {
-        int pendingSubscription = subscriptionState.getPendingSubscription();
-        boolean hasAutoAcceptSubscription = PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getUser());
+        boolean hasAutoAcceptSubscription = PresenceManager.INSTANCE.hasAutoAcceptSubscription(getAccount(), getContactJid());
         switch (subscriptionState.getSubscriptionType()) {
             case SubscriptionState.BOTH:
                 setSendSubscriptionField(true, R.string.contact_subscription_send);
@@ -196,7 +198,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString(SAVED_CONTACT_NICKNAME, contactEditNickname.getText().toString());
@@ -206,8 +208,8 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
 
     private void enableSaveIfNeeded() {
         // Nickname
-        String name = RosterManager.getInstance().getName(getAccount(), getUser());
-        String nickname = RosterManager.getInstance().getNickname(getAccount(), getUser());
+        String name = RosterManager.getInstance().getName(getAccount(), getContactJid());
+        String nickname = RosterManager.getInstance().getNickname(getAccount(), getContactJid());
         String setName = contactEditNickname.getText().toString().trim();
 
         // Set name must be different from the general name
@@ -229,7 +231,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
             return;
         }
         boolean hasOutgoingSubscription = subscriptionState.hasOutgoingSubscription();
-        boolean hasAutoAcceptSubscription = PresenceManager.getInstance().hasAutoAcceptSubscription(getAccount(), getUser());
+        boolean hasAutoAcceptSubscription = PresenceManager.INSTANCE.hasAutoAcceptSubscription(getAccount(), getContactJid());
 
         switch (subscriptionState.getSubscriptionType()) {
             case SubscriptionState.BOTH:
@@ -266,17 +268,17 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
         }
 
         // Circles
-        ArrayList<String> selectedGroups = getSelected();
-        Collections.sort(contactGroups);
-        Collections.sort(selectedGroups);
+        ArrayList<String> selectedCircles = getSelected();
+        Collections.sort(contactCircles);
+        Collections.sort(selectedCircles);
 
-        if (contactGroups.size() != selectedGroups.size()) {
+        if (contactCircles.size() != selectedCircles.size()) {
             ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
             return;
         }
 
-        for (int i = 0; i < selectedGroups.size(); i++) {
-            if (!selectedGroups.get(i).equals(contactGroups.get(i))) {
+        for (int i = 0; i < selectedCircles.size(); i++) {
+            if (!selectedCircles.get(i).equals(contactCircles.get(i))) {
                 ((ContactEditActivity)getActivity()).toolbarSetEnabled(true);
                 return;
             }
@@ -287,7 +289,7 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
 
     public void saveChanges() {
         if (saveNickname) {
-            RosterManager.getInstance().setName(getAccount(), getUser(), contactEditNickname.getText().toString());
+            RosterManager.getInstance().setName(getAccount(), getContactJid(), contactEditNickname.getText().toString());
         }
         saveSubscriptionSettings();
         saveCircles();
@@ -301,75 +303,75 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
                 }
                 try {
                     if (!chkSendPresence.isChecked()) {
-                        PresenceManager.getInstance().discardSubscription(getAccount(), getUser());
+                        PresenceManager.INSTANCE.discardSubscription(getAccount(), getContactJid());
                     }
                     if (!chkReceivePresence.isChecked()) {
-                        PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
-                        AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getUser());
+                        PresenceManager.INSTANCE.unsubscribeFromPresence(getAccount(), getContactJid());
+                        AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getContactJid());
                         if (chat != null) chat.setAddContactSuggested(true);
                     }
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 break;
             case SubscriptionState.TO:
                 try {
                     if (chkSendPresence.isChecked()) {
-                        PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
+                        PresenceManager.INSTANCE.addAutoAcceptSubscription(getAccount(), getContactJid());
                     } else {
-                        PresenceManager.getInstance().removeAutoAcceptSubscription(getAccount(), getUser());
+                        PresenceManager.INSTANCE.removeAutoAcceptSubscription(getAccount(), getContactJid());
                     }
                     if (!chkReceivePresence.isChecked()) {
-                        PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
-                        AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getUser());
+                        PresenceManager.INSTANCE.unsubscribeFromPresence(getAccount(), getContactJid());
+                        AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getContactJid());
                         if (chat != null) chat.setAddContactSuggested(true);
                     }
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 break;
             case SubscriptionState.FROM:
                 try {
                     if (!chkSendPresence.isChecked()) {
-                        PresenceManager.getInstance().discardSubscription(getAccount(), getUser());
+                        PresenceManager.INSTANCE.discardSubscription(getAccount(), getContactJid());
                     }
                     if (chkReceivePresence.isChecked()) {
                         if (subscriptionState.getPendingSubscription() != SubscriptionState.PENDING_OUT) {
-                            PresenceManager.getInstance().subscribeForPresence(getAccount(), getUser());
+                            PresenceManager.INSTANCE.subscribeForPresence(getAccount(), getContactJid());
                         }
                     } else {
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT) {
-                            PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
-                            AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getUser());
+                            PresenceManager.INSTANCE.unsubscribeFromPresence(getAccount(), getContactJid());
+                            AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getContactJid());
                             if (chat != null) chat.setAddContactSuggested(true);
                         }
                     }
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 break;
             case SubscriptionState.NONE:
                 try {
                     if (chkSendPresence.isChecked()) {
-                        PresenceManager.getInstance().addAutoAcceptSubscription(getAccount(), getUser());
+                        PresenceManager.INSTANCE.addAutoAcceptSubscription(getAccount(), getContactJid());
                     } else {
-                        PresenceManager.getInstance().removeAutoAcceptSubscription(getAccount(), getUser());
+                        PresenceManager.INSTANCE.removeAutoAcceptSubscription(getAccount(), getContactJid());
                     }
                     if (chkReceivePresence.isChecked()) {
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_NONE
                                 || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN) {
-                            PresenceManager.getInstance().subscribeForPresence(getAccount(), getUser());
+                            PresenceManager.INSTANCE.subscribeForPresence(getAccount(), getContactJid());
                         }
                     } else {
                         if (subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_IN_OUT
                                 || subscriptionState.getPendingSubscription() == SubscriptionState.PENDING_OUT)  {
-                            PresenceManager.getInstance().unsubscribeFromPresence(getAccount(), getUser());
-                            AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getUser());
+                            PresenceManager.INSTANCE.unsubscribeFromPresence(getAccount(), getContactJid());
+                            AbstractChat chat = ChatManager.getInstance().getChat(getAccount(), getContactJid());
                             if (chat != null) chat.setAddContactSuggested(true);
                         }
                     }
                 } catch (NetworkException e) {
-                    e.printStackTrace();
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
                 break;
         }
@@ -388,11 +390,12 @@ public class ContactEditFragment extends GroupEditorFragment implements OnContac
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
         for (BaseEntity entity : entities) {
-            if (entity.equals(getAccount(), getUser())) {
-                updateContact();
+            if (entity.equals(getAccount(), getContactJid())) {
+                Application.getInstance().runOnUiThread(this::updateContact);
             }
         }
     }
+
 }

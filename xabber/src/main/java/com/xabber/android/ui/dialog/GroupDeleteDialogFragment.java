@@ -7,8 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -52,13 +50,10 @@ public class GroupDeleteDialogFragment extends DialogFragment implements DialogI
             return;
         }
 
-        try {
-            if (account == null)
-                RosterManager.getInstance().removeGroup(group);
-            else
-                RosterManager.getInstance().removeGroup(account, group);
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        }
+        if (account == null)
+            RosterManager.getInstance().removeGroup(group);
+        else
+            RosterManager.getInstance().removeGroup(account, group);
     }
+
 }

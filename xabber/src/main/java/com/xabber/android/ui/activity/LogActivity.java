@@ -2,7 +2,6 @@ package com.xabber.android.ui.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,6 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,7 +26,6 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
     public static final int LOG_MENU = R.menu.toolbar_log;
     RecyclerView recyclerView;
     private LogFilesAdapter logFilesAdapter;
-
 
     public static Intent createIntent(Context context) {
         return new Intent(context, LogActivity.class);
@@ -53,6 +52,7 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
 
         updateFileList(logFilesAdapter);
     }
@@ -60,7 +60,6 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
     private void updateFileList(LogFilesAdapter logFilesAdapter) {
         logFilesAdapter.setFiles(LogManager.getLogFiles());
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,11 +75,9 @@ public class LogActivity extends ManagedActivity implements Toolbar.OnMenuItemCl
                 new AlertDialog.Builder(this)
                         .setTitle("Clear logs")
                         .setMessage("Are you sure you want to delete all log files?")
-                        .setPositiveButton("Clear", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                clearLog();
-                                updateFileList(logFilesAdapter);
-                            }
+                        .setPositiveButton("Clear", (dialog, which) -> {
+                            clearLog();
+                            updateFileList(logFilesAdapter);
                         })
                         .setNegativeButton(android.R.string.cancel, null)
                         .show();

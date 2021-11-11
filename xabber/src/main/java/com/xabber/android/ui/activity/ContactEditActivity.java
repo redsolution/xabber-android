@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -25,18 +25,20 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
 import com.xabber.android.data.entity.ContactJid;
-import com.xabber.android.data.intent.EntityIntentBuilder;
-import com.xabber.android.data.roster.OnContactChangedListener;
 import com.xabber.android.data.roster.RosterContact;
+import com.xabber.android.ui.OnAccountChangedListener;
+import com.xabber.android.ui.OnContactChangedListener;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.fragment.ContactEditFragment;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jxmpp.jid.BareJid;
 
 import java.util.Collection;
@@ -50,18 +52,11 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
     private BarPainter barPainter;
 
     public static Intent createIntent(Context context, AccountJid account, ContactJid user) {
-        Intent intent = new EntityIntentBuilder(context, ContactEditActivity.class)
-                .setAccount(account).setUser(user).build();
+        Intent intent = IntentHelpersKt.createContactIntent(
+                context, ContactEditActivity.class, account, user
+        );
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         return intent;
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return EntityIntentBuilder.getAccount(intent);
-    }
-
-    private static ContactJid getUser(Intent intent) {
-        return EntityIntentBuilder.getUser(intent);
     }
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,24 +78,18 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
         }
         tvSave.setPadding(tvSave.getPaddingLeft(), tvSave.getPaddingTop(), tvSave.getPaddingRight() + 20, tvSave.getPaddingBottom());
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         toolbarSetEnabled(false);
 
         barPainter = new BarPainter(this, toolbar);
 
-        Intent intent = getIntent();
-        account = ContactEditActivity.getAccount(intent);
-        user = ContactEditActivity.getUser(intent);
+        account = IntentHelpersKt.getAccountJid(getIntent());
+        user = IntentHelpersKt.getContactJid(getIntent());
 
         update();
 
-        if (AccountManager.getInstance().getAccount(account) == null || user == null) {
+        if (AccountManager.INSTANCE.getAccount(account) == null || user == null) {
             Application.getInstance().onError(R.string.ENTRY_IS_NOT_FOUND);
             finish();
         }
@@ -138,30 +127,28 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
     }
 
     @Override
-    public void onContactsChanged(Collection<RosterContact> entities) {
+    public void onContactsChanged(@NotNull Collection<? extends RosterContact> entities) {
         BareJid thisBareAddress = user.getBareJid();
         for (BaseEntity entity : entities) {
             if (entity.equals(account, thisBareAddress)) {
-                update();
+                Application.getInstance().runOnUiThread(this::update);
                 break;
             }
         }
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        if (accounts.contains(account)) {
-            update();
-        }
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                ((ContactEditFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_container)).saveChanges();
-                finish();
+        if (item.getItemId() == R.id.action_save) {
+            ((ContactEditFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).saveChanges();
+            finish();
         }
         return false;
     }
+
 }

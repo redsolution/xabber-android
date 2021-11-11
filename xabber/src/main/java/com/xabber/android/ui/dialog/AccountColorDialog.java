@@ -41,7 +41,7 @@ public class AccountColorDialog extends DialogFragment implements AccountColorPi
 
     @Override public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-        int colorIndex = AccountManager.getInstance().getColorLevel(accountJid);
+        int colorIndex = AccountManager.INSTANCE.getColorLevel(accountJid);
         dialog.setTitle(getString(R.string.account_color));
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_color_picker, null);
@@ -63,9 +63,9 @@ public class AccountColorDialog extends DialogFragment implements AccountColorPi
 
     @Override
     public void onColorClickListener(int position) {
-        AccountManager.getInstance().setColor(accountJid, position);
-        AccountManager.getInstance().setTimestamp(accountJid, XabberAccountManager.getInstance().getCurrentTime());
-        AccountManager.getInstance().onAccountChanged(accountJid);
+        AccountManager.INSTANCE.setColor(accountJid, position);
+        AccountManager.INSTANCE.setTimestamp(accountJid, (int) (System.currentTimeMillis() / 1000L));
+        AccountManager.INSTANCE.onAccountChanged(accountJid);
 
         if (XabberAccountManager.getInstance().getAccount() != null)
             XabberAccountManager.getInstance().updateRemoteAccountSettings();

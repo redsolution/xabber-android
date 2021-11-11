@@ -4,16 +4,15 @@ import android.os.Looper;
 
 import androidx.annotation.Nullable;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.data.message.MessageUpdateEvent;
-
-import org.greenrobot.eventbus.EventBus;
+import com.xabber.android.data.message.MessageStatus;
+import com.xabber.android.ui.OnMessageUpdatedListener;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.realm.Realm;
@@ -32,9 +31,12 @@ public class BackpressureMessageMarker {
         return instance;
     }
 
-    public void markMessage(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker, AccountJid accountJid) {
-        if (messageId != null && marker != null && accountJid != null)
+    public void markMessage(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker,
+                            AccountJid accountJid) {
+
+        if (messageId != null && marker != null && accountJid != null){
             subject.onNext(new MessageIdAndMarker(messageId, stanzaId, marker, accountJid));
+        }
     }
 
     private BackpressureMessageMarker() {
@@ -47,22 +49,24 @@ public class BackpressureMessageMarker {
                 .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(messageIdAndMarkers -> {
+
                     if (messageIdAndMarkers == null || messageIdAndMarkers.isEmpty()) return;
+
                     Realm realm = null;
                     try{
                         realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                         realm.executeTransaction(realm1 -> {
                             for (MessageIdAndMarker messageAndMarker : messageIdAndMarkers) {
-
                                 String headMessageId = messageAndMarker.messageId;
                                 ArrayList<String> altHeadMessageId = messageAndMarker.stanzaId;
                                 ChatMarkersState marker = messageAndMarker.marker;
                                 AccountJid accountJid = messageAndMarker.accountJid;
 
-                                MessageRealmObject headMessage = getMessageById(realm1, headMessageId,altHeadMessageId, accountJid);
+                                MessageRealmObject headMessage = getMessageById(realm1, headMessageId,altHeadMessageId,
+                                        accountJid);
                                 if (headMessage != null && marker != null) {
-                                    RealmResults<MessageRealmObject> messages = getPreviousUnmarkedMessages(realm1, headMessage, marker);
-                                    List<String> ids = new ArrayList<>();
+                                    RealmResults<MessageRealmObject> messages = getPreviousUnmarkedMessages(
+                                            realm1, marker, headMessage);
                                     if (messages != null) {
                                         for (MessageRealmObject mes : messages) {
                                             setMarkedState(mes, marker);
@@ -74,10 +78,12 @@ public class BackpressureMessageMarker {
                     } catch (Exception e) {
                         LogManager.exception(BackpressureMessageMarker.class.getSimpleName(), e);
                     } finally {
-                        if (realm != null && Looper.myLooper() != Looper.getMainLooper())
-                            realm.close();
+                        if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close();
                     }
-                    EventBus.getDefault().post(new MessageUpdateEvent());
+                    for (OnMessageUpdatedListener listener :
+                            Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                        listener.onAction();
+                    }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
@@ -91,38 +97,40 @@ public class BackpressureMessageMarker {
     private void setMarkedState(MessageRealmObject item, ChatMarkersState marker) {
         switch (marker) {
             case received:
-                item.setDelivered(true);
+                item.setMessageStatus(MessageStatus.RECEIVED);
                 break;
             case displayed:
-                item.setDisplayed(true);
+                item.setMessageStatus(MessageStatus.DISPLAYED);
                 break;
         }
     }
 
-    private RealmResults<MessageRealmObject> getPreviousUnmarkedMessages(Realm realm, MessageRealmObject messageRealmObject, ChatMarkersState marker) {
+    private RealmResults<MessageRealmObject> getPreviousUnmarkedMessages(Realm realm, ChatMarkersState marker,
+                                                                         MessageRealmObject messageRealmObject) {
         String chatMarkerFieldState = null;
         switch (marker) {
             case received:
-                chatMarkerFieldState = MessageRealmObject.Fields.DELIVERED;
+                chatMarkerFieldState = MessageStatus.RECEIVED.toString();
                 break;
             case displayed:
-                chatMarkerFieldState = MessageRealmObject.Fields.DISPLAYED;
+                chatMarkerFieldState = MessageStatus.DISPLAYED.toString();
                 break;
         }
         if (chatMarkerFieldState == null) return null;
+
         return realm.where(MessageRealmObject.class)
                 .equalTo(MessageRealmObject.Fields.ACCOUNT, messageRealmObject.getAccount().toString())
                 .equalTo(MessageRealmObject.Fields.USER, messageRealmObject.getUser().toString())
                 .equalTo(MessageRealmObject.Fields.INCOMING, false)
-                .equalTo(chatMarkerFieldState, false)
-                .equalTo(MessageRealmObject.Fields.IS_IN_PROGRESS, false)
+                .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, chatMarkerFieldState)
+                .notEqualTo(MessageRealmObject.Fields.MESSAGE_STATUS, MessageStatus.UPLOADING.toString())
                 .lessThanOrEqualTo(MessageRealmObject.Fields.TIMESTAMP, messageRealmObject.getTimestamp())
                 .findAll();
     }
 
-    private MessageRealmObject getMessageById(Realm realm, String id, ArrayList<String> stanzaIds, AccountJid accountJid) {
+    private MessageRealmObject getMessageById(Realm realm, String id, ArrayList<String> stanzaIds,
+                                              AccountJid accountJid) {
         int idFieldCounter = 0;
-
         RealmQuery<MessageRealmObject> realmQuery = realm.where(MessageRealmObject.class);
         realmQuery.equalTo(MessageRealmObject.Fields.ACCOUNT, accountJid.toString());
         realmQuery.beginGroup();
@@ -134,7 +142,9 @@ public class BackpressureMessageMarker {
         }
         if (stanzaIds != null && stanzaIds.size() > 0) {
             for (String stanzaId : stanzaIds) {
+
                 if (idFieldCounter > 0) realmQuery.or();
+
                 realmQuery.equalTo(MessageRealmObject.Fields.STANZA_ID, stanzaId);
                 idFieldCounter++;
             }
@@ -153,11 +163,13 @@ public class BackpressureMessageMarker {
         final ChatMarkersState marker;
         final AccountJid accountJid;
 
-        MessageIdAndMarker(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker, AccountJid accountJid) {
+        MessageIdAndMarker(String messageId, @Nullable ArrayList<String> stanzaId, ChatMarkersState marker,
+                           AccountJid accountJid) {
             this.messageId = messageId;
             this.stanzaId = stanzaId;
             this.marker = marker;
             this.accountJid = accountJid;
         }
     }
+
 }

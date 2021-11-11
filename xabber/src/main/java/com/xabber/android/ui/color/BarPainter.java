@@ -17,10 +17,9 @@ import com.xabber.android.data.entity.AccountJid;
 public class BarPainter {
 
     private final Toolbar toolbar;
-    private StatusBarPainter statusBarPainter;
-    private TypedValue typedValue = new TypedValue();
-    int standartColor;
-    private AccountPainter accountPainter;
+    private final StatusBarPainter statusBarPainter;
+    int standardColor;
+    private final AccountPainter accountPainter;
     Context context;
 
     public BarPainter(AppCompatActivity activity, Toolbar toolbar) {
@@ -28,48 +27,48 @@ public class BarPainter {
         statusBarPainter = new StatusBarPainter(activity);
         accountPainter = new AccountPainter(activity);
         context = toolbar.getContext();
+        TypedValue typedValue = new TypedValue();
         activity.getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
-        standartColor = typedValue.data;
+        standardColor = typedValue.data;
     }
 
     public void updateWithAccountName(AccountJid account) {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
             if (account == null) {
-                toolbar.setBackgroundColor(standartColor);
+                toolbar.setBackgroundColor(standardColor);
             } else {
                 toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(account));
             }
             toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithAccountName(account);
         } else {
-            toolbar.setBackgroundColor(standartColor);
+            toolbar.setBackgroundColor(standardColor);
             toolbar.setTitleTextColor(Color.WHITE);
-            statusBarPainter.updateWithColor(standartColor);
+            statusBarPainter.updateWithColor(standardColor);
         }
 
     }
 
     public void setDefaultColor() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light){
-            if (AccountManager.getInstance().getFirstAccount() == null)
+            if (AccountManager.INSTANCE.getFirstAccount() == null)
             {
-                toolbar.setBackgroundColor(standartColor);
+                toolbar.setBackgroundColor(standardColor);
             } else {
-                toolbar.setBackgroundColor(accountPainter.getAccountRippleColor(AccountManager.getInstance().getFirstAccount()));
+                toolbar.setBackgroundColor(
+                        accountPainter.getAccountRippleColor(
+                                AccountManager.INSTANCE.getFirstAccount()
+                        )
+                );
             }
             toolbar.setTitleTextColor(Color.BLACK);
             statusBarPainter.updateWithDefaultColor();
         } else {
-            toolbar.setBackgroundColor(standartColor);
+            toolbar.setBackgroundColor(standardColor);
             toolbar.setTitleTextColor(Color.WHITE);
-            statusBarPainter.updateWithColor(standartColor);
+            statusBarPainter.updateWithColor(standardColor);
         }
 
-    }
-
-    public void updateWithColorName(String targetColorName) {
-        toolbar.setBackgroundColor(accountPainter.getAccountMainColorByColorName(targetColorName));
-        statusBarPainter.updateWithColor(accountPainter.getAccountDarkColorByColorName(targetColorName));
     }
 
     public void setLiteGrey() {
@@ -89,4 +88,5 @@ public class BarPainter {
     public AccountPainter getAccountPainter() {
         return accountPainter;
     }
+
 }

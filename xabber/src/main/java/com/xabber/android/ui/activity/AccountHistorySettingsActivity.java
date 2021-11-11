@@ -3,26 +3,24 @@ package com.xabber.android.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import android.view.View;
 
 import com.xabber.android.R;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.preferences.AccountHistorySettingsFragment;
 
 public class AccountHistorySettingsActivity extends ManagedActivity {
 
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
-    }
-
     @NonNull
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, AccountHistorySettingsActivity.class).setAccount(account).build();
+        return IntentHelpersKt.createAccountIntent(
+                context, AccountHistorySettingsActivity.class, account
+        );
     }
 
     @Override
@@ -30,20 +28,16 @@ public class AccountHistorySettingsActivity extends ManagedActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_history_settings);
 
-
-        AccountJid account = getAccount(getIntent());
+        AccountJid account = IntentHelpersKt.getAccountJid(getIntent());
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
+        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_grey_24dp);
-        else toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
+        }
         toolbar.setTitle(R.string.account_chat_history);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);

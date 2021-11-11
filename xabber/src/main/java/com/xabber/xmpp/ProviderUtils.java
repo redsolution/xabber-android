@@ -16,20 +16,11 @@ package com.xabber.xmpp;
 
 import com.xabber.android.data.log.LogManager;
 
-import org.jxmpp.util.XmppDateTime;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.LinkedList;
-import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Set of functions commonly used by packet providers.
@@ -39,62 +30,6 @@ import java.util.regex.Pattern;
 public class ProviderUtils {
 
     private ProviderUtils() {
-    }
-
-    /**
-     * Pattern to remove microseconds.
-     */
-    private static final Pattern pattern = Pattern
-            .compile("^(\\d+-\\d+-\\d+T\\d+:\\d+:\\d+\\.\\d{1,3})\\d+(Z)$");
-
-    /**
-     * Date format without milliseconds.
-     */
-    private static final DateFormat XEP_0082_UTC_FORMAT_WITHOUT_MILLIS = new SimpleDateFormat(
-            "yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-    static {
-        XEP_0082_UTC_FORMAT_WITHOUT_MILLIS.setTimeZone(TimeZone
-                .getTimeZone("UTC"));
-    }
-
-    /**
-     * Parse date time from string.
-     *
-     * @param dateString
-     * @return <code>null</code> if dateString is null or contains invalid data.
-     */
-    public static Date parseDateTime(String dateString) {
-        if (dateString == null)
-            return null;
-        Matcher matcher = pattern.matcher(dateString);
-        if (matcher.matches())
-            dateString = matcher.group(1) + matcher.group(2);
-        try {
-            return XmppDateTime.parseXEP0082Date(dateString);
-        } catch (ParseException e) {
-            synchronized (XEP_0082_UTC_FORMAT_WITHOUT_MILLIS) {
-                try {
-                    return XEP_0082_UTC_FORMAT_WITHOUT_MILLIS.parse(dateString);
-                } catch (ParseException e2) {
-                    return null;
-                }
-            }
-        }
-    }
-
-    /**
-     * Parse integer.
-     *
-     * @param value
-     * @return <code>null</code> if inner value is <code>null</code> or invalid.
-     */
-    public static Integer parseInteger(String value) {
-        try {
-            return Integer.valueOf(value);
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 
     /**
@@ -129,8 +64,6 @@ public class ProviderUtils {
      * @param maximum maximum length of returned value. Use <code>-1</code> to
      *                disable limits.
      * @return Empty string if there is no inner text elements.
-     * @throws OverflowReceiverBufferException If more than maximum chars have been read. Though parser
-     *                                         position will be at the and of the tag.
      * @throws Exception
      */
     public static String parseText(XmlPullParser parser, int maximum) throws IOException, XmlPullParserException {
@@ -192,59 +125,6 @@ public class ProviderUtils {
             } else if (eventType == XmlPullParser.END_DOCUMENT)
                 break;
         }
-    }
-
-    /**
-     * Parse big decimal.
-     *
-     * @param parser
-     * @return <code>null</code> if inner text elements contains no or invalid
-     * data.
-     * @throws Exception
-     */
-    public static BigDecimal parseBigDecimal(XmlPullParser parser)
-            throws Exception {
-        try {
-            return new BigDecimal(parseText(parser, -1));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Parse integer.
-     *
-     * @param parser
-     * @return <code>null</code> if inner text elements contains no or invalid
-     * data.
-     * @throws Exception
-     */
-    public static Integer parseInteger(XmlPullParser parser) throws IOException, XmlPullParserException {
-        return parseInteger(parseText(parser, -1));
-    }
-
-    /**
-     * Parse boolean.
-     *
-     * @param parser
-     * @return <code>null</code> if inner text elements contains no or invalid
-     * data.
-     * @throws Exception
-     */
-    public static Integer parseBoolean(XmlPullParser parser) throws IOException, XmlPullParserException {
-        return parseInteger(parseText(parser, -1));
-    }
-
-    /**
-     * Parse date time.
-     *
-     * @param parser
-     * @return <code>null</code> if inner text elements contains no or invalid
-     * data.
-     * @throws Exception
-     */
-    public static Date parseDateTime(XmlPullParser parser) throws IOException, XmlPullParserException {
-        return parseDateTime(parseText(parser, -1));
     }
 
 }

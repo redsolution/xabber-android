@@ -1,9 +1,9 @@
 package com.xabber.android.data.notification;
 
 public class Action {
-    private int notificationID;
+    private final int notificationID;
     private CharSequence replyText;
-    private ActionType actionType;
+    private final ActionType actionType;
 
     public Action(int notificationID, CharSequence replyText, ActionType actionType) {
         this.notificationID = notificationID;

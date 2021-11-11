@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -25,14 +25,12 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.capability.CapabilitiesManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
-import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.message.chat.ChatManager;
 import com.xabber.android.data.message.chat.RegularChat;
 import com.xabber.android.data.notification.EntityNotificationProvider;
@@ -93,10 +91,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
     };
 
     public static AttentionManager getInstance() {
-        if (instance == null) {
-            instance = new AttentionManager();
-        }
-
+        if (instance == null) instance = new AttentionManager();
         return instance;
     }
 
@@ -105,8 +100,8 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
 
     public void onSettingsChanged() {
         synchronized (enabledLock) {
-            for (AccountJid account : AccountManager.getInstance().getEnabledAccounts()) {
-                AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+            for (AccountJid account : AccountManager.INSTANCE.getEnabledAccounts()) {
+                AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
                 if (accountItem == null) {
                     continue;
                 }
@@ -118,6 +113,7 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                 for (String feature : manager.getFeatures()) {
                     if (AttentionExtension.NAMESPACE.equals(feature)) {
                         contains = true;
+                        break;
                     }
                 }
                 if (SettingsManager.chatsAttention() == contains) {
@@ -129,19 +125,12 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
                     manager.removeFeature(AttentionExtension.NAMESPACE);
                 }
             }
-            AccountManager.getInstance().resendPresence();
+            AccountManager.INSTANCE.resendPresence();
         }
     }
 
     @Override
-    public void onLoad() {
-        Application.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                onLoaded();
-            }
-        });
-    }
+    public void onLoad() { Application.getInstance().runOnUiThread(this::onLoaded); }
 
     @SuppressWarnings("WeakerAccess")
     void onLoaded() {
@@ -162,28 +151,21 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
         ContactJid from;
         try {
             from = ContactJid.from(stanza.getFrom());
-        } catch (ContactJid.UserJidCreateException e) {
-            e.printStackTrace();
+        } catch (ContactJid.ContactJidCreateException e) {
+            LogManager.exception(getClass().getSimpleName(), e);
             return;
         }
 
         for (ExtensionElement packetExtension : stanza.getExtensions()) {
             if (packetExtension instanceof AttentionExtension) {
-                boolean fromMUC = ((Message) stanza).getType().equals(Message.Type.groupchat);
                 ChatManager.getInstance().openChat(account, from);
-                ChatManager.getInstance()
-                        .getOrCreateChat(account, from)
-                        .newAction(null,
-                                Application.getInstance().getApplicationContext().getString(R.string.action_attention_requested),
-                                ChatAction.attention_requested,
-                                fromMUC);
                 attentionRequestProvider.add(new AttentionRequest(account, from.getBareUserJid()), true);
             }
         }
     }
 
     public void sendAttention(AccountJid account, ContactJid user) throws NetworkException {
-        AbstractChat chat = ChatManager.getInstance().getOrCreateChat(account, user);
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
         if (!(chat instanceof RegularChat)) {
             throw new NetworkException(R.string.ENTRY_IS_NOT_FOUND);
         }
@@ -201,23 +183,24 @@ public class AttentionManager implements OnPacketListener, OnLoadListener {
             throw new NetworkException(R.string.ENTRY_IS_NOT_AVAILABLE);
         }
 
-        if (!CapabilitiesManager.getInstance().isFeatureSupported(to, AttentionExtension.NAMESPACE)) {
-            throw new NetworkException(R.string.ATTENTION_IS_NOT_SUPPORTED);
-        }
+//        if (!CapabilitiesManager.getInstance().isFeatureSupported(to, AttentionExtension.NAMESPACE)) {
+//            throw new NetworkException(R.string.ATTENTION_IS_NOT_SUPPORTED);
+//        }
 
         Message message = new Message();
         message.setTo(to);
         message.setType(Message.Type.headline);
         message.addExtension(new AttentionExtension());
-        StanzaSender.sendStanza(account, message);
-        chat.newAction(null,
-                Application.getInstance().getApplicationContext().getString(R.string.action_attention_called),
-                ChatAction.attention_called,
-                false);
+        try {
+            AccountManager.INSTANCE.getAccount(account).getConnection().sendStanza(message);
+        } catch (Exception e) {
+            LogManager.exception(this, e);
+        }
     }
 
     public void removeAccountNotifications(AccountJid accountJid, ContactJid contactJid) {
         LogManager.i(this, "removeAccountNotifications " + contactJid);
         attentionRequestProvider.remove(accountJid, contactJid.getBareUserJid());
     }
+
 }

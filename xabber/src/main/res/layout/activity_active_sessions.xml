@@ -73,7 +73,9 @@
                         android:text="@string/account_current_session"
                         />
 
-                    <include layout="@layout/item_session"
+                    <include
+                        android:id="@+id/current_session_root"
+                        layout="@layout/item_session"
                         android:clickable="false"
                         android:focusable="false"
                         />

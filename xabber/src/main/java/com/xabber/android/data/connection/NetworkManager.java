@@ -15,7 +15,6 @@
 package com.xabber.android.data.connection;
 
 import android.content.Context;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
@@ -38,8 +37,6 @@ public class  NetworkManager implements OnCloseListener, OnInitializedListener {
 
     private final ConnectivityManager connectivityManager;
 
-
-
     private static NetworkManager instance;
 
     public static NetworkManager getInstance() {
@@ -59,38 +56,24 @@ public class  NetworkManager implements OnCloseListener, OnInitializedListener {
 
     @Override
     public void onInitialized() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        Application.getInstance().registerReceiver(connectivityReceiver, filter);
+        connectivityReceiver.requestRegister(Application.getInstance());
         WakeLockManager.onWakeLockSettingsChanged();
         WakeLockManager.onWifiLockSettingsChanged();
     }
 
     @Override
     public void onClose() {
-        try {
-            Application.getInstance().unregisterReceiver(connectivityReceiver);
-        } catch (IllegalArgumentException e) {
-            LogManager.exception(LOG_TAG, e);
-        }
+        connectivityReceiver.requestUnregister(Application.getInstance());
     }
 
     public void onNetworkChange() {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         LogManager.i(LOG_TAG, "Active network info: " + networkInfo);
 
-        if (networkInfo != null) {
-            switch (networkInfo.getState()) {
-                case CONNECTED:
-                    shutdownConnection();
-                    onAvailable();
-                    break;
-                case DISCONNECTING:
-                case DISCONNECTED:
-                case SUSPENDED:
-                    shutdownConnection();
-                    break;
-            }
+        //todo fix this to use on background thread
+        if (networkInfo != null && networkInfo.getState().equals(State.CONNECTED)) {
+            shutdownConnection();
+            onAvailable();
         } else {
             shutdownConnection();
         }

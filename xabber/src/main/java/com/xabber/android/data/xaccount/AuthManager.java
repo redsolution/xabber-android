@@ -103,7 +103,7 @@ public class AuthManager {
                     }
                     XabberAccountManager.getInstance().setAccountSyncState(syncState);
 
-                    if (AccountManager.getInstance().isLoaded()) {
+                    if (AccountManager.INSTANCE.isLoaded()) {
                         // update last synchronization time
                         SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
 
@@ -238,7 +238,7 @@ public class AuthManager {
                         PrivateStorageManager.getInstance()
                                 .setXabberAccountBinding(AccountJid.from(jid), true);
                     } catch (XmppStringprepException e) {
-                        e.printStackTrace();
+                        LogManager.exception("AuthManager", e);
                     }
 
                     return XabberAccountManager.getInstance()

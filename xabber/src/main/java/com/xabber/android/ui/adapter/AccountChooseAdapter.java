@@ -15,16 +15,15 @@
 package com.xabber.android.ui.adapter;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.avatar.AvatarManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,16 +35,20 @@ import java.util.Collections;
  */
 public class AccountChooseAdapter extends BaseAdapter {
     protected final ArrayList<AccountJid> accounts;
-    private final int[] accountColors;
-    private final Activity activity;
+    private final LayoutInflater layoutInflater;
 
     public AccountChooseAdapter(Activity activity) {
         super();
-        this.activity = activity;
-        accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
+        this.layoutInflater = activity.getLayoutInflater();
+        accounts = new ArrayList<>(AccountManager.INSTANCE.getEnabledAccounts());
         Collections.sort(accounts);
+    }
 
-        accountColors = activity.getResources().getIntArray(R.array.account_500);
+    public AccountChooseAdapter(LayoutInflater layoutInflater){
+        super();
+        this.layoutInflater = layoutInflater;
+        accounts = new ArrayList<>(AccountManager.INSTANCE.getEnabledAccounts());
+        Collections.sort(accounts);
     }
 
     @Override
@@ -66,21 +69,17 @@ public class AccountChooseAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         final View view;
-        final AccountManager accountManager = AccountManager.getInstance();
         if (convertView == null) {
-            view = activity.getLayoutInflater().inflate(
+            view = layoutInflater.inflate(
                     R.layout.item_account_choose, parent, false);
         } else {
             view = convertView;
         }
         final AccountJid account = (AccountJid) getItem(position);
 
-        int accountColor = accountColors[accountManager.getColorLevel(account)];
-        ((ImageView) view.findViewById(R.id.avatar))
-                .setImageDrawable(AvatarManager.getInstance().getAccountAvatar(account));
-
-        ((TextView) view.findViewById(R.id.name)).setText(accountManager
-                .getVerboseName(account));
+        ((TextView) view.findViewById(R.id.name)).setText(
+                AccountManager.INSTANCE.getVerboseName(account)
+        );
         return view;
     }
 

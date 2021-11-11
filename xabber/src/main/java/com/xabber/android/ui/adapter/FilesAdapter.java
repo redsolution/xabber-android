@@ -1,5 +1,7 @@
 package com.xabber.android.ui.adapter;
 
+import static com.xabber.android.ui.helper.AndroidUtilsKt.dipToPx;
+
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -13,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
@@ -24,9 +27,8 @@ import com.xabber.android.data.extension.references.mutable.voice.VoiceMessagePr
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.data.filedownload.FileCategory;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.text.DatesUtilsKt;
 import com.xabber.android.ui.widget.PlayerVisualizerView;
-import com.xabber.android.utils.StringUtils;
-import com.xabber.android.utils.Utils;
 
 import org.apache.commons.io.FileUtils;
 
@@ -38,9 +40,9 @@ import rx.subscriptions.CompositeSubscription;
 
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHolder> {
 
-    private RealmList<AttachmentRealmObject> items;
-    private FileListListener listener;
-    private Long timestamp;
+    private final RealmList<AttachmentRealmObject> items;
+    private final FileListListener listener;
+    private final Long timestamp;
 
     public interface FileListListener {
         void onFileClick(int position);
@@ -57,9 +59,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
         this.listener = listener;
     }
 
+    @NonNull
     @Override
     public FileViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_file_message, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(
+                R.layout.item_file_message, parent, false
+        );
         return new FileViewHolder(view);
     }
 
@@ -77,16 +82,21 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             StringBuilder voiceText = new StringBuilder();
             voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
             if (attachmentRealmObject.getDuration() != null && attachmentRealmObject.getDuration() != 0) {
-                voiceText.append(String.format(Locale.getDefault(), ", %s", StringUtils.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())));
+                voiceText.append(
+                        String.format(
+                                Locale.getDefault(),
+                                ", %s",
+                                DatesUtilsKt.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())
+                        )
+                );
                 RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) holder.fileInfoLayout.getLayoutParams();
-                int width = Utils.dipToPx(140, holder.fileInfoLayout.getContext());
+                int width = dipToPx(140, holder.fileInfoLayout.getContext());
                 if (attachmentRealmObject.getDuration() < 10) {
-                    lp.width = width + Utils.dipToPx(6 * attachmentRealmObject.getDuration(), holder.fileInfoLayout.getContext());
-                    holder.fileInfoLayout.setLayoutParams(lp);
+                    lp.width = width + dipToPx(6 * attachmentRealmObject.getDuration(), holder.fileInfoLayout.getContext());
                 } else {
-                    lp.width = width + Utils.dipToPx(60, holder.fileInfoLayout.getContext());
-                    holder.fileInfoLayout.setLayoutParams(lp);
+                    lp.width = width + dipToPx(60, holder.fileInfoLayout.getContext());
                 }
+                holder.fileInfoLayout.setLayoutParams(lp);
             }
             holder.tvFileName.setText(voiceText);
 
@@ -94,9 +104,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
             if (attachmentRealmObject.getFilePath() != null) {
                 holder.tvFileName.setVisibility(View.GONE);
-                holder.tvFileSize.setText((attachmentRealmObject.getDuration()!= null && attachmentRealmObject.getDuration() != 0) ?
-                        StringUtils.getDurationStringForVoiceMessage(0L, attachmentRealmObject.getDuration())
-                        : FileUtils.byteCountToDisplaySize(size != null ? size : 0));
+                holder.tvFileSize.setText(
+                        (attachmentRealmObject.getDuration()!= null && attachmentRealmObject.getDuration() != 0) ?
+                                DatesUtilsKt.getDurationStringForVoiceMessage(
+                                        0L, attachmentRealmObject.getDuration()
+                                ) : FileUtils.byteCountToDisplaySize(size != null ? size : 0)
+                );
                 VoiceMessagePresenterManager.getInstance().sendWaveDataIfSaved(attachmentRealmObject.getFilePath(), holder.audioVisualizer);
                 holder.audioVisualizer.setVisibility(View.VISIBLE);
                 holder.audioVisualizer.setOnTouchListener(new PlayerVisualizerView.onProgressTouch() {
@@ -140,30 +153,24 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                     ? getFileIconByCategory(FileCategory.determineFileCategory(attachmentRealmObject.getMimeType()))
                     : R.drawable.ic_download);
         }
-        holder.ivFileIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (holder.voiceMessage)
-                    listener.onVoiceClick(holder.getAdapterPosition(), holder.attachmentId, attachmentRealmObject.getFilePath()!=null, timestamp);
-                else
-                    listener.onFileClick(position);
-            }
+        holder.ivFileIcon.setOnClickListener(view -> {
+            if (holder.voiceMessage)
+                listener.onVoiceClick(
+                        holder.getAdapterPosition(),
+                        holder.attachmentId,
+                        attachmentRealmObject.getFilePath()!=null,
+                        timestamp
+                );
+            else
+                listener.onFileClick(position);
         });
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (items.size() > position)
-                    listener.onFileLongClick(items.get(position), v);
-                return true;
-            }
+        holder.itemView.setOnLongClickListener(v -> {
+            if (items.size() > position)
+                listener.onFileLongClick(items.get(position), v);
+            return true;
         });
 
-        holder.ivCancelDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onDownloadCancel();
-            }
-        });
+        holder.ivCancelDownload.setOnClickListener(v -> listener.onDownloadCancel());
 
         holder.itemView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -209,7 +216,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
     class FileViewHolder extends RecyclerView.ViewHolder {
 
-        private CompositeSubscription subscriptions = new CompositeSubscription();
+        private final CompositeSubscription subscriptions = new CompositeSubscription();
         String attachmentId;
         boolean voiceMessage;
 
@@ -232,12 +239,6 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
             ivFileIcon = itemView.findViewById(R.id.ivFileIcon);
             progressBar = itemView.findViewById(R.id.progressBar);
             audioProgress = itemView.findViewById(R.id.audioProgress);
-            /*audioProgress.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    return true;
-                }
-            });*/
             audioVisualizer = itemView.findViewById(R.id.audioVisualizer);
             ivCancelDownload = itemView.findViewById(R.id.ivCancelDownload);
         }
@@ -248,32 +249,12 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
 
         public void subscribeForDownloadProgress() {
             subscriptions.add(DownloadManager.getInstance().subscribeForProgress()
-                    .doOnNext(new Action1<DownloadManager.ProgressData>() {
-                        @Override
-                        public void call(DownloadManager.ProgressData progressData) {
-                            setUpProgress(progressData);
-                        }
-                    }).subscribe());
+                    .doOnNext(this::setUpProgress).subscribe());
         }
-
-        //public void subscribeForAudioProgress() {
-        //    subscriptions.add(FileInteractionFragment.PublishAudioProgress.getInstance().subscribeForProgress()
-        //            .doOnNext(new Action1<FileInteractionFragment.PublishAudioProgress.AudioInfo>() {
-        //                @Override
-        //                public void call(FileInteractionFragment.PublishAudioProgress.AudioInfo info) {
-        //                    setUpAudioProgress(info);
-        //                }
-        //            }).subscribe());
-        //}
 
         public void subscribeForAudioProgress() {
             subscriptions.add(VoiceManager.PublishAudioProgress.getInstance().subscribeForProgress()
-                    .doOnNext(new Action1<VoiceManager.PublishAudioProgress.AudioInfo>() {
-                        @Override
-                        public void call(VoiceManager.PublishAudioProgress.AudioInfo info) {
-                            setUpAudioProgress(info);
-                        }
-                    }).subscribe());
+                    .doOnNext(this::setUpAudioProgress).subscribe());
         }
 
         private void setUpAudioProgress(VoiceManager.PublishAudioProgress.AudioInfo info) {
@@ -281,32 +262,46 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.FileViewHold
                 if (info.getTimestamp() != null && info.getTimestamp().equals(timestamp)) {
                     if (info.getDuration() != 0) {
                         if (info.getDuration() > 1000) {
-                            audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / (float) info.getDuration()), false);
+                            audioVisualizer.updatePlayerPercent(
+                                    ((float) info.getCurrentPosition() / (float) info.getDuration()),
+                                    false
+                            );
                             audioProgress.setMax(info.getDuration());
-                            audioProgress.setProgress(info.getCurrentPosition());
                         } else {
-                            audioVisualizer.updatePlayerPercent(((float) info.getCurrentPosition() / ((float) info.getDuration() * 1000)), false);
+                            audioVisualizer.updatePlayerPercent(
+                                    ((float) info.getCurrentPosition() / ((float) info.getDuration() * 1000)),
+                                    false
+                            );
                             audioProgress.setMax(info.getDuration() * 1000);
-                            audioProgress.setProgress(info.getCurrentPosition());
                         }
+                        audioProgress.setProgress(info.getCurrentPosition());
                         if (info.getResultCode() == VoiceManager.COMPLETED_AUDIO_PROGRESS) {
                             ivFileIcon.setImageResource(R.drawable.ic_play);
                             showProgress(false);
-                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage(0L,
-                                    info.getDuration() > 1000 ?
-                                            (info.getDuration() / 1000) : info.getDuration()));
+                            tvFileSize.setText(
+                                    DatesUtilsKt.getDurationStringForVoiceMessage(
+                                            0L,
+                                    info.getDuration() > 1000 ? (info.getDuration() / 1000) : info.getDuration()
+                                    )
+                            );
                         } else if (info.getResultCode() == VoiceManager.PAUSED_AUDIO_PROGRESS) {
                             ivFileIcon.setImageResource(R.drawable.ic_play);
                             showProgress(false);
-                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
-                                    info.getDuration() > 1000 ?
-                                            (info.getDuration() / 1000) : info.getDuration()));
+                            tvFileSize.setText(
+                                    DatesUtilsKt.getDurationStringForVoiceMessage(
+                                            (long) info.getCurrentPosition() / 1000,
+                                            info.getDuration() > 1000 ? (info.getDuration() / 1000) : info.getDuration()
+                                    )
+                            );
                         } else {
                             ivFileIcon.setImageResource(R.drawable.ic_pause);
                             showProgress(false);
-                            tvFileSize.setText(StringUtils.getDurationStringForVoiceMessage((long) info.getCurrentPosition() / 1000,
-                                    info.getDuration() > 1000 ?
-                                            (info.getDuration() / 1000) : info.getDuration()));
+                            tvFileSize.setText(
+                                    DatesUtilsKt.getDurationStringForVoiceMessage(
+                                            (long) info.getCurrentPosition() / 1000,
+                                            info.getDuration() > 1000 ? (info.getDuration() / 1000) : info.getDuration()
+                                    )
+                            );
                         }
                     }
                 }

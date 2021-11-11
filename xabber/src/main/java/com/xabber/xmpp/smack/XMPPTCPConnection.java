@@ -372,7 +372,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         try {
             saslAuthentication.authenticate(username, password, config.getAuthzid(), sslSession);
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
             if (e.getCause() instanceof XMPPException.StreamErrorException){
                 throw (XMPPException.StreamErrorException) e.getCause();
             }
@@ -411,12 +411,12 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         if (getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE) != null){
             Mechanisms mechanisms = getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE);
             List<String> mechanismsList = mechanisms.getMechanisms();
-            if (mechanismsList.contains(SASLXTOKENMechanism.NAME) &&
-                    !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
-                XTokenManager.getInstance().sendXTokenRequest(this);
+            if (mechanismsList.contains(SASLXTOKENMechanism.NAME)
+                    && !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
+                LogManager.d(XMPPTCPConnection.class.getSimpleName(), getUsedSaslMechansism());
+                XTokenManager.INSTANCE.sendXTokenRequest(this);
             }
         }
-
 
         // Now bind the resource. It is important to do this *after* we dropped an eventually
         // existing Stream Management state. As otherwise <bind/> and <session/> may end up in
@@ -431,7 +431,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
             try {
                 smEnabledSyncPoint.sendAndWaitForResponseOrThrow(new Enable(useSmResumption, smClientMaxResumptionTime));
             } catch (Exception e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
                 if (e instanceof XMPPException.StreamErrorException) {
                     throw (XMPPException.StreamErrorException) e;
                 } else {
@@ -1762,12 +1762,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         }
         // Remove the listener after max. 12 hours
         final int removeAfterSeconds = Math.min(getMaxSmResumptionTime(), 12 * 60 * 60);
-        schedule(new Runnable() {
-            @Override
-            public void run() {
-                stanzaIdAcknowledgedListeners.remove(id);
-            }
-        }, removeAfterSeconds, TimeUnit.SECONDS);
+        schedule(() -> stanzaIdAcknowledgedListeners.remove(id), removeAfterSeconds, TimeUnit.SECONDS);
         return stanzaIdAcknowledgedListeners.put(id, listener);
     }
 

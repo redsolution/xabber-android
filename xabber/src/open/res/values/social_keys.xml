@@ -6,10 +6,10 @@
     <string name="SOCIAL_AUTH_TWITTER_KEY">temp</string>
     <string name="SOCIAL_AUTH_TWITTER_SECRET">temp</string>
 
-    <string name="SOCIAL_AUTH_GITHUB_KEY">temp</string>
-    <string name="SOCIAL_AUTH_GITHUB_SECRET">temp</string>
-
     <string name="RECAPTCHA_KEY">temp</string>
+
     <string name="CROWDFUNDING_KEY">temp</string>
+
     <string name="PUSH_API_KEY">temp</string>
+
 </resources>

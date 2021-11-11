@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <!-- Groupchat name -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/edit_text_rounded_corners_background_grey">
+
+        <TextView
+            android:id="@+id/groupchat_name_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="10dp"
+            android:text="@string/groupchat_name" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/create_groupchat_name_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:hint="@string/groupchat_public_group"
+            android:gravity="top"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:inputType="textNoSuggestions"
+            android:background="@color/transparent"/>
+
+        <View
+            android:id="@+id/groupchat_name_vw"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/grey_500"/>
+
+    </LinearLayout>
+
+
+    <!-- Groupchat XMPP JID -->
+    <LinearLayout
+        android:id="@+id/groupchat_jid_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/edit_text_rounded_corners_background_grey">
+
+        <TextView
+            android:id="@+id/groupchat_jid_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="10dp"
+            android:text="@string/groupchat_xmpp_jid" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"
+
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+
+                android:layout_toStartOf="@id/server_iv"
+                android:layout_toLeftOf="@id/server_iv"
+
+                android:background="@color/transparent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/groupchat_jid_et"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:hint="public-group"
+                        android:inputType="textNoSuggestions"
+                        android:background="@color/transparent"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/server_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        style="?attr/editTextStyle"
+                        android:background="@color/transparent"
+                        android:text="\u200A\@\u200Agc.xabber.com"/>
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+            <ImageView
+                android:id="@+id/server_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                app:srcCompat="@drawable/ic_web"/>
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/groupchat_jid_vw"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/grey_500"/>
+
+    </LinearLayout>
+
+    <!-- Error view -->
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/error_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/red_A700"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:visibility="invisible"/>
+
+
+    <!-- Description -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/edit_text_rounded_corners_background_grey">
+
+        <TextView
+            android:id="@+id/groupchat_description_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingEnd="16dp"
+            android:paddingRight="16dp"
+
+            android:paddingTop="10dp"
+            android:text="@string/groupchat_description" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/groupchat_description_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="top"
+            android:maxLines="5"
+            android:minLines="5"
+            android:hint="@string/groupchat_example_description"
+            android:background="@color/transparent"/>
+
+        <View
+            android:id="@+id/groupchat_description_vw"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/grey_500"/>
+
+    </LinearLayout>
+
+
+    <!-- Membership setting -->
+    <TextView
+        android:id="@+id/groupchat_membership_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp"
+        android:text="@string/groupchat_membership"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/groupchat_membership_rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp">
+
+        <RadioButton
+            android:id="@+id/group_membership_members_only_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_membership_type_members_only" />
+
+        <RadioButton
+            android:id="@+id/group_membership_open_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_membership_type_open" />
+
+    </RadioGroup>
+
+
+    <!-- Divider -->
+    <View
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
+
+
+    <!-- Index type setting -->
+    <TextView
+        android:id="@+id/groupchat_indexed_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:paddingEnd="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="12dp"
+        android:text="@string/groupchat_index"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/groupchat_indexed_rg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp">
+
+        <RadioButton
+            android:id="@+id/group_index_none_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_index_type_none" />
+
+        <RadioButton
+            android:id="@+id/group_index_local_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_index_type_local" />
+
+        <RadioButton
+            android:id="@+id/group_index_global_rb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:paddingStart="12dp"
+            android:paddingLeft="12dp"
+            android:paddingEnd="12dp"
+            android:paddingRight="12dp"
+            android:text="@string/groupchat_index_type_global" />
+
+    </RadioGroup>
+
+
+    <!-- Divider -->
+    <View
+        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+

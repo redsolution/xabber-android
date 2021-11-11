@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -14,12 +14,14 @@
  */
 package com.xabber.android.data.connection;
 
+import com.xabber.android.data.Application;
 import com.xabber.android.data.OnCloseListener;
 import com.xabber.android.data.OnInitializedListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 
 import org.jivesoftware.smack.SmackConfiguration;
 
@@ -32,7 +34,7 @@ import java.util.ArrayList;
  */
 public class ConnectionManager implements OnInitializedListener, OnCloseListener {
 
-    private static String LOG_TAG = ConnectionManager.class.getSimpleName();
+    private static final String LOG_TAG = ConnectionManager.class.getSimpleName();
 
     /**
      * Timeout for receiving reply from server.
@@ -71,14 +73,16 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
     @Override
     public void onInitialized() {
         LogManager.i(LOG_TAG, "onInitialized");
-        AccountManager.getInstance().onAccountsChanged(new ArrayList<>(AccountManager.getInstance().getAllAccounts()));
+        for (OnAccountChangedListener listener : Application.getInstance().getUIListeners(OnAccountChangedListener.class)) {
+            listener.onAccountsChanged(new ArrayList<>(AccountManager.INSTANCE.getAllAccounts()));
+        }
     }
 
     @Override
     public void onClose() {
         LogManager.i(LOG_TAG, "onClose");
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        for (AccountJid accountJid : AccountManager.INSTANCE.getEnabledAccounts()) {
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
             if (accountItem != null) {
                 accountItem.disconnect();
             }
@@ -87,20 +91,20 @@ public class ConnectionManager implements OnInitializedListener, OnCloseListener
 
     public void connectAll() {
         LogManager.i(LOG_TAG, "connectAll");
-        AccountManager accountManager = AccountManager.getInstance();
-        for (AccountJid account : accountManager.getEnabledAccounts()) {
+        for (AccountJid account : AccountManager.INSTANCE.getEnabledAccounts()) {
             ReconnectionManager.getInstance().requestReconnect(account);
         }
     }
 
     public void shutdownAll() {
         LogManager.i(LOG_TAG, "shutdownAll");
-        AccountManager accountManager = AccountManager.getInstance();
+        AccountManager accountManager = AccountManager.INSTANCE;
         for (AccountItem account : accountManager.getAllAccountItems()) {
             if (account.isEnabled() && account.getConnection().isConnected()) {
                 account.getConnection().instantShutdown();
             }
         }
     }
+
 }
 

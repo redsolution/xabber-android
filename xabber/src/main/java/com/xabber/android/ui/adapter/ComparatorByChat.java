@@ -25,8 +25,8 @@ public class ComparatorByChat extends ComparatorByName {
     @Override
     public int compare(AbstractContact contact1, AbstractContact contact2) {
         final ChatManager chatManager = ChatManager.getInstance();
-        final AbstractChat abstractChat1 = chatManager.getChat(contact1.getAccount(), contact1.getUser());
-        final AbstractChat abstractChat2 = chatManager.getChat(contact2.getAccount(), contact2.getUser());
+        final AbstractChat abstractChat1 = chatManager.getChat(contact1.getAccount(), contact1.getContactJid());
+        final AbstractChat abstractChat2 = chatManager.getChat(contact2.getAccount(), contact2.getContactJid());
 
         final boolean hasActiveChat1 = abstractChat1 != null && abstractChat1.isActive();
         final boolean hasActiveChat2 = abstractChat2 != null && abstractChat2.isActive();

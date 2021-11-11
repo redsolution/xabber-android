@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/interactionView"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="?attr/chat_input_background"
+    android:clickable="true">
+
+    <ImageView
+        android:id="@+id/ivClose"
+        android:layout_width="48dp"
+        android:layout_height="@dimen/input_view_height"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="14dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/ic_close"
+        android:tint="@color/grey_600" />
+
+    <TextView
+        android:id="@+id/tvCount"
+        android:layout_width="48dp"
+        android:layout_height="@dimen/input_view_height"
+        android:layout_toEndOf="@id/ivClose"
+        android:layout_toRightOf="@id/ivClose"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:visibility="visible"
+        tools:text="3"
+        android:textColor="@color/grey_600"
+        android:textSize="22sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true">
+
+        <ImageView
+            android:id="@+id/ivPin"
+            android:layout_width="48dp"
+            android:layout_height="@dimen/input_view_height"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_pin_grey_24dp" />
+
+        <ImageView
+            android:id="@+id/ivEdit"
+            android:layout_width="48dp"
+            android:layout_height="@dimen/input_view_height"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_edit_grey_24dp" />
+
+        <ImageView
+            android:id="@+id/ivCopy"
+            android:layout_width="48dp"
+            android:layout_height="@dimen/input_view_height"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_copy" />
+
+        <ImageView
+            android:id="@+id/ivDelete"
+            android:layout_width="48dp"
+            android:layout_height="@dimen/input_view_height"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            app:srcCompat="@drawable/ic_delete_grey" />
+
+    </LinearLayout>
+
+</RelativeLayout>

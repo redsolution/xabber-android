@@ -19,7 +19,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.database.repositories.CircleRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.NestedMap;
@@ -28,8 +28,7 @@ import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.stringprep.XmppStringprepException;
 
-public class CircleManager implements OnLoadListener, OnAccountRemovedListener,
-        CircleStateProvider {
+public class CircleManager implements OnLoadListener, OnAccountRemovedListener, CircleStateProvider {
 
     /**
      * Reserved group name for the rooms.
@@ -59,7 +58,6 @@ public class CircleManager implements OnLoadListener, OnAccountRemovedListener,
 
     static {
         try {
-            // TODO: looks ugly, comes from times, when account was string.
             NO_ACCOUNT = AccountJid.from("com.xabber.android@data/NO_ACCOUNT");
         } catch (XmppStringprepException e) {
             LogManager.exception(CircleManager.class.getSimpleName(), e);
@@ -107,7 +105,7 @@ public class CircleManager implements OnLoadListener, OnAccountRemovedListener,
         } else if (CircleManager.ACTIVE_CHATS.equals(group)) {
             return Application.getInstance().getString(R.string.group_active_chat);
         } else if (CircleManager.IS_ACCOUNT.equals(group)) {
-            return AccountManager.getInstance().getVerboseName(account);
+            return AccountManager.INSTANCE.getVerboseName(account);
         }
         return group;
     }

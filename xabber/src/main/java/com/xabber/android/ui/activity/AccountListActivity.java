@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -33,14 +32,16 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.xaccount.XabberAccountManager;
+import com.xabber.android.ui.OnAccountChangedListener;
 import com.xabber.android.ui.adapter.AccountListAdapter;
 import com.xabber.android.ui.adapter.AccountListReorderAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.AccountDeleteDialog;
 import com.xabber.android.ui.widget.SimpleItemTouchHelperCallback;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +53,6 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     private AccountListReorderAdapter accountListAdapter;
     private BarPainter barPainter;
     private ItemTouchHelper touchHelper;
-    private Toolbar toolbar;
     private TextView tvSummary;
 
     public static Intent createIntent(Context context) {
@@ -65,16 +65,11 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
         setContentView(R.layout.activity_account_list);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light)
             toolbar.setNavigationIcon(R.drawable.ic_clear_grey_24dp);
         else toolbar.setNavigationIcon(R.drawable.ic_clear_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(AccountListActivity.this);
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> NavUtils.navigateUpFromSameTask(AccountListActivity.this));
         toolbar.setTitle(R.string.title_reordering_account);
         toolbar.inflateMenu(R.menu.toolbar_account_list);
         toolbar.setOnMenuItemClickListener(this);
@@ -96,10 +91,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     }
 
     private void update() {
-        List<AccountItem> accountItems = new ArrayList<>();
-        for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
-            accountItems.add(accountItem);
-        }
+        List<AccountItem> accountItems = new ArrayList<>(AccountManager.INSTANCE.getAllAccountItems());
 
         accountListAdapter.setAccountItems(accountItems);
 
@@ -121,7 +113,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
         if (accountListAdapter != null) {
             int order = 1;
             for (AccountItem account : accountListAdapter.getItems())
-                AccountManager.getInstance().setOrder(account.getAccount(), order++);
+                AccountManager.INSTANCE.setOrder(account.getAccount(), order++);
 
             XabberAccountManager.getInstance().setLastOrderChangeTimestampIsNow();
             if (XabberAccountManager.getInstance().getAccount() != null)
@@ -150,6 +142,7 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
             case R.id.action_account_edit:
                 return true;
+
             case R.id.action_account_delete:
                 return true;
         }
@@ -158,8 +151,8 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
+    public void onAccountsChanged(@Nullable Collection<? extends AccountJid> accounts) {
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     @Override
@@ -179,8 +172,10 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
 
     @Override
     public void onDeleteAccount(AccountItem accountItem) {
-        AccountDeleteDialog.newInstance(accountItem.getAccount()).show(getSupportFragmentManager(),
-                AccountDeleteDialog.class.getName());
+        AccountDeleteDialog.Companion.newInstance(accountItem.getAccount()).show(
+                getSupportFragmentManager(),
+                AccountDeleteDialog.class.getName()
+        );
     }
 
     @Override
@@ -198,4 +193,5 @@ public class AccountListActivity extends ManagedActivity implements OnAccountCha
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
         touchHelper.startDrag(viewHolder);
     }
+
 }

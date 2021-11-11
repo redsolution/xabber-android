@@ -2,30 +2,44 @@
 <resources>
     <string name="accept_subscription">Accept contact</string>
     <string name="account_reconnect">Reconnect</string>
+
     <string name="application_action_disabled">Manage accounts</string>
     <string name="application_action_empty">Add account</string>
     <string name="application_action_no_contacts">Add contact</string>
+
     <string name="application_action_no_online">Show offline contacts</string>
     <string name="application_action_offline">Go online</string>
     <string name="application_action_waiting">Reconnect</string>
+    <string name="application_action_lets_go">Let\'s go!</string>
+
     <string name="application_state_connecting">Connecting…</string>
-    <string name="application_state_disabled">Accounts disabled</string>
-    <string name="application_state_empty">You don\'t have any accounts</string>
-    <string name="application_state_no_contacts">You have no contacts</string>
-    <string name="application_state_no_online">Nobody online</string>
-    <string name="application_state_nobody_by_filter">No contacts found</string>
-    <string name="application_state_offline">No online accounts</string>
     <string name="application_state_roster">Connected.</string>
     <string name="application_state_starting">Launching application…</string>
     <string name="application_state_waiting">Waiting for connection…</string>
+
+    <string name="application_state_disabled">No active accounts</string>
+    <string name="application_state_empty">You don\'t have any accounts</string>
+    <string name="application_state_no_contacts">You have no contacts</string>
+
+    <string name="placeholder_no_archived">No archived chats</string>
+    <string name="placeholder_no_unread">No unread chats</string>
+    <string name="placeholder_no_chats">Your chats will appear here</string>
+
+    <string name="application_state_no_online">Nobody online</string>
+    <string name="application_state_nobody_by_filter">No contacts found</string>
+    <string name="application_state_offline">No online accounts</string>
+
     <string name="chat_viewer">Chat</string>
     <string name="CONNECTION_FAILED">Connection error</string>
     <string name="contact_add">Add contact</string>
     <string name="contact_delete">Delete</string>
     <string name="contact_delete_full">Delete contact</string>
     <string name="contact_block">Block contact</string>
-    <string name="contact_block_and_delete">Block &amp; Delete</string>
+    <string name="contact_block_and_delete">Delete &amp; Block</string>
     <string name="contact_delete_confirm">Do you really want to delete contact %1$s from account %2$s?</string>
+    <string name="groupchat_leave">Leave</string>
+    <string name="groupchat_leave_full">Leave group</string>
+    <string name="groupchat_leave_confirm">Do you really want to leave group %s?</string>
     <string name="contact_delete_confirm_short">Do you really want to delete contact &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="contact_delete_warning">You will be able to exchange messages and subscription requests</string>
     <string name="discard_subscription">Decline contact</string>
@@ -75,7 +89,7 @@
     <string name="contacts_unblocked_successfully">Contacts unblocked successfully</string>
     <string name="error_unblocking_contacts">Error unblocking contacts</string>
     <string name="block_contact_confirm">Do you really want to block contact %1$s from account %2$s?</string>
-    <string name="block_contact_confirm_short">Do you really want to block contact &lt;b&gt;%s&lt;/b&gt;?</string>
+    <string name="block_contact_confirm_short">Do you really want to block &lt;b&gt;%s&lt;/b&gt;?</string>
     <string name="block_contact_warning">You will be unable to exchange messages and presence updates with &lt;b&gt;%s&lt;/b&gt;</string>
     <string name="unblock_all_contacts_confirm">Do you really want to unblock all contacts from account %1$s?</string>
     <string name="unblock_all">Unblock all</string>
@@ -84,32 +98,23 @@
     <string name="dark_theme_suggest_dialog_message">New dark theme is now available for Xabber. Join the dark side or stay on the light side?</string>
     <string name="dark_theme_suggest_dialog_join_dark_side">Dark</string>
     <string name="dark_theme_suggest_dialog_stay_on_light_side">Light</string>
-
     <string name="battery_optimization_disable_dialog_title">Battery optimization</string>
     <string name="battery_optimization_disable_dialog_message">Your device is doing some heavy battery optimizations on Xabber that might lead to delayed notifications or even message loss.\n\nYou will now be asked to disable those.</string>
-
     <string name="clear_log">Delete old log files</string>
     <string name="open_log_file">Open</string>
     <string name="send_log_file">Send</string>
     <string name="send_all_log_files">Send all log files</string>
-
     <string name="voice_download_dialog_message">Xabber can automatically download all incoming media files. It is way more convenient, but carries a privacy risk and may cause high data usage.</string>
-    <string name="voice_download_dialog_message_settings">You can always change this in <b>connection settings.</b></string>
+    <string name="voice_download_dialog_message_settings">You can always change this in <b>connection settings</b>.</string>
     <string name="voice_download_dialog_agree">Download automatically</string>
-
     <string name="synchronize_bookmarks">Synchronize bookmarks</string>
     <string name="remove_all_bookmarks">Remove all</string>
     <string name="remove_selected_bookmarks">Remove selected</string>
     <string name="remove_all_bookmarks_confirm">Do you really want to remove all bookmarks from account %1$s?</string>
     <string name="remove_selected_bookmarks_confirm">Do you really want to remove selected bookmarks from account %1$s?</string>
-
-    <string name="placeholder_no_archived">Archive has no chats</string>
-    <string name="placeholder_no_unread">No unread chats</string>
-
     <string name="chat_was_archived">Chat was archived</string>
     <string name="chat_was_unarchived">Removed from archive</string>
     <string name="undo">UNDO</string>
-
     <string name="recent_chats">Recent</string>
     <string name="unread_chats">Unread</string>
     <string name="archived_chats">Archived</string>
@@ -118,11 +123,7 @@
     <string name="show_all_chats">Show all chats</string>
     <string name="category_title_contacts">Contacts</string>
     <string name="voice_message">Voice message</string>
-    <string name="image_message">Image</string>
-    <string name="file_message">File</string>
-
     <string name="showcase_contact_list_text_1">Swipe chat left or right to archive it</string>
-
     <string name="last_seen_now">last seen just now</string>
     <string name="last_seen_minutes">last seen %1$s minutes ago</string>
     <string name="last_seen_hours">last seen an hour ago</string>
@@ -132,4 +133,29 @@
     <string name="last_seen_date">last seen %1$s</string>
     <string name="mark_all_as_read_button">Mark all as read</string>
     <string name="all_chats_were_market_as_read_toast">All messages were marked as read</string>
+    <string name="hide_offline_always">Always hide</string>
+    <string name="dialog_circle_settings__label_common_settings">Use common settings</string>
+    <string name="dialog_circle_settings__header">Circle settings</string>
+    <string name="dialog_circle_settings__button_apply">Apply</string>
+    <string name="contact_list__placeholder">Please select a contact to view details</string>
+    <plurals name="recent_chat__last_message__images">
+        <item quantity="one">Image</item>
+        <item quantity="other">%d images</item>
+    </plurals>
+    <plurals name="recent_chat__last_message__files">
+        <item quantity="one">File</item>
+        <item quantity="other">%d files</item>
+    </plurals>
+    <string name="synchronization__text_all_chats_loaded">All chats loaded</string>
+    <string name="circles__name_general_circle">Contacts</string>
+    <string name="circles__name_non_roster_circle">Not in roster</string>
+    <string name="dialog_add_circle__error__text_input_name">Please input name!</string>
+    <string name="dialog_add_circle__error__text_wrong_name">Wrong name</string>
+    <string name="application_state_reconnect_after_some_seconds">Reconnect after %d seconds…</string>
+    <string name="recent_chat__last_message_retracted">Message retracted</string>
+    <string name="recent_chat__decrypting_messages">Decrypting messages</string>
+    <string name="saved_messages__hint_forward_here">Forward here to save</string>
+    <string name="category_recent_chats">Recent chats</string>
+    <string name="recent_chat__last_message__attachments">%d attachments</string>
+    <string name="recent_chat__last_message__private_invitation">Invitation to private chat</string>
 </resources>

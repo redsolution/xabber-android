@@ -1,29 +1,18 @@
 package com.xabber.android.data.extension.file;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.MultiTransformation;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.xabber.android.BuildConfig;
-import com.xabber.android.R;
 import com.xabber.android.data.Application;
-import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.helper.RoundedBorders;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -40,10 +29,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_CORNERS;
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_BORDER_WIDTH;
-import static com.xabber.android.ui.adapter.chat.FileMessageVH.IMAGE_ROUNDED_CORNERS;
-
 public class FileManager {
 
     public static final String LOG_TAG = FileManager.class.getSimpleName();
@@ -54,28 +39,12 @@ public class FileManager {
     private static final String XABBER_DIR = "Xabber";
     private static final String XABBER_AUDIO_DIR = "Xabber Audio";
 
-    private static int maxImageSize;
-    private static int maxImageHeightSize;
-    private static int minImageSize;
-
-
     static {
         instance = new FileManager();
-
-        Resources resources = Application.getInstance().getResources();
-        maxImageSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_size);
-        maxImageHeightSize = resources.getDimensionPixelSize(R.dimen.max_chat_image_height_size);
-        minImageSize = resources.getDimensionPixelSize(R.dimen.min_chat_image_size);
     }
 
     public static FileManager getInstance() {
         return instance;
-    }
-
-    public static void processFileMessage(final MessageRealmObject messageRealmObject) {
-        boolean isImage = isImageUrl(messageRealmObject.getText());
-        if (messageRealmObject.getAttachmentRealmObjects() != null)
-            messageRealmObject.getAttachmentRealmObjects().get(0).setIsImage(isImage);
     }
 
     public static boolean fileIsImage(File file) {
@@ -84,39 +53,6 @@ public class FileManager {
 
     public static boolean extensionIsImage(String extension) {
         return Arrays.asList(VALID_IMAGE_EXTENSIONS).contains(extension);
-    }
-
-    public static boolean loadImageFromFile(Context context, String path, ImageView imageView) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-
-        // Returns null, sizes are in the options variable
-        BitmapFactory.decodeFile(path, options);
-
-        ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-        if (FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
-            scaleImage(layoutParams, options.outWidth, options.outHeight);
-        } else
-            scaleImage(layoutParams, options.outHeight, options.outWidth);
-
-        if (options.outHeight == 0 || options.outWidth == 0) {
-            return false;
-        }
-
-        /*if(FileManager.isImageNeededDimensionsFlip(Uri.fromFile(new File(path)))) {
-                int tempWidth = layoutParams.height;
-                int tempHeight = layoutParams.width;
-                layoutParams.width = tempWidth;
-                layoutParams.height = tempHeight;
-        }*/
-        imageView.setLayoutParams(layoutParams);
-        Glide.with(context)
-                .load(path)
-                .transform(new MultiTransformation<>(new RoundedCorners(IMAGE_ROUNDED_CORNERS),
-                        new RoundedBorders(IMAGE_ROUNDED_BORDER_CORNERS, IMAGE_ROUNDED_BORDER_WIDTH)))
-                .into(imageView);
-
-        return true;
     }
 
     public static boolean isImageUrl(String text) {
@@ -171,46 +107,6 @@ public class FileManager {
         return null;
     }
 
-
-    public static void scaleImage(ViewGroup.LayoutParams layoutParams, int height, int width) {
-        int scaledWidth;
-        int scaledHeight;
-
-        if (width <= height) {
-            if (height > maxImageHeightSize) {
-                scaledWidth = (int) (width / ((double) height / maxImageHeightSize));
-                scaledHeight = maxImageHeightSize;
-            } else if (width < minImageSize) {
-                scaledWidth = minImageSize;
-                scaledHeight = (int) (height / ((double) width / minImageSize));
-                if (scaledHeight > maxImageHeightSize) {
-                    scaledHeight = maxImageHeightSize;
-                }
-            } else {
-                scaledWidth = width;
-                scaledHeight = height;
-            }
-        } else {
-            if (width > maxImageSize) {
-                scaledWidth = maxImageSize;
-                scaledHeight = (int) (height / ((double) width / maxImageSize));
-            } else if (height < minImageSize) {
-                scaledWidth = (int) (width / ((double) height / minImageSize));
-                if (scaledWidth > maxImageSize) {
-                    scaledWidth = maxImageSize;
-                }
-                scaledHeight = minImageSize;
-            } else {
-                scaledWidth = width;
-                scaledHeight = height;
-            }
-        }
-
-        layoutParams.width = scaledWidth;
-        layoutParams.height = scaledHeight;
-
-    }
-
     public static boolean isImageSizeGreater(Uri srcUri, int maxSize) {
         final String srcPath = FileUtils.getPath(Application.getInstance(), srcUri);
         if (srcPath == null) {
@@ -219,7 +115,7 @@ public class FileManager {
 
         FileInputStream fis;
         try {
-            fis = new FileInputStream(new File(srcPath));
+            fis = new FileInputStream(srcPath);
         } catch (FileNotFoundException e) {
             return false;
         }
@@ -249,8 +145,7 @@ public class FileManager {
             return false;
         }
 
-        int orientation = exif
-                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
 
         switch (orientation) {
             case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
@@ -283,8 +178,8 @@ public class FileManager {
             return false;
         }
 
-        int orientation = exif
-                .getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
         switch (orientation) {
             case ExifInterface.ORIENTATION_TRANSPOSE:
             case ExifInterface.ORIENTATION_ROTATE_90:
@@ -311,7 +206,6 @@ public class FileManager {
             bos = new BufferedOutputStream(new FileOutputStream(rotateImageFile));
             bos.write(data);
 
-
         } catch (IOException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
@@ -337,7 +231,6 @@ public class FileManager {
             bos = new BufferedOutputStream(new FileOutputStream(rotateImageFile));
             bos.write(data);
 
-
         } catch (IOException e) {
             LogManager.exception(LOG_TAG, e);
             return null;
@@ -355,8 +248,7 @@ public class FileManager {
     }
 
     public static Uri getFileUri(File file) {
-        return FileProvider.getUriForFile(Application.getInstance(),
-                BuildConfig.APPLICATION_ID + ".provider", file);
+        return FileProvider.getUriForFile(Application.getInstance(), BuildConfig.APPLICATION_ID + ".provider", file);
     }
 
     public static File createTempImageFile(String name) throws IOException {
@@ -372,7 +264,7 @@ public class FileManager {
         return File.createTempFile(name, ".opus", Application.getInstance().getCacheDir());
     }
 
-    public static File createAudioFile(String name) {
+    public File createAudioFile(String name) {
         // create dir
         File directory = new File(getDownloadDirPath());
         if (!directory.exists()) {
@@ -453,12 +345,12 @@ public class FileManager {
         }
     }
 
-    private static String getDownloadDirPath() {
-        return Environment.getExternalStorageDirectory().getPath()
+    private String getDownloadDirPath() {
+        return Application.getInstance().getExternalFilesDir(null).getPath()
                 + File.separator + XABBER_DIR;
     }
 
-    private static String getSpecificDownloadDirPath() {
+    private String getSpecificDownloadDirPath() {
         return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
     }
 
@@ -517,8 +409,10 @@ public class FileManager {
         if (file != null) {
             if (file.isDirectory()) {
                 String[] children = file.list();
-                for (int i = 0; i < children.length; i++) {
-                    deletedAll = deleteFile(new File(file, children[i])) && deletedAll;
+                if (children != null) {
+                    for (String child : children) {
+                        deletedAll = deleteFile(new File(file, child)) && deletedAll;
+                    }
                 }
             } else {
                 deletedAll = file.delete();

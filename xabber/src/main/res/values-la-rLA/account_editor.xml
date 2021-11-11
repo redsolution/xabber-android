@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_compression">Comprime</string>
+    <string name="account_host">Hospes</string>
+    <string name="account_password">Signum</string>
+    <string name="confirm_password">Signum confirma</string>
+    <string name="account_port">Porta</string>
+    <string name="account_priority">Prioritas</string>
+</resources>

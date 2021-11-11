@@ -24,7 +24,7 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_gravity="bottom|end"
-        android:src="@drawable/ic_groupchat_14_border"
+        android:src="@drawable/ic_status_combined"
         android:visibility="gone" />
 
     <ImageView

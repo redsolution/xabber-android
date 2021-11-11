@@ -27,7 +27,7 @@ class BlockedListener implements JidsBlockedListener {
                 ContactJid contactJid = ContactJid.from(jid);
                 blockedList.add(contactJid);
                 BlockingManager.blockContactLocally(account, contactJid);
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(LOG_TAG, e);
             }
         }

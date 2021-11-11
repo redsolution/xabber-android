@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  * <p>
  * This file is part of Xabber project; you can redistribute it and/or
@@ -19,7 +19,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -33,10 +32,10 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
+import com.xabber.android.data.extension.blocking.BlockingManager;
 import com.xabber.android.data.message.NotificationState;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
-import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
@@ -44,7 +43,6 @@ import com.xabber.android.ui.activity.AccountActivity;
 import com.xabber.android.ui.activity.ContactAddActivity;
 import com.xabber.android.ui.activity.ContactEditActivity;
 import com.xabber.android.ui.activity.ContactViewerActivity;
-import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.StatusEditActivity;
 import com.xabber.android.ui.dialog.BlockContactDialog;
 import com.xabber.android.ui.dialog.ChatDeleteDialog;
@@ -54,6 +52,9 @@ import com.xabber.android.ui.dialog.GroupRenameDialogFragment;
 import com.xabber.android.ui.dialog.SnoozeDialog;
 import com.xabber.android.ui.preferences.CustomNotifySettings;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Helper class for context menu creation.
  *
@@ -61,27 +62,18 @@ import com.xabber.android.ui.preferences.CustomNotifySettings;
  */
 public class ContextMenuHelper {
 
-    private ContextMenuHelper() {
-    }
+    private ContextMenuHelper() { }
 
     public static void createContactContextMenu(final FragmentActivity activity,
                                                 ListPresenter presenter,
-                                                AbstractContact abstractContact,
+                                                AccountJid accountJid,
+                                                ContactJid contactJid,
                                                 ContextMenu menu) {
-        final AccountJid account = abstractContact.getAccount();
-        final ContactJid user = abstractContact.getUser();
-        //menu.setHeaderTitle(abstractContact.getName());
-        MenuInflater inflater = activity.getMenuInflater();
-        inflater.inflate(R.menu.item_contact, menu);
 
-        setContactContextMenuActions(activity, presenter, menu, account, user);
-        if (activity instanceof MainActivity) {
-            setContactContextMenuItemsVisibility(abstractContact,
-                    ((MainActivity) activity).currentActiveFragmentType, menu, account, user);
-        } else {
-            setContactContextMenuItemsVisibility(abstractContact,
-                    MainActivity.ActiveFragmentType.CHATS, menu, account, user);
-        }
+        activity.getMenuInflater().inflate(R.menu.item_contact, menu);
+
+        setContactContextMenuActions(activity, presenter, menu, accountJid, contactJid);
+        setContactContextMenuItemsVisibility(menu, accountJid, contactJid);
     }
 
     private static void setContactContextMenuActions(final FragmentActivity activity,
@@ -97,51 +89,60 @@ public class ContextMenuHelper {
 
         menu.findItem(R.id.action_edit_contact).setOnMenuItemClickListener(
                 item -> {
-                    activity.startActivity(ContactEditActivity
-                            .createIntent(activity, account, user));
+                    activity.startActivity(ContactEditActivity.createIntent(activity, account, user));
                     return true;
                 });
 
         menu.findItem(R.id.action_delete_chat).setOnMenuItemClickListener(
                 item -> {
-                    ChatDeleteDialog.newInstance(account, user)
-                            .show(activity.getSupportFragmentManager(),
-                                    ChatDeleteDialog.class.getName());
+                    ChatDeleteDialog.newInstance(account, user).show(
+                            activity.getSupportFragmentManager(),
+                            ChatDeleteDialog.class.getName()
+                    );
                     return true;
                 });
 
         menu.findItem(R.id.action_delete_contact).setOnMenuItemClickListener(
                 item -> {
-                    ContactDeleteDialog.newInstance(account, user)
-                            .show(activity.getSupportFragmentManager(),
-                                    ContactDeleteDialog.class.getName());
+                    ContactDeleteDialog.newInstance(account, user).show(
+                            activity.getSupportFragmentManager(),
+                            ContactDeleteDialog.class.getName()
+                    );
                     return true;
                 });
 
         menu.findItem(R.id.action_block_contact).setOnMenuItemClickListener(
                 item -> {
-                    BlockContactDialog.newInstance(account, user)
-                            .show(activity.getSupportFragmentManager(),
-                                    BlockContactDialog.class.getName());
+                    BlockContactDialog.newInstance(account, user).show(
+                            activity.getSupportFragmentManager(),
+                            BlockContactDialog.class.getName()
+                    );
+                    return true;
+                });
+
+        menu.findItem(R.id.action_unblock_contact).setOnMenuItemClickListener(
+                item -> {
+                    List<ContactJid> contacts = new ArrayList<>();
+                    contacts.add(user);
+                    BlockingManager.getInstance().unblockContacts(account, contacts, null);
                     return true;
                 });
 
         menu.findItem(R.id.action_accept_subscription).setOnMenuItemClickListener(
                 item -> {
                     try {
-                        PresenceManager.getInstance().acceptSubscription(account, user);
+                        PresenceManager.INSTANCE.acceptSubscription(account, user);
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                     }
-                    activity.startActivity(ContactEditActivity
-                            .createIntent(activity, account, user));
+                    activity.startActivity(ContactEditActivity.createIntent(activity, account, user));
                     return true;
                 });
+
         menu.findItem(R.id.action_discard_subscription).setOnMenuItemClickListener(
                 item -> {
                     try {
-                        PresenceManager.getInstance()
-                                .discardSubscription(account, user);
+                        PresenceManager.INSTANCE.discardSubscription(account, user);
                     } catch (NetworkException e) {
                         Application.getInstance().onError(e);
                     }
@@ -158,9 +159,12 @@ public class ContextMenuHelper {
         menu.findItem(R.id.action_unmute_chat).setOnMenuItemClickListener(
                 item -> {
                     AbstractChat chat = ChatManager.getInstance().getChat(account, user);
-                    if (chat != null) chat.setNotificationStateOrDefault(
-                            new NotificationState(NotificationState.NotificationMode.enabled,
-                                    0), true);
+                    if (chat != null) {
+                        chat.setNotificationStateOrDefault(
+                                new NotificationState(NotificationState.NotificationMode.enabled, 0),
+                                true
+                        );
+                    }
                     presenter.updateContactList();
                     return true;
                 });
@@ -168,31 +172,31 @@ public class ContextMenuHelper {
 
         menu.findItem(R.id.action_configure_notifications).setOnMenuItemClickListener(
                 item -> {
-                    activity.startActivity(CustomNotifySettings
-                            .createIntent(activity, account, user));
+                    activity.startActivity(CustomNotifySettings.createIntent(activity, account, user));
                     return true;
                 });
     }
 
-    private static void setContactContextMenuItemsVisibility(AbstractContact abstractContact,
-                                                             MainActivity.ActiveFragmentType fragment,
-                                                             ContextMenu menu,
-                                                             AccountJid account, ContactJid user) {
-        // all menu items are visible by default
-        // it allows to hide items in xml file without touching code
+    private static void setContactContextMenuItemsVisibility(ContextMenu menu, AccountJid account, ContactJid user) {
 
-        if (!PresenceManager.getInstance().hasSubscriptionRequest(account, user)) {
+        if (!PresenceManager.INSTANCE.hasSubscriptionRequest(account, user)) {
             menu.findItem(R.id.action_accept_subscription).setVisible(false);
             menu.findItem(R.id.action_discard_subscription).setVisible(false);
         }
 
-        // archive/unarchive chat
         AbstractChat chat = ChatManager.getInstance().getChat(account, user);
+
+        if (BlockingManager.getInstance().contactIsBlocked(account, user)) {
+            menu.findItem(R.id.action_block_contact).setVisible(false);
+            menu.findItem(R.id.action_unblock_contact).setVisible(true);
+        } else {
+            menu.findItem(R.id.action_block_contact).setVisible(true);
+            menu.findItem(R.id.action_unblock_contact).setVisible(false);
+        }
 
         // mute chat
         menu.findItem(R.id.action_mute_chat).setVisible(chat != null && chat.notifyAboutMessage());
-        menu.findItem(R.id.action_unmute_chat)
-                .setVisible(chat != null && !chat.notifyAboutMessage());
+        menu.findItem(R.id.action_unmute_chat).setVisible(chat != null && !chat.notifyAboutMessage());
     }
 
     public static void createGroupContextMenu(final Activity activity,
@@ -206,8 +210,8 @@ public class ContextMenuHelper {
                     item -> {
                         GroupRenameDialogFragment.newInstance(
                                 account.equals(CircleManager.NO_ACCOUNT) ? null : account,
-                                group.equals(CircleManager.NO_GROUP) ? null
-                                        : group).show(activity.getFragmentManager(),
+                                group.equals(CircleManager.NO_GROUP) ? null : group
+                        ).show(activity.getFragmentManager(),
                                 "GROUP_RENAME");
                         return true;
                     });
@@ -215,8 +219,8 @@ public class ContextMenuHelper {
                 menu.add(R.string.circle_remove).setOnMenuItemClickListener(
                         item -> {
                             GroupDeleteDialogFragment.newInstance(
-                                    account.equals(CircleManager.NO_ACCOUNT) ? null : account, group)
-                                    .show(activity.getFragmentManager(), "GROUP_DELETE");
+                                    account.equals(CircleManager.NO_ACCOUNT) ? null : account, group
+                            ).show(activity.getFragmentManager(), "GROUP_DELETE");
                             return true;
                         });
             }
@@ -231,8 +235,7 @@ public class ContextMenuHelper {
         if (!group.equals(CircleManager.NO_GROUP)) {
             menu.add(R.string.configure_notifications).setOnMenuItemClickListener(
                     item -> {
-                        activity.startActivity(CustomNotifySettings
-                                .createIntent(activity, account, group));
+                        activity.startActivity(CustomNotifySettings.createIntent(activity, account, group));
                         return true;
                     });
         }
@@ -243,14 +246,14 @@ public class ContextMenuHelper {
                                                 final AccountJid account,
                                                 ContextMenu menu) {
         activity.getMenuInflater().inflate(R.menu.item_account_group, menu);
-        menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(account));
+        menu.setHeaderTitle(AccountManager.INSTANCE.getVerboseName(account));
 
         setUpAccountMenu(activity, presenter, account, menu);
     }
 
     public static void setUpAccountMenu(final Activity activity, final ListPresenter presenter,
                                         final AccountJid account, Menu menu) {
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        final AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             return;
         }
@@ -262,7 +265,7 @@ public class ContextMenuHelper {
                     .setOnMenuItemClickListener(
                             item -> {
                                 accountItem.disconnect();
-                                AccountManager.getInstance().onAccountChanged(account);
+                                AccountManager.INSTANCE.onAccountChanged(account);
                                 return true;
                             });
         }
@@ -278,15 +281,18 @@ public class ContextMenuHelper {
                 });
 
         if (state.isConnected()) {
-            menu.findItem(R.id.action_add_contact).setVisible(true)
-                    .setIntent(ContactAddActivity.createIntent(activity, account));
+            menu.findItem(R.id.action_add_contact).setVisible(true).setIntent(
+                    ContactAddActivity.Companion.createIntent(activity, account)
+            );
         }
 
         if (SettingsManager.contactsShowAccounts()) {
             menu.findItem(R.id.action_set_up_offline_contacts).setVisible(true)
                     .setOnMenuItemClickListener(item -> {
-                        ContextMenuHelper.createOfflineContactsDialog(activity, presenter, account,
-                                CircleManager.IS_ACCOUNT).show();
+                        ContextMenuHelper.createOfflineContactsDialog(
+                                activity, presenter, account, CircleManager.IS_ACCOUNT
+                        ).show();
+
                         return true;
                     });
         }
@@ -302,8 +308,10 @@ public class ContextMenuHelper {
                         R.array.offline_contacts_show_option,
                         CircleManager.getInstance().getShowOfflineMode(account, group).ordinal(),
                         (dialog, which) -> {
-                            CircleManager.getInstance().setShowOfflineMode(account,
-                                    group, ShowOfflineMode.values()[which]);
+                            CircleManager.getInstance().setShowOfflineMode(
+                                    account, group, ShowOfflineMode.values()[which]
+                            );
+
                             presenter.updateContactList();
                             dialog.dismiss();
                         }).create();
@@ -312,10 +320,11 @@ public class ContextMenuHelper {
     private static void showSnoozeDialog(AppCompatActivity activity, AbstractChat chat,
                                          final ListPresenter presenter) {
         SnoozeDialog dialog = SnoozeDialog.newInstance(chat, presenter::updateContactList);
-        dialog.show(activity.getSupportFragmentManager(), "snooze_fragment");
+        dialog.show(activity.getSupportFragmentManager(), SnoozeDialog.TAG);
     }
 
     public interface ListPresenter {
         void updateContactList();
     }
+
 }

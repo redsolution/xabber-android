@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="web_client__screen_about__preamble_1">ni mjumbe wa chanzo wazi cha XMPP kwa majukwaa ya Android, iOS na Wavuti. imejengwa ndani ya viwango vya wazi, ushirikiano, muundo na uzoefu mzuri wa mtumiaji. Matoleo ya kwa kila jukwaa yamejengwa ili kutoa mazungumzo ya kuendelea kati yao</string>
+    <string name="web_client__screen_about__preamble_2">Utapata habari zaidi kwenye wavuti yetu rasmi</string>
+    <string name="web_client__screen_about__preamble_2__link">https://www.xabber.com</string>
+    <string name="web_client__screen_about__block_1__header">itifaki ya XMPP</string>
+    <string name="web_client__screen_about__block_1__text">Itifaki ya Kutuma Ujumbe na Uwepo (XMPP) ni itifaki ya mawasiliano ya programu ya katikati inayolenga ujumbe kulingana na XML (Lugha ya Markup Inayowezekana). Inawezesha ubadilishaji wa karibu-wakati halisi wa data zilizopangwa lakini zinazoweza kupanuliwa kati ya vyombo vyovyote mbili au zaidi vya mtandao. Itifaki hiyo hapo awali iliitwa Jabber, na ilitengenezwa na jamii ya chanzo wazi ya Jabber mnamo 1999 kwa ujumbe wa karibu wa papo hapo (IM), habari ya uwepo, na matengenezo ya orodha ya mawasiliano.</string>
+    <string name="web_client__screen_about__block_2__header">Itifaki za Ugani wa XMPP</string>
+    <string name="web_client__screen_about__block_2__text">XMPP inaenea sana, kupitia viendelezi vinavyojulikana kama XEPs (Itifaki ya Ugani ya XMPP). % s inasaidia idadi ya XEP maarufu ambazo ni muhimu kutoa uzoefu mzuri wa gumzo kwa watumiaji wetu.</string>
+    <string name="web_client__screen_about__block_3__header">Watengenezaji</string>
+</resources>

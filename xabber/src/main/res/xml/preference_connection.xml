@@ -34,12 +34,6 @@
             />
 
         <CheckBoxPreference
-            android:title="@string/connection_use_carbons"
-            android:key="@string/connection_use_carbons_key"
-            android:defaultValue="@bool/connection_use_carbons_default"
-            />
-
-        <CheckBoxPreference
             android:title="@string/connection_compress_image_on_upload_title"
             android:key="@string/connection_compress_image_on_upload_key"
             android:defaultValue="@bool/connection_compress_image_on_upload_default"

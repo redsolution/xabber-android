@@ -28,11 +28,11 @@ public class DownloadManager {
     private static final String LOG_TAG = "DownloadManager";
     private static DownloadManager instance;
 
-    private PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
+    private final PublishSubject<ProgressData> progressSubscribe = PublishSubject.create();
     private boolean isDownloading;
     private String attachmentId;
-    private LinkedList<AttachmentRealmObject> downloadQueue = new LinkedList<>();
-    private HashMap<String, AccountJid> accountAttachments = new HashMap<>();
+    private final LinkedList<AttachmentRealmObject> downloadQueue = new LinkedList<>();
+    private final HashMap<String, AccountJid> accountAttachments = new HashMap<>();
 
     public static DownloadManager getInstance() {
         if (instance == null) instance = new DownloadManager();
@@ -48,7 +48,6 @@ public class DownloadManager {
         if (isDownloading) {
             if (downloadQueue.size() >= 10) {
                 progressSubscribe.onNext(new ProgressData(0, "Downloading already started", false, attachmentId));
-                return;
             } else {
                 boolean duplicate = false;
                 for (int i = 0; i < downloadQueue.size(); i++) {
@@ -59,14 +58,13 @@ public class DownloadManager {
                 if (attachmentId != null && attachmentId.equals(attachmentRealmObject.getUniqueId()))
                     duplicate = true; //already downloading this file
 
-                if (duplicate) return;
-                else {
+                if (!duplicate) {
                     downloadQueue.offer(attachmentRealmObject);
                     accountAttachments.put(attachmentRealmObject.getUniqueId(), accountJid);
                     LogManager.d(LOG_TAG + "/PUT_IN_QUEUE", "attachment id = " + attachmentRealmObject.getUniqueId() + " account = " + accountJid);
-                    return;
                 }
             }
+            return;
         }
 
         isDownloading = true;

@@ -58,7 +58,7 @@ public class MetadataProvider extends ExtensionElementProvider<MetadataExtension
         return new MetadataExtension(metadataInfos, pointers);
     }
 
-    private MetadataInfo parseInfo(XmlPullParser parser) throws XmlPullParserException {
+    public static MetadataInfo parseInfo(XmlPullParser parser) throws XmlPullParserException {
         String id;
         URL url = null;
         long bytes = 0;

@@ -71,7 +71,7 @@ public class VCardRealmObject extends RealmObject {
     public ContactJid getContactJid() {
         try {
             return ContactJid.from(contactJid);
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }

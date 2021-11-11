@@ -1,16 +1,16 @@
-/**
- * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
- * This file is part of Xabber project; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License, Version 3.
- *
- * Xabber is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License,
- * along with this program. If not, see http://www.gnu.org/licenses/.
+/*
+  Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+  This file is part of Xabber project; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License, Version 3.
+
+  Xabber is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License,
+  along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data.database.realmobjects;
 
@@ -23,9 +23,10 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.MessageStatus;
 import com.xabber.android.data.message.chat.ChatAction;
 import com.xabber.android.data.roster.RosterManager;
-import com.xabber.android.utils.StringUtils;
+import com.xabber.android.ui.text.StringUtilsKt;
 
 import org.jxmpp.jid.parts.Resourcepart;
 import org.jxmpp.stringprep.XmppStringprepException;
@@ -38,17 +39,19 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
+@SuppressWarnings("FieldMayBeFinal")
 public class MessageRealmObject extends RealmObject {
 
+    @SuppressWarnings("unused")
     public static class Fields {
-        public static final String UNIQUE_ID = "uniqueId";
+        public static final String PRIMARY_KEY = "primaryKey";
+        public static final String STANZA_ID = "stanzaId";
+        public static final String ORIGIN_ID = "originId";
         public static final String ACCOUNT = "account";
-        //public static final String BARE_ACCOUNT_JID = "bareAccount";
         public static final String USER = "user";
         public static final String RESOURCE = "resource";
         public static final String TEXT = "text";
@@ -56,45 +59,34 @@ public class MessageRealmObject extends RealmObject {
         public static final String ACTION = "action";
         public static final String INCOMING = "incoming";
         public static final String ENCRYPTED = "encrypted";
-        public static final String UNENCRYPTED = "unencrypted"; // deprecated
-        public static final String OFFLINE = "offline";
         public static final String TIMESTAMP = "timestamp";
         public static final String DELAY_TIMESTAMP = "delayTimestamp";
         public static final String EDITED_TIMESTAMP = "editedTimestamp";
         public static final String ERROR = "error";
         public static final String ERROR_DESCR = "errorDescription";
-        public static final String DELIVERED = "delivered";
-        public static final String DISPLAYED = "displayed";
-        public static final String SENT = "sent";
+        public static final String MESSAGE_STATUS = "messageStatus";
         public static final String READ = "read";
-        public static final String STANZA_ID = "stanzaId";
-        public static final String ORIGIN_ID = "originId";
-        public static final String IS_RECEIVED_FROM_MAM = "isReceivedFromMessageArchive";
         public static final String FORWARDED = "forwarded";
-        public static final String ACKNOWLEDGED = "acknowledged";
-        public static final String IS_IN_PROGRESS = "isInProgress";
         public static final String ATTACHMENTS = "attachments";
         public static final String FORWARDED_IDS = "forwardedIds";
         public static final String ORIGINAL_STANZA = "originalStanza";
         public static final String ORIGINAL_FROM = "originalFrom";
         public static final String PARENT_MESSAGE_ID = "parentMessageId";
-        public static final String PREVIOUS_ID = "previousId";
-        public static final String ARCHIVED_ID = "archivedId";
         public static final String GROUPCHAT_USER_ID = "groupchatUserId";
+        public static final String IS_GROUPCHAT_SYSTEM = "isGroupchatSystem";
+        public static final String IS_REGULAR_RECEIVED = "isRegularReceived";
     }
 
     /**
-     * UUID
+     * Should be account jid + # + contact jid + originId or stanzaId
      */
-
     @PrimaryKey
     @Required
-    private String uniqueId;
+    private String primaryKey;
 
     @Index
     private String account;
-//    @Index
-//    private String bareAccount;
+
     @Index
     private String user;
 
@@ -102,11 +94,13 @@ public class MessageRealmObject extends RealmObject {
      * Contact's resource.
      */
     private String resource;
+
     /**
      * Text representation.
      */
     private String text;
     private String markupText;
+
     /**
      * Optional action. If set message represent not an actual message but some
      * action in the chat.
@@ -115,79 +109,54 @@ public class MessageRealmObject extends RealmObject {
 
     private boolean incoming;
 
-    private boolean encrypted;
-
-    /**
-     * Message was received from server side offline storage.
-     */
-    private boolean offline;
-
     /**
      * Time when message was received or sent by Xabber.
      * Realm truncated Date type to seconds, using long for accuracy
      */
     @Index
     private Long timestamp;
+
     /**
      * RIme when message was edited
      * Realm truncated Date type to seconds, using long for accuracy
      */
     private Long editedTimestamp;
+
     /**
      * Time when message was created.
      * Realm truncated Date type to seconds, using long for accuracy
      */
     private Long delayTimestamp;
+
+    /**
+     * Message state represented by MessageStatus
+     */
+    private String messageStatus;
+
+    /**
+     * Message was shown to the us.
+     */
+    private boolean read;
+
     /**
      * Error response received on send request.
      */
-    private boolean error;
     private String errorDescription;
-    /**
-     * ReceiptElement was received for sent message.
-     */
-    private boolean delivered;
-    /**
-     * Chat marker was received for sent message.
-     */
-    private boolean displayed;
-    /**
-     * Message was sent.
-     */
-    @Index
-    private boolean sent;
-    /**
-     * Message was shown to the user.
-     */
-    private boolean read;
+
     /**
      * Outgoing packet id - usual message stanza (packet) id
      */
     private String stanzaId;
+
     /**
      * Internal packet id
      */
     private String originId;
 
     /**
-     * If message was received from server message archive (XEP-0313)
-     */
-    private boolean isReceivedFromMessageArchive;
-
-    /**
      * If message was forwarded (e.g. message carbons (XEP-0280))
      */
     private boolean forwarded;
-
-    /**
-     * If message was acknowledged by server (XEP-0198: Stream Management)
-     */
-    private boolean acknowledged;
-
-    /**
-     * If message is currently in progress (i.e. file is uploading/downloading)
-     */
-    private boolean isInProgress;
 
     private RealmList<AttachmentRealmObject> attachmentRealmObjects;
 
@@ -199,21 +168,83 @@ public class MessageRealmObject extends RealmObject {
     private String originalFrom;
 
     private String parentMessageId;
-    private String previousId;
-    private String archivedId;
-    @Ignore
-    private String packetId;
     private String groupchatUserId;
+    private boolean isGroupchatSystem = false;
+    private boolean isRegularReceived = true;
 
     private RealmList<ForwardIdRealmObject> forwardedIds;
 
-    public MessageRealmObject(String uniqueId) { this.uniqueId = uniqueId; }
+    private MessageRealmObject(String primaryKey) { this.primaryKey = primaryKey; }
 
-    public MessageRealmObject() { this.uniqueId = UUID.randomUUID().toString(); }
+    public static MessageRealmObject createMessageRealmObjectWithStanzaId(AccountJid accountJid,
+                                                                          ContactJid contactJid,
+                                                                          String stanzaId){
+        MessageRealmObject messageRealmObject =
+                new MessageRealmObject(createPrimaryKey(accountJid, contactJid, stanzaId));
 
-    public String getUniqueId() { return uniqueId; }
+        messageRealmObject.account = accountJid.toString();
+        messageRealmObject.user = contactJid.toString();
+        messageRealmObject.stanzaId = stanzaId;
 
-    public void setUniqueId(String uniqueId) { this.uniqueId = uniqueId; }
+        return messageRealmObject;
+    }
+
+    public static MessageRealmObject createForwardedMessageRealmObjectWithStanzaId(
+            AccountJid accountJid, ContactJid contactJid, String stanzaId
+    ){
+        MessageRealmObject messageRealmObject =
+                new MessageRealmObject(createForwardedPrimaryKey(accountJid, contactJid, stanzaId));
+
+        messageRealmObject.account = accountJid.toString();
+        messageRealmObject.user = contactJid.toString();
+        messageRealmObject.stanzaId = stanzaId;
+        messageRealmObject.setForwarded(true);
+
+        return messageRealmObject;
+    }
+
+
+    public static MessageRealmObject createMessageRealmObjectWithOriginId(AccountJid accountJid,
+                                                                         ContactJid contactJid,
+                                                                         String originId){
+        MessageRealmObject messageRealmObject =
+                new MessageRealmObject(createPrimaryKey(accountJid, contactJid, originId));
+
+        messageRealmObject.account = accountJid.toString();
+        messageRealmObject.user = contactJid.toString();
+        messageRealmObject.originId = originId;
+
+        return messageRealmObject;
+    }
+
+    public static MessageRealmObject createForwardedMessageRealmObjectWithOriginId(
+            AccountJid accountJid, ContactJid contactJid, String originId
+    ){
+        MessageRealmObject messageRealmObject =
+                new MessageRealmObject(createForwardedPrimaryKey(accountJid, contactJid, originId));
+
+        messageRealmObject.account = accountJid.toString();
+        messageRealmObject.user = contactJid.toString();
+        messageRealmObject.originId = originId;
+        messageRealmObject.setForwarded(true);
+
+        return messageRealmObject;
+    }
+
+
+    public static String createPrimaryKey(AccountJid accountJid, ContactJid contactJid, String id){
+        return accountJid.toString() + "#" + contactJid.toString() + "#" + id;
+    }
+
+    public static String createForwardedPrimaryKey(
+            AccountJid accountJid, ContactJid contactJid, String id
+    ) {
+        return accountJid.toString() + "#" + contactJid.toString() + "#" + id + "forwarded";
+    }
+
+    public MessageRealmObject() { this.primaryKey = UUID.randomUUID().toString(); }
+
+    public String getPrimaryKey() { return primaryKey; }
 
     public AccountJid getAccount() {
         try {
@@ -224,23 +255,14 @@ public class MessageRealmObject extends RealmObject {
         }
     }
 
-    public void setAccount(AccountJid account) {
-        this.account = account.toString();
-        //this.bareAccount = account.getFullJid().asBareJid().toString();
-    }
-
-    //public String getBareAccount() { return bareAccount; }
-
     public ContactJid getUser() {
         try {
             return ContactJid.from(user);
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
             throw new IllegalStateException();
         }
     }
-
-    public void setUser(ContactJid user) { this.user = user.toString(); }
 
     public Resourcepart getResource() {
         if (TextUtils.isEmpty(resource)) {
@@ -275,10 +297,6 @@ public class MessageRealmObject extends RealmObject {
 
     public void setIncoming(boolean incoming) { this.incoming = incoming; }
 
-    public boolean isOffline() { return offline; }
-
-    public void setOffline(boolean offline) { this.offline = offline; }
-
     public Long getTimestamp() { return timestamp; }
 
     public void setTimestamp(Long timestamp) { this.timestamp = timestamp; }
@@ -291,26 +309,6 @@ public class MessageRealmObject extends RealmObject {
 
     public void setDelayTimestamp(Long delayTimestamp) { this.delayTimestamp = delayTimestamp; }
 
-    public boolean isError() { return error; }
-
-    public void setError(boolean error) { this.error = error; }
-
-    public boolean isDelivered() { return delivered; }
-
-    public void setDelivered(boolean delivered) { this.delivered = delivered; }
-
-    public boolean isDisplayed() { return displayed; }
-
-    public void setDisplayed(boolean displayed) { this.displayed = displayed; }
-
-    public boolean isSent() { return sent; }
-
-    public void setSent(boolean sent) { this.sent = sent; }
-
-    public boolean isRead() { return read; }
-
-    public void setRead(boolean read) { this.read = read; }
-
     public String getStanzaId() { return stanzaId; }
 
     public void setStanzaId(String stanzaId) { this.stanzaId = stanzaId; }
@@ -319,34 +317,33 @@ public class MessageRealmObject extends RealmObject {
 
     public void setOriginId(String originId) { this.originId = originId; }
 
-    public boolean isReceivedFromMessageArchive() { return isReceivedFromMessageArchive; }
-
-    public void setReceivedFromMessageArchive(boolean receivedFromMessageArchive) { isReceivedFromMessageArchive = receivedFromMessageArchive; }
-
     public boolean isForwarded() { return forwarded; }
 
     public void setForwarded(boolean forwarded) { this.forwarded = forwarded; }
 
-    public static ChatAction getChatAction(MessageRealmObject messageRealmObject) { return ChatAction.valueOf(messageRealmObject.getAction()); }
+    public ChatAction getChatAction() {
+        try {
+            return ChatAction.valueOf(getAction());
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
 
-    public static Spannable getSpannable(MessageRealmObject messageRealmObject) { return new SpannableString(messageRealmObject.getText()); }
+    public Spannable getSpannable() { return new SpannableString(getText()); }
 
-    public static boolean isUploadFileMessage(MessageRealmObject messageRealmObject) {
-        return messageRealmObject.getAttachmentRealmObjects() != null
-                && messageRealmObject.getAttachmentRealmObjects().size() != 0
-                && !messageRealmObject.isSent(); }
+    public MessageStatus getMessageStatus() {
+        try {
+            return MessageStatus.valueOf(messageStatus);
+        } catch (Exception e) {
+            return MessageStatus.NONE;
+        }
+    }
 
-    public boolean isAcknowledged() { return acknowledged; }
+    public void setMessageStatus(MessageStatus messageStatus) { this.messageStatus = messageStatus.toString(); }
 
-    public void setAcknowledged(boolean acknowledged) { this.acknowledged = acknowledged; }
+    public boolean isRead() { return read; }
 
-    public boolean isInProgress() { return isInProgress; }
-
-    public void setInProgress(boolean inProgress) {  isInProgress = inProgress; }
-
-    public boolean isEncrypted() { return encrypted; }
-
-    public void setEncrypted(boolean encrypted) { this.encrypted = encrypted; }
+    public void setRead(boolean read) { this.read = read; }
 
     public String getErrorDescription() { return errorDescription; }
 
@@ -354,14 +351,16 @@ public class MessageRealmObject extends RealmObject {
 
     public RealmList<AttachmentRealmObject> getAttachmentRealmObjects() { return attachmentRealmObjects; }
 
-    public void setAttachmentRealmObjects(RealmList<AttachmentRealmObject> attachmentRealmObjects) { this.attachmentRealmObjects = attachmentRealmObjects; }
+    public void setAttachmentRealmObjects(RealmList<AttachmentRealmObject> attachmentRealmObjects) {
+        this.attachmentRealmObjects = attachmentRealmObjects;
+    }
 
-    public boolean haveAttachments() { return attachmentRealmObjects != null && attachmentRealmObjects.size() > 0; }
+    public boolean hasAttachments() { return attachmentRealmObjects != null && attachmentRealmObjects.size() > 0; }
 
     public RealmList<ForwardIdRealmObject> getForwardedIds() { return forwardedIds; }
 
     public String[] getForwardedIdsAsArray() {
-        String forwardedIds[] = new String[getForwardedIds().size()];
+        String[] forwardedIds = new String[getForwardedIds().size()];
 
         int i = 0;
         for (ForwardIdRealmObject id : getForwardedIds()) {
@@ -374,7 +373,7 @@ public class MessageRealmObject extends RealmObject {
 
     public void setForwardedIds(RealmList<ForwardIdRealmObject> forwardedMessages) { this.forwardedIds = forwardedMessages; }
 
-    public boolean haveForwardedMessages() { return forwardedIds != null && forwardedIds.size() > 0; }
+    public boolean hasForwardedMessages() { return forwardedIds != null && !forwardedIds.isEmpty(); }
 
     public String getOriginalStanza() { return originalStanza; }
 
@@ -388,18 +387,6 @@ public class MessageRealmObject extends RealmObject {
 
     public void setParentMessageId(String parentMessageId) { this.parentMessageId = parentMessageId; }
 
-    public String getPreviousId() { return previousId; }
-
-    public void setPreviousId(String previousId) { this.previousId = previousId; }
-
-    public String getArchivedId() { return archivedId; }
-
-    public void setArchivedId(String archivedId) { this.archivedId = archivedId; }
-
-    public String getPacketId() { return packetId; }
-
-    public void setPacketId(String packetId) { this.packetId = packetId; }
-
     public String getMarkupText() { return markupText; }
 
     public void setMarkupText(String markupText) { this.markupText = markupText; }
@@ -408,17 +395,24 @@ public class MessageRealmObject extends RealmObject {
 
     public void setGroupchatUserId(String groupchatUserId) { this.groupchatUserId = groupchatUserId; }
 
+    public boolean isGroupchatSystem() { return isGroupchatSystem; }
+
+    public void setGroupchatSystem(boolean groupchatSystem) {
+        isGroupchatSystem = groupchatSystem;
+        if (groupchatSystem) setRead(true);
+    }
+
     public String getFirstForwardedMessageText() { return getFirstForwardedMessageText(-1); }
 
     public String getFirstForwardedMessageText(int color) {
         String text = null;
-        if (haveForwardedMessages()) {
+        if (hasForwardedMessages()) {
             String[] forwardedIDs = getForwardedIdsAsArray();
             if (!Arrays.asList(forwardedIDs).contains(null)) {
                 Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 RealmResults<MessageRealmObject> forwardedMessages = realm
                         .where(MessageRealmObject.class)
-                        .in(MessageRealmObject.Fields.UNIQUE_ID, forwardedIDs)
+                        .in(MessageRealmObject.Fields.PRIMARY_KEY, forwardedIDs)
                         .findAll()
                         .sort(MessageRealmObject.Fields.TIMESTAMP, Sort.ASCENDING);
 
@@ -431,13 +425,15 @@ public class MessageRealmObject extends RealmObject {
                         if (color == -1) {
                             stringBuilder.append(author);
                             stringBuilder.append(":");
-                        } else stringBuilder.append(StringUtils.getColoredText(author + ":", color));
+                        } else {
+                            stringBuilder.append(StringUtilsKt.wrapWithColorTag(author, color));
+                        }
                     }
                     stringBuilder.append(message.getText().trim()).append(" ");
                     String attachmentName = "";
-                    if (message.haveAttachments() && message.getAttachmentRealmObjects().size() > 0) {
+                    if (message.hasAttachments() && message.getAttachmentRealmObjects().size() > 0) {
                         AttachmentRealmObject attachmentRealmObject = message.getAttachmentRealmObjects().get(0);
-                        attachmentName = StringUtils.getColoredText(attachmentRealmObject.getTitle().trim(), color);
+                        attachmentName = StringUtilsKt.wrapWithColorTag(attachmentRealmObject.getTitle().trim(), color);
                         stringBuilder.append(attachmentName);
                     }
                     if (!message.getText().trim().isEmpty() || !attachmentName.equals(""))
@@ -452,10 +448,9 @@ public class MessageRealmObject extends RealmObject {
     public boolean isAttachmentImageOnly(){
         if(attachmentRealmObjects !=null && attachmentRealmObjects.size()>0) {
             for (AttachmentRealmObject a : attachmentRealmObjects) {
-                if (!a.isImage()) {
-                    return false;
-                }
-            } return true;
+                if (!a.isImage()) return false;
+            }
+            return true;
         }
         return false;
     }
@@ -472,15 +467,8 @@ public class MessageRealmObject extends RealmObject {
         return false;
     }
 
-    public boolean isUiEqual(MessageRealmObject comparableMessageRealmObject){
-        return this.getText().equals(comparableMessageRealmObject.getText())
-                && this.isIncoming() == comparableMessageRealmObject.isIncoming()
-                && this.getTimestamp().equals(comparableMessageRealmObject.getTimestamp())
-                && this.isError() == comparableMessageRealmObject.isError()
-                && this.isDelivered() == comparableMessageRealmObject.isDelivered()
-                && this.isDisplayed() == comparableMessageRealmObject.isDisplayed()
-                && this.isSent() == comparableMessageRealmObject.isSent()
-                && this.isRead() == comparableMessageRealmObject.isRead()
-                && this.isAcknowledged() == comparableMessageRealmObject.isAcknowledged();
-    }
+    public boolean isRegularReceived() { return isRegularReceived; }
+
+    public void setRegularReceived(boolean regularReceived) { isRegularReceived = regularReceived; }
+
 }

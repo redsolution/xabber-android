@@ -8,12 +8,12 @@
     <string name="account_priority">Priority</string>
     <string name="account_resource">Resource</string>
     <string name="account_server_name">Server</string>
-    <string name="account_xmpp_register_warning">You must&#160;<a href="https://duckduckgo.com/?q=register an XMPP account&amp;ia=web">register an XMPP account</a> before adding it to Xabber!</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">You must <a href="https://duckduckgo.com/?q=register an XMPP account&amp;ia=web">register an XMPP account</a> before adding it to Xabber!</string>
     <string name="account_user_name">Username</string>
-    <string name="EMPTY_SERVER_NAME">Server name is not specified</string>
-    <string name="EMPTY_USER_NAME">Username is not specified</string>
-    <string name="CONFIRM_PASSWORD">Passwords do not match</string>
-    <string name="ACCOUNT_EXIST">This account already exist</string>
+    <string name="settings_account__alert_server_not_specified">Server name is not specified</string>
+    <string name="settings_account__alert_xmpp_id_not_specified">Username is not specified</string>
+    <string name="settings_account__alert_passwords_do_not_match">Passwords do not match</string>
+    <string name="settings_account__alert_account_exists">This account already exist</string>
     <string name="account_compression_summary">Check to enable data compression</string>
     <string name="account_custom">Custom host</string>
     <string name="account_custom_summary">Use custom host settings instead of SRV record</string>
@@ -45,16 +45,15 @@
     <string name="orbot_required_message">In order to process using TOR you must have Orbot installed and activated to proxy traffic through it. Would you like to install it from Google Play?</string>
     <string name="orbot_required_title">Install Orbot?</string>
     <string name="install_orbot">Install Orbot</string>
-    <string name="ACCOUNT_REGISTER_FAILED">Failed to register account on the server.</string>
-    <string name="SERVER_INFO_ERROR">Could not get server info.</string>
-    <string name="INCORRECT_USER_NAME">Incorrect user name</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_DOMAIN">: invalid domain</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_AT">: multiple \"@\"-symbols present</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL">: invalid local part</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL_AT">: \"@\" is present without local part</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL">: \"%s\" symbol is not accepted in the local part</string>
-    <string name="INCORRECT_USER_NAME_ADDENDUM_RESOURCE">: \"/\" character is not accepted</string>
-
+    <string name="account_add__alert_registration_failed">Failed to register account on the server.</string>
+    <string name="account_add__alert_no_server_info">Could not get server info.</string>
+    <string name="account_add__alert_incorrect_xmpp_id">Incorrect user name</string>
+    <string name="account_add__alert_invalid_domain">Incorrect user name: invalid domain</string>
+    <string name="account_add__alert_invalid_symbols_at">Incorrect user name: multiple \"@\" symbols present</string>
+    <string name="account_add__alert_localpart_invalid">Incorrect user name: invalid local part</string>
+    <string name="account_add__alert_localpart_absent">Incorrect user name: \"@\" is present without local part</string>
+    <string name="account_add__alert_localpart_invalid_symbols">Incorrect user name: \"%s\" symbol is not accepted in the local part</string>
+    <string name="account_add__alert_invalid_slash">Incorrect user name: \"/\" character is not accepted</string>
     <string name="account_color">Account color</string>
     <string name="account_color_name_green">Green</string>
     <string name="account_color_name_orange">Orange</string>
@@ -73,21 +72,20 @@
     <string name="account_color_name_amber">Amber</string>
     <string name="account_color_name_deep_orange">Deep-orange</string>
     <string name="account_color_name_brown">Brown</string>
-
     <string name="account_connected_devices">Connected devices</string>
     <string name="account_connected_devices_none">Account is offline</string>
-    <string name="account_connected_devices_singular">1 connected device</string>
-    <string name="account_connected_devices_plural">%d connected devices</string>
-
+    <plurals name="account_connected_devices">
+        <item quantity="one">1 connected device</item>
+        <item quantity="other">%d connected devices</item>
+    </plurals>
     <string name="account_connection_settings">Connection settings</string>
     <string name="account_active_sessions">Active sessions</string>
     <string name="account_current_session">Current session</string>
-    <string name="account_terminate_all_sessions">Terminate all others sessions</string>
+    <string name="account_terminate_all_sessions">Terminate all other sessions</string>
     <string name="account_active_sessions_summary">Manage your sessions with X-Token</string>
     <string name="account_active_sessions_disabled">Server does not support X-Token</string>
     <string name="account_active_sessions_error">Failed to get a list of active sessions</string>
     <string name="account_active_sessions_not_supported">XMPP client typically needs to store a password to connect to a server. This leads to increased security threats associated with storing account password on client device: in can be extracted from the device by whoever gains access to it. Also, a user can\'t revoke access from connected clients even by changing password. \n\nXabber supports superior way to handle this issue: XMPP tokens. They allow users to control client sessions and revoke them when needed, providing greater chat security. However, %s does not support this standard.</string>
-
     <string name="blocked_contact_message">Contact blocked</string>
     <string name="blocked_contact">Blocked contact</string>
     <string name="blocked_group">Blocked group</string>
@@ -100,48 +98,62 @@
     <string name="blocked_group_invitations">Group invitations</string>
     <string name="blocked_group_invitations_summary">Blocking is used to mark group invitations as \'read\'</string>
     <string name="blocked_group_invitations_summary_full">Blocking is used to mark group invitations as \'read\'. If you remove these entries from the block list, you might see invitation dialog again.</string>
-
     <plurals name="blocked_contacts_number">
         <item quantity="one">%d contact blocked</item>
         <item quantity="other">%d contacts blocked</item>
     </plurals>
-
     <string name="account_chat_history">Chat history</string>
     <string name="account_history_options_summary">Storage options for chat messages</string>
-
     <string name="account_chat_history_unknown">Support for chat history server store is not determined yet</string>
     <string name="account_chat_history_not_supported">The server does not support storing chat history.</string>
-
     <string name="account_mam_default_behavior_title">Message Archive Management</string>
     <string name="account_mam_default_behavior_always">Store all messages on server</string>
     <string name="account_mam_default_behavior_roster">Store roster contacts messages on server</string>
     <string name="account_mam_default_behavior_never">Do not store any messages on server</string>
-
     <string name="account_mam_sync_title">Load message history</string>
     <string name="account_mam_sync_all">Load history for all contacts</string>
     <string name="account_mam_sync_current">Load history for opened chat only</string>
     <string name="account_mam_sync_none">Do not load history for anybody</string>
-
     <string name="account_clear_history_on_exit_title">Clear history on exit</string>
     <string name="account_clear_history_on_exit_summary">Delete all chat messages from device before exiting Xabber.</string>
-
     <string name="account_bookmarks">Bookmarks</string>
     <string name="account_bookmarks_summary">List of bookmarks for this account</string>
-
     <string name="account_sync">Synchronization</string>
-    <string name="account_sync_summary">Synchronization with Xabber Account</string>
-
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Synchronization with Xabber Account</string>
     <string name="account_vcard">Profile picture, vCard</string>
     <string name="account_vcard_summary">Edit your Avatar and vCard info</string>
-
+    <string name="avatar_successfully_published">Avatar published!</string>
+    <string name="avatar_publishing_failed">Avatar publishing failed!</string>
     <string name="account_push">Push notifications</string>
     <string name="account_push_enable">Enable push notifications</string>
-
     <string name="bookmark_not_supported">Server does not support bookmarks</string>
-
     <string name="account_delete_summary">Remove this account from your device</string>
-
     <string name="terminate_all_sessions_title">Are you sure you want to terminate all other sessions?</string>
     <string name="terminate_session_title">Terminate this session?</string>
     <string name="button_terminate">Terminate</string>
+    <string name="settings_account__label_this_device">this device</string>
+    <string name="settings_account__label_client">Client</string>
+    <string name="settings_account__label_status">Status</string>
+    <string name="account_color_scheme">Color scheme</string>
+    <string name="account_xmpp_resources">XMPP resources</string>
+    <string name="settings_account__section_header_vcard">vCard</string>
+    <string name="settings_account__section_header_server_info">Server information</string>
+    <string name="settings_account__section_header_circles">Circles</string>
+    <string name="settings_account__button_quit_account">Quit account</string>
+    <string name="settings_account__button_reconnect">Reconnect</string>
+    <string name="settings_account__blocklist__button_block">Block</string>
+    <string name="dialog_block_xmpp_address__text">Block a specific XMPP address</string>
+    <string name="dialog_block_xmpp_address__hint_address">name@example.com</string>
+    <string name="dialog_quit_account__confirm">Do you want to quit this account? Account will not be deleted from the server.</string>
+    <string name="settings_account__dialog_terminate_sessions__header">Terminate sessions</string>
+    <string name="delete_settings__optional_button__delete_synced_account">Delete synced XMPP account</string>
+    <string name="dialog_change_password__error__text_input_pass">Please input password!</string>
+    <string name="dialog_change_password__feedback__text_auth_with_pass">Authentication with password...</string>
+    <string name="account_auth__error__text_input_username">Please input username!</string>
+    <string name="account_auth__error__text_wrong_username">Wrong username format!</string>
+    <string name="account_auth__feedback__text_authentication">Authentication...</string>
+    <string name="account_color_name_grey">Grey</string>
+    <string name="account_color_name_yellow">Yellow</string>
+    <string name="account_settings__server_info__status_available">Available</string>
+    <string name="account_settings__server_info__status_unavailable">Unavailable</string>
 </resources>

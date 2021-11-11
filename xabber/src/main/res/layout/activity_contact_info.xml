@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+     This file is part of Xabber project; you can redistribute it and/or
+     modify it under the terms of the GNU General Public License, Version 3.
+
+     Xabber is distributed in the hope that it will be useful, but
+     WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+     See the GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License,
+     along with this program. If not, see http://www.gnu.org/licenses/.
+-->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
+    android:fitsSystemWindows="true"
+    android:background="?attr/contact_list_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:background="?attr/bottom_navigation_background"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="8dp"
+            android:fitsSystemWindows="true"
+
+            app:expandedTitleMarginBottom="50dp"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="88dp"
+            app:expandedTitleTextAppearance="@style/ContactViewCollapsingToolbarNew"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:statusBarScrim="@color/transparent">
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true">
+
+                <ImageView
+                    android:id="@+id/backgroundView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/about_backdrop"
+                    tools:srcCompat="@color/white" />
+
+                <ImageView
+                    android:id="@+id/backgroundTintLower"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/contact_image_gradient_dark_tint"
+                    tools:visibility="visible" />
+
+                <include
+                    layout="@layout/contact_title_expanded"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+
+                    android:layout_marginTop="?attr/actionBarSize"
+                    app:layout_collapseMode="none" />
+            </FrameLayout>
+
+            <ImageView
+                android:id="@+id/backgroundTintUpper"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="1"
+                app:srcCompat="@drawable/contact_image_gradient_dark_tint_down"
+                tools:visibility="visible" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar_default"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="8dp"
+                android:theme="@style/ThemeBorderlessVcard"
+                app:layout_collapseMode="pin"
+                app:popupTheme="?attr/toolbar_popup_theme" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_behavior="com.xabber.android.ui.helper.CustomScrollingViewBehavior">
+
+        <include layout="@layout/view_contact_info_bar" />
+
+        <FrameLayout
+            android:id="@+id/scrollable_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/contact_list_background">
+            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+        </FrameLayout>
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

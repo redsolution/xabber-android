@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -16,31 +16,35 @@ package com.xabber.android.data.extension.vcard;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.OnLoadListener;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.ConnectionManager;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
+import com.xabber.android.data.connection.OnDisconnectListener;
+import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.database.realmobjects.VCardRealmObject;
 import com.xabber.android.data.database.repositories.ContactRepository;
 import com.xabber.android.data.database.repositories.VCardRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.iqlast.LastActivityInteractor;
+import com.xabber.android.data.extension.groups.GroupsManager;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.message.chat.ChatManager;
+import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.data.roster.OnRosterChangedListener;
 import com.xabber.android.data.roster.OnRosterReceivedListener;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.data.roster.RosterContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.data.roster.StructuredName;
+import com.xabber.android.ui.OnVCardListener;
+import com.xabber.android.ui.OnVCardSaveListener;
 import com.xabber.xmpp.vcard.VCard;
 import com.xabber.xmpp.vcard.VCardProperty;
+import com.xabber.xmpp.vcardupdate.VCardUpdate;
 
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
@@ -67,8 +71,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
  *
  * @author alexander.ivanov
  */
-public class VCardManager implements OnLoadListener, OnPacketListener,
-        OnRosterReceivedListener, OnAccountRemovedListener {
+public class VCardManager implements OnPacketListener, OnRosterReceivedListener,
+        OnAccountRemovedListener, OnDisconnectListener {
 
     private static final String LOG_TAG = VCardManager.class.getSimpleName();
 
@@ -93,7 +97,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     @SuppressWarnings("WeakerAccess")
     Set<AccountJid> vCardSaveRequests = new ConcurrentSkipListSet<>();
 
-    private Map<AccountItem, RosterAndHistoryLoadState> rosterOrHistoryIsLoaded = new ConcurrentHashMap<>();
+    private final Map<AccountItem, RosterAndHistoryLoadState> rosterOrHistoryIsLoaded = new ConcurrentHashMap<>();
 
     enum RosterAndHistoryLoadState {
         ROSTER, HISTORY, BOTH
@@ -115,9 +119,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
     }
 
-    @Override
-    public void onLoad() { }
-
     private void requestRosterVCards(AccountItem accountItem) {
         AccountJid account = accountItem.getAccount();
         if (!accountRequested.contains(account) && SettingsManager.connectionLoadVCard()) {
@@ -132,57 +133,29 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
         // Request vCards for new contacts.
         for (RosterContact contact : accountRosterContacts) {
-            if (!names.containsKey(contact.getUser().getJid())) {
-                request(account, contact.getUser().getJid());
+            if (!names.containsKey(contact.getContactJid().getJid())) {
+                request(account, contact.getContactJid().getJid());
             }
         }
-    }
-
-    private void requestRosterLastActivity(AccountItem accountItem) {
-        AccountJid account = accountItem.getAccount();
-        Collection<RosterContact> accountRosterContacts = RosterManager.getInstance().getAccountRosterContacts(account);
-        LastActivityInteractor.getInstance().requestRosterLastActivity(account, accountRosterContacts);
     }
 
     @Override
     public void onRosterReceived(AccountItem accountItem) {
         LogManager.d("VCardManager", "roster received");
-        LogManager.d("timeCount", "roster received, time since connected = "
-                + (System.currentTimeMillis() - start) + " ms");
         RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(accountItem);
         if (loaded == RosterAndHistoryLoadState.HISTORY) {
             rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.BOTH);
             requestRosterVCards(accountItem);
         } else {
             rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.ROSTER);
-            requestRosterLastActivity(accountItem);
         }
     }
 
-    private Long start;
-
-    public void setStart(long start) {
-        if (this.start == null) this.start = start;
-    }
-
-    public Long getStart() {
-        return start;
-    }
-
-    public void onHistoryLoaded(AccountItem accountItem) {
-        LogManager.d("VCardManager", "historyLoaded");
-        LogManager.d("timeCount", "history loaded, time since connected = " + (System.currentTimeMillis() - start) + " ms");
-        RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(accountItem);
-        if (loaded == RosterAndHistoryLoadState.ROSTER) {
-            rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.BOTH);
-            requestRosterVCards(accountItem);
-        } else {
-            rosterOrHistoryIsLoaded.put(accountItem, RosterAndHistoryLoadState.HISTORY);
-        }
-    }
+    @Override
+    public void onDisconnect(ConnectionItem connection) { resetLoadedState(connection.getAccount()); }
 
     public boolean isRosterOrHistoryLoaded(AccountJid accountJid) {
-        AccountItem account = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem account = AccountManager.INSTANCE.getAccount(accountJid);
         if (account == null) return false;
         RosterAndHistoryLoadState loaded = rosterOrHistoryIsLoaded.get(account);
         return loaded != null;
@@ -192,11 +165,10 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     //  make sure this will not be called after reconnecting and getting full roster.
     //  (if the connection listener is calling this method too late)
     public void resetLoadedState(AccountJid accountJid) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
         if (accountItem != null) {
             rosterOrHistoryIsLoaded.remove(accountItem);
             vCardRequests.remove(accountJid);
-            LastActivityInteractor.getInstance().interruptLastActivityRequest(accountJid);
         }
     }
 
@@ -234,10 +206,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             else
                 return ContactRepository.getBestNameFromRealm(jid);
         return name.getBestName();
-    }
-
-    public VCard getSavedVCard(AccountJid accountJid, ContactJid contactJid){
-        return VCardRepository.getVCardForContactFromRealm(contactJid).getVCard();
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -282,11 +250,11 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         }
 
         if (vCard.getFrom() == null) { // account it self
-            AccountManager.getInstance().onAccountChanged(account);
+            AccountManager.INSTANCE.onAccountChanged(account);
         } else {
             try {
                 RosterManager.onContactChanged(account, ContactJid.from(bareAddress));
-            } catch (ContactJid.UserJidCreateException e) {
+            } catch (ContactJid.ContactJidCreateException e) {
                 LogManager.exception(this, e);
             }
         }
@@ -294,6 +262,15 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
         for (OnVCardListener listener : Application.getInstance().getUIListeners(OnVCardListener.class)) {
             listener.onVCardReceived(account, bareAddress, vCard);
         }
+
+        try {
+            if(ChatManager.getInstance().getChat(account, ContactJid.from(bareAddress)) instanceof GroupChat){
+                GroupsManager.INSTANCE.processVcard(account, ContactJid.from(bareAddress), vCard);
+            }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        }
+
     }
 
     @SuppressWarnings("WeakerAccess")
@@ -352,7 +329,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
 
     @SuppressWarnings("WeakerAccess")
     void getVCard(final AccountJid account, final Jid srcUser) {
-        final AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        final AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             onVCardFailed(account, srcUser);
             return;
@@ -363,19 +340,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
             return;
         }
 
-        Collection<ContactJid> blockedContacts = BlockingManager.getInstance().getCachedBlockedContacts(account);
-        for (ContactJid blockedContact : blockedContacts) {
-            if (blockedContact.getBareJid().equals(srcUser.asBareJid())) {
-                onVCardFailed(account, srcUser);
-                return;
-            }
-        }
-
-        //if (BlockingManager.getInstance().jidIsBlockedLocally(account, srcUser)) {
-        //    onVCardFailed(account, srcUser);
-        //    return;
-        //}
-        //final EntityBareJid entityBareJid = srcUser.asEntityBareJidIfPossible();
         final BareJid bareJid = srcUser.asBareJid();
 
         if (bareJid != null) {
@@ -413,7 +377,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     }
 
     public void saveVCard(final AccountJid account, final VCard vCard) {
-        AccountItem accountItem = AccountManager.getInstance().getAccount(account);
+        AccountItem accountItem = AccountManager.INSTANCE.getAccount(account);
         if (accountItem == null) {
             onVCardSaveFailed(account);
             return;
@@ -443,7 +407,7 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                     if (avatarHash == null) {
                         avatarHash = AvatarManager.EMPTY_HASH;
                     }
-                    PresenceManager.getInstance().sendVCardUpdatePresence(account, avatarHash);
+                    PresenceManager.INSTANCE.sendVCardUpdatePresence(account, avatarHash);
                 } catch (SmackException.NoResponseException | XMPPException.XMPPErrorException
                         | SmackException.NotConnectedException | NetworkException | InterruptedException e) {
                     LogManager.w(this, "Error saving vCard: " + e.getMessage());
@@ -454,18 +418,21 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
                 xmppConnection.setPacketReplyTimeout(ConnectionManager.PACKET_REPLY_TIMEOUT);
 
                 final boolean finalIsSuccess = isSuccess;
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (finalIsSuccess) {
-                            onVCardSaveSuccess(account);
-                        } else {
-                            onVCardSaveFailed(account);
-                        }
+                Application.getInstance().runOnUiThread(() -> {
+                    if (finalIsSuccess) {
+                        onVCardSaveSuccess(account);
+                    } else {
+                        onVCardSaveFailed(account);
                     }
                 });
             }
         });
+    }
+
+    public void addVCardUpdateToPresence(Presence presence, String hash) {
+        final VCardUpdate vCardUpdate = new VCardUpdate();
+        vCardUpdate.setPhotoHash(hash);
+        presence.addExtension(vCardUpdate);
     }
 
     /**
@@ -474,8 +441,6 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
      *
      * @throws XMPPException.XMPPErrorException thrown if there was an issue setting the VCard in the server.
      * @throws SmackException.NoResponseException if there was no response from the server.
-     * @throws SmackException.NotConnectedException
-     * @throws InterruptedException
      */
     private void sendUpdateAccountVcardStanza(XMPPConnection connection, VCard vcard) throws SmackException.NoResponseException, XMPPException.XMPPErrorException, SmackException.NotConnectedException, InterruptedException {
         // XEP-54 § 3.2 "A user may publish or update his or her vCard by sending an IQ of type "set" with no 'to' address…"
@@ -517,4 +482,5 @@ public class VCardManager implements OnLoadListener, OnPacketListener,
     public boolean isVCardSaveRequested(AccountJid account) {
         return vCardSaveRequests.contains(account);
     }
+
 }

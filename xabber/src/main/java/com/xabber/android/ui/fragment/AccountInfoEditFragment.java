@@ -14,7 +14,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.DatePicker;
@@ -42,11 +41,11 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.data.extension.vcard.OnVCardListener;
-import com.xabber.android.data.extension.vcard.OnVCardSaveListener;
 import com.xabber.android.data.extension.vcard.VCardManager;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.activity.ChatActivity;
+import com.xabber.android.ui.OnVCardListener;
+import com.xabber.android.ui.OnVCardSaveListener;
+import com.xabber.android.ui.helper.AndroidUtilsKt;
 import com.xabber.android.ui.helper.PermissionsRequester;
 import com.xabber.xmpp.avatar.UserAvatarManager;
 import com.xabber.xmpp.vcard.AddressProperty;
@@ -57,7 +56,6 @@ import com.xabber.xmpp.vcard.VCardProperty;
 import org.apache.commons.io.FileUtils;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
-import org.jivesoftware.smackx.pubsub.PubSubException;
 import org.jxmpp.jid.Jid;
 
 import java.io.ByteArrayOutputStream;
@@ -73,7 +71,8 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
-public class AccountInfoEditFragment extends Fragment implements OnVCardSaveListener, OnVCardListener, DatePickerDialog.OnDateSetListener, TextWatcher {
+public class AccountInfoEditFragment extends Fragment implements OnVCardSaveListener, OnVCardListener,
+        DatePickerDialog.OnDateSetListener, TextWatcher {
 
     public static final String ARGUMENT_ACCOUNT = "com.xabber.android.ui.fragment.AccountInfoEditFragment.ARGUMENT_ACCOUNT";
     public static final String ARGUMENT_VCARD = "com.xabber.android.ui.fragment.AccountInfoEditFragment.ARGUMENT_USER";
@@ -199,7 +198,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             try {
                 vCard = ContactVcardViewerFragment.parseVCard(xmlVCard);
             } catch (Exception e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
 
@@ -252,27 +251,25 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
             }
         });
         middleName = setUpInputField(view, R.id.vcard_middle_name);
-        middleName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (!hasFocus) {
-                    nickName.setHint(givenName.getText().toString().concat(" ") + ((EditText) view).getText().toString().concat(" ") + familyName.getText().toString().concat(" "));
-                    if (nickName.getHint().equals("")) {
-                        nickName.setHint(R.string.vcard_nick_name);
-                    }
+        middleName.setOnFocusChangeListener((view1, hasFocus) -> {
+            if (!hasFocus) {
+                nickName.setHint(givenName.getText().toString().concat(" ")
+                        + ((EditText) view1).getText().toString().concat(" ")
+                        + familyName.getText().toString().concat(" "));
+                if (nickName.getHint().equals("")) {
+                    nickName.setHint(R.string.vcard_nick_name);
                 }
             }
         });
 
         familyName = setUpInputField(view, R.id.vcard_family_name);
-        familyName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if (!hasFocus) {
-                    nickName.setHint(givenName.getText().toString().concat(" ") + middleName.getText().toString().concat(" ") + ((EditText)view).getText().toString().concat(" "));
-                    if (nickName.getHint().equals("")) {
-                        nickName.setHint(R.string.vcard_nick_name);
-                    }
+        familyName.setOnFocusChangeListener((view12, hasFocus) -> {
+            if (!hasFocus) {
+                nickName.setHint(givenName.getText().toString().concat(" ")
+                        + middleName.getText().toString().concat(" ")
+                        + ((EditText) view12).getText().toString().concat(" "));
+                if (nickName.getHint().equals("")) {
+                    nickName.setHint(R.string.vcard_nick_name);
                 }
             }
         });
@@ -288,29 +285,14 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         });
         saveAvatarButton = view.findViewById(R.id.saveAvatarButton);
         saveAvatarButton.setVisibility(View.GONE);
-        saveAvatarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveAvatar();
-            }
-        });
+        saveAvatarButton.setOnClickListener(view13 -> saveAvatar());
 
         birthDate = (TextView) view.findViewById(R.id.vcard_birth_date);
-        birthDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                datePicker.show();
-            }
-        });
+        birthDate.setOnClickListener(v -> datePicker.show());
         birthDate.addTextChangedListener(this);
 
         birthDateRemoveButton = view.findViewById(R.id.vcard_birth_date_remove_button);
-        birthDateRemoveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setBirthDate(null);
-            }
-        });
+        birthDateRemoveButton.setOnClickListener(v -> setBirthDate(null));
 
         title = setUpInputField(view, R.id.vcard_title);
         role = setUpInputField(view, R.id.vcard_role);
@@ -367,7 +349,8 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
         }
 
         VCardManager vCardManager = VCardManager.getInstance();
-        if (vCardManager.isVCardRequested(account, account.getBareJid()) || vCardManager.isVCardSaveRequested(account)) {
+        if (vCardManager.isVCardRequested(account, account.getBareJid())
+                || vCardManager.isVCardSaveRequested(account)) {
             enableProgressMode(getString(R.string.saving));
         }
         updateFromVCardFlag = false;
@@ -376,9 +359,10 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     public void requestVCard() {
         enableProgressMode("Requesting vcard");
         try {
-            VCardManager.getInstance().requestByUser(account, ContactJid.from(account.getFullJid().asBareJid()).getJid());
-        } catch (ContactJid.UserJidCreateException e) {
-            e.printStackTrace();
+            VCardManager.getInstance().requestByUser(account,
+                    ContactJid.from(account.getFullJid().asBareJid()).getJid());
+        } catch (ContactJid.ContactJidCreateException e) {
+            LogManager.exception(getClass().getSimpleName(), e);
         }
     }
 
@@ -512,25 +496,22 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     private void changeAvatar() {
         PopupMenu menu = new PopupMenu(getActivity(), avatar);
         menu.inflate(R.menu.change_avatar);
-        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_choose_from_gallery:
-                        onChooseFromGalleryClick();
-                        return true;
-                    case R.id.action_take_photo:
-                        onTakePhotoClick();
-                        return true;
-                    case R.id.action_remove_avatar:
-                        removeAvatar();
-                        return true;
+        menu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_choose_from_gallery:
+                    onChooseFromGalleryClick();
+                    return true;
+                case R.id.action_take_photo:
+                    onTakePhotoClick();
+                    return true;
+                case R.id.action_remove_avatar:
+                    removeAvatar();
+                    return true;
 
-                    default:
-                        return false;
-                }
-
+                default:
+                    return false;
             }
+
         });
         menu.show();
     }
@@ -631,23 +612,17 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     private void beginCrop(final Uri source) {
         newAvatarImageUri = Uri.fromFile(new File(getActivity().getCacheDir(), TEMP_FILE_NAME));
 
-        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-            @Override
-            public void run() {
-                final boolean isImageNeedPreprocess = FileManager.isImageSizeGreater(source, MAX_IMAGE_SIZE)
-                        || FileManager.isImageNeedRotation(source);
+        Application.getInstance().runInBackgroundUserRequest(() -> {
+            final boolean isImageNeedPreprocess = FileManager.isImageSizeGreater(source, MAX_IMAGE_SIZE)
+                    || FileManager.isImageNeedRotation(source);
 
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isImageNeedPreprocess) {
-                            preprocessAndStartCrop(source);
-                        } else {
-                            startImageCropActivity(source);
-                        }
-                    }
-                });
-            }
+            Application.getInstance().runOnUiThread(() -> {
+                if (isImageNeedPreprocess) {
+                    preprocessAndStartCrop(source);
+                } else {
+                    startImageCropActivity(source);
+                }
+            });
         });
     }
 
@@ -657,46 +632,40 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-                            @Override
-                            public void run() {
-                                ContentResolver cR = Application.getInstance().getApplicationContext().getContentResolver();
-                                String imageType = cR.getType(source);
-                                imageFileType = imageType;
+                        Application.getInstance().runInBackgroundUserRequest(() -> {
+                            ContentResolver cR = Application.getInstance().getApplicationContext().getContentResolver();
+                            String imageType = cR.getType(source);
+                            imageFileType = imageType;
 
-                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-                                if (imageFileType.equals("image/png")) {
-                                    resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                } else {
-                                    resource.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                                }
-                                //resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                byte[] data = stream.toByteArray();
-                                resource.recycle();
-                                try {
-                                    stream.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                Uri rotatedImage;
-                                if (imageType.equals("image/png")) {
-                                    rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
-                                } else {
-                                    rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
-                                }
-                                if (rotatedImage == null) return;
-                                final Uri rotategImg = rotatedImage;
-
-                                Application.getInstance().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        startImageCropActivity(rotategImg);
-                                        disableProgressMode();
-                                    }
-                                });
-
+                            if (imageFileType.equals("image/png")) {
+                                resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            } else {
+                                resource.compress(Bitmap.CompressFormat.JPEG, 100, stream);
                             }
+                            //resource.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            byte[] data = stream.toByteArray();
+                            resource.recycle();
+                            try {
+                                stream.close();
+                            } catch (IOException e) {
+                                LogManager.exception(getClass().getSimpleName(), e);
+                            }
+                            Uri rotatedImage;
+                            if (imageType.equals("image/png")) {
+                                rotatedImage = FileManager.savePNGImage(data, ROTATE_FILE_NAME);
+                            } else {
+                                rotatedImage = FileManager.saveImage(data, ROTATE_FILE_NAME);
+                            }
+                            if (rotatedImage == null) return;
+                            final Uri rotategImg = rotatedImage;
+
+                            Application.getInstance().runOnUiThread(() -> {
+                                startImageCropActivity(rotategImg);
+                                disableProgressMode();
+                            });
+
                         });
                     }
 
@@ -764,57 +733,49 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull final Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-                            @Override
-                            public void run() {
-                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                if (imageFileType != null) {
-                                    if (imageFileType.equals("image/png")) {
-                                        resource.compress(Bitmap.CompressFormat.PNG, 90, stream);
-                                    } else {
-                                        resource.compress(Bitmap.CompressFormat.JPEG, 90, stream);
-                                    }
+                        Application.getInstance().runInBackgroundUserRequest(() -> {
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            if (imageFileType != null) {
+                                if (imageFileType.equals("image/png")) {
+                                    resource.compress(Bitmap.CompressFormat.PNG, 90, stream);
+                                } else {
+                                    resource.compress(Bitmap.CompressFormat.JPEG, 90, stream);
                                 }
-                                //resource.compress(Bitmap.CompressFormat.PNG, quality, stream);
-                                byte[] data = stream.toByteArray();
-                                if (data.length > 35 * KB_SIZE_IN_BYTES) {
-                                    MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE/8;
-                                    if (MAX_IMAGE_RESIZE == 0) {
-                                        Toast.makeText(getActivity(), "Error with resizing", Toast.LENGTH_LONG).show();
-                                        return;
-                                    }
-                                    resize(src);
+                            }
+                            //resource.compress(Bitmap.CompressFormat.PNG, quality, stream);
+                            byte[] data = stream.toByteArray();
+                            if (data.length > 35 * KB_SIZE_IN_BYTES) {
+                                MAX_IMAGE_RESIZE = MAX_IMAGE_RESIZE - MAX_IMAGE_RESIZE/8;
+                                if (MAX_IMAGE_RESIZE == 0) {
+                                    Toast.makeText(getActivity(), "Error with resizing", Toast.LENGTH_LONG).show();
                                     return;
                                 }
-                                resource.recycle();
-                                try {
-                                    stream.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                Uri rotatedImage = null;
-                                if(imageFileType!=null) {
-                                    if (imageFileType.equals("image/png")) {
-                                        rotatedImage = FileManager.savePNGImage(data, "resize");
-                                    } else {
-                                        rotatedImage = FileManager.saveImage(data, "resize");
-                                    }
-                                }
-                                if (rotatedImage == null) return;
-                                try {
-                                    FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-
-                                Application.getInstance().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        setUpAvatarView();
-                                    }
-                                });
-
+                                resize(src);
+                                return;
                             }
+                            resource.recycle();
+                            try {
+                                stream.close();
+                            } catch (IOException e) {
+                                LogManager.exception(getClass().getSimpleName(), e);
+                            }
+                            Uri rotatedImage = null;
+                            if(imageFileType!=null) {
+                                if (imageFileType.equals("image/png")) {
+                                    rotatedImage = FileManager.savePNGImage(data, "resize");
+                                } else {
+                                    rotatedImage = FileManager.saveImage(data, "resize");
+                                }
+                            }
+                            if (rotatedImage == null) return;
+                            try {
+                                FileUtils.writeByteArrayToFile(new File(newAvatarImageUri.getPath()), data);
+                            } catch (IOException e) {
+                                LogManager.exception(getClass().getSimpleName(), e);
+                            }
+
+                            Application.getInstance().runOnUiThread(() -> setUpAvatarView());
+
                         });
                     }
 
@@ -929,7 +890,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
     }
 
     public void saveVCard() {
-        ChatActivity.hideKeyboard(getActivity());
+        AndroidUtilsKt.tryToHideKeyboardIfNeed(getActivity());
         updateVCardFromFields();
         enableProgressMode(getString(R.string.saving));
         saveAvatar();
@@ -939,7 +900,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
     private void saveAvatar(){
         enableProgressMode(getString(R.string.saving));
-        AccountItem item = AccountManager.getInstance().getAccount(account);
+        AccountItem item = AccountManager.INSTANCE.getAccount(account);
         final UserAvatarManager mng = UserAvatarManager.getInstanceFor(item.getConnection());
 
         if (removeAvatarFlag) {
@@ -953,7 +914,7 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 }
             } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
                     | InterruptedException | SmackException.NoResponseException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         } else if (newAvatarImageUri != null) {
             try {
@@ -970,62 +931,51 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
                 }
             } catch (IOException | XMPPException.XMPPErrorException | SmackException.NotConnectedException
                     | InterruptedException | SmackException.NoResponseException e) {
-                e.printStackTrace();
+                LogManager.exception(getClass().getSimpleName(), e);
             }
         }
-        Application.getInstance().runInBackgroundNetworkUserRequest(new Runnable() {
-            @Override
-            public void run() {
+        Application.getInstance().runInBackgroundNetworkUserRequest(() -> {
 
-                if (removeAvatarFlag) {
-                    try {
-                        mng.unpublishAvatar();
-                        isAvatarSuccessful = true;
-                    } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
-                            SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
-                        e.printStackTrace();
-                    }
-
-                    final boolean isSuccessfulFinal = isAvatarSuccessful;
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (isSuccessfulFinal) {
-                                Toast.makeText(getActivity(), "Avatar published!", Toast.LENGTH_LONG).show();
-                                disableProgressMode();
-                            } else {
-                                Toast.makeText(getActivity(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
-                                disableProgressMode();
-                            }
-                        }
-                    });
-                } else if(avatarData!=null) {
-                    try {
-                        if(imageFileType.equals("image/png")) {
-                            mng.publishAvatar(avatarData, MAX_TEST, MAX_TEST);
-                        } else mng.publishAvatarJPG(avatarData, MAX_TEST, MAX_TEST);
-                        isAvatarSuccessful = true;
-                    } catch (XMPPException.XMPPErrorException | PubSubException.NotALeafNodeException |
-                            SmackException.NotConnectedException | InterruptedException | SmackException.NoResponseException e) {
-                        e.printStackTrace();
-                    }
-
-                    final boolean isSuccessfulFinal = isAvatarSuccessful;
-                    Application.getInstance().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            if (isSuccessfulFinal) {
-                                Toast.makeText(getActivity(), "Avatar published!", Toast.LENGTH_LONG).show();
-                                disableProgressMode();
-                            } else {
-                                Toast.makeText(getActivity(), "Avarar publishing failed", Toast.LENGTH_LONG).show();
-                                disableProgressMode();
-                            }
-                        }
-                    });
-
+            if (removeAvatarFlag) {
+                try {
+                    mng.unpublishAvatar();
+                    isAvatarSuccessful = true;
+                } catch (Exception e) {
+                    LogManager.exception(getClass().getSimpleName(), e);
                 }
+
+                final boolean isSuccessfulFinal = isAvatarSuccessful;
+                Application.getInstance().runOnUiThread(() -> {
+                    if (isSuccessfulFinal) {
+                        Toast.makeText(getActivity(), getString(R.string.avatar_successfully_published), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getActivity(), getString(R.string.avatar_publishing_failed), Toast.LENGTH_LONG).show();
+                    }
+                    disableProgressMode();
+                });
+            } else if(avatarData!=null) {
+                try {
+                    if(imageFileType.equals("image/png")) {
+                        mng.publishAvatar(avatarData, MAX_TEST, MAX_TEST);
+                    } else mng.publishAvatarJPG(avatarData, MAX_TEST, MAX_TEST);
+                    isAvatarSuccessful = true;
+                } catch (XMPPException.XMPPErrorException | SmackException.NotConnectedException
+                        | InterruptedException | SmackException.NoResponseException e) {
+                    LogManager.exception(getClass().getSimpleName(), e);
+                }
+
+                final boolean isSuccessfulFinal = isAvatarSuccessful;
+                Application.getInstance().runOnUiThread(() -> {
+
+                    if (isSuccessfulFinal) {
+                        Toast.makeText(getActivity(), getString(R.string.avatar_successfully_published), Toast.LENGTH_LONG).show();
+                        disableProgressMode();
+                    } else {
+                        Toast.makeText(getActivity(), getString(R.string.avatar_publishing_failed), Toast.LENGTH_LONG).show();
+                        disableProgressMode();
+                    }
+                });
+
             }
         });
     }
@@ -1058,63 +1008,71 @@ public class AccountInfoEditFragment extends Fragment implements OnVCardSaveList
 
     @Override
     public void onVCardSaveSuccess(AccountJid account) {
-        if (!this.account.equals(account)) {
-            return;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (!this.account.equals(account)) {
+                return;
+            }
 
-        enableProgressMode(getString(R.string.saving));
-        VCardManager.getInstance().request(account, account.getFullJid().asBareJid());
-        isSaveSuccess = true;
+            enableProgressMode(getString(R.string.saving));
+            VCardManager.getInstance().request(account, account.getFullJid().asBareJid());
+            isSaveSuccess = true;
+        });
     }
 
     @Override
     public void onVCardSaveFailed(AccountJid account) {
-        if (!this.account.equals(account)) {
-            return;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (!this.account.equals(account)) {
+                return;
+            }
 
-        disableProgressMode();
-        listener.toggleSave(true);
-        Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
-        isSaveSuccess = false;
+            disableProgressMode();
+            listener.toggleSave(true);
+            Toast.makeText(getActivity(), getString(R.string.account_user_info_save_fail), Toast.LENGTH_LONG).show();
+            isSaveSuccess = false;
+        });
     }
 
     @Override
     public void onVCardReceived(AccountJid account, Jid bareAddress, VCard vCard) {
-        if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
-            return;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
+                return;
+            }
 
-        if (isSaveSuccess) {
-            Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
-            isSaveSuccess = false;
+            if (isSaveSuccess) {
+                Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
+                isSaveSuccess = false;
 
-            Intent data = new Intent();
-            data.putExtra(ARGUMENT_VCARD, vCard.getChildElementXML().toString());
-            getActivity().setResult(Activity.RESULT_OK, data);
+                Intent data = new Intent();
+                data.putExtra(ARGUMENT_VCARD, vCard.getChildElementXML().toString());
+                getActivity().setResult(Activity.RESULT_OK, data);
 
-            getActivity().finish();
-        } else {
-            disableProgressMode();
-            this.vCard = vCard;
-            updateFromVCardFlag = true;
-            setFieldsFromVCard();
-            updateFromVCardFlag = false;
-        }
+                getActivity().finish();
+            } else {
+                disableProgressMode();
+                this.vCard = vCard;
+                updateFromVCardFlag = true;
+                setFieldsFromVCard();
+                updateFromVCardFlag = false;
+            }
+        });
     }
 
     @Override
     public void onVCardFailed(AccountJid account, Jid bareAddress) {
-        if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
-            return;
-        }
+        Application.getInstance().runOnUiThread(() -> {
+            if (!account.getFullJid().asBareJid().equals(bareAddress.asBareJid())) {
+                return;
+            }
 
-        if (isSaveSuccess) {
-            Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
-            isSaveSuccess = false;
-            getActivity().setResult(REQUEST_NEED_VCARD);
-            getActivity().finish();
-        }
+            if (isSaveSuccess) {
+                Toast.makeText(getActivity(), getString(R.string.account_user_info_save_success), Toast.LENGTH_LONG).show();
+                isSaveSuccess = false;
+                getActivity().setResult(REQUEST_NEED_VCARD);
+                getActivity().finish();
+            }
+        });
     }
 
     @Override

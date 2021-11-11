@@ -30,10 +30,7 @@
     <string name="order_last_timestamp_key">order_last_timestamp_key</string>
 
     <string name="patreon_last_load_timestamp_key">patreon_last_load_timestamp_key</string>
-    <string name="crowdfunding_last_load_timestamp_key">crowdfunding_last_load_timestamp_key</string>
-    <string name="crowdfunding_leader_last_load_timestamp_key">crowdfunding_leader_last_load_timestamp_key</string>
     <string name="first_app_run_timestamp_key">first_app_run_timestamp_key</string>
-    <string name="crowdfunding_last_position_key">crowdfunding_last_position_key</string>
     <string name="enabled_push_nodes">enabled_push_nodes</string>
 
     <string name="last_sync_date_key">last_sync_date_key</string>
@@ -354,11 +351,6 @@
     <string name="connection_load_images_key">connection_load_images</string>
     <bool name="connection_load_images_default">true</bool>
 
-    <!-- "connection_use_carbons" was used up to 1.0.169, default value earlier was false -->
-    <!-- so we add new key and set it to true (old users key will not be used) -->
-    <string name="connection_use_carbons_key">connection_use_carbons_new</string>
-    <bool name="connection_use_carbons_default">true</bool>
-
     <string name="connection_compress_image_on_upload_key">connection_compress_image_on_upload</string>
     <bool name="connection_compress_image_on_upload_default">true</bool>
 
@@ -494,28 +486,6 @@
     <!-- preference_security -->
     <string name="security_check_certificate_key">security_check_certificate</string>
     <bool name="security_check_certificate_default">true</bool>
-
-    <string name="security_otr_mode_key">security_otr_mode</string>
-    <string name="security_otr_mode_disabled_value">disabled</string>
-    <string name="security_otr_mode_manual_value">manual</string>
-    <string name="security_otr_mode_auto_value">auto</string>
-    <string name="security_otr_mode_required_value">required</string>
-    <string-array name="security_otr_mode_entries">
-        <item>@string/disabled</item>
-        <item>@string/manual</item>
-        <item>@string/auto</item>
-        <item>@string/required</item>
-    </string-array>
-    <string-array name="security_otr_mode_entryvalues">
-        <item>@string/security_otr_mode_disabled_value</item>
-        <item>@string/security_otr_mode_manual_value</item>
-        <item>@string/security_otr_mode_auto_value</item>
-        <item>@string/security_otr_mode_required_value</item>
-    </string-array>
-    <string name="security_otr_mode_default">@string/security_otr_mode_manual_value</string>
-
-    <string name="security_otr_history_key">security_otr_history</string>
-    <bool name="security_otr_history_default">true</bool>
 
 <!-- preference_phrase -->
     <string name="phrase_text_key">phrase_text</string>

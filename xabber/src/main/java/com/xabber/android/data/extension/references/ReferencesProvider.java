@@ -1,6 +1,6 @@
 package com.xabber.android.data.extension.references;
 
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -8,10 +8,12 @@ import com.xabber.android.data.extension.references.mutable.filesharing.FileInfo
 import com.xabber.android.data.extension.references.mutable.filesharing.FileReference;
 import com.xabber.android.data.extension.references.mutable.filesharing.FileSharingExtension;
 import com.xabber.android.data.extension.references.mutable.filesharing.FileSources;
-import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatUserReference;
+import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatMemberReference;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessageExtension;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceReference;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.xmpp.avatar.MetadataInfo;
+import com.xabber.xmpp.avatar.MetadataProvider;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
@@ -72,7 +74,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                 return null;
             }
         } catch (Exception e) {
-            LogManager.d(ReferencesProvider.class, e.toString());
+            LogManager.exception(ReferencesProvider.class, e);
             return null;
         }
     }
@@ -81,7 +83,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         List<FileSharingExtension> fileSharingExtensions = new ArrayList<>();
         List<VoiceMessageExtension> voiceMessageExtensions = new ArrayList<>();
         List<Forwarded> forwardedMessages = new ArrayList<>();
-        GroupchatUserExtension user = null;
+        GroupMemberExtensionElement user = null;
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
@@ -100,8 +102,8 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                             && VoiceMessageExtension.VOICE_NAMESPACE.equals(parser.getNamespace())) {
                         VoiceMessageExtension voiceMessageExtension = parseVoiceSharing(parser);
                         if (voiceMessageExtension != null) voiceMessageExtensions.add(voiceMessageExtension);
-                    } else if (GroupchatUserExtension.ELEMENT.equals(parser.getName())
-                            && GroupchatUserExtension.NAMESPACE.equals(parser.getNamespace())) {
+                    } else if (GroupMemberExtensionElement.ELEMENT.equals(parser.getName())
+                            && GroupMemberExtensionElement.NAMESPACE.equals(parser.getNamespace())) {
                         user = parseUser(parser);
                         parser.next();
                     } else parser.next();
@@ -119,7 +121,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         if (!forwardedMessages.isEmpty()) {
             return new Forward(begin, end, forwardedMessages);
         } else if (user != null) {
-            return new GroupchatUserReference(begin, end, user);
+            return new GroupchatMemberReference(begin, end, user);
         } else if (!voiceMessageExtensions.isEmpty()) {
             return new VoiceReference(begin, end, voiceMessageExtensions);
         } else if (!fileSharingExtensions.isEmpty()) {
@@ -210,7 +212,14 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
     }
 
     private FileInfo parseFileInfo(XmlPullParser parser) throws Exception {
-        FileInfo fileInfo = new FileInfo();
+        String mediaType = "";
+        String name = "";
+        long size = 0;
+
+        String description = "";
+        int height = 0;
+        int width = 0;
+        long duration = 0;
 
         parser.next();
         outerloop: while (true) {
@@ -219,25 +228,25 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                 case XmlPullParser.START_TAG:
                     switch (parser.getName()) {
                         case FileInfo.ELEMENT_MEDIA_TYPE:
-                            fileInfo.setMediaType(parser.nextText());
+                            mediaType = parser.nextText();
                             break;
                         case FileInfo.ELEMENT_NAME:
-                            fileInfo.setName(parser.nextText());
+                            name = parser.nextText();
                             break;
                         case FileInfo.ELEMENT_DESC:
-                            fileInfo.setDesc(parser.nextText());
+                            description = parser.nextText();
                             break;
                         case FileInfo.ELEMENT_HEIGHT:
-                            fileInfo.setHeight(Integer.parseInt(parser.nextText()));
+                            height = Integer.parseInt(parser.nextText());
                             break;
                         case FileInfo.ELEMENT_WIDTH:
-                            fileInfo.setWidth(Integer.parseInt(parser.nextText()));
+                            width = Integer.parseInt(parser.nextText());
                             break;
                         case FileInfo.ELEMENT_SIZE:
-                            fileInfo.setSize(Long.parseLong(parser.nextText()));
+                            size = Long.parseLong(parser.nextText());
                             break;
                         case FileInfo.ELEMENT_DURATION:
-                            fileInfo.setDuration(Long.parseLong(parser.nextText()));
+                            duration = Long.parseLong(parser.nextText());
                             break;
                         default:
                             parser.next();
@@ -252,11 +261,19 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     parser.next();
             }
         }
+
+        FileInfo fileInfo = new FileInfo(mediaType, name, size);
+
+        if (!description.isEmpty()) fileInfo.setDesc(description);
+        if (height != 0) fileInfo.setHeight(height);
+        if (width != 0) fileInfo.setWidth(width);
+        if (duration != 0) fileInfo.setDuration(duration);
+
         return fileInfo;
     }
 
     private FileSources parseFileSources(XmlPullParser parser) throws XmlPullParserException, IOException {
-        FileSources fileSources = new FileSources();
+        List<String> uris = new ArrayList<>();
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
@@ -265,7 +282,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     if (FileSources.URI_ELEMENT.equals(parser.getName())) {
                         String uri = parser.nextText();
                         if (uri != null && !uri.isEmpty()) {
-                            fileSources.addSource(uri);
+                            uris.add(uri);
                         }
                     } else {
                         parser.next();
@@ -280,40 +297,44 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     parser.next();
             }
         }
-        return fileSources;
+        return new FileSources(uris);
     }
 
-    private GroupchatUserExtension parseUser(XmlPullParser parser) throws Exception {
+    private GroupMemberExtensionElement parseUser(XmlPullParser parser) throws Exception {
         String id = null;
         String jid = null;
         String nickname = null;
         String role = null;
         String badge = null;
-        String avatar = null;
+        String present = null;
+        MetadataInfo avatar = null;
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
             switch (eventType) {
                 case XmlPullParser.START_TAG:
                     switch (parser.getName()) {
-                        case GroupchatUserExtension.ELEMENT:
-                            id = parser.getAttributeValue("", GroupchatUserExtension.ATTR_ID);
+                        case GroupMemberExtensionElement.ELEMENT:
+                            id = parser.getAttributeValue("", GroupMemberExtensionElement.ATTR_ID);
                             parser.next();
                             break;
-                        case GroupchatUserExtension.ELEMENT_JID:
+                        case GroupMemberExtensionElement.ELEMENT_JID:
                             jid = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_BADGE:
+                        case GroupMemberExtensionElement.ELEMENT_BADGE:
                             badge = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_NICKNAME:
+                        case GroupMemberExtensionElement.ELEMENT_NICKNAME:
                             nickname = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_ROLE:
+                        case GroupMemberExtensionElement.ELEMENT_ROLE:
                             role = parser.nextText();
                             break;
-                        case GroupchatUserExtension.ELEMENT_METADATA:
-                            if (GroupchatUserExtension.NAMESPACE_METADATA.equals(parser.getNamespace()))
+                        case GroupMemberExtensionElement.ELEMENT_PRESENT:
+                            present = parser.nextText();
+                            break;
+                        case GroupMemberExtensionElement.ELEMENT_METADATA:
+                            if (GroupMemberExtensionElement.NAMESPACE_METADATA.equals(parser.getNamespace()))
                             avatar = parseAvatar(parser);
                             parser.next();
                             break;
@@ -322,7 +343,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                     }
                     break;
                 case XmlPullParser.END_TAG:
-                    if (GroupchatUserExtension.ELEMENT.equals(parser.getName())) {
+                    if (GroupMemberExtensionElement.ELEMENT.equals(parser.getName())) {
                         break outerloop;
                     } else parser.next();
                     break;
@@ -331,24 +352,29 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
             }
         }
         if (id != null && nickname != null && role != null) {
-            GroupchatUserExtension user = new GroupchatUserExtension(id, nickname, role);
+            GroupMemberExtensionElement user = new GroupMemberExtensionElement(id, nickname, role);
             user.setBadge(badge);
             user.setJid(jid);
-            user.setAvatar(avatar);
+            user.setLastPresent(present);
+            if (avatar != null)
+                user.setAvatarInfo(avatar);
             return user;
         } else return null;
     }
 
-    private String parseAvatar(XmlPullParser parser) throws Exception {
-        String avatar = null;
-        parser.next();
-        if (parser.getEventType() == XmlPullParser.START_TAG) {
-            if (GroupchatUserExtension.ELEMENT_INFO.equals(parser.getName())) {
-                avatar = parser.getAttributeValue("", GroupchatUserExtension.ATTR_URL);
-                parser.next();
+    private MetadataInfo parseAvatar(XmlPullParser parser) {
+        try{
+            parser.next();
+            if (parser.getEventType() == XmlPullParser.START_TAG) {
+                if (GroupMemberExtensionElement.ELEMENT_INFO.equals(parser.getName())) {
+                    return MetadataProvider.parseInfo(parser);
+                }
             }
+            return null;
+        } catch (Exception e){
+            LogManager.exception(ReferencesProvider.class, e);
+            return null;
         }
-        return avatar;
     }
 
 

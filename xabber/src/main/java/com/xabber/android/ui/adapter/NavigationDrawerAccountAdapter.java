@@ -8,13 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionState;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -33,7 +33,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view;
-        AccountManager accountManager = AccountManager.getInstance();
+        AccountManager accountManager = AccountManager.INSTANCE;
         if (convertView == null) {
             view = getActivity().getLayoutInflater().inflate(R.layout.contact_list_drawer_account_item, parent, false);
         } else {
@@ -48,7 +48,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
 
         try {
             accountName.setText(RosterManager.getInstance().getBestContact(account, ContactJid.from(accountManager.getVerboseName(account))).getName());
-        } catch (ContactJid.UserJidCreateException e) {
+        } catch (ContactJid.ContactJidCreateException e) {
             LogManager.exception(this, e);
         }
         accountName.setTextColor(ColorManager.getInstance().getAccountPainter().getAccountTextColor(account));
@@ -69,7 +69,7 @@ public class NavigationDrawerAccountAdapter extends BaseListEditorAdapter<Accoun
     @Override
     protected Collection<AccountJid> getTags() {
         List<AccountJid> list = new ArrayList<>();
-        list.addAll(AccountManager.getInstance().getEnabledAccounts());
+        list.addAll(AccountManager.INSTANCE.getEnabledAccounts());
         Collections.sort(list);
         return list;
     }

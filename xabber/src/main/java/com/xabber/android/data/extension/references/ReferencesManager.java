@@ -8,9 +8,11 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.extension.groupchat.Groupchat;
-import com.xabber.android.data.extension.groupchat.GroupchatUserContainer;
-import com.xabber.android.data.extension.groupchat.GroupchatUserExtension;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.text.StringUtilsKt;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
+import com.xabber.xmpp.groups.GroupExtensionElement;
+import com.xabber.xmpp.groups.GroupMemberContainerExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -19,11 +21,10 @@ import com.xabber.android.data.extension.references.mutable.filesharing.FileInfo
 import com.xabber.android.data.extension.references.mutable.filesharing.FileReference;
 import com.xabber.android.data.extension.references.mutable.filesharing.FileSharingExtension;
 import com.xabber.android.data.extension.references.mutable.filesharing.FileSources;
-import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatUserReference;
+import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatMemberReference;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessageExtension;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceReference;
 import com.xabber.android.ui.text.ClickSpan;
-import com.xabber.android.utils.Utils;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -54,34 +55,27 @@ public class ReferencesManager {
     }
 
     public static FileReference createMediaReferences(AttachmentRealmObject attachmentRealmObject, int begin, int end) {
-        FileInfo fileInfo = new FileInfo();
-        FileSources fileSources = new FileSources();
+        FileInfo fileInfo = new FileInfo(attachmentRealmObject.getMimeType(), attachmentRealmObject.getTitle(),
+                attachmentRealmObject.getFileSize());
 
-        fileInfo.setName(attachmentRealmObject.getTitle());
-        fileInfo.setMediaType(attachmentRealmObject.getMimeType());
+        FileSources fileSources = new FileSources(attachmentRealmObject.getFileUrl());
+
         fileInfo.setDuration(attachmentRealmObject.getDuration());
-        fileInfo.setSize(attachmentRealmObject.getFileSize());
         if (attachmentRealmObject.getImageHeight() != null)
             fileInfo.setHeight(attachmentRealmObject.getImageHeight());
         if (attachmentRealmObject.getImageWidth() != null)
             fileInfo.setWidth(attachmentRealmObject.getImageWidth());
-
-        fileSources.addSource(attachmentRealmObject.getFileUrl());
 
         FileSharingExtension fileSharingExtension = new FileSharingExtension(fileInfo, fileSources);
         return new FileReference(begin, end, fileSharingExtension);
     }
 
     public static VoiceReference createVoiceReferences(AttachmentRealmObject attachmentRealmObject, int begin, int end) {
-        FileInfo fileInfo = new FileInfo();
-        FileSources fileSources = new FileSources();
+        FileInfo fileInfo = new FileInfo(attachmentRealmObject.getMimeType(), attachmentRealmObject.getTitle(),
+                attachmentRealmObject.getFileSize());
+        FileSources fileSources = new FileSources(attachmentRealmObject.getFileUrl());
 
-        fileInfo.setName(attachmentRealmObject.getTitle());
-        fileInfo.setMediaType(attachmentRealmObject.getMimeType());
         fileInfo.setDuration(attachmentRealmObject.getDuration());
-        fileInfo.setSize(attachmentRealmObject.getFileSize());
-
-        fileSources.addSource(attachmentRealmObject.getFileUrl());
 
         FileSharingExtension fileSharingExtension = new FileSharingExtension(fileInfo, fileSources);
         VoiceMessageExtension voiceMessageExtension = new VoiceMessageExtension(fileSharingExtension);
@@ -94,7 +88,7 @@ public class ReferencesManager {
             Message forwarded = PacketParserUtils.parseStanza(item.getOriginalStanza());
             forwardedList.add(new Forwarded(new DelayInformation(new Date(item.getTimestamp())), forwarded));
         } catch (Exception e) {
-            e.printStackTrace();
+            LogManager.exception("ReferencesManager", e);
         }
 
         return new Forward(begin, end, forwardedList);
@@ -139,9 +133,9 @@ public class ReferencesManager {
             }
         }
 
-        List<ExtensionElement> groupchatElements = message.getExtensions(Groupchat.ELEMENT, Groupchat.NAMESPACE);
+        List<ExtensionElement> groupchatElements = message.getExtensions(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE);
         for (ExtensionElement groupchatElement : groupchatElements) {
-            if (groupchatElement instanceof GroupchatUserContainer) {
+            if (groupchatElement instanceof GroupMemberContainerExtensionElement) {
                 return true;
             }
         }
@@ -177,11 +171,11 @@ public class ReferencesManager {
     //}
 
     @Nullable
-    public static GroupchatUserExtension getGroupchatUserFromReferences(Stanza packet) {
-        Groupchat element = packet.getExtension(Groupchat.ELEMENT, Groupchat.NAMESPACE);
+    public static GroupMemberExtensionElement getGroupchatUserFromReferences(Stanza packet) {
+        GroupExtensionElement element = packet.getExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE);
         if (element == null) return null;
-        if (element instanceof GroupchatUserContainer) {
-            return ((GroupchatUserContainer) element).getUser();
+        if (element instanceof GroupMemberContainerExtensionElement) {
+            return ((GroupMemberContainerExtensionElement) element).getUser();
         }
         return null;
     }
@@ -190,11 +184,11 @@ public class ReferencesManager {
         if (body == null || body.isEmpty() || body.trim().isEmpty()) return new Pair<>(body, null);
 
         List<ExtensionElement> directReferenceElements = message.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
-        List<ExtensionElement> groupchatWrappedElements = message.getExtensions(Groupchat.ELEMENT, Groupchat.NAMESPACE);
+        List<ExtensionElement> groupchatWrappedElements = message.getExtensions(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE);
         if ((directReferenceElements == null || directReferenceElements.size() == 0)
                 && (groupchatWrappedElements == null || groupchatWrappedElements.size() == 0)) return new Pair<>(body, null);
 
-        List<ReferenceElement> references = new ArrayList<ReferenceElement>();
+        List<ReferenceElement> references = new ArrayList<>();
         if (directReferenceElements != null && directReferenceElements.size() != 0) {
             references.addAll(getReferences(directReferenceElements));
         }
@@ -204,7 +198,7 @@ public class ReferencesManager {
         if (references.isEmpty()) return new Pair<>(body, null);
 
         // encode HTML and split into chars
-        String[] chars = stringToChars(Utils.xmlEncode(body));
+        String[] chars = stringToChars(StringUtilsKt.escapeXml(body));
 
         // modify chars with references except markup and mention
         for (ReferenceElement reference : references) {
@@ -215,7 +209,7 @@ public class ReferencesManager {
 
         // chars to string and decode from html
         String regularBody = Html.fromHtml(charsToString(chars).replace("\n", "<br/>")).toString();
-        String markupBody = null;
+        String markupBody;
 
         // modify chars with markup and mention references
         for (ReferenceElement reference : references) {
@@ -240,8 +234,8 @@ public class ReferencesManager {
     private static List<ReferenceElement> getGroupchatUserReferences(List<ExtensionElement> elements) {
         List<ReferenceElement> references = new ArrayList<>();
         for (ExtensionElement element : elements) {
-            if (element instanceof GroupchatUserContainer) {
-                GroupchatUserReference userReference = ((GroupchatUserContainer) element).getUserReference();
+            if (element instanceof GroupMemberContainerExtensionElement) {
+                GroupchatMemberReference userReference = ((GroupMemberContainerExtensionElement) element).getUserReference();
                 if (userReference != null) references.add(userReference);
             }
         }
@@ -250,9 +244,9 @@ public class ReferencesManager {
 
     private static String charsToString(String[] array) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < array.length; i++) {
-            if (!array[i].equals(String.valueOf(Character.MIN_VALUE)))
-                builder.append(array[i]);
+        for (String s : array) {
+            if (!s.equals(String.valueOf(Character.MIN_VALUE)))
+                builder.append(s);
         }
         return builder.toString();
     }

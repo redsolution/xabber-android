@@ -13,29 +13,38 @@
     <string name="never">Never</string>
     <string name="required">Required</string>
     <string name="auto">Automatically</string>
-
     <string name="save">Save</string>
-
     <string name="cancel">Cancel</string>
     <string name="remove">Remove</string>
     <string name="skip">Skip</string>
     <string name="skip_anyway">Skip anyway</string>
     <string name="warning">Warning!</string>
     <string name="settings">Settings</string>
+    <string name="about">About</string>
     <string name="ok">OK</string>
     <string name="login">Login</string>
-
+    <string name="add">Add</string>
+    <string name="set">Set</string>
     <string name="share">Share</string>
     <string name="send_to">Send to:</string>
-
     <string name="got_it">Got it</string>
     <string name="search">Search</string>
     <string name="clear">Clear</string>
     <string name="free">free</string>
-
     <string name="contact_bar_chat">Chat</string>
     <string name="contact_bar_call">Call</string>
     <string name="contact_bar_notifications">Notifications</string>
     <string name="contact_bar_block">Block</string>
     <string name="contact_bar_unblock">Unblock</string>
+    <string name="groupchat_bar_invite">Invite</string>
+    <string name="groupchat_bar_leave">Leave</string>
+    <string name="toolbar__menu_item__all_chats">All chats</string>
+    <string name="toolbar__menu_item__chats">Chats</string>
+    <string name="toolbar__menu_item__groups">Groups</string>
+    <string name="toolbar__menu_item__mentions">Mentions</string>
+    <string name="toolbar__menu_item__archive_chats">Archive chats</string>
+    <string name="stop">Stop</string>
+    <string name="create">Create</string>
+    <string name="ignore">Ignore</string>
+    <string name="yes">yes</string>
 </resources>

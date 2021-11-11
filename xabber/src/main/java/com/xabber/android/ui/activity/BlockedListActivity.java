@@ -1,5 +1,6 @@
 package com.xabber.android.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -16,18 +17,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
+import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
-import com.xabber.android.data.extension.blocking.OnBlockedListChangedListener;
-import com.xabber.android.data.intent.AccountIntentBuilder;
 import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnBlockedListChangedListener;
 import com.xabber.android.ui.adapter.BlockedListAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.dialog.BlockByJidDialog;
 import com.xabber.android.ui.dialog.UnblockAllContactsDialog;
 import com.xabber.android.ui.widget.DividerItemDecoration;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -54,18 +57,14 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     private int previousState;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return new AccountIntentBuilder(context, BlockedListActivity.class).setAccount(account).build();
-    }
-
-    private static AccountJid getAccount(Intent intent) {
-        return AccountIntentBuilder.getAccount(intent);
+        return IntentHelpersKt.createAccountIntent(context, BlockedListActivity.class, account);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        account = getAccount(getIntent());
+        account = IntentHelpersKt.getAccountJid(getIntent());
         if (account == null) {
             finish();
             return;
@@ -74,7 +73,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         setContentView(R.layout.activity_with_toolbar_and_container);
         boolean lightTheme = SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light;
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar_default);
+        toolbar = findViewById(R.id.toolbar_default);
         toolbar.setNavigationIcon(lightTheme ? R.drawable.ic_arrow_left_grey_24dp : R.drawable.ic_arrow_left_white_24dp);
         if (toolbar.getOverflowIcon() != null) {
             toolbar.getOverflowIcon().setColorFilter(lightTheme ?
@@ -104,7 +103,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
                 for (String contactString : checkedContacts) {
                     try {
                         checkedJids.add(ContactJid.from(contactString));
-                    } catch (ContactJid.UserJidCreateException e) {
+                    } catch (ContactJid.ContactJidCreateException e) {
                         LogManager.exception(this, e);
                     }
                 }
@@ -157,7 +156,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NotNull Bundle outState) {
         super.onSaveInstanceState(outState);
         ArrayList<ContactJid> checkedContacts = adapter.getCheckedContacts();
         ArrayList<String> checkedContactsStringList = new ArrayList<>();
@@ -174,6 +173,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         return onOptionsItemSelected(item);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -250,7 +250,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
             barPainter.setGrey();
 
             toolbar.setNavigationOnClickListener(v -> {
-                adapter.setCheckedContacts(new ArrayList<ContactJid>());
+                adapter.setCheckedContacts(new ArrayList<>());
                 adapter.onChange();
                 update();
             });
@@ -262,7 +262,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
 
     @Override
     public void onBlockedListChanged(AccountJid account) {
-        update();
+        Application.getInstance().runOnUiThread(this::update);
     }
 
     public void update() {
@@ -281,4 +281,5 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
     public void onErrorUnblock() {
         Toast.makeText(BlockedListActivity.this, getString(R.string.error_unblocking_contacts), Toast.LENGTH_SHORT).show();
     }
+
 }

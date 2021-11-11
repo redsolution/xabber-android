@@ -22,6 +22,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.blocking.BlockingManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.activity.BlockedListActivity;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -98,8 +99,8 @@ public class BlockByJidDialog extends DialogFragment implements BlockingManager.
                 if (validationIsSuccess()) {
                     try {
                         BlockingManager.getInstance().blockContact(account, ContactJid.from(blockJid.getText().toString()), this);
-                    } catch (ContactJid.UserJidCreateException e) {
-                        e.printStackTrace();
+                    } catch (ContactJid.ContactJidCreateException e) {
+                        LogManager.exception(getClass().getSimpleName(), e);
                     }
                 }
                 break;
@@ -133,12 +134,12 @@ public class BlockByJidDialog extends DialogFragment implements BlockingManager.
         contactString = contactString.trim();
 
         if (contactString.contains(" ")) {
-            setError(getString(R.string.INCORRECT_USER_NAME));
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id));
             return false;
         }
 
         if (TextUtils.isEmpty(contactString)) {
-            setError(getString(R.string.EMPTY_USER_NAME));
+            setError(getString(R.string.settings_account__alert_xmpp_id_not_specified));
             return false;
         }
 
@@ -171,63 +172,63 @@ public class BlockByJidDialog extends DialogFragment implements BlockingManager.
 
         //
         if (!resourceName.equals("")) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_RESOURCE));
+            setError(getString(R.string.account_add__alert_invalid_slash));
             return false;
         }
         //Invalid when domain is empty
         if (domainName.equals("")) {
-            setError(getString(R.string.INCORRECT_USER_NAME));
+            setError(getString(R.string.account_add__alert_incorrect_xmpp_id));
             return false;
         }
 
         //Invalid when "@" is present but localPart is empty
         if (atChar == 0) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_AT));
+            setError(getString(R.string.account_add__alert_localpart_absent));
             return false;
         }
 
         //Invalid when "@" is present in a domainPart
         if (atChar > 0) {
             if (domainName.contains("@")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_AT));
+                setError(getString(R.string.account_add__alert_invalid_symbols_at));
                 return false;
             }
         }
 
         //Invalid when domain has "." at the start/end
         if (domainName.charAt(domainName.length()-1)=='.' || domainName.charAt(0)=='.'){
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+            setError(getString(R.string.account_add__alert_invalid_domain));
             return false;
         }
         //Invalid when domain does not have a "." in the middle, when paired with the last check
         if (!domainName.contains(".")) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+            setError(getString(R.string.account_add__alert_invalid_domain));
             return false;
         }
         //Invalid when domain has multiple dots in a row
         if(domainName.contains("..")) {
-            setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_DOMAIN));
+            setError(getString(R.string.account_add__alert_invalid_domain));
             return false;
         }
 
         if (!localName.equals("")) {
             //Invalid when localPart is NOT empty, and HAS "." at the start/end
             if (localName.charAt(localName.length() - 1) == '.' || localName.charAt(0) == '.') {
-                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL));
+                setError(getString(R.string.account_add__alert_localpart_invalid));
                 return false;
             }
             //Invalid when localPart is NOT empty, and contains ":" or "/" symbol. Other restricted localPart symbols get checked during the creation of the jid/userJid.
             if (localName.contains(":")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + String.format(getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), ":"));
+                setError(String.format(getString(R.string.account_add__alert_localpart_invalid_symbols), ":"));
                 return false;
             }
             if (localName.contains("/")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + String.format(getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL_SYMBOL), "/"));
+                setError(String.format(getString(R.string.account_add__alert_localpart_invalid_symbols), "/"));
                 return false;
             }
             //Invalid when localPart is NOT empty, and has multiple dots in a row
             if(localName.contains("..")) {
-                setError(getString(R.string.INCORRECT_USER_NAME) + getString(R.string.INCORRECT_USER_NAME_ADDENDUM_LOCAL));
+                setError(getString(R.string.account_add__alert_localpart_invalid));
                 return false;
             }
         }
