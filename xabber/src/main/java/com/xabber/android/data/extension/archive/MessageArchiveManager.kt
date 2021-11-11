@@ -24,7 +24,6 @@ import com.xabber.xmpp.mam.MamFinIQ
 import com.xabber.xmpp.mam.MamQueryIQ
 import io.realm.Realm
 import io.realm.Sort
-import org.jivesoftware.smack.XMPPConnection
 import org.jivesoftware.smack.XMPPException
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.packet.Stanza
@@ -157,7 +156,6 @@ object MessageArchiveManager : OnRosterReceivedListener {
                 accountJid,
                 ChatManager.getInstance(),
                 MessageHandler,
-                groupsQueryToRequestArchive
             )
             val contacts = RosterManager.getInstance().getAccountRosterContacts(accountJid)
             connection.addAsyncStanzaListener(listener, MamResultsStanzaFilter())
