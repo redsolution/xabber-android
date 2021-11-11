@@ -192,7 +192,17 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             return ChatManager.getInstance().chatsOfEnabledAccounts
                 .filter { it.lastMessage != null && it.lastTime != null }
                 .filteredByString(filterString)
-                .sortedBy { it.lastTime }
+                .sortedWith { chat1, chat2 ->
+                    when {
+                        chat1.account.bareJid.toString() == chat1.contactJid.bareJid.toString()
+                                && chat2.account.bareJid.toString() != chat2.contactJid.bareJid.toString()
+                                || chat1.lastTime > chat2.lastTime -> -1
+                        chat2.account.bareJid.toString() == chat2.contactJid.bareJid.toString()
+                                && chat1.account.bareJid.toString() != chat1.contactJid.bareJid.toString()
+                                || chat2.lastTime > chat1.lastTime -> 1
+                        else -> 0
+                    }
+                }
                 .unionWith(
                     RosterManager.getInstance().allContactsForEnabledAccounts
                         .filteredByString(filterString)
