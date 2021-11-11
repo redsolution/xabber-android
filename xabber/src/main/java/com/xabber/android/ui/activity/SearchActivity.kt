@@ -14,9 +14,12 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.account.AccountManager
+import com.xabber.android.data.createAccountIntent
+import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.BaseEntity
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupInviteManager.hasActiveIncomingInvites
+import com.xabber.android.data.getAccountJid
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.RegularChat
@@ -40,6 +43,7 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
     /* Variables for intents */
     private var action: String? = null
     private var forwardedIds: ArrayList<String>? = null
+    private var accountJid: AccountJid? = null
     private var sendText: String? = null
 
     private lateinit var toolbar: SearchToolbar
@@ -68,11 +72,12 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
         fun createSearchIntent(context: Context) =
             Intent(context, SearchActivity::class.java).also { it.action = ACTION_SEARCH }
 
-        fun createForwardIntent(context: Context, forwardedIds: List<String>) =
-            Intent(context, SearchActivity::class.java).also {
-                it.action = ACTION_FORWARD
-                it.putStringArrayListExtra(FORWARDED_IDS_EXTRA, ArrayList(forwardedIds))
-            }
+        fun createForwardIntent(
+            context: Context, accountJid: AccountJid, forwardedIds: List<String>
+        ) = createAccountIntent(context, SearchActivity::class.java, accountJid).apply {
+                action = ACTION_FORWARD
+                putStringArrayListExtra(FORWARDED_IDS_EXTRA, ArrayList(forwardedIds))
+        }
 
     }
 
@@ -94,6 +99,7 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             action = intent?.action
             forwardedIds = intent?.getStringArrayListExtra(FORWARDED_IDS_EXTRA)
             sendText = intent?.getStringExtra(Intent.EXTRA_TEXT)
+            accountJid = intent?.getAccountJid()
         }
     }
 
@@ -203,6 +209,9 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                         else -> 0
                     }
                 }
+                .filter { chat ->
+                    accountJid?.let { chat.account.bareJid.toString() == it.bareJid.toString() } ?: true
+                }
                 .unionWith(
                     RosterManager.getInstance().allContactsForEnabledAccounts
                         .filteredByString(filterString)
@@ -234,6 +243,10 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                 .apply {
                     addAll(0, savedMessagesChats)
                 }
+                .filter { chat ->
+                    accountJid?.let { chat.account.bareJid.toString() == it.bareJid.toString() } ?: true
+                }
+                .toMutableList()
         }
     }
 
