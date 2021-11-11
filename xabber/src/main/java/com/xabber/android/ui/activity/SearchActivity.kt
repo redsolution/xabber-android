@@ -198,6 +198,11 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
             return ChatManager.getInstance().chatsOfEnabledAccounts
                 .filter { it.lastMessage != null && it.lastTime != null }
                 .filteredByString(filterString)
+                .unionWith(
+                    RosterManager.getInstance().allContactsForEnabledAccounts
+                        .filteredByString(filterString)
+                        .map { RegularChat(it.account, it.contactJid) }
+                )
                 .sortedWith { chat1, chat2 ->
                     when {
                         chat1.account.bareJid.toString() == chat1.contactJid.bareJid.toString()
@@ -212,11 +217,7 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                 .filter { chat ->
                     accountJid?.let { chat.account.bareJid.toString() == it.bareJid.toString() } ?: true
                 }
-                .unionWith(
-                    RosterManager.getInstance().allContactsForEnabledAccounts
-                        .filteredByString(filterString)
-                        .map { RegularChat(it.account, it.contactJid) }
-                )
+                .toMutableList()
         } else {
             val savedMessagesChats = AccountManager.enabledAccounts.map {
                 val contactJid = ContactJid.from(it.bareJid.toString())
@@ -228,6 +229,13 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                 .filter {
                     it.lastTime != null && it.account.bareJid.toString() != it.contactJid.bareJid.toString()
                 }
+                .toMutableList()
+                .apply {
+                    addAll(0, savedMessagesChats)
+                }
+                .filter { chat ->
+                    accountJid?.let { chat.account.bareJid.toString() == it.bareJid.toString() } ?: true
+                }
                 .sortedWith { chat1, chat2 ->
                     when {
                         chat1.account.bareJid.toString() == chat1.contactJid.bareJid.toString()
@@ -238,13 +246,6 @@ class SearchActivity : ManagedActivity(), ChatListItemListener {
                                 || chat2.lastTime > chat1.lastTime -> 1
                         else -> 0
                     }
-                }
-                .toMutableList()
-                .apply {
-                    addAll(0, savedMessagesChats)
-                }
-                .filter { chat ->
-                    accountJid?.let { chat.account.bareJid.toString() == it.bareJid.toString() } ?: true
                 }
                 .toMutableList()
         }
