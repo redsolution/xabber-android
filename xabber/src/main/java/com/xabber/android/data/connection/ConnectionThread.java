@@ -118,22 +118,10 @@ class ConnectionThread {
             AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
                     AccountErrorEvent.Type.PASS_REQUIRED, "");
 
-            //com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
             com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(connectionItem.getAccount(), false);
             EventBus.getDefault().postSticky(accountErrorEvent);
             return;
         }
-
-//        switch (SettingsManager.connectionDnsResolver()) {
-//            case dnsJavaResolver:
-//                LogManager.i(this, "Use DNS Java resolver");
-//                ExtDNSJavaResolver.setup();
-//                break;
-//            case miniDnsResolver:
-//                LogManager.i(this, "Use Mini DNS resolver");
-//                MiniDnsResolver.setup();
-//                break;
-//        }
 
         LogManager.i(this, "Use DNS Java resolver");
         ExtDNSJavaResolver.setup();
@@ -187,7 +175,14 @@ class ConnectionThread {
                 ProviderManager.addIQProvider(HttpConfirmIq.ELEMENT,
                         HttpConfirmIq.NAMESPACE, new HttpConfirmIqProvider());
 
-                connection.login();
+                if (connectionItem.getConnectionSettings().getXToken() != null) {
+                    connection.login(
+                            connectionItem.getConnectionSettings().getUserName(),
+                            connectionItem.getConnectionSettings().getXToken().getTokenAndCounterStringForSASL()
+                    );
+                } else {
+                    connection.login();
+                }
 
                 ((AccountItem)connectionItem).setStreamError(false);
             } else {
