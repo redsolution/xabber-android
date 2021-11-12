@@ -1,6 +1,5 @@
 package com.xabber.android.data.extension.references;
 
-import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -8,16 +7,20 @@ import com.xabber.android.data.extension.references.mutable.filesharing.FileInfo
 import com.xabber.android.data.extension.references.mutable.filesharing.FileReference;
 import com.xabber.android.data.extension.references.mutable.filesharing.FileSharingExtension;
 import com.xabber.android.data.extension.references.mutable.filesharing.FileSources;
+import com.xabber.android.data.extension.references.mutable.geo.GeoReferenceExtensionElement;
 import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatMemberReference;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessageExtension;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceReference;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.xmpp.avatar.MetadataInfo;
 import com.xabber.xmpp.avatar.MetadataProvider;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 
 import org.jivesoftware.smack.provider.ExtensionElementProvider;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
 import org.jivesoftware.smackx.forward.provider.ForwardedProvider;
+import org.jivesoftware.smackx.geoloc.packet.GeoLocation;
+import org.jivesoftware.smackx.geoloc.provider.GeoLocationProvider;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -84,6 +87,7 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
         List<VoiceMessageExtension> voiceMessageExtensions = new ArrayList<>();
         List<Forwarded> forwardedMessages = new ArrayList<>();
         GroupMemberExtensionElement user = null;
+        List<GeoLocation> locations = new ArrayList<>();
 
         outerloop: while (true) {
             int eventType = parser.getEventType();
@@ -106,7 +110,16 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
                             && GroupMemberExtensionElement.NAMESPACE.equals(parser.getNamespace())) {
                         user = parseUser(parser);
                         parser.next();
-                    } else parser.next();
+                    } else if (GeoLocation.ELEMENT.equals(parser.getName())
+                            && GeoLocation.NAMESPACE.equals(parser.getNamespace())) {
+                                GeoLocation geoloc = (new GeoLocationProvider()).parse(parser);
+                                if (geoloc != null) {
+                                    locations.add(geoloc);
+                                }
+                                parser.next();
+                    } else {
+                        parser.next();
+                    }
                     break;
                 case XmlPullParser.END_TAG:
                     if (ReferenceElement.ELEMENT.equals(parser.getName())) {
@@ -126,10 +139,13 @@ public class ReferencesProvider extends ExtensionElementProvider<ReferenceElemen
             return new VoiceReference(begin, end, voiceMessageExtensions);
         } else if (!fileSharingExtensions.isEmpty()) {
             return new FileReference(begin, end, fileSharingExtensions);
+        } else if (!locations.isEmpty()) {
+            return new GeoReferenceExtensionElement(locations, begin, end);
         } else {
             return null;
         }
     }
+
     private ReferenceElement parseDecoration(XmlPullParser parser, int begin, int end) throws Exception {
         boolean bold = false, italic = false, underline = false, strike = false, quote = false;
         String link = null;
