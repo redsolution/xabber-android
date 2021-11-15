@@ -61,7 +61,7 @@ class MessagesAdapter(
 
             changeSet.insertionRanges.map { range ->
                 val isAddedToBottom = range.startIndex + range.length == messageRealmObjects.size
-                notifyItemRangeInserted(range.startIndex - 1, range.length + 1)
+                notifyItemRangeInserted(range.startIndex, range.length)
                 if (isAddedToBottom && (isListAlreadyScrolledToBottom || isLastMessageIsOutgoing)) {
                     llm.scrollToPosition(llm.itemCount - 1)
                 }
@@ -69,7 +69,7 @@ class MessagesAdapter(
 
             changeSet.changeRanges?.map { range ->
                 val isChangedInBottom = range.startIndex + range.length == messageRealmObjects.size
-                notifyItemRangeChanged(range.startIndex, range.length)
+                notifyItemRangeChanged(range.startIndex - 1, range.length + 1)
                 if (isChangedInBottom && (isListAlreadyScrolledToBottom || isLastMessageIsOutgoing)) {
                     llm.scrollToPosition(llm.itemCount - 1)
                 }
