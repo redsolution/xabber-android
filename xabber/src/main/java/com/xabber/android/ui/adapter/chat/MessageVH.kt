@@ -22,7 +22,7 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.DatabaseManager
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
@@ -95,7 +95,7 @@ open class MessageVH(
             timestamp: Long?
         )
 
-        fun onFileLongClick(attachmentRealmObject: AttachmentRealmObject?, caller: View?)
+        fun onFileLongClick(referenceRealmObject: ReferenceRealmObject?, caller: View?)
         fun onDownloadCancel()
         fun onUploadCancel()
         fun onDownloadError(error: String?)
@@ -273,7 +273,7 @@ open class MessageVH(
             ?.also { imageCount = it.size }
             ?.takeIf { it.isNotEmpty() }
             ?.let {
-                RealmList<AttachmentRealmObject>().apply {
+                RealmList<ReferenceRealmObject>().apply {
                     addAll(it)
                 }
             }
@@ -290,13 +290,13 @@ open class MessageVH(
     }
 
     private fun setUpFile(
-        attachmentRealmObjects: RealmList<AttachmentRealmObject>, vhExtraData: MessageVhExtraData
+        referenceRealmObjects: RealmList<ReferenceRealmObject>, vhExtraData: MessageVhExtraData
     ) {
-        attachmentRealmObjects.filter { !it.isImage }
+        referenceRealmObjects.filter { !it.isImage }
             .also { fileCount = it.size }
             .takeIf { it.isNotEmpty() }
             ?.let {
-                RealmList<AttachmentRealmObject>().apply { addAll(it) }
+                RealmList<ReferenceRealmObject>().apply { addAll(it) }
             }
             ?.let {
                 rvFileList.apply {
@@ -358,8 +358,8 @@ open class MessageVH(
         VoiceManager.getInstance().seekAudioPlaybackTo(attachmentId, timestamp, current, max)
     }
 
-    override fun onFileLongClick(attachmentRealmObject: AttachmentRealmObject, caller: View) {
-        fileListener?.onFileLongClick(attachmentRealmObject, caller)
+    override fun onFileLongClick(referenceRealmObject: ReferenceRealmObject, caller: View) {
+        fileListener?.onFileLongClick(referenceRealmObject, caller)
     }
 
     override fun onDownloadCancel() {

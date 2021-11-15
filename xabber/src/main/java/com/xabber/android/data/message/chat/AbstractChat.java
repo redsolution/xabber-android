@@ -25,7 +25,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
@@ -208,11 +208,11 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransaction(realm1 -> {
-            RealmList<AttachmentRealmObject> attachmentRealmObjects;
+            RealmList<ReferenceRealmObject> referenceRealmObjects;
 
             if (files != null){
-                attachmentRealmObjects = attachmentsFromFiles(files, messageAttachmentType);
-            } else attachmentRealmObjects = attachmentsFromUris(uris);
+                referenceRealmObjects = attachmentsFromFiles(files, messageAttachmentType);
+            } else referenceRealmObjects = attachmentsFromUris(uris);
 
             if (forwards != null && forwards.size() > 0) {
                 RealmList<ForwardIdRealmObject> ids = new RealmList<>();
@@ -224,7 +224,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             }
 
             messageRealmObject.setOriginalFrom(account.toString());
-            messageRealmObject.setAttachmentRealmObjects(attachmentRealmObjects);
+            messageRealmObject.setAttachmentRealmObjects(referenceRealmObjects);
             messageRealmObject.setTimestamp(System.currentTimeMillis());
             messageRealmObject.setRead(true);
             messageRealmObject.setMessageStatus(MessageStatus.UPLOADING);
@@ -237,43 +237,43 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return messageRealmObject.getPrimaryKey();
     }
 
-    private RealmList<AttachmentRealmObject> attachmentsFromFiles(List<File> files, String messageAttachmentType) {
-        RealmList<AttachmentRealmObject> attachmentRealmObjects = new RealmList<>();
+    private RealmList<ReferenceRealmObject> attachmentsFromFiles(List<File> files, String messageAttachmentType) {
+        RealmList<ReferenceRealmObject> referenceRealmObjects = new RealmList<>();
         for (File file : files) {
             boolean isImage = FileManager.fileIsImage(file);
-            AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
-            attachmentRealmObject.setFilePath(file.getPath());
-            attachmentRealmObject.setFileSize(file.length());
-            attachmentRealmObject.setTitle(file.getName());
-            attachmentRealmObject.setIsImage(isImage);
-            attachmentRealmObject.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+            ReferenceRealmObject referenceRealmObject = new ReferenceRealmObject();
+            referenceRealmObject.setFilePath(file.getPath());
+            referenceRealmObject.setFileSize(file.length());
+            referenceRealmObject.setTitle(file.getName());
+            referenceRealmObject.setIsImage(isImage);
+            referenceRealmObject.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
             if ("voice".equals(messageAttachmentType)) {
-                attachmentRealmObject.setIsVoice(true);
-                attachmentRealmObject.setDuration(HttpFileUploadManager.getVoiceLength(file.getPath()));
-            } else attachmentRealmObject.setDuration((long) 0);
+                referenceRealmObject.setIsVoice(true);
+                referenceRealmObject.setDuration(HttpFileUploadManager.getVoiceLength(file.getPath()));
+            } else referenceRealmObject.setDuration((long) 0);
 
 
             if (isImage) {
                 HttpFileUploadManager.ImageSize imageSize = HttpFileUploadManager.getImageSizes(file.getPath());
-                attachmentRealmObject.setImageHeight(imageSize.getHeight());
-                attachmentRealmObject.setImageWidth(imageSize.getWidth());
+                referenceRealmObject.setImageHeight(imageSize.getHeight());
+                referenceRealmObject.setImageWidth(imageSize.getWidth());
             }
-            attachmentRealmObjects.add(attachmentRealmObject);
+            referenceRealmObjects.add(referenceRealmObject);
         }
-        return attachmentRealmObjects;
+        return referenceRealmObjects;
     }
 
-    private RealmList<AttachmentRealmObject> attachmentsFromUris(List<Uri> uris) {
-        RealmList<AttachmentRealmObject> attachmentRealmObjects = new RealmList<>();
+    private RealmList<ReferenceRealmObject> attachmentsFromUris(List<Uri> uris) {
+        RealmList<ReferenceRealmObject> referenceRealmObjects = new RealmList<>();
         for (Uri uri : uris) {
-            AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
-            attachmentRealmObject.setTitle(UriUtils.getFullFileName(uri));
-            attachmentRealmObject.setIsImage(UriUtils.uriIsImage(uri));
-            attachmentRealmObject.setMimeType(UriUtils.getMimeType(uri));
-            attachmentRealmObject.setDuration((long) 0);
-            attachmentRealmObjects.add(attachmentRealmObject);
+            ReferenceRealmObject referenceRealmObject = new ReferenceRealmObject();
+            referenceRealmObject.setTitle(UriUtils.getFullFileName(uri));
+            referenceRealmObject.setIsImage(UriUtils.uriIsImage(uri));
+            referenceRealmObject.setMimeType(UriUtils.getMimeType(uri));
+            referenceRealmObject.setDuration((long) 0);
+            referenceRealmObjects.add(referenceRealmObject);
         }
-        return attachmentRealmObjects;
+        return referenceRealmObjects;
     }
 
     @Nullable
@@ -338,7 +338,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
     private Message createFileAndForwardMessagePacket(
             String stanzaId,
-            RealmList<AttachmentRealmObject> attachmentRealmObjects,
+            RealmList<ReferenceRealmObject> referenceRealmObjects,
             String[] forwardIds, String text
     ) {
 
@@ -353,7 +353,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         StringBuilder builder = new StringBuilder();
         createForwardMessageReferences(message, forwardIds, builder);
         builder.append(text);
-        createFileMessageReferences(message, attachmentRealmObjects, builder);
+        createFileMessageReferences(message, referenceRealmObjects, builder);
 
         message.setBody(builder);
         return message;
@@ -363,7 +363,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
      * Send stanza with data-references.
      */
     private Message createFileMessagePacket(String stanzaId,
-                                            RealmList<AttachmentRealmObject> attachmentRealmObjects,
+                                            RealmList<ReferenceRealmObject> referenceRealmObjects,
                                             String body) {
 
         Message message = new Message();
@@ -373,7 +373,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         if (stanzaId != null) message.setStanzaId(stanzaId);
 
         StringBuilder builder = new StringBuilder(body);
-        createFileMessageReferences(message, attachmentRealmObjects, builder);
+        createFileMessageReferences(message, referenceRealmObjects, builder);
 
         message.setBody(builder);
         return message;
@@ -411,22 +411,22 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return message;
     }
 
-    private void createFileMessageReferences(Message message, RealmList<AttachmentRealmObject> attachmentRealmObjects,
+    private void createFileMessageReferences(Message message, RealmList<ReferenceRealmObject> referenceRealmObjects,
                                              StringBuilder builder) {
-        for (AttachmentRealmObject attachmentRealmObject : attachmentRealmObjects) {
+        for (ReferenceRealmObject referenceRealmObject : referenceRealmObjects) {
             StringBuilder rowBuilder = new StringBuilder();
             if (builder.length() > 0) rowBuilder.append("\n");
-            rowBuilder.append(attachmentRealmObject.getFileUrl());
+            rowBuilder.append(referenceRealmObject.getFileUrl());
 
             int begin = getSizeOfEncodedChars(builder.toString());
             builder.append(rowBuilder);
             ReferenceElement reference;
-            if (attachmentRealmObject.isVoice()) {
+            if (referenceRealmObject.isVoice()) {
                 reference = ReferencesManager.createVoiceReferences(
-                        attachmentRealmObject, begin, getSizeOfEncodedChars(builder.toString()));
+                        referenceRealmObject, begin, getSizeOfEncodedChars(builder.toString()));
             } else {
                 reference = ReferencesManager.createMediaReferences(
-                        attachmentRealmObject, begin, getSizeOfEncodedChars(builder.toString()));
+                        referenceRealmObject, begin, getSizeOfEncodedChars(builder.toString()));
             }
             message.addExtension(reference);
         }

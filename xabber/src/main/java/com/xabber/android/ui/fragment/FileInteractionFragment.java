@@ -27,7 +27,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -292,16 +292,16 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
     }
 
     @Override
-    public void onFileLongClick(final AttachmentRealmObject attachmentRealmObject, View caller) {
+    public void onFileLongClick(final ReferenceRealmObject referenceRealmObject, View caller) {
         PopupMenu popupMenu = new PopupMenu(getActivity(), caller);
         popupMenu.inflate(R.menu.menu_file_attachment);
         popupMenu.setOnMenuItemClickListener(item -> {
             switch (item.getItemId()) {
                 case R.id.action_copy_link:
-                    onCopyFileLink(attachmentRealmObject);
+                    onCopyFileLink(referenceRealmObject);
                     break;
                 case R.id.action_share:
-                    onShareClick(attachmentRealmObject);
+                    onShareClick(referenceRealmObject);
                     break;
             }
             return true;
@@ -532,9 +532,9 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
         }
     }
 
-    private void onShareClick(AttachmentRealmObject attachmentRealmObject) {
-        if (attachmentRealmObject == null) return;
-        String path = attachmentRealmObject.getFilePath();
+    private void onShareClick(ReferenceRealmObject referenceRealmObject) {
+        if (referenceRealmObject == null) return;
+        String path = referenceRealmObject.getFilePath();
 
         if (path != null) {
             File file = new File(path);
@@ -547,9 +547,9 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
         Toast.makeText(getActivity(), R.string.FILE_NOT_FOUND, Toast.LENGTH_SHORT).show();
     }
 
-    private void onCopyFileLink(AttachmentRealmObject attachmentRealmObject) {
-        if (attachmentRealmObject == null) return;
-        String url = attachmentRealmObject.getFileUrl();
+    private void onCopyFileLink(ReferenceRealmObject referenceRealmObject) {
+        if (referenceRealmObject == null) return;
+        String url = referenceRealmObject.getFileUrl();
 
         ClipboardManager clipboardManager = ((ClipboardManager)
                 getActivity().getSystemService(Context.CLIPBOARD_SERVICE));
@@ -572,30 +572,30 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
         }
 
         if (messageRealmObject.hasAttachments()) {
-            RealmList<AttachmentRealmObject> fileAttachmentRealmObjects = new RealmList<>();
-            for (AttachmentRealmObject attachmentRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
-                if (!attachmentRealmObject.isImage()) fileAttachmentRealmObjects.add(attachmentRealmObject);
+            RealmList<ReferenceRealmObject> fileReferenceRealmObjects = new RealmList<>();
+            for (ReferenceRealmObject referenceRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
+                if (!referenceRealmObject.isImage()) fileReferenceRealmObjects.add(referenceRealmObject);
             }
 
-            final AttachmentRealmObject attachmentRealmObject = fileAttachmentRealmObjects.get(attachmentPosition);
-            if (attachmentRealmObject == null) return;
+            final ReferenceRealmObject referenceRealmObject = fileReferenceRealmObjects.get(attachmentPosition);
+            if (referenceRealmObject == null) return;
 
             LogManager.d("VoiceDebug", "openFileOrDownload fork! dl or open?");
-            if (attachmentRealmObject.getFilePath() != null) {
+            if (referenceRealmObject.getFilePath() != null) {
                 LogManager.d("VoiceDebug", "Opening file shortly!");
-                File file = new File(attachmentRealmObject.getFilePath());
+                File file = new File(referenceRealmObject.getFilePath());
                 if (!file.exists()) {
-                    MessageManager.setAttachmentLocalPathToNull(attachmentRealmObject.getUniqueId());
+                    MessageManager.setAttachmentLocalPathToNull(referenceRealmObject.getUniqueId());
                     return;
                 }
 
-                if (!attachmentRealmObject.isVoice()) {
-                    manageOpeningFile(attachmentRealmObject);
+                if (!referenceRealmObject.isVoice()) {
+                    manageOpeningFile(referenceRealmObject);
                 }
             } else {
-                LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + attachmentRealmObject.getUniqueId());
-                DownloadManager.getInstance().downloadFile(attachmentRealmObject, accountJid, getActivity());
-                if (attachmentRealmObject.isVoice()) {
+                LogManager.d("VoiceDebug", "Download Starting Shortly! attachment.getUniqueId = " + referenceRealmObject.getUniqueId());
+                DownloadManager.getInstance().downloadFile(referenceRealmObject, accountJid, getActivity());
+                if (referenceRealmObject.isVoice()) {
                     showAutoDownloadDialog();
                 }
             }
@@ -614,12 +614,12 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
         }
     }
 
-    private void manageOpeningFile(AttachmentRealmObject attachmentRealmObject) {
+    private void manageOpeningFile(ReferenceRealmObject referenceRealmObject) {
         Intent i = new Intent(Intent.ACTION_VIEW);
-        String path = attachmentRealmObject.getFilePath();
+        String path = referenceRealmObject.getFilePath();
         i.setDataAndType(FileProvider.getUriForFile(requireActivity(),
                 requireActivity().getApplicationContext().getPackageName() + ".provider",
-                new File(path)), attachmentRealmObject.getMimeType());
+                new File(path)), referenceRealmObject.getMimeType());
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         try {

@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.ContactJid
@@ -502,8 +502,8 @@ class MessagesAdapter(
         }
     }
 
-    override fun onFileLongClick(attachmentRealmObject: AttachmentRealmObject?, caller: View?) {
-        fileListener?.onFileLongClick(attachmentRealmObject, caller)
+    override fun onFileLongClick(referenceRealmObject: ReferenceRealmObject?, caller: View?) {
+        fileListener?.onFileLongClick(referenceRealmObject, caller)
     }
 
     override fun onDownloadCancel() {

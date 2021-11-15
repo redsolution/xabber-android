@@ -6,7 +6,7 @@ import android.os.Looper;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -96,9 +96,9 @@ public class ClipManager {
         }
 
         if (message.hasAttachments()) {
-            for (AttachmentRealmObject attachmentRealmObject : message.getAttachmentRealmObjects()) {
+            for (ReferenceRealmObject referenceRealmObject : message.getAttachmentRealmObjects()) {
                 stringBuilder.append(space);
-                stringBuilder.append(attachmentRealmObject.getFileUrl());
+                stringBuilder.append(referenceRealmObject.getFileUrl());
                 stringBuilder.append("\n");
             }
         }

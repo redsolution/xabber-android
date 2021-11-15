@@ -22,7 +22,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.database.DatabaseManager
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.ui.adapter.chat.MessageVhExtraData
 import com.xabber.android.ui.helper.MessageDeliveryStatusHelper
@@ -141,10 +141,10 @@ class ImageGrid {
     }
 
     private fun setupImageViewIntoRigidGridCell(
-        attachmentRealmObject: AttachmentRealmObject, imageView: ImageView
+        referenceRealmObject: ReferenceRealmObject, imageView: ImageView
     ) {
-        val uri = attachmentRealmObject.filePath?.takeIf { it.isNotEmpty() }
-            ?: attachmentRealmObject.fileUrl
+        val uri = referenceRealmObject.filePath?.takeIf { it.isNotEmpty() }
+            ?: referenceRealmObject.fileUrl
 
         Glide.with(imageView.context)
             .load(uri)
@@ -155,18 +155,18 @@ class ImageGrid {
     }
 
     private fun setupImageViewIntoFlexibleSingleImageCell(
-        attachmentRealmObject: AttachmentRealmObject, imageView: ImageView
+        referenceRealmObject: ReferenceRealmObject, imageView: ImageView
     ) {
-        val imageWidth = attachmentRealmObject.imageWidth
-        val imageHeight = attachmentRealmObject.imageHeight
+        val imageWidth = referenceRealmObject.imageWidth
+        val imageHeight = referenceRealmObject.imageHeight
 
         if (imageWidth != null && imageHeight != null) {
             setupImageViewWithDimensions(
-                imageView, attachmentRealmObject, imageWidth, imageHeight
+                imageView, referenceRealmObject, imageWidth, imageHeight
             )
         } else {
             setupImageViewWithoutDimensions(
-                imageView, attachmentRealmObject.fileUrl, attachmentRealmObject.uniqueId
+                imageView, referenceRealmObject.fileUrl, referenceRealmObject.uniqueId
             )
         }
     }
@@ -204,8 +204,8 @@ class ImageGrid {
                     Application.getInstance().runInBackground {
                         DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
                             realm.executeTransactionAsync { realm1: Realm ->
-                                realm1.where(AttachmentRealmObject::class.java)
-                                    .equalTo(AttachmentRealmObject.Fields.UNIQUE_ID, attachmentId)
+                                realm1.where(ReferenceRealmObject::class.java)
+                                    .equalTo(ReferenceRealmObject.Fields.UNIQUE_ID, attachmentId)
                                     .findFirst()
                                     ?.apply {
                                         this.imageWidth = width
@@ -225,10 +225,10 @@ class ImageGrid {
     }
 
     private fun setupImageViewWithDimensions(
-        imageView: ImageView, attachmentRealmObject: AttachmentRealmObject, width: Int, height: Int
+        imageView: ImageView, referenceRealmObject: ReferenceRealmObject, width: Int, height: Int
     ) {
-        val uri = attachmentRealmObject.filePath?.takeIf { it.isNotEmpty() }
-            ?: attachmentRealmObject.fileUrl
+        val uri = referenceRealmObject.filePath?.takeIf { it.isNotEmpty() }
+            ?: referenceRealmObject.fileUrl
 
         Glide.with(imageView.context)
             .load(uri)

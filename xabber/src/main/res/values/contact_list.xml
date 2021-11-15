@@ -156,6 +156,6 @@
     <string name="recent_chat__decrypting_messages">Decrypting messages</string>
     <string name="saved_messages__hint_forward_here">Forward here to save</string>
     <string name="category_recent_chats">Recent chats</string>
-    <string name="recent_chat__last_message__attachments">%d attachments</string>
+    <string name="recent_chat__last_message__attachments">%d references</string>
     <string name="recent_chat__last_message__private_invitation">Invitation to private chat</string>
 </resources>

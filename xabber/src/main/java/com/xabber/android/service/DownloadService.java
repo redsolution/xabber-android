@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.log.LogManager;
@@ -185,10 +185,10 @@ public class DownloadService extends IntentService {
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
                 realm.executeTransaction(realm1 -> {
-                    AttachmentRealmObject attachmentRealmObject = realm1.where(AttachmentRealmObject.class)
-                            .equalTo(AttachmentRealmObject.Fields.UNIQUE_ID, attachmentId).findFirst();
-                    if (attachmentRealmObject != null) {
-                        attachmentRealmObject.setFilePath(path);
+                    ReferenceRealmObject referenceRealmObject = realm1.where(ReferenceRealmObject.class)
+                            .equalTo(ReferenceRealmObject.Fields.UNIQUE_ID, attachmentId).findFirst();
+                    if (referenceRealmObject != null) {
+                        referenceRealmObject.setFilePath(path);
                     }
                 });
             } catch (Exception e){

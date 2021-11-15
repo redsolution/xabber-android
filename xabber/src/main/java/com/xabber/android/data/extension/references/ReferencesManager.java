@@ -1,13 +1,15 @@
 package com.xabber.android.data.extension.references;
 
+import android.location.LocationProvider;
 import android.text.Html;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.extension.references.mutable.geo.GeoReferenceExtensionElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.text.StringUtilsKt;
 import com.xabber.xmpp.groups.GroupMemberExtensionElement;
@@ -32,6 +34,7 @@ import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.forward.packet.Forwarded;
+import org.jivesoftware.smackx.geoloc.packet.GeoLocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,28 +57,28 @@ public class ReferencesManager {
         return forwarded;
     }
 
-    public static FileReference createMediaReferences(AttachmentRealmObject attachmentRealmObject, int begin, int end) {
-        FileInfo fileInfo = new FileInfo(attachmentRealmObject.getMimeType(), attachmentRealmObject.getTitle(),
-                attachmentRealmObject.getFileSize());
+    public static FileReference createMediaReferences(ReferenceRealmObject referenceRealmObject, int begin, int end) {
+        FileInfo fileInfo = new FileInfo(referenceRealmObject.getMimeType(), referenceRealmObject.getTitle(),
+                referenceRealmObject.getFileSize());
 
-        FileSources fileSources = new FileSources(attachmentRealmObject.getFileUrl());
+        FileSources fileSources = new FileSources(referenceRealmObject.getFileUrl());
 
-        fileInfo.setDuration(attachmentRealmObject.getDuration());
-        if (attachmentRealmObject.getImageHeight() != null)
-            fileInfo.setHeight(attachmentRealmObject.getImageHeight());
-        if (attachmentRealmObject.getImageWidth() != null)
-            fileInfo.setWidth(attachmentRealmObject.getImageWidth());
+        fileInfo.setDuration(referenceRealmObject.getDuration());
+        if (referenceRealmObject.getImageHeight() != null)
+            fileInfo.setHeight(referenceRealmObject.getImageHeight());
+        if (referenceRealmObject.getImageWidth() != null)
+            fileInfo.setWidth(referenceRealmObject.getImageWidth());
 
         FileSharingExtension fileSharingExtension = new FileSharingExtension(fileInfo, fileSources);
         return new FileReference(begin, end, fileSharingExtension);
     }
 
-    public static VoiceReference createVoiceReferences(AttachmentRealmObject attachmentRealmObject, int begin, int end) {
-        FileInfo fileInfo = new FileInfo(attachmentRealmObject.getMimeType(), attachmentRealmObject.getTitle(),
-                attachmentRealmObject.getFileSize());
-        FileSources fileSources = new FileSources(attachmentRealmObject.getFileUrl());
+    public static VoiceReference createVoiceReferences(ReferenceRealmObject referenceRealmObject, int begin, int end) {
+        FileInfo fileInfo = new FileInfo(referenceRealmObject.getMimeType(), referenceRealmObject.getTitle(),
+                referenceRealmObject.getFileSize());
+        FileSources fileSources = new FileSources(referenceRealmObject.getFileUrl());
 
-        fileInfo.setDuration(attachmentRealmObject.getDuration());
+        fileInfo.setDuration(referenceRealmObject.getDuration());
 
         FileSharingExtension fileSharingExtension = new FileSharingExtension(fileInfo, fileSources);
         VoiceMessageExtension voiceMessageExtension = new VoiceMessageExtension(fileSharingExtension);
@@ -106,6 +109,22 @@ public class ReferencesManager {
             }
         }
         return mediaFileExtensions;
+    }
+
+    public static List<GeoLocation> getGeoLocationsFromReference(Stanza packet) {
+        List<ExtensionElement> elements = packet.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);
+        if (elements == null || elements.size() == 0) {
+            return Collections.emptyList();
+        }
+        List<GeoLocation> locations = new ArrayList<>();
+        for (ExtensionElement element : elements) {
+            if (element instanceof GeoReferenceExtensionElement) {
+                for (GeoLocation location : ((GeoReferenceExtensionElement) element).getGeoLocationElements()) {
+                    locations.add(location);
+                }
+            }
+        }
+        return locations;
     }
 
     @NonNull

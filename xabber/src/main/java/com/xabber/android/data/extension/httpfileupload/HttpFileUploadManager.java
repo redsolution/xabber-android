@@ -23,8 +23,8 @@ import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnAuthenticatedListener;
 import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.file.FileManager;
@@ -43,6 +43,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.geoloc.packet.GeoLocation;
 import org.jivesoftware.smackx.xdata.FormField;
 import org.jivesoftware.smackx.xdata.packet.DataForm;
 import org.jxmpp.jid.BareJid;
@@ -128,22 +129,28 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
         return type;
     }
 
-    public static RealmList<AttachmentRealmObject> parseFileMessage(Stanza packet) {
-        RealmList<AttachmentRealmObject> attachmentRealmObjects = new RealmList<>();
+    public static RealmList<ReferenceRealmObject> parseMessageWithReference(Stanza packet) {
+        RealmList<ReferenceRealmObject> referenceRealmObjects = new RealmList<>();
 
         // parsing file references
+        List<GeoLocation> refLocations = ReferencesManager.getGeoLocationsFromReference(packet);
         List<FileSharingExtension> refMediaList = ReferencesManager.getMediaFromReferences(packet);
         List<FileSharingExtension> refVoiceList = ReferencesManager.getVoiceFromReferences(packet);
         if (!refMediaList.isEmpty()) {
             for (FileSharingExtension media : refMediaList) {
-                attachmentRealmObjects.add(refMediaToAttachment(media, false));
+                referenceRealmObjects.add(refMediaToAttachment(media, false));
             }
         }
         if (!refVoiceList.isEmpty()) {
             for (FileSharingExtension voice : refVoiceList) {
-                attachmentRealmObjects.add(refMediaToAttachment(voice, true));
+                referenceRealmObjects.add(refMediaToAttachment(voice, true));
             }
         }
+        if (!refLocations.isEmpty()) {
+            for (GeoLocation location : refLocations) {
+                referenceRealmObjects.add(refGeoToAttachment(location));
+            }
+        } //todo yep, it shouldn't be here
 
         // parsing data forms
         DataForm dataForm = DataForm.from(packet);
@@ -153,53 +160,61 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
             for (FormField field : fields) {
                 if (field instanceof ExtendedFormField) {
                     ExtendedFormField.Media media = ((ExtendedFormField) field).getMedia();
-                    if (media != null) attachmentRealmObjects.add(mediaToAttachment(media, field.getLabel()));
+                    if (media != null) referenceRealmObjects.add(mediaToAttachment(media, field.getLabel()));
                 }
             }
         }
 
-        if (attachmentRealmObjects.size() == 0) {
-            AttachmentRealmObject attachment = messageBodyToAttachment(packet);
-            if (attachment != null) attachmentRealmObjects.add(attachment);
+        if (referenceRealmObjects.size() == 0) {
+            ReferenceRealmObject attachment = messageBodyToAttachment(packet);
+            if (attachment != null) referenceRealmObjects.add(attachment);
         }
 
-        return attachmentRealmObjects;
+        return referenceRealmObjects;
     }
 
-    private static AttachmentRealmObject refMediaToAttachment(FileSharingExtension sharedFile,
-                                                              boolean isVoice) {
-        AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
+    private static ReferenceRealmObject refGeoToAttachment(GeoLocation element) {
+        ReferenceRealmObject referenceRealmObject = new ReferenceRealmObject();
+        referenceRealmObject.setLatitude(element.getLat());
+        referenceRealmObject.setLongitude(element.getLon());
+        referenceRealmObject.setGeo(true);
+        return referenceRealmObject;
+    }
+
+    private static ReferenceRealmObject refMediaToAttachment(FileSharingExtension sharedFile,
+                                                             boolean isVoice) {
+        ReferenceRealmObject referenceRealmObject = new ReferenceRealmObject();
         FileSources fileSources = sharedFile.getFileSources();
 
         String url = fileSources.getUris().get(0);
-        attachmentRealmObject.setFileUrl(url);
-        attachmentRealmObject.setIsImage(FileManager.isImageUrl(url));
-        attachmentRealmObject.setIsVoice(isVoice);
+        referenceRealmObject.setFileUrl(url);
+        referenceRealmObject.setIsImage(FileManager.isImageUrl(url));
+        referenceRealmObject.setIsVoice(isVoice);
         //attachmentRealmObject.setRefType(referenceType);
 
         FileInfo fileInfo = sharedFile.getFileInfo();
-        attachmentRealmObject.setTitle(fileInfo.getName());
-        attachmentRealmObject.setMimeType(fileInfo.getMediaType());
-        attachmentRealmObject.setDuration(fileInfo.getDuration());
-        attachmentRealmObject.setFileSize(fileInfo.getSize());
-        if (fileInfo.getHeight() > 0) attachmentRealmObject.setImageHeight(fileInfo.getHeight());
-        if (fileInfo.getWidth() > 0) attachmentRealmObject.setImageWidth(fileInfo.getWidth());
+        referenceRealmObject.setTitle(fileInfo.getName());
+        referenceRealmObject.setMimeType(fileInfo.getMediaType());
+        referenceRealmObject.setDuration(fileInfo.getDuration());
+        referenceRealmObject.setFileSize(fileInfo.getSize());
+        if (fileInfo.getHeight() > 0) referenceRealmObject.setImageHeight(fileInfo.getHeight());
+        if (fileInfo.getWidth() > 0) referenceRealmObject.setImageWidth(fileInfo.getWidth());
 
-        return attachmentRealmObject;
+        return referenceRealmObject;
     }
 
-    private static AttachmentRealmObject mediaToAttachment(ExtendedFormField.Media media,
-                                                           String title) {
-        AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
-        attachmentRealmObject.setTitle(title);
+    private static ReferenceRealmObject mediaToAttachment(ExtendedFormField.Media media,
+                                                          String title) {
+        ReferenceRealmObject referenceRealmObject = new ReferenceRealmObject();
+        referenceRealmObject.setTitle(title);
 
         try {
             if (media.getWidth() != null && !media.getWidth().isEmpty()){
-                attachmentRealmObject.setImageWidth(Integer.valueOf(media.getWidth()));
+                referenceRealmObject.setImageWidth(Integer.valueOf(media.getWidth()));
             }
 
             if (media.getHeight() != null && !media.getHeight().isEmpty()) {
-                attachmentRealmObject.setImageHeight(Integer.valueOf(media.getHeight()));
+                referenceRealmObject.setImageHeight(Integer.valueOf(media.getHeight()));
             }
 
         } catch (NumberFormatException e) {
@@ -208,19 +223,19 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
 
         ExtendedFormField.Uri uri = media.getUri();
         if (uri != null) {
-            attachmentRealmObject.setMimeType(uri.getType());
-            attachmentRealmObject.setFileSize(uri.getSize());
-            attachmentRealmObject.setDuration(uri.getDuration());
-            attachmentRealmObject.setFileUrl(uri.getUri());
-            attachmentRealmObject.setIsImage(FileManager.isImageUrl(uri.getUri()));
+            referenceRealmObject.setMimeType(uri.getType());
+            referenceRealmObject.setFileSize(uri.getSize());
+            referenceRealmObject.setDuration(uri.getDuration());
+            referenceRealmObject.setFileUrl(uri.getUri());
+            referenceRealmObject.setIsImage(FileManager.isImageUrl(uri.getUri()));
         }
-        return attachmentRealmObject;
+        return referenceRealmObject;
     }
 
-    private static AttachmentRealmObject messageBodyToAttachment(Stanza packet) {
+    private static ReferenceRealmObject messageBodyToAttachment(Stanza packet) {
         Message message = (Message) packet;
         if (FileManager.isImageUrl(message.getBody())) {
-            AttachmentRealmObject bodyAttachment = new AttachmentRealmObject();
+            ReferenceRealmObject bodyAttachment = new ReferenceRealmObject();
             bodyAttachment.setTitle(FileManager.extractFileName(message.getBody()));
             bodyAttachment.setFileUrl(message.getBody());
             bodyAttachment.setIsImage(true);
@@ -265,9 +280,9 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     public void retrySendFileMessage(final MessageRealmObject messageRealmObject, Context context) {
         List<String> notUploadedFilesPaths = new ArrayList<>();
 
-        for (AttachmentRealmObject attachmentRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
-            if (attachmentRealmObject.getFileUrl() == null || attachmentRealmObject.getFileUrl().isEmpty()){
-                notUploadedFilesPaths.add(attachmentRealmObject.getFilePath());
+        for (ReferenceRealmObject referenceRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
+            if (referenceRealmObject.getFileUrl() == null || referenceRealmObject.getFileUrl().isEmpty()){
+                notUploadedFilesPaths.add(referenceRealmObject.getFilePath());
             }
         }
 

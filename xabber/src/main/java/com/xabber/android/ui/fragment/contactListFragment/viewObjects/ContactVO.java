@@ -29,7 +29,7 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -186,21 +186,27 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                 String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid());
                 messageText = StringUtilsKt.wrapWithColorTag(chatState, accountColorIndicatorLight);
             } else if (lastMessage.hasAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
-                AttachmentRealmObject attachmentRealmObject = lastMessage.getAttachmentRealmObjects().get(0);
-                if (attachmentRealmObject.isVoice()) {
+                ReferenceRealmObject referenceRealmObject = lastMessage.getAttachmentRealmObjects().get(0);
+                if (referenceRealmObject.isVoice()) {
                     StringBuilder voiceText = new StringBuilder();
                     voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
-                    if (attachmentRealmObject.getDuration() != null && attachmentRealmObject.getDuration() != 0) {
+                    if (referenceRealmObject.getDuration() != null && referenceRealmObject.getDuration() != 0) {
                         voiceText.append(
                                 String.format(
                                         Locale.getDefault(),
                                         ", %s",
-                                        DatesUtilsKt.getDurationStringForVoiceMessage(null, attachmentRealmObject.getDuration())
+                                        DatesUtilsKt.getDurationStringForVoiceMessage(null, referenceRealmObject.getDuration())
                                 )
                         );
                     }
                     messageText = StringUtilsKt.wrapWithColorTag(voiceText.toString(), accountColorIndicator);
-                } else messageText = StringUtilsKt.wrapWithColorTag(attachmentRealmObject.getTitle().trim(), accountColorIndicator);
+                } else {
+                    if (referenceRealmObject.isGeo()) {
+                        messageText = "Location temp";
+                    } else {
+                        messageText = StringUtilsKt.wrapWithColorTag(referenceRealmObject.getTitle().trim(), accountColorIndicator);
+                    }
+                }
             } else if (lastMessage.getAttachmentRealmObjects() != null
                     && lastMessage.getAttachmentRealmObjects().size() !=0
                     && lastMessage.getAttachmentRealmObjects().get(0).getFilePath() != null) {

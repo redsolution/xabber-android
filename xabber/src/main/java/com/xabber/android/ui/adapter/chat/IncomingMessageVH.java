@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.ContactJid;
@@ -93,7 +93,7 @@ public class IncomingMessageVH  extends MessageVH {
         boolean imageOnly = true;
 
         if(messageRealmObject.hasAttachments()) {
-            for (AttachmentRealmObject a : messageRealmObject.getAttachmentRealmObjects()){
+            for (ReferenceRealmObject a : messageRealmObject.getAttachmentRealmObjects()){
                 if (a.isImage()) {
                     imageAttached = true;
                 } else imageOnly = false;

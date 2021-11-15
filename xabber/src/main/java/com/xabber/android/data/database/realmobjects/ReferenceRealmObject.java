@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class AttachmentRealmObject extends RealmObject {
+public class ReferenceRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String UNIQUE_ID = "uniqueId";
@@ -22,7 +22,7 @@ public class AttachmentRealmObject extends RealmObject {
         public static final String IMAGE_HEIGHT = "imageHeight";
         public static final String DURATION = "duration";
         public static final String MIME_TYPE = "mimeType";
-        public static final String REF_TYPE = "refType";
+        public static final String IS_GEO = "isGeo";
     }
 
     @PrimaryKey
@@ -48,6 +48,8 @@ public class AttachmentRealmObject extends RealmObject {
      */
     private boolean isVoice;
 
+    private boolean isGeo;
+
     @Nullable
     private Integer imageWidth;
 
@@ -58,13 +60,14 @@ public class AttachmentRealmObject extends RealmObject {
 
     private String mimeType;
 
-    @Nullable
-    private String refType;
-
     /** Duration in seconds */
     private Long duration;
 
-    public AttachmentRealmObject() {
+    private double longitude;
+
+    private double latitude;
+
+    public ReferenceRealmObject() {
         this.uniqueId = UUID.randomUUID().toString();
     }
 
@@ -75,7 +78,6 @@ public class AttachmentRealmObject extends RealmObject {
     public String getFilePath() {
         return filePath;
     }
-
     public void setFilePath(String filePath) {
         this.filePath = filePath;
     }
@@ -83,7 +85,6 @@ public class AttachmentRealmObject extends RealmObject {
     public boolean isImage() {
         return isImage;
     }
-
     public void setIsImage(boolean isImage) {
         this.isImage = isImage;
     }
@@ -91,10 +92,12 @@ public class AttachmentRealmObject extends RealmObject {
     public boolean isVoice() {
         return isVoice;
     }
-
     public void setIsVoice(boolean isVoice) {
         this.isVoice = isVoice;
     }
+
+    public boolean isGeo() { return isGeo; }
+    public void setGeo(boolean geo) { isGeo = geo; }
 
     @Nullable
     public Integer getImageWidth() {
@@ -154,14 +157,10 @@ public class AttachmentRealmObject extends RealmObject {
         this.duration = duration;
     }
 
-    @Deprecated
-    @Nullable
-    public String getRefType() {
-        return refType;
-    }
+    public double getLongitude() { return longitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
 
-    @Deprecated
-    public void setRefType(String refType) {
-        this.refType = refType;
-    }
+    public double getLatitude() { return latitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+
 }

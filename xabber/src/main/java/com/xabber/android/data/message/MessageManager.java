@@ -25,7 +25,7 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.ConnectionItem;
 import com.xabber.android.data.connection.OnPacketListener;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
@@ -164,20 +164,20 @@ public class MessageManager implements OnPacketListener {
                     .findFirst();
 
             if (messageRealmObject != null) {
-                RealmList<AttachmentRealmObject> attachmentRealmObjects = messageRealmObject.getAttachmentRealmObjects();
+                RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getAttachmentRealmObjects();
 
                 // remove attachments that not uploaded
                 for (String file : notUploadedFilesUrls) {
-                    for (AttachmentRealmObject attachmentRealmObject : attachmentRealmObjects) {
-                        if (file.equals(attachmentRealmObject.getFilePath())) {
-                            attachmentRealmObjects.remove(attachmentRealmObject);
+                    for (ReferenceRealmObject referenceRealmObject : referenceRealmObjects) {
+                        if (file.equals(referenceRealmObject.getFilePath())) {
+                            referenceRealmObjects.remove(referenceRealmObject);
                             break;
                         }
                     }
                 }
 
-                for (AttachmentRealmObject attachmentRealmObject : attachmentRealmObjects) {
-                    attachmentRealmObject.setFileUrl(urls.get(attachmentRealmObject.getFilePath()));
+                for (ReferenceRealmObject referenceRealmObject : referenceRealmObjects) {
+                    referenceRealmObject.setFileUrl(urls.get(referenceRealmObject.getFilePath()));
                 }
 
                 messageRealmObject.setText("");
@@ -199,27 +199,27 @@ public class MessageManager implements OnPacketListener {
                     .findFirst();
 
             if (messageRealmObject != null) {
-                RealmList<AttachmentRealmObject> attachmentRealmObjects = messageRealmObject.getAttachmentRealmObjects();
+                RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getAttachmentRealmObjects();
 
                 // remove temporary attachments created from uri
                 // to replace it with attachments created from files
-                attachmentRealmObjects.deleteAllFromRealm();
+                referenceRealmObjects.deleteAllFromRealm();
 
                 for (File file : files) {
-                    AttachmentRealmObject attachmentRealmObject = new AttachmentRealmObject();
-                    attachmentRealmObject.setFilePath(file.getPath());
-                    attachmentRealmObject.setFileSize(file.length());
-                    attachmentRealmObject.setTitle(file.getName());
-                    attachmentRealmObject.setIsImage(FileManager.fileIsImage(file));
-                    attachmentRealmObject.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
-                    attachmentRealmObject.setDuration((long) 0);
+                    ReferenceRealmObject referenceRealmObject = new ReferenceRealmObject();
+                    referenceRealmObject.setFilePath(file.getPath());
+                    referenceRealmObject.setFileSize(file.length());
+                    referenceRealmObject.setTitle(file.getName());
+                    referenceRealmObject.setIsImage(FileManager.fileIsImage(file));
+                    referenceRealmObject.setMimeType(HttpFileUploadManager.getMimeType(file.getPath()));
+                    referenceRealmObject.setDuration((long) 0);
 
-                    if (attachmentRealmObject.isImage()) {
+                    if (referenceRealmObject.isImage()) {
                         HttpFileUploadManager.ImageSize imageSize = HttpFileUploadManager.getImageSizes(file.getPath());
-                        attachmentRealmObject.setImageHeight(imageSize.getHeight());
-                        attachmentRealmObject.setImageWidth(imageSize.getWidth());
+                        referenceRealmObject.setImageHeight(imageSize.getHeight());
+                        referenceRealmObject.setImageWidth(imageSize.getWidth());
                     }
-                    attachmentRealmObjects.add(attachmentRealmObject);
+                    referenceRealmObjects.add(referenceRealmObject);
                 }
             }
         });
@@ -492,8 +492,8 @@ public class MessageManager implements OnPacketListener {
     public static void setAttachmentLocalPathToNull(final String uniqId) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
         realm.executeTransactionAsync(realm1 -> {
-            AttachmentRealmObject first = realm1.where(AttachmentRealmObject.class)
-                    .equalTo(AttachmentRealmObject.Fields.UNIQUE_ID, uniqId)
+            ReferenceRealmObject first = realm1.where(ReferenceRealmObject.class)
+                    .equalTo(ReferenceRealmObject.Fields.UNIQUE_ID, uniqId)
                     .findFirst();
             if (first != null) {
                 first.setFilePath(null);

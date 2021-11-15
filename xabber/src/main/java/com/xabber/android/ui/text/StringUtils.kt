@@ -10,7 +10,7 @@ import android.text.style.URLSpan
 import android.text.util.Linkify
 import androidx.annotation.RequiresApi
 import com.xabber.android.R
-import com.xabber.android.data.database.realmobjects.AttachmentRealmObject
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.log.LogManager
 import com.xabber.xmpp.groups.GroupPresenceExtensionElement
 import java.io.UnsupportedEncodingException
@@ -92,13 +92,13 @@ fun getDateStringForMessage(timestamp: Long, locale: Locale = Locale.getDefault(
 }
 
 fun getColoredAttachmentDisplayName(
-    context: Context, attachments: List<AttachmentRealmObject>?, accountColorIndicator: Int
+    context: Context, references: List<ReferenceRealmObject>?, accountColorIndicator: Int
 ): String? {
-    return if (attachments != null) {
+    return if (references != null) {
         val attachmentName: String
         val attachmentBuilder = java.lang.StringBuilder()
-        if (attachments.size == 1) {
-            val singleAttachment = attachments[0]
+        if (references.size == 1) {
+            val singleAttachment = references[0]
             if (singleAttachment.isVoice) {
                 attachmentBuilder.append(context.resources.getString(R.string.voice_message))
                 if (singleAttachment.duration != null && singleAttachment.duration != 0L) {
@@ -141,13 +141,13 @@ fun getColoredAttachmentDisplayName(
             }
         } else {
             var sizeOfAllAttachments: Long = 0
-            for (attachmentRealmObject in attachments) {
+            for (attachmentRealmObject in references) {
                 sizeOfAllAttachments += attachmentRealmObject.fileSize
             }
             var isAllAttachmentsOfOneType = true
-            for (i in 1 until attachments.size) {
-                val currentAttachment = attachments[i]
-                val previousAttachment = attachments[i - 1]
+            for (i in 1 until references.size) {
+                val currentAttachment = references[i]
+                val previousAttachment = references[i - 1]
                 if (!(currentAttachment.isVoice && previousAttachment.isVoice)
                     || !(currentAttachment.isImage && previousAttachment.isVoice)
                 ) {
@@ -156,27 +156,27 @@ fun getColoredAttachmentDisplayName(
                 }
             }
             if (isAllAttachmentsOfOneType) {
-                if (attachments[0].isImage) {
+                if (references[0].isImage) {
                     attachmentBuilder.append(
                         context.resources.getQuantityString(
                             R.plurals.recent_chat__last_message__images,
-                            attachments.size,
-                            attachments.size
+                            references.size,
+                            references.size
                         )
                     )
                 } else {
                     attachmentBuilder.append(
                         context.resources.getQuantityString(
                             R.plurals.recent_chat__last_message__files,
-                            attachments.size,
-                            attachments.size
+                            references.size,
+                            references.size
                         )
                     )
                 }
             } else {
                 attachmentBuilder.append(
                     context.resources.getString(
-                        R.string.recent_chat__last_message__attachments, attachments.size
+                        R.string.recent_chat__last_message__attachments, references.size
                     )
                 )
             }
