@@ -2,7 +2,7 @@ package com.xabber.android.data.extension.xtoken
 
 import com.xabber.xmpp.xtoken.IncomingNewXTokenIQ
 
-data class XToken(val uid: String, val token: String, val expire: Long, var counter: Int = -1) {
+data class XToken(val uid: String, val token: String, val expire: Long, var counter: Int = 0) {
     val isExpired: Boolean
         get() = System.currentTimeMillis() > expire
 

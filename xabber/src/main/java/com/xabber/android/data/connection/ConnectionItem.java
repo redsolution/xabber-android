@@ -163,12 +163,11 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-        if (!NetworkManager.isNetworkAvailable() &&
-                (getState() == ConnectionState.connected
-                        || getState() == ConnectionState.authentication
-                        || getState() == ConnectionState.connecting)
+        if (!NetworkManager.isNetworkAvailable()
+                || getState() == ConnectionState.authentication
+                || getState() == ConnectionState.connecting
         ) {
-            LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + " but DID NOT TRY to reconnect");
+            LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + " but DID NOT TRY to reconnect cause state: " + getState());
             return false;
         }
         if (getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting
