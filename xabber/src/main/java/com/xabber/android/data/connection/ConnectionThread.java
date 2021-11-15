@@ -180,6 +180,7 @@ class ConnectionThread {
                             connectionItem.getConnectionSettings().getUserName(),
                             connectionItem.getConnectionSettings().getXToken().getTokenAndCounterStringForSASL()
                     );
+                    XTokenManager.INSTANCE.onLogin(connectionItem);
                 } else {
                     connection.login();
                 }

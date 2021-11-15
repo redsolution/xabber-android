@@ -6,7 +6,6 @@ import com.xabber.android.data.NetworkException
 import com.xabber.android.data.account.AccountErrorEvent
 import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.connection.ConnectionItem
-import com.xabber.android.data.connection.OnAuthenticatedListener
 import com.xabber.android.data.connection.OnPacketListener
 import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.entity.AccountJid
@@ -23,7 +22,7 @@ import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 
-object XTokenManager : OnPacketListener, OnAuthenticatedListener {
+object XTokenManager : OnPacketListener {
 
     const val NAMESPACE = "https://xabber.com/protocol/auth-tokens"
 
@@ -43,7 +42,7 @@ object XTokenManager : OnPacketListener, OnAuthenticatedListener {
         }
     }
 
-    override fun onAuthenticated(connectionItem: ConnectionItem) {
+    fun onLogin(connectionItem: ConnectionItem) {
         val account = AccountManager.getAccount(connectionItem.account)
         LogManager.d("XToken", "onAuthentikated; prev counter: ${connectionItem.connectionSettings.xToken.counter}")
         account?.connectionSettings?.xToken?.apply {
