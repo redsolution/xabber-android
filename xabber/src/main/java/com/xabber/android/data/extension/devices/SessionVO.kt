@@ -1,7 +1,7 @@
-package com.xabber.android.data.extension.xtoken
+package com.xabber.android.data.extension.devices
 
 import com.xabber.android.ui.text.getSmartTimeTextForRoster
-import com.xabber.xmpp.xtoken.ResultSessionsIQ
+import com.xabber.xmpp.devices.ResultSessionsIQ
 import java.util.*
 
 data class SessionVO(
@@ -23,15 +23,15 @@ fun ResultSessionsIQ.getMainAndOtherSessions(
     this.sessions.sortedByDescending { it.lastAuth }.let { iqSessions ->
         Pair(
             iqSessions
-                .first { it.uid == currentSessionUid }
-                .let { SessionVO(it.client, it.device, it.uid, it.ip, "online", it.description) },
+                .first { it.id == currentSessionUid }
+                .let { SessionVO(it.client, it.info, it.id, it.ip, "online", it.description) },
             iqSessions
-                .filter { it.uid != currentSessionUid }
+                .filter { it.id != currentSessionUid }
                 .map {
                     SessionVO(
                         it.client,
-                        it.device,
-                        it.uid,
+                        it.info,
+                        it.id,
                         it.ip,
                         Date(it.lastAuth).getSmartTimeTextForRoster(),
                         it.description

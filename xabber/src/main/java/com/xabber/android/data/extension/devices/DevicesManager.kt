@@ -1,4 +1,4 @@
-package com.xabber.android.data.extension.xtoken
+package com.xabber.android.data.extension.devices
 
 import android.os.Build
 import com.xabber.android.data.Application
@@ -10,32 +10,32 @@ import com.xabber.android.data.connection.OnPacketListener
 import com.xabber.android.data.database.repositories.AccountRepository
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.log.LogManager
-import com.xabber.android.ui.OnXTokenSessionsUpdatedListener
+import com.xabber.android.ui.OnDevicesSessionsUpdatedListener
 import com.xabber.android.ui.notifySamUiListeners
 import com.xabber.xmpp.smack.XMPPTCPConnection
-import com.xabber.xmpp.xtoken.*
-import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.getXTokenRevokeExtensionElement
-import com.xabber.xmpp.xtoken.XTokenRevokeExtensionElement.Companion.hasXTokenRevokeExtensionElement
+import com.xabber.xmpp.devices.*
+import com.xabber.xmpp.devices.DeviceRevokeExtensionElement.Companion.getDeviceRevokeExtensionElement
+import com.xabber.xmpp.devices.DeviceRevokeExtensionElement.Companion.hasDeviceRevokeExtensionElement
 import org.greenrobot.eventbus.EventBus
 import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener
 import org.jivesoftware.smack.packet.Message
 import org.jivesoftware.smack.packet.Stanza
 
-object XTokenManager : OnPacketListener {
+object DevicesManager : OnPacketListener {
 
-    const val NAMESPACE = "https://xabber.com/protocol/auth-tokens"
+    const val NAMESPACE = "https://xabber.com/protocol/devices"
 
     override fun onStanza(connection: ConnectionItem?, packet: Stanza?) {
-        if (packet is IncomingNewXTokenIQ) {
-            AccountManager.updateXToken(connection?.account, packet.getXToken())
+        if (packet is IncomingNewDeviceIQ) {
+            AccountManager.updateDevice(connection?.account, packet.getDeviceElement())
         } else if (packet is Message && packet.hasExtension(NAMESPACE)) {
-            notifySamUiListeners(OnXTokenSessionsUpdatedListener::class.java)
-            if (packet.hasXTokenRevokeExtensionElement()) {
+            notifySamUiListeners(OnDevicesSessionsUpdatedListener::class.java)
+            if (packet.hasDeviceRevokeExtensionElement()) {
                 connection?.account?.let {
-                    val myXtoken = AccountManager.getAccount(it)?.connectionSettings?.xToken?.uid
-                    if (packet.getXTokenRevokeExtensionElement().uids.contains(myXtoken)) {
-                        onAccountXTokenRevoked(it)
+                    val myDevice = AccountManager.getAccount(it)?.connectionSettings?.device?.uid
+                    if (packet.getDeviceRevokeExtensionElement().ids.contains(myDevice)) {
+                        onAccountDeviceRevoked(it)
                     }
                 }
             }
@@ -44,23 +44,23 @@ object XTokenManager : OnPacketListener {
 
     fun onLogin(connectionItem: ConnectionItem) {
         val account = AccountManager.getAccount(connectionItem.account)
-        LogManager.d("XToken", "onAuthentikated; prev counter: ${connectionItem.connectionSettings.xToken.counter}")
-        account?.connectionSettings?.xToken?.apply {
+        LogManager.d("XToken", "onAuthentikated; prev counter: ${connectionItem.connectionSettings.device.counter}")
+        account?.connectionSettings?.device?.apply {
             counter++
         }
         AccountRepository.saveAccountToRealm(account)
-        LogManager.d("XToken", "onAuthentikated; new counter: ${connectionItem.connectionSettings.xToken.counter}")
+        LogManager.d("XToken", "onAuthentikated; new counter: ${connectionItem.connectionSettings.device.counter}")
     }
 
-    fun onAccountXTokenRevoked(accountJid: AccountJid) {
+    fun onAccountDeviceRevoked(accountJid: AccountJid) {
         LogManager.e(this, "${this::class.java.simpleName}.onAccountXTokenRevoked($accountJid)")
         AccountManager.removeAccount(accountJid)
     }
 
-    fun onAccountXTokenCounterOutOfSync(accountJid: AccountJid) {
+    fun onSecretAndCounterOutOfSync(accountJid: AccountJid) {
         LogManager.e(this, "${this::class.java.simpleName}.onAccountXTokenCounterOutOfSync($accountJid)")
         AccountManager.getAccount(accountJid)?.apply {
-            connectionSettings.xToken = null
+            connectionSettings.device = null
             recreateConnection(false)
         }?.also {
             AccountManager.setEnabled(accountJid, false)
@@ -73,33 +73,32 @@ object XTokenManager : OnPacketListener {
             ""
         )
         EventBus.getDefault().postSticky(accountErrorEvent)
-        //todo possible remove xtoken
     }
 
-    fun sendXTokenRequest(connection: XMPPTCPConnection) {
+    fun sendRegisterDeviceRequest(connection: XMPPTCPConnection) {
         try {
             connection.sendStanza(
-                XTokenRequestIQ(
+                DeviceRegisterIQ(
                     server = connection.xmppServiceDomain,
                     client = Application.getInstance().versionName,
-                    device = "${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}"
+                    info = "${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}"
                 )
             )
         } catch (e: Exception) {
-            LogManager.d(this, "Error on request x-token: $e")
+            LogManager.d(this, "Error on device register: $e")
         }
     }
 
-    fun sendChangeXTokenDescriptionRequest(
+    fun sendChangeDeviceDescriptionRequest(
         connection: XMPPTCPConnection,
-        tokenID: String,
+        deviceId: String,
         description: String,
         listener: StanzaListener,
         exceptionCallback: ExceptionCallback,
     ) {
         try {
             connection.sendIqWithResponseCallback(
-                ChangeXTokenDescriptionIQ(connection.xmppServiceDomain, tokenID, description),
+                ChangeDeviceDescriptionIQ(connection.xmppServiceDomain, deviceId, description),
                 listener,
                 exceptionCallback
             )
@@ -108,35 +107,35 @@ object XTokenManager : OnPacketListener {
         }
     }
 
-    fun sendRevokeXTokenRequest(connection: XMPPTCPConnection, tokenID: String) {
-        sendRevokeXTokenRequest(connection, mutableListOf(tokenID))
+    fun sendRevokeDeviceRequest(connection: XMPPTCPConnection, deviceId: String) {
+        sendRevokeDeviceRequest(connection, mutableListOf(deviceId))
     }
 
-    fun sendRevokeXTokenRequest(connection: XMPPTCPConnection, tokenIDs: List<String>) {
+    fun sendRevokeDeviceRequest(connection: XMPPTCPConnection, deviceIDs: List<String>) {
         try {
-            connection.sendStanza(XTokenRevokeIQ(connection.xmppServiceDomain, tokenIDs))
+            connection.sendStanza(RevokeDeviceIq(connection.xmppServiceDomain, deviceIDs))
         } catch (e: Exception) {
             LogManager.exception(javaClass.simpleName, e)
         }
     }
 
-    fun sendRevokeAllRequest(connection: XMPPTCPConnection) {
+    fun sendRevokeAllDevicesRequest(connection: XMPPTCPConnection) {
         try {
-            connection.sendStanza(RevokeAllXTokenRequestIQ(connection.xmppServiceDomain))
+            connection.sendStanza(RevokeAllDevicesRequestIQ(connection.xmppServiceDomain))
         } catch (e: Exception) {
             LogManager.exception(javaClass.simpleName, e)
         }
     }
 
     fun requestSessions(
-        currentTokenUID: String, connection: XMPPTCPConnection, listener: SessionsListener
+        currentDeviceUID: String, connection: XMPPTCPConnection, listener: SessionsListener
     ) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
             try {
                 connection.sendIqWithResponseCallback(
                     RequestSessionsIQ(connection.xmppServiceDomain),
                     {
-                        (it as? ResultSessionsIQ)?.getMainAndOtherSessions(currentTokenUID)?.let {
+                        (it as? ResultSessionsIQ)?.getMainAndOtherSessions(currentDeviceUID)?.let {
                             Application.getInstance().runOnUiThread {
                                 listener.onResult(it.first, it.second.toMutableList())
                             }

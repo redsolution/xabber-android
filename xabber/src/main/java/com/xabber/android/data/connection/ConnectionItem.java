@@ -19,7 +19,7 @@ import androidx.annotation.NonNull;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.xtoken.XToken;
+import com.xabber.android.data.extension.devices.DeviceVO;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
 import com.xabber.android.ui.OnConnectionStateChangedListener;
@@ -86,7 +86,7 @@ public abstract class ConnectionItem {
 
 
     public ConnectionItem(boolean custom, String host, int port, DomainBareJid serverName, Localpart userName,
-                          Resourcepart resource, boolean storePassword, String password, String token, XToken xToken,
+                          Resourcepart resource, boolean storePassword, String password, String token, DeviceVO deviceVO,
                           boolean saslEnabled, TLSMode tlsMode, boolean compression, ProxyType proxyType,
                           String proxyHost, int proxyPort, String proxyUser, String proxyPassword) {
 
@@ -96,7 +96,7 @@ public abstract class ConnectionItem {
         connectionListener = new com.xabber.android.data.connection.ConnectionListener(this);
 
         connectionSettings = new ConnectionSettings(userName, serverName, resource, custom, host, port, password, token,
-                xToken, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
+                deviceVO, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
         connection = createConnection();
 
         updateState(ConnectionState.offline);
@@ -167,11 +167,11 @@ public abstract class ConnectionItem {
                 || getState() == ConnectionState.authentication
                 || getState() == ConnectionState.connecting
         ) {
-            LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + " but DID NOT TRY to reconnect cause state: " + getState());
+            //LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + " but DID NOT TRY to reconnect cause state: " + getState());
             return false;
         }
         if (getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting
-                || connectionSettings.getXToken() != null) {
+                || connectionSettings.getDevice() != null) {
             // if we wanted to connect during the disconnection process, we
             // need to make sure our connection settings aren't outdated.
             checkIfConnectionIsOutdated();
@@ -183,8 +183,8 @@ public abstract class ConnectionItem {
 
         boolean isConnectionThreadStarted = connectionThread.start();
 
-        LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + "; and connectionThread is started: " + isConnectionThreadStarted);
-        LogManager.exception("XTOKEN", new Exception());
+        //LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + "; and connectionThread is started: " + isConnectionThreadStarted);
+        //LogManager.exception("XTOKEN", new Exception());
 
         return isConnectionThreadStarted;
     }

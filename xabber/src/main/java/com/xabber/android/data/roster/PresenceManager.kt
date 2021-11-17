@@ -51,7 +51,7 @@ import com.xabber.android.data.notification.NotificationManager
 import com.xabber.android.ui.OnStatusChangeListener
 import com.xabber.android.ui.forEachOnUi
 import com.xabber.android.ui.text.getDisplayStatusForGroupchat
-import com.xabber.xmpp.device.DeviceExtensionElement
+import com.xabber.xmpp.devices.DeviceExtensionElement
 import com.xabber.xmpp.groups.GroupExtensionElement
 import com.xabber.xmpp.groups.GroupPresenceExtensionElement
 import com.xabber.xmpp.groups.hasGroupExtensionElement
@@ -387,7 +387,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         LogManager.i(this, "sendVCardUpdatePresence: $account")
         getAccountPresence(account)?.let { accountPresence ->
 
-            AccountManager.getAccount(account)?.connectionSettings?.xToken?.uid
+            AccountManager.getAccount(account)?.connectionSettings?.device?.uid
                 ?.takeIf { it.isNotEmpty() }
                 ?.let {
                     accountPresence.addExtension(

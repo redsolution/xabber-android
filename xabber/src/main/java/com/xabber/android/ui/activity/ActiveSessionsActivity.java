@@ -26,9 +26,9 @@ import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.extension.xtoken.SessionVO;
-import com.xabber.android.data.extension.xtoken.XTokenManager;
-import com.xabber.android.ui.OnXTokenSessionsUpdatedListener;
+import com.xabber.android.data.extension.devices.SessionVO;
+import com.xabber.android.data.extension.devices.DevicesManager;
+import com.xabber.android.ui.OnDevicesSessionsUpdatedListener;
 import com.xabber.android.ui.adapter.SessionAdapter;
 import com.xabber.android.ui.color.BarPainter;
 import com.xabber.android.ui.helper.AndroidUtilsKt;
@@ -38,7 +38,7 @@ import org.jivesoftware.smack.packet.IQ;
 import java.util.List;
 
 public class ActiveSessionsActivity extends ManagedActivity implements SessionAdapter.Listener,
-        OnXTokenSessionsUpdatedListener {
+        OnDevicesSessionsUpdatedListener {
 
     private SessionAdapter adapter;
     private TextView tvCurrentClient;
@@ -50,7 +50,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     private ProgressBar progressBar;
     private View contentView;
 
-    private boolean isXTokenEnabled = false;
+    private boolean isDeviceManagementEnabled = false;
     private SessionVO currentSession;
 
     private AccountItem accountItem;
@@ -77,8 +77,8 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             return;
         }
 
-        isXTokenEnabled = accountItem.getConnectionSettings().getXToken() != null &&
-                !accountItem.getConnectionSettings().getXToken().isExpired();
+        isDeviceManagementEnabled = accountItem.getConnectionSettings().getDevice() != null &&
+                !accountItem.getConnectionSettings().getDevice().isExpired();
 
         Toolbar toolbar = findViewById(R.id.toolbar_default);
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
@@ -100,7 +100,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         TextView tvTokensUnavailableHeader = findViewById(R.id.tvTokensUnavailableHeader);
 
         // other sessions
-        if (isXTokenEnabled) {
+        if (isDeviceManagementEnabled) {
             RecyclerView recyclerView = findViewById(R.id.rvSessions);
             adapter = new SessionAdapter(this);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -134,20 +134,20 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     @Override
     protected void onResume() {
         super.onResume();
-        Application.getInstance().addUIListener(OnXTokenSessionsUpdatedListener.class, this);
+        Application.getInstance().addUIListener(OnDevicesSessionsUpdatedListener.class, this);
     }
 
     @Override
     protected void onPause() {
-        Application.getInstance().removeUIListener(OnXTokenSessionsUpdatedListener.class, this);
+        Application.getInstance().removeUIListener(OnDevicesSessionsUpdatedListener.class, this);
         super.onPause();
     }
 
     private void refreshData(){
-        XTokenManager.INSTANCE.requestSessions(
-                accountItem.getConnectionSettings().getXToken().getUid(),
+        DevicesManager.INSTANCE.requestSessions(
+                accountItem.getConnectionSettings().getDevice().getUid(),
                 accountItem.getConnection(),
-                new XTokenManager.SessionsListener() {
+                new DevicesManager.SessionsListener() {
                     @Override
                     public void onResult(
                             @Nullable SessionVO currentSession, @NonNull List<SessionVO> sessions
@@ -169,16 +169,16 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
 
     @Override
     public void onAction() {
-        Application.getInstance().runOnUiThread(() -> { if (isXTokenEnabled) refreshData();} );
+        Application.getInstance().runOnUiThread(() -> { if (isDeviceManagementEnabled) refreshData();} );
     }
 
     private void getSessionsData() {
         progressBar.setVisibility(View.VISIBLE);
         contentView.setVisibility(View.GONE);
-        XTokenManager.INSTANCE.requestSessions(
-                accountItem.getConnectionSettings().getXToken().getUid(),
+        DevicesManager.INSTANCE.requestSessions(
+                accountItem.getConnectionSettings().getDevice().getUid(),
                 accountItem.getConnection(),
-                new XTokenManager.SessionsListener() {
+                new DevicesManager.SessionsListener() {
                     @Override
                     public void onResult(@Nullable SessionVO currentSession, @NonNull List<SessionVO> sessions) {
                         progressBar.setVisibility(View.GONE);
@@ -239,7 +239,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                 .setTitle("Device description") //todo use right resources strings
                 .setView(container)
                 .setPositiveButton("Set description", (dialog, which) ->
-                        XTokenManager.INSTANCE.sendChangeXTokenDescriptionRequest(
+                        DevicesManager.INSTANCE.sendChangeDeviceDescriptionRequest(
                                 accountItem.getConnection(),
                                 currentSession.getUid(),
                                 descriptionEditText.getText().toString(),
@@ -265,7 +265,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         new AlertDialog.Builder(ActiveSessionsActivity.this)
                 .setMessage(R.string.terminate_all_sessions_title)
                 .setPositiveButton(R.string.button_terminate, (dialogInterface, i) -> {
-                    XTokenManager.INSTANCE.sendRevokeAllRequest(accountItem.getConnection());
+                    DevicesManager.INSTANCE.sendRevokeAllDevicesRequest(accountItem.getConnection());
                     getSessionsData();
                 })
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
@@ -277,7 +277,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         new AlertDialog.Builder(ActiveSessionsActivity.this)
                 .setMessage(R.string.terminate_session_title)
                 .setPositiveButton(R.string.button_terminate, (dialogInterface, i) -> {
-                    XTokenManager.INSTANCE.sendRevokeXTokenRequest(accountItem.getConnection(), uid);
+                    DevicesManager.INSTANCE.sendRevokeDeviceRequest(accountItem.getConnection(), uid);
                     getSessionsData();
                 })
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())

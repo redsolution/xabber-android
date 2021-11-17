@@ -25,7 +25,7 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.extension.archive.LoadHistorySettings
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.vcard.VCardManager
-import com.xabber.android.data.extension.xtoken.XToken
+import com.xabber.android.data.extension.devices.DeviceVO
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.notification.BaseAccountNotificationProvider
 import com.xabber.android.data.notification.NotificationManager
@@ -137,7 +137,11 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
                 accountRealmObject.isStorePassword,
                 accountRealmObject.password,
                 accountRealmObject.token,
-                if (accountRealmObject.xToken != null) accountRealmObject.xToken.toXToken() else null,
+                if (accountRealmObject.device != null) {
+                    accountRealmObject.device.toDeviceVO()
+                } else {
+                    null
+                },
                 accountRealmObject.colorIndex,
                 accountRealmObject.order,
                 accountRealmObject.isSyncNotAllowed,
@@ -452,9 +456,9 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
     }
 
     /** Set x-token to account and remove password  */
-    fun updateXToken(account: AccountJid?, token: XToken?) {
+    fun updateDevice(account: AccountJid?, token: DeviceVO?) {
         getAccount(account)?.apply {
-            setXToken(token)
+            setDevice(token)
             setPassword("")
             setConnectionIsOutdated(true)
         }?.also {

@@ -1,10 +1,10 @@
-package com.xabber.xmpp.xtoken
+package com.xabber.xmpp.devices
 
-import com.xabber.android.data.extension.xtoken.XTokenManager
+import com.xabber.android.data.extension.devices.DevicesManager
 import org.jivesoftware.smack.packet.IQ
 import org.jxmpp.jid.DomainBareJid
 
-class RevokeAllXTokenRequestIQ(server: DomainBareJid) : IQ(ELEMENT, XTokenManager.NAMESPACE) {
+class RevokeAllDevicesRequestIQ(server: DomainBareJid) : IQ(ELEMENT, DevicesManager.NAMESPACE) {
 
     init {
         type = Type.set

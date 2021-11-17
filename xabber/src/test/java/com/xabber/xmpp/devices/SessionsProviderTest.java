@@ -1,11 +1,11 @@
-package com.xabber.xmpp.xtoken;
+package com.xabber.xmpp.devices;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import com.xabber.android.data.TestApplication;
-import com.xabber.xmpp.xtoken.providers.SessionsProvider;
+import com.xabber.xmpp.devices.providers.SessionsProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,8 +60,8 @@ public class SessionsProviderTest {
         ResultSessionsIQ.Session session1 = element.getSessions().get(0);
         assertNotNull(session1);
         assertEquals("xabber-web 2.3", session1.getClient());
-        assertEquals("iMac Pro MacOS 10.14", session1.getDevice());
-        assertEquals("024717297867c1d32714cadde305825a9909ef7c", session1.getUid());
+        assertEquals("iMac Pro MacOS 10.14", session1.getInfo());
+        assertEquals("024717297867c1d32714cadde305825a9909ef7c", session1.getId());
         assertEquals("127.0.0.1", session1.getIp());
         assertEquals(1636322632000L, session1.getExpire());
         assertEquals(1536322632000L, session1.getLastAuth());
@@ -69,8 +69,8 @@ public class SessionsProviderTest {
         ResultSessionsIQ.Session session2 = element.getSessions().get(1);
         assertNotNull(session2);
         assertEquals("xabber-android 2.363", session2.getClient());
-        assertEquals("Nokia  Android 8.0", session2.getDevice());
-        assertEquals("7dbf8541c4de1d24a0f748cc01f98a140100979a", session2.getUid());
+        assertEquals("Nokia  Android 8.0", session2.getInfo());
+        assertEquals("7dbf8541c4de1d24a0f748cc01f98a140100979a", session2.getId());
         assertEquals("127.0.1.1", session2.getIp());
         assertEquals(1736322632000L, session2.getExpire());
         assertEquals(1436322632000L, session2.getLastAuth());

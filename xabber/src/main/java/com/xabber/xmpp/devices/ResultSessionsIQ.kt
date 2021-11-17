@@ -1,6 +1,6 @@
-package com.xabber.xmpp.xtoken
+package com.xabber.xmpp.devices
 
-import com.xabber.android.data.extension.xtoken.XTokenManager
+import com.xabber.android.data.extension.devices.DevicesManager
 import org.jivesoftware.smack.packet.IQ
 
 class ResultSessionsIQ(val sessions: List<Session>) : IQ(ELEMENT, NAMESPACE) {
@@ -14,19 +14,19 @@ class ResultSessionsIQ(val sessions: List<Session>) : IQ(ELEMENT, NAMESPACE) {
 
     data class Session(
         val client: String,
-        val device: String,
-        val uid: String,
+        val info: String,
+        val id: String,
         val ip: String,
         val expire: Long,
         val lastAuth: Long,
-        val description: String,
+        val description: String?,
     ) {
 
         companion object {
-            const val ELEMENT_NAME = "xtoken"
+            const val ELEMENT_NAME = "device"
             const val ELEMENT_CLIENT = "client"
-            const val ELEMENT_DEVICE = "device"
-            const val ELEMENT_UID_ATTRIBUTE = "uid"
+            const val ELEMENT_INFO = "info"
+            const val ID_ATTRIBUTE = "id"
             const val ELEMENT_EXPIRE = "expire"
             const val ELEMENT_IP = "ip"
             const val ELEMENT_DESCRIPTION = "description"
@@ -37,7 +37,7 @@ class ResultSessionsIQ(val sessions: List<Session>) : IQ(ELEMENT, NAMESPACE) {
     companion object {
         const val ELEMENT = "query"
         private const val HASH_BLOCK = "#items"
-        const val NAMESPACE = XTokenManager.NAMESPACE + HASH_BLOCK
+        const val NAMESPACE = DevicesManager.NAMESPACE + HASH_BLOCK
     }
 
 }

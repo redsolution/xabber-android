@@ -1,17 +1,17 @@
-package com.xabber.xmpp.xtoken
+package com.xabber.xmpp.devices
 
-import com.xabber.android.data.extension.xtoken.XTokenManager
+import com.xabber.android.data.extension.devices.DevicesManager
 import com.xabber.xmpp.SimpleNamedElement
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.util.XmlStringBuilder
 import org.jxmpp.jid.DomainBareJid
 
-class ChangeXTokenDescriptionIQ(
+class ChangeDeviceDescriptionIQ(
     serverAddress: DomainBareJid,
-    private val tokenUid: String,
+    private val deviceUid: String,
     private val description: String
-): IQ(ELEMENT_NAME, XTokenManager.NAMESPACE) {
+): IQ(ELEMENT_NAME, DevicesManager.NAMESPACE) {
 
     init {
         type = Type.set
@@ -21,7 +21,7 @@ class ChangeXTokenDescriptionIQ(
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder?) = xml?.apply {
         rightAngleBracket()
         optElement(
-            XTokenChangeDescriptionElement(tokenUid, description)
+            DeviceChangeDescriptionElement(deviceUid, description)
         )
     }
 
@@ -29,14 +29,14 @@ class ChangeXTokenDescriptionIQ(
         const val ELEMENT_NAME = "query"
     }
 
-    private class XTokenChangeDescriptionElement(
+    private class DeviceChangeDescriptionElement(
         private val uid: String,
         private val description: String
     ): ExtensionElement {
 
         override fun getElementName() = ELEMENT_NAME
 
-        override fun getNamespace() = XTokenManager.NAMESPACE
+        override fun getNamespace() = DevicesManager.NAMESPACE
 
         override fun toXML() = XmlStringBuilder().apply {
             halfOpenElement(ELEMENT_NAME)
@@ -49,8 +49,8 @@ class ChangeXTokenDescriptionIQ(
         }
 
         private companion object {
-            const val ELEMENT_NAME = "xtoken"
-            const val ELEMENT_UID_ATTRIBUTE = "uid"
+            const val ELEMENT_NAME = "device"
+            const val ELEMENT_UID_ATTRIBUTE = "id"
             const val ELEMENT_DESCRIPTION = "description"
         }
     }

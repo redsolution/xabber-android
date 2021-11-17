@@ -1,7 +1,6 @@
 package com.xabber.android.data.database.realmobjects;
 
-import com.xabber.android.data.extension.xtoken.XToken;
-import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.extension.devices.DeviceVO;
 
 import java.util.UUID;
 
@@ -9,7 +8,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-public class XTokenRealmObject extends RealmObject {
+public class DeviceRealmObject extends RealmObject {
 
     public static class Fields {
         public static final String ID = "id";
@@ -22,11 +21,11 @@ public class XTokenRealmObject extends RealmObject {
     private long expire;
     private int counter;
 
-    public XTokenRealmObject() {
+    public DeviceRealmObject() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public XTokenRealmObject(String id, String token, long expire, int counter) {
+    public DeviceRealmObject(String id, String token, long expire, int counter) {
         this.id = id;
         this.token = token;
         this.expire = expire;
@@ -37,11 +36,11 @@ public class XTokenRealmObject extends RealmObject {
         return id;
     }
 
-    public String getToken() {
+    public String getSecret() {
         return token;
     }
 
-    public void setToken(String token) {
+    public void setSecret(String token) {
         this.token = token;
     }
 
@@ -57,14 +56,14 @@ public class XTokenRealmObject extends RealmObject {
 
     public void setCounter(int counter) { this.counter = counter; }
 
-    static public XTokenRealmObject createFromXToken(XToken xToken) {
-        return new XTokenRealmObject(
-                xToken.getUid(), xToken.getToken(), xToken.getExpire(), xToken.getCounter()
+    static public DeviceRealmObject createFromDevice(DeviceVO deviceVO) {
+        return new DeviceRealmObject(
+                deviceVO.getUid(), deviceVO.getSecret(), deviceVO.getExpire(), deviceVO.getCounter()
         );
     }
 
-    public XToken toXToken() {
-        return new XToken(id, token, expire, counter);
+    public DeviceVO toDeviceVO() {
+        return new DeviceVO(id, token, expire, counter);
     }
 
 }

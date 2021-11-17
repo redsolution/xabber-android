@@ -42,7 +42,6 @@ public class AccountRealmObject extends RealmObject {
         public static final String MAM_DEFAULT_BEHAVIOR = "mamDefaultBehavior";
         public static final String LOAD_HISTORY_SETTINGS = "loadHistorySettings";
         public static final String SUCCESSFUL_CONNECTION_HAPPENED = "successfulConnectionHappened";
-        public static final String XTOKEN = "xToken";
         public static final String UPLOAD_SERVER = "uploadServer";
         public static final String GROUP_SERVERS = "groupServers";
         public static final String CUSTOM_GROUP_SERVERS = "customGroupServers";
@@ -69,7 +68,7 @@ public class AccountRealmObject extends RealmObject {
     private boolean storePassword;
     private String password;
     private String token;
-    private XTokenRealmObject xToken;
+    private DeviceRealmObject device;
 
     private int colorIndex;
     private int timestamp;
@@ -419,12 +418,12 @@ public class AccountRealmObject extends RealmObject {
         this.successfulConnectionHappened = successfulConnectionHappened;
     }
 
-    public XTokenRealmObject getXToken() {
-        return xToken;
+    public DeviceRealmObject getDevice() {
+        return device;
     }
 
-    public void setXToken(XTokenRealmObject xToken) {
-        this.xToken = xToken;
+    public void setDevice(DeviceRealmObject device) {
+        this.device = device;
     }
 
     public void setUploadServer(String uploadServer) { this.uploadServer = uploadServer; }

@@ -1,6 +1,6 @@
-package com.xabber.xmpp.xtoken.providers;
+package com.xabber.xmpp.devices.providers;
 
-import com.xabber.xmpp.xtoken.ResultSessionsIQ;
+import com.xabber.xmpp.devices.ResultSessionsIQ;
 
 import org.jivesoftware.smack.provider.IQProvider;
 import org.xmlpull.v1.XmlPullParser;
@@ -50,7 +50,7 @@ public class SessionsProvider extends IQProvider<ResultSessionsIQ> {
 
     private ResultSessionsIQ.Session parseSession(XmlPullParser parser) throws Exception {
         String client = null;
-        String device = null;
+        String info = null;
         String uid = null;
         String ip = null;
         String description = null;
@@ -61,15 +61,15 @@ public class SessionsProvider extends IQProvider<ResultSessionsIQ> {
             int eventType = parser.getEventType();
             switch (eventType) {
                 case XmlPullParser.START_TAG:
-                    String attr = parser.getAttributeValue(null, ResultSessionsIQ.Session.ELEMENT_UID_ATTRIBUTE);
+                    String attr = parser.getAttributeValue(null, ResultSessionsIQ.Session.ID_ATTRIBUTE);
                     if (attr != null && !attr.isEmpty()) {
                         uid = attr;
                     }
 
                     if (ResultSessionsIQ.Session.ELEMENT_CLIENT.equals(parser.getName())) {
                         client = parser.nextText();
-                    } else if (ResultSessionsIQ.Session.ELEMENT_DEVICE.equals(parser.getName())) {
-                        device = parser.nextText();
+                    } else if (ResultSessionsIQ.Session.ELEMENT_INFO.equals(parser.getName())) {
+                        info = parser.nextText();
                     } else if (ResultSessionsIQ.Session.ELEMENT_IP.equals(parser.getName())) {
                         ip = parser.nextText();
                     } else if (ResultSessionsIQ.Session.ELEMENT_EXPIRE.equals(parser.getName())) {
@@ -92,9 +92,9 @@ public class SessionsProvider extends IQProvider<ResultSessionsIQ> {
             }
         }
 
-        if (client != null && device != null && uid != null && ip != null) {
+        if (client != null && info != null && uid != null && ip != null) {
             return new ResultSessionsIQ.Session(
-                    client, device, uid, ip,
+                    client, info, uid, ip,
                     TimeUnit.SECONDS.toMillis(expire), TimeUnit.SECONDS.toMillis(lastAuth),
                     description
             );

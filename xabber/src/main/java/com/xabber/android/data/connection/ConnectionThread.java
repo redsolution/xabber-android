@@ -25,19 +25,19 @@ import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
-import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.extension.devices.DevicesManager;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
 import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
 import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ;
 import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIqProvider;
-import com.xabber.xmpp.smack.SASLXTOKENMechanism;
+import com.xabber.xmpp.smack.SaslHtopMechanism;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
-import com.xabber.xmpp.xtoken.IncomingNewXTokenIQ;
-import com.xabber.xmpp.xtoken.ResultSessionsIQ;
-import com.xabber.xmpp.xtoken.providers.SessionsProvider;
-import com.xabber.xmpp.xtoken.providers.XTokenProvider;
+import com.xabber.xmpp.devices.IncomingNewDeviceIQ;
+import com.xabber.xmpp.devices.ResultSessionsIQ;
+import com.xabber.xmpp.devices.providers.SessionsProvider;
+import com.xabber.xmpp.devices.providers.DeviceProvider;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
@@ -145,9 +145,9 @@ class ConnectionThread {
         );
 
         ProviderManager.addIQProvider(
-                IncomingNewXTokenIQ.ELEMENT,
-                IncomingNewXTokenIQ.NAMESPACE,
-                new XTokenProvider()
+                IncomingNewDeviceIQ.ELEMENT,
+                IncomingNewDeviceIQ.NAMESPACE,
+                new DeviceProvider()
         );
 
         ProviderManager.addIQProvider(
@@ -175,12 +175,12 @@ class ConnectionThread {
                 ProviderManager.addIQProvider(HttpConfirmIq.ELEMENT,
                         HttpConfirmIq.NAMESPACE, new HttpConfirmIqProvider());
 
-                if (connectionItem.getConnectionSettings().getXToken() != null) {
+                if (connectionItem.getConnectionSettings().getDevice() != null) {
                     connection.login(
                             connectionItem.getConnectionSettings().getUserName(),
-                            connectionItem.getConnectionSettings().getXToken().getTokenAndCounterStringForSASL()
+                            connectionItem.getConnectionSettings().getDevice().getPasswordString()
                     );
-                    XTokenManager.INSTANCE.onLogin(connectionItem);
+                    DevicesManager.INSTANCE.onLogin(connectionItem);
                 } else {
                     connection.login();
                 }
@@ -192,14 +192,14 @@ class ConnectionThread {
         } catch (SASLErrorException e)  {
             LogManager.exception(this, e);
 
-            if (e.getMechanism().equals(SASLXTOKENMechanism.NAME)) {
+            if (e.getMechanism().equals(SaslHtopMechanism.NAME)) {
                 switch (e.getSASLFailure().getSASLError()) {
                     case not_authorized: {
-                        XTokenManager.INSTANCE.onAccountXTokenRevoked(connectionItem.getAccount());
+                        DevicesManager.INSTANCE.onAccountDeviceRevoked(connectionItem.getAccount());
                         break;
                     }
                     case malformed_request: {
-                        XTokenManager.INSTANCE.onAccountXTokenCounterOutOfSync(connectionItem.getAccount());
+                        DevicesManager.INSTANCE.onSecretAndCounterOutOfSync(connectionItem.getAccount());
                         break;
                     }
                 }

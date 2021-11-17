@@ -100,7 +100,7 @@ public abstract class ManagedActivity extends AppCompatActivity {
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
         if (!accountErrorEvent.getType().equals(CONNECTION)) {
             // show enter pass dialog
-            if (AccountManager.INSTANCE.getAccount(accountErrorEvent.getAccount()).getConnectionSettings().getXToken() != null){
+            if (AccountManager.INSTANCE.getAccount(accountErrorEvent.getAccount()).getConnectionSettings().getDevice() != null){
                 ConnectionManager.getInstance().connectAll();
             } else {
                 AccountEnterPassDialog.newInstance(accountErrorEvent).show(

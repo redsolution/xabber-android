@@ -51,7 +51,7 @@ fun <T : SamBaseUiListener> notifySamUiListeners(listener: Class<T>) {
     }
 }
 
-interface OnXTokenSessionsUpdatedListener : SamBaseUiListener
+interface OnDevicesSessionsUpdatedListener : SamBaseUiListener
 
 interface OnReorderClickListener : SamBaseUiListener
 

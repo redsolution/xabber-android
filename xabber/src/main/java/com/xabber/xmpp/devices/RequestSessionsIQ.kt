@@ -1,6 +1,6 @@
-package com.xabber.xmpp.xtoken
+package com.xabber.xmpp.devices
 
-import com.xabber.android.data.extension.xtoken.XTokenManager
+import com.xabber.android.data.extension.devices.DevicesManager
 import org.jivesoftware.smack.packet.IQ
 import org.jxmpp.jid.DomainBareJid
 
@@ -18,7 +18,7 @@ class RequestSessionsIQ(server: DomainBareJid) : IQ(ELEMENT, NAMESPACE) {
     companion object {
         const val ELEMENT = "query"
         private const val HASH_BLOCK = "#items"
-        const val NAMESPACE = XTokenManager.NAMESPACE + HASH_BLOCK
+        const val NAMESPACE = DevicesManager.NAMESPACE + HASH_BLOCK
     }
 
 }

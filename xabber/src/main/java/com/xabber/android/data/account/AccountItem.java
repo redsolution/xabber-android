@@ -25,7 +25,7 @@ import com.xabber.android.data.connection.ProxyType;
 import com.xabber.android.data.connection.TLSMode;
 import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.extension.archive.LoadHistorySettings;
-import com.xabber.android.data.extension.xtoken.XToken;
+import com.xabber.android.data.extension.devices.DeviceVO;
 
 import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.packet.Presence;
@@ -126,7 +126,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     public AccountItem(boolean custom, String host, int port, DomainBareJid serverName,
                        Localpart userName, Resourcepart resource, boolean storePassword,
-                       String password, String token, XToken xToken, int colorIndex, int order,
+                       String password, String token, DeviceVO deviceVO, int colorIndex, int order,
                        boolean syncNotAllowed, int timestamp, int priority, StatusMode statusMode,
                        String statusText, boolean enabled, boolean saslEnabled, TLSMode tlsMode,
                        boolean compression, ProxyType proxyType, String proxyHost, int proxyPort,
@@ -134,7 +134,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
                        ArchiveMode archiveMode, boolean xabberAutoLoginEnabled,
                        String retractVersion) {
         super(custom, host, port, serverName, userName, resource, storePassword, password, token,
-                xToken, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort,
+                deviceVO, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort,
                 proxyUser, proxyPassword);
 
         this.id = UUID.randomUUID().toString();
@@ -378,7 +378,7 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
         AccountManager.INSTANCE.removePasswordRequest(getAccount());
     }
 
-    void setXToken(XToken token) { getConnectionSettings().setXToken(token); }
+    void setDevice(DeviceVO device) { getConnectionSettings().setDevice(device); }
 
     /**
      * Remove password and update notification if {@link #storePassword} is disabled.

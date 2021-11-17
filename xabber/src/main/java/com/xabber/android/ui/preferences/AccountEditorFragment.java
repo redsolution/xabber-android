@@ -54,7 +54,7 @@ public class AccountEditorFragment extends BaseSettingsFragment {
     public void onResume() {
         super.onResume();
         if (listener != null) {
-            if (listener.getAccountItem().getConnectionSettings().getXToken() != null) {
+            if (listener.getAccountItem().getConnectionSettings().getDevice() != null) {
                 findPreference(getString(R.string.account_password_key)).setEnabled(false);
                 findPreference(getString(R.string.account_password_key)).setSummary(getString(R.string.account_password_disabled));
                 findPreference(getString(R.string.account_store_password_key)).setEnabled(false);

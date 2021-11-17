@@ -1,13 +1,13 @@
-package com.xabber.xmpp.xtoken
+package com.xabber.xmpp.devices
 
-import com.xabber.android.data.extension.xtoken.XTokenManager
+import com.xabber.android.data.extension.devices.DevicesManager
 import org.jivesoftware.smack.packet.IQ
 import org.jxmpp.jid.DomainBareJid
 
-class XTokenRequestIQ(
+class DeviceRegisterIQ(
     server: DomainBareJid,
     private val client: String,
-    private val device: String,
+    private val info: String,
 ) : IQ(ELEMENT, NAMESPACE) {
 
     init {
@@ -18,12 +18,12 @@ class XTokenRequestIQ(
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
         rightAngleBracket()
         optElement("client", client)
-        optElement("device", device)
+        optElement("info", info)
     }
 
     companion object {
-        const val ELEMENT = "issue"
-        const val NAMESPACE = XTokenManager.NAMESPACE
+        const val ELEMENT = "register"
+        const val NAMESPACE = DevicesManager.NAMESPACE
     }
 
 }

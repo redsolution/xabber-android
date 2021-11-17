@@ -1,7 +1,7 @@
-package com.xabber.xmpp.xtoken;
+package com.xabber.xmpp.devices;
 
 import com.xabber.android.data.TestApplication;
-import com.xabber.xmpp.xtoken.providers.XTokenProvider;
+import com.xabber.xmpp.devices.providers.DeviceProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,15 +19,15 @@ import static org.junit.Assert.fail;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 28, application = TestApplication.class)
-public class XTokenProviderTest {
+public class DeviceVOProviderTest {
 
-    private XTokenProvider provider;
+    private DeviceProvider provider;
     private XmlPullParserFactory factory;
     private String stringToken;
 
     @Before
     public void setUp() throws Exception {
-        provider = new XTokenProvider();
+        provider = new DeviceProvider();
         factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
 
@@ -40,15 +40,15 @@ public class XTokenProviderTest {
 
     @Test
     public void parse() {
-        IncomingNewXTokenIQ element = parseString(stringToken);
+        IncomingNewDeviceIQ element = parseString(stringToken);
         assertNotNull(element);
-        assertEquals("VkpTYqfpPcLpwciTRtgHaV7BC9O9kY", element.getToken());
+        assertEquals("VkpTYqfpPcLpwciTRtgHaV7BC9O9kY", element.getSecret());
         assertEquals("49975a48609793c5c93f5e9264f6706f04164", element.getUid());
         assertEquals(1536322632000L, element.getExpire());
     }
 
-    private IncomingNewXTokenIQ parseString(String source) {
-        IncomingNewXTokenIQ result = null;
+    private IncomingNewDeviceIQ parseString(String source) {
+        IncomingNewDeviceIQ result = null;
         try {
             XmlPullParser parser = factory.newPullParser();
             parser.setInput(new StringReader(source));

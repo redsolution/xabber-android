@@ -1,12 +1,12 @@
-package com.xabber.xmpp.xtoken
+package com.xabber.xmpp.devices
 
-import com.xabber.android.data.extension.xtoken.XTokenManager
+import com.xabber.android.data.extension.devices.DevicesManager
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.packet.IQ
 import org.jivesoftware.smack.util.XmlStringBuilder
 import org.jxmpp.jid.DomainBareJid
 
-class XTokenRevokeIQ(
+class RevokeDeviceIq(
     server: DomainBareJid,
     private val ids: List<String>,
 ) : IQ(ELEMENT, NAMESPACE) {
@@ -19,19 +19,19 @@ class XTokenRevokeIQ(
     override fun getIQChildElementBuilder(xml: IQChildElementXmlStringBuilder) = xml.apply {
         rightAngleBracket()
         ids.forEach {
-            element(TokenElement(it))
+            element(DeviceElement(it))
         }
     }
 
     companion object {
         const val ELEMENT = "revoke"
-        const val NAMESPACE = XTokenManager.NAMESPACE
+        const val NAMESPACE = DevicesManager.NAMESPACE
     }
 
-    private class TokenElement(private val tokenUid: String): ExtensionElement {
+    private class DeviceElement(private val deviceUid: String): ExtensionElement {
         override fun toXML() = XmlStringBuilder().apply {
             halfOpenElement(ELEMENT_NAME)
-            attribute(UID_ATTRIBUTE, tokenUid)
+            attribute(ID_ATTRIBUTE, deviceUid)
             closeEmptyElement()
         }
 
@@ -39,8 +39,8 @@ class XTokenRevokeIQ(
         override fun getElementName() = ELEMENT_NAME
 
         companion object {
-            const val ELEMENT_NAME = "xtoken"
-            const val UID_ATTRIBUTE = "uid"
+            const val ELEMENT_NAME = "device"
+            const val ID_ATTRIBUTE = "id"
         }
     }
 

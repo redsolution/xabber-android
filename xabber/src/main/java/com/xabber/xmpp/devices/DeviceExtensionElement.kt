@@ -1,4 +1,4 @@
-package com.xabber.xmpp.device
+package com.xabber.xmpp.devices
 
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder

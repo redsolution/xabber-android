@@ -68,8 +68,8 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
         }
 
         if (accountOption.equals(AccountOption.SESSIONS)) {
-            if (accountItem.getConnectionSettings().getXToken() != null &&
-                    !accountItem.getConnectionSettings().getXToken().isExpired()) {
+            if (accountItem.getConnectionSettings().getDevice() != null &&
+                    !accountItem.getConnectionSettings().getDevice().isExpired()) {
                 holder.title.setEnabled(true);
                 holder.description.setEnabled(true);
                 holder.description.setText(R.string.account_active_sessions_summary);

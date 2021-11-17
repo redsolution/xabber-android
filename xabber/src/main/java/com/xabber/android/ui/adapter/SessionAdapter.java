@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
-import com.xabber.android.data.extension.xtoken.SessionVO;
+import com.xabber.android.data.extension.devices.SessionVO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,11 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
     @Override
     public void onBindViewHolder(@NonNull SessionHolder holder, int position) {
         final SessionVO session = items.get(position);
-        holder.tvClient.setText(session.getClient());
+        if (session.getDescription() != null && !session.getDescription().isEmpty()) {
+            holder.tvClient.setText(session.getDescription());
+        } else {
+            holder.tvClient.setText(session.getClient());
+        }
         holder.tvDevice.setText(session.getDevice());
         holder.tvIPAddress.setText(session.getIp());
         holder.tvDate.setText(session.getLastAuth());

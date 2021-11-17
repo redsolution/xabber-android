@@ -1,6 +1,6 @@
 package com.xabber.xmpp.smack;
 
-import com.xabber.android.data.extension.xtoken.XTokenManager;
+import com.xabber.android.data.extension.devices.DevicesManager;
 import com.xabber.android.data.log.LogManager;
 
 import org.jivesoftware.smack.AbstractConnectionListener;
@@ -411,10 +411,10 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
         if (getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE) != null){
             Mechanisms mechanisms = getFeature(Mechanisms.ELEMENT, Mechanisms.NAMESPACE);
             List<String> mechanismsList = mechanisms.getMechanisms();
-            if (mechanismsList.contains(SASLXTOKENMechanism.NAME)
-                    && !getUsedSaslMechansism().equals(SASLXTOKENMechanism.NAME)) {
+            if (mechanismsList.contains(SaslHtopMechanism.NAME)
+                    && !getUsedSaslMechansism().equals(SaslHtopMechanism.NAME)) {
                 LogManager.d(XMPPTCPConnection.class.getSimpleName(), getUsedSaslMechansism());
-                XTokenManager.INSTANCE.sendXTokenRequest(this);
+                DevicesManager.INSTANCE.sendRegisterDeviceRequest(this);
             }
         }
 

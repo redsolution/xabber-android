@@ -13,14 +13,14 @@
     <extensionProvider>
         <elementName>device</elementName>
         <namespace>https://xabber.com/protocol/devices</namespace>
-        <className>com.xabber.xmpp.device.DeviceExtensionElementProvider</className>
+        <className>com.xabber.xmpp.devices.DeviceExtensionElementProvider</className>
     </extensionProvider>
 
-    <!-- XEP-TOKEN Token Management -->
+    <!-- XEP-DEVICE Device management -->
     <extensionProvider>
         <elementName>revoke</elementName>
-        <namespace>https://xabber.com/protocol/auth-tokens</namespace>
-        <className>com.xabber.xmpp.xtoken.providers.XTokenRevokeExtensionElementProvider</className>
+        <namespace>https://xabber.com/protocol/devices</namespace>
+        <className>com.xabber.xmpp.devices.providers.RevokeDeviceExtensionElementProvider</className>
     </extensionProvider>
 
 
