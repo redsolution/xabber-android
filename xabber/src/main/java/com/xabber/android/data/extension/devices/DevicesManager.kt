@@ -82,7 +82,7 @@ object DevicesManager : OnPacketListener {
     fun sendRegisterDeviceRequest(connection: XMPPTCPConnection) {
         try {
             connection.sendStanza(
-                DeviceRegisterIQ(
+                DeviceRegisterIQ.createRegisterDeviceRequest(
                     server = connection.xmppServiceDomain,
                     client = Application.getInstance().versionName,
                     info = "${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}"
