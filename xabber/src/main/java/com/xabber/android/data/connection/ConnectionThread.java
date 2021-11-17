@@ -176,6 +176,7 @@ class ConnectionThread {
                         HttpConfirmIq.NAMESPACE, new HttpConfirmIqProvider());
 
                 if (connectionItem.getConnectionSettings().getDevice() != null) {
+                    DevicesManager.INSTANCE.onLogin(connectionItem);
                     connection.login(
                             connectionItem.getConnectionSettings().getUserName(),
                             connectionItem.getConnectionSettings().getDevice().getPasswordString()

@@ -167,7 +167,6 @@ public abstract class ConnectionItem {
                 || getState() == ConnectionState.authentication
                 || getState() == ConnectionState.connecting
         ) {
-            //LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + " but DID NOT TRY to reconnect cause state: " + getState());
             return false;
         }
         if (getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting
@@ -182,9 +181,6 @@ public abstract class ConnectionItem {
         }
 
         boolean isConnectionThreadStarted = connectionThread.start();
-
-        //LogManager.d("XTOKEN", "Invoked connect() with connection: " + connection.toString() + "; and xtoken counter: " + connection.getConfiguration().getPassword() + "; and connectionThread is started: " + isConnectionThreadStarted);
-        //LogManager.exception("XTOKEN", new Exception());
 
         return isConnectionThreadStarted;
     }

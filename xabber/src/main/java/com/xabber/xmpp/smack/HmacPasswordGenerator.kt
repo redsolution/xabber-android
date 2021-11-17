@@ -16,14 +16,10 @@ open class HmacPasswordGenerator(algorithm: String = HOTP_HMAC_ALGORITHM) {
     fun generateOneTimePassword(key: Key?, counter: Long): String {
         buffer.clear()
         buffer.putLong(0, counter)
-        try {
-            val array: ByteArray = buffer.array()
-            mac.init(key)
-            mac.update(array, 0, 8)
-            mac.doFinal(array, 0)
-        } catch (e: ShortBufferException) {
-            throw RuntimeException(e)
-        }
+        val array: ByteArray = buffer.array()
+        mac.init(key)
+        mac.update(array, 0, 8)
+        mac.doFinal(array, 0)
         val offset: Byte = buffer[buffer.capacity() - 1] and 0x0f
         val truncated = (buffer.getInt(offset.toInt()) and 0x7fffffff) % MOD_DIV
         return String.format("%08d", truncated)

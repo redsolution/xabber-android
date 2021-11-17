@@ -47,9 +47,13 @@ object DevicesManager : OnPacketListener {
         LogManager.d("XToken", "onAuthentikated; prev counter: ${connectionItem.connectionSettings.device.counter}")
         account?.connectionSettings?.device?.apply {
             counter++
+        }?.also {
+            LogManager.d("XToken", "onAuthentikated; new counter: ${connectionItem.connectionSettings.device.counter}")
+            connectionItem.connectionSettings.device = it
+            connectionItem.connectionSettings.password = it.getPasswordString()
         }
         AccountRepository.saveAccountToRealm(account)
-        LogManager.d("XToken", "onAuthentikated; new counter: ${connectionItem.connectionSettings.device.counter}")
+
     }
 
     fun onAccountDeviceRevoked(accountJid: AccountJid) {
