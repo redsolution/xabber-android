@@ -387,7 +387,7 @@ object PresenceManager : OnLoadListener, OnAccountDisabledListener, OnPacketList
         LogManager.i(this, "sendVCardUpdatePresence: $account")
         getAccountPresence(account)?.let { accountPresence ->
 
-            AccountManager.getAccount(account)?.connectionSettings?.device?.uid
+            AccountManager.getAccount(account)?.connectionSettings?.device?.id
                 ?.takeIf { it.isNotEmpty() }
                 ?.let {
                     accountPresence.addExtension(

@@ -58,7 +58,7 @@ public class DeviceRealmObject extends RealmObject {
 
     static public DeviceRealmObject createFromDevice(DeviceVO deviceVO) {
         return new DeviceRealmObject(
-                deviceVO.getUid(), deviceVO.getSecret(), deviceVO.getExpire(), deviceVO.getCounter()
+                deviceVO.getId(), deviceVO.getSecret(), deviceVO.getExpire(), deviceVO.getCounter()
         );
     }
 

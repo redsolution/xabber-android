@@ -12,10 +12,10 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.ui.OnDevicesSessionsUpdatedListener
 import com.xabber.android.ui.notifySamUiListeners
-import com.xabber.xmpp.smack.XMPPTCPConnection
 import com.xabber.xmpp.devices.*
 import com.xabber.xmpp.devices.DeviceRevokeExtensionElement.Companion.getDeviceRevokeExtensionElement
 import com.xabber.xmpp.devices.DeviceRevokeExtensionElement.Companion.hasDeviceRevokeExtensionElement
+import com.xabber.xmpp.smack.XMPPTCPConnection
 import org.greenrobot.eventbus.EventBus
 import org.jivesoftware.smack.ExceptionCallback
 import org.jivesoftware.smack.StanzaListener
@@ -33,9 +33,9 @@ object DevicesManager : OnPacketListener {
             notifySamUiListeners(OnDevicesSessionsUpdatedListener::class.java)
             if (packet.hasDeviceRevokeExtensionElement()) {
                 connection?.account?.let {
-                    val myDevice = AccountManager.getAccount(it)?.connectionSettings?.device?.uid
+                    val myDevice = AccountManager.getAccount(it)?.connectionSettings?.device?.id
                     if (packet.getDeviceRevokeExtensionElement().ids.contains(myDevice)) {
-                        onAccountDeviceRevoked(it)
+                        onAccountDeviceRevokedOrExpired(it)
                     }
                 }
             }
@@ -56,13 +56,13 @@ object DevicesManager : OnPacketListener {
 
     }
 
-    fun onAccountDeviceRevoked(accountJid: AccountJid) {
-        LogManager.e(this, "${this::class.java.simpleName}.onAccountXTokenRevoked($accountJid)")
+    fun onAccountDeviceRevokedOrExpired(accountJid: AccountJid) {
+        LogManager.e(this, "${this::class.java.simpleName}.onAccountDeviceRevokedOrExpired($accountJid)")
         AccountManager.removeAccount(accountJid)
     }
 
-    fun onSecretAndCounterOutOfSync(accountJid: AccountJid) {
-        LogManager.e(this, "${this::class.java.simpleName}.onAccountXTokenCounterOutOfSync($accountJid)")
+    fun onPasswordIncorrect(accountJid: AccountJid) {
+        LogManager.e(this, "${this::class.java.simpleName}.onPasswordIncorrect($accountJid)")
         AccountManager.getAccount(accountJid)?.apply {
             connectionSettings.device = null
             recreateConnection(false)
@@ -81,13 +81,28 @@ object DevicesManager : OnPacketListener {
 
     fun sendRegisterDeviceRequest(connection: XMPPTCPConnection) {
         try {
-            connection.sendStanza(
-                DeviceRegisterIQ.createRegisterDeviceRequest(
-                    server = connection.xmppServiceDomain,
-                    client = Application.getInstance().versionName,
-                    info = "${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}"
-                )
+            val accountJid = AccountJid.from(
+                connection.configuration.username.toString() + "@"
+                        + connection.host + "/"
+                        + connection.configuration.resource
             )
+            val existingDeviceOrNull = AccountManager.getAccount(accountJid)?.connectionSettings?.device
+
+            val registerIQ =
+                if (existingDeviceOrNull == null) {
+                    DeviceRegisterIQ.createRegisterDeviceRequest(
+                        server = connection.xmppServiceDomain,
+                        client = Application.getInstance().versionName,
+                        info = "${Build.MANUFACTURER} ${Build.MODEL}, Android ${Build.VERSION.RELEASE}"
+                    )
+                } else {
+                    DeviceRegisterIQ.createRequestNewSecretForDevice(
+                        server = connection.xmppServiceDomain,
+                        id = existingDeviceOrNull.id,
+                    )
+                }
+
+            connection.sendStanza(registerIQ)
         } catch (e: Exception) {
             LogManager.d(this, "Error on device register: $e")
         }

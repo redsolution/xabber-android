@@ -195,12 +195,12 @@ class ConnectionThread {
 
             if (e.getMechanism().equals(SaslHtopMechanism.NAME)) {
                 switch (e.getSASLFailure().getSASLError()) {
-                    case not_authorized: {
-                        DevicesManager.INSTANCE.onAccountDeviceRevoked(connectionItem.getAccount());
+                    case credentials_expired: {
+                        DevicesManager.INSTANCE.onAccountDeviceRevokedOrExpired(connectionItem.getAccount());
                         break;
                     }
-                    case malformed_request: {
-                        DevicesManager.INSTANCE.onSecretAndCounterOutOfSync(connectionItem.getAccount());
+                    case not_authorized: {
+                        DevicesManager.INSTANCE.onPasswordIncorrect(connectionItem.getAccount());
                         break;
                     }
                 }

@@ -145,7 +145,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
 
     private void refreshData(){
         DevicesManager.INSTANCE.requestSessions(
-                accountItem.getConnectionSettings().getDevice().getUid(),
+                accountItem.getConnectionSettings().getDevice().getId(),
                 accountItem.getConnection(),
                 new DevicesManager.SessionsListener() {
                     @Override
@@ -176,7 +176,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         progressBar.setVisibility(View.VISIBLE);
         contentView.setVisibility(View.GONE);
         DevicesManager.INSTANCE.requestSessions(
-                accountItem.getConnectionSettings().getDevice().getUid(),
+                accountItem.getConnectionSettings().getDevice().getId(),
                 accountItem.getConnection(),
                 new DevicesManager.SessionsListener() {
                     @Override

@@ -6,7 +6,7 @@ import com.xabber.xmpp.devices.IncomingNewDeviceIQ
 import com.xabber.xmpp.smack.HmacPasswordGenerator
 import javax.crypto.spec.SecretKeySpec
 
-data class DeviceVO(val uid: String, val secret: String, val expire: Long, var counter: Int = 1) {
+data class DeviceVO(val id: String, val secret: String, val expire: Long, var counter: Int = 1) {
     val isExpired: Boolean
         get() = System.currentTimeMillis() > expire
 
