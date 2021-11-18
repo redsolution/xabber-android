@@ -377,6 +377,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                 throw (XMPPException.StreamErrorException) e.getCause();
             }
         }
+        DevicesManager.INSTANCE.afterLogin(this);
         // If compression is enabled then request the server to use stream compression. XEP-170
         // recommends to perform stream compression before resource binding.
         maybeEnableCompression();

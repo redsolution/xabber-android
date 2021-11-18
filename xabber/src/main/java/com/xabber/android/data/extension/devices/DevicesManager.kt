@@ -42,18 +42,38 @@ object DevicesManager : OnPacketListener {
         }
     }
 
-    fun onLogin(connectionItem: ConnectionItem) {
+    //dirt hack to increase counter possible useless
+    fun beforeLogin(connectionItem: ConnectionItem) {
         val account = AccountManager.getAccount(connectionItem.account)
-        LogManager.d("XToken", "onAuthentikated; prev counter: ${connectionItem.connectionSettings.device.counter}")
+        LogManager.d("XToken", "beforeLogin; prev counter: ${connectionItem.connectionSettings.device.counter}")
         account?.connectionSettings?.device?.apply {
             counter++
         }?.also {
-            LogManager.d("XToken", "onAuthentikated; new counter: ${connectionItem.connectionSettings.device.counter}")
+            LogManager.d("XToken", "beforeLogin; new counter: ${connectionItem.connectionSettings.device.counter}")
             connectionItem.connectionSettings.device = it
             connectionItem.connectionSettings.password = it.getPasswordString()
         }
         AccountRepository.saveAccountToRealm(account)
 
+    }
+
+    fun afterLogin(connection: XMPPTCPConnection) {
+        val accountJid = AccountJid.from(
+            connection.configuration.username.toString() + "@"
+                    + connection.host + "/"
+                    + connection.configuration.resource
+        )
+        val accountItem = AccountManager.getAccount(accountJid)
+        LogManager.d("XToken", "afterLogin; prev counter: ${accountItem?.connectionSettings?.device?.counter}")
+
+        accountItem?.connectionSettings?.device?.apply {
+            counter++
+        }?.also {
+            LogManager.d("XToken", "afterLogin; new counter: ${accountItem.connectionSettings.device.counter}")
+            accountItem.connectionSettings.device = it
+            accountItem.connectionSettings.password = it.getPasswordString()
+        }
+        AccountRepository.saveAccountToRealm(accountItem)
     }
 
     fun onAccountDeviceRevokedOrExpired(accountJid: AccountJid) {
