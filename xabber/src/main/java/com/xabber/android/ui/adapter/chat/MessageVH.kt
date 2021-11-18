@@ -1,7 +1,9 @@
 package com.xabber.android.ui.adapter.chat
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Rect
+import android.net.Uri
 import android.os.Build
 import android.text.Html
 import android.text.SpannableStringBuilder
@@ -22,8 +24,8 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.DatabaseManager
-import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager
@@ -191,7 +193,7 @@ open class MessageVH(
             messageStatusLayout.visibility = View.GONE
         }
 
-        if (messageRealmObject.hasAttachments() || messageRealmObject.hasForwardedMessages()) {
+        if (messageRealmObject.hasReferences() || messageRealmObject.hasForwardedMessages()) {
             flexboxLayout.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
@@ -214,7 +216,7 @@ open class MessageVH(
         }
 
         if (messageRealmObject.text.isNullOrEmpty()
-            && messageRealmObject.attachmentRealmObjects.none { it.isImage }
+            && messageRealmObject.referencesRealmObjects.none { it.isImage }
             && messageRealmObject.messageStatus != MessageStatus.UPLOADING
         ) {
             messageStatusLayout.visibility = View.VISIBLE
@@ -258,9 +260,31 @@ open class MessageVH(
         rvFileList.visibility = View.GONE
         imageGridContainer.removeAllViews()
         imageGridContainer.visibility = View.GONE
-        if (messageRealmObject.hasAttachments()) {
+        if (messageRealmObject.hasReferences()) {
+            setUpGeoLocation(messageRealmObject, vhExtraData)
             setUpImage(messageRealmObject, vhExtraData)
-            setUpFile(messageRealmObject.attachmentRealmObjects, vhExtraData)
+            setUpFile(messageRealmObject.referencesRealmObjects, vhExtraData)
+        }
+    }
+
+    private fun setUpGeoLocation(
+        messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData
+    ) {
+        if (!SettingsManager.connectionLoadImages()) {
+            return
+        }
+        messageRealmObject.referencesRealmObjects?.firstOrNull { it.isGeo }?.let { reference ->
+            val lat = reference.latitude
+            val lon = reference.longitude
+
+            itemView.setOnClickListener {
+                itemView.context.startActivity(
+                    Intent().apply {
+                        action = Intent.ACTION_VIEW
+                        data = Uri.parse("geo:$lat,$lon?q=\"$lat, $lon\"")
+                    }
+                )
+            }
         }
     }
 
@@ -268,7 +292,7 @@ open class MessageVH(
         if (!SettingsManager.connectionLoadImages()) {
             return
         }
-        message.attachmentRealmObjects
+        message.referencesRealmObjects
             ?.filter { it.isImage }
             ?.also { imageCount = it.size }
             ?.takeIf { it.isNotEmpty() }

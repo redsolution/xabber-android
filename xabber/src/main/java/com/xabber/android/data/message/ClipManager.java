@@ -95,8 +95,8 @@ public class ClipManager {
             stringBuilder.append("\n");
         }
 
-        if (message.hasAttachments()) {
-            for (ReferenceRealmObject referenceRealmObject : message.getAttachmentRealmObjects()) {
+        if (message.hasReferences()) {
+            for (ReferenceRealmObject referenceRealmObject : message.getReferencesRealmObjects()) {
                 stringBuilder.append(space);
                 stringBuilder.append(referenceRealmObject.getFileUrl());
                 stringBuilder.append("\n");

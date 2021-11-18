@@ -349,13 +349,13 @@ public class MessageRealmObject extends RealmObject {
 
     public void setErrorDescription(String errorDescription) { this.errorDescription = errorDescription; }
 
-    public RealmList<ReferenceRealmObject> getAttachmentRealmObjects() { return referenceRealmObjects; }
+    public RealmList<ReferenceRealmObject> getReferencesRealmObjects() { return referenceRealmObjects; }
 
-    public void setAttachmentRealmObjects(RealmList<ReferenceRealmObject> referenceRealmObjects) {
+    public void setReferencesRealmObjects(RealmList<ReferenceRealmObject> referenceRealmObjects) {
         this.referenceRealmObjects = referenceRealmObjects;
     }
 
-    public boolean hasAttachments() { return referenceRealmObjects != null && referenceRealmObjects.size() > 0; }
+    public boolean hasReferences() { return referenceRealmObjects != null && referenceRealmObjects.size() > 0; }
 
     public RealmList<ForwardIdRealmObject> getForwardedIds() { return forwardedIds; }
 
@@ -431,8 +431,8 @@ public class MessageRealmObject extends RealmObject {
                     }
                     stringBuilder.append(message.getText().trim()).append(" ");
                     String attachmentName = "";
-                    if (message.hasAttachments() && message.getAttachmentRealmObjects().size() > 0) {
-                        ReferenceRealmObject referenceRealmObject = message.getAttachmentRealmObjects().get(0);
+                    if (message.hasReferences() && message.getReferencesRealmObjects().size() > 0) {
+                        ReferenceRealmObject referenceRealmObject = message.getReferencesRealmObjects().get(0);
                         attachmentName = StringUtilsKt.wrapWithColorTag(referenceRealmObject.getTitle().trim(), color);
                         stringBuilder.append(attachmentName);
                     }

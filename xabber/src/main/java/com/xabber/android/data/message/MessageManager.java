@@ -164,7 +164,7 @@ public class MessageManager implements OnPacketListener {
                     .findFirst();
 
             if (messageRealmObject != null) {
-                RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getAttachmentRealmObjects();
+                RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getReferencesRealmObjects();
 
                 // remove attachments that not uploaded
                 for (String file : notUploadedFilesUrls) {
@@ -199,7 +199,7 @@ public class MessageManager implements OnPacketListener {
                     .findFirst();
 
             if (messageRealmObject != null) {
-                RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getAttachmentRealmObjects();
+                RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getReferencesRealmObjects();
 
                 // remove temporary attachments created from uri
                 // to replace it with attachments created from files

@@ -60,7 +60,7 @@ class MessageContextMenu(
             menuItems += MessageContextMenuItem.Remove(context)
         }
 
-        if (!message.isIncoming && !message.hasAttachments()
+        if (!message.isIncoming && !message.hasReferences()
             && (message.messageStatus == MessageStatus.DELIVERED
                     || message.messageStatus == MessageStatus.DISPLAYED
                     || message.messageStatus == MessageStatus.RECEIVED)

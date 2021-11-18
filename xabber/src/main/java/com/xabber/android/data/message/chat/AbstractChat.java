@@ -224,7 +224,7 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             }
 
             messageRealmObject.setOriginalFrom(account.toString());
-            messageRealmObject.setAttachmentRealmObjects(referenceRealmObjects);
+            messageRealmObject.setReferencesRealmObjects(referenceRealmObjects);
             messageRealmObject.setTimestamp(System.currentTimeMillis());
             messageRealmObject.setRead(true);
             messageRealmObject.setMessageStatus(MessageStatus.UPLOADING);
@@ -540,14 +540,14 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
 
         Message message = null;
 
-        if (messageRealmObject.hasAttachments()) {
+        if (messageRealmObject.hasReferences()) {
             if (messageRealmObject.hasForwardedMessages()) {
                 message = createFileAndForwardMessagePacket(
-                        messageRealmObject.getStanzaId(), messageRealmObject.getAttachmentRealmObjects(),
+                        messageRealmObject.getStanzaId(), messageRealmObject.getReferencesRealmObjects(),
                         messageRealmObject.getForwardedIdsAsArray(), text);
             } else {
                 message = createFileMessagePacket(
-                        messageRealmObject.getStanzaId(), messageRealmObject.getAttachmentRealmObjects(), text);
+                        messageRealmObject.getStanzaId(), messageRealmObject.getReferencesRealmObjects(), text);
             }
         } else if (messageRealmObject.hasForwardedMessages()) {
             if (messageRealmObject.getMarkupText() != null && !messageRealmObject.getMarkupText().isEmpty()) {

@@ -287,7 +287,7 @@ object MessageHandler {
             this.delayTimestamp = DelayInformation.from(messageStanza)?.stamp?.time
             this.forwardedIds = forwardIdRealmObjects
             this.groupchatUserId = groupMember?.memberId
-            referenceRealmObjects?.let { this.attachmentRealmObjects = it }
+            referenceRealmObjects?.let { this.referencesRealmObjects = it }
             editedTime?.let { this.editedTimestamp = XmppDateTime.parseDate(it).time }
             this.isRegularReceived = isRegularMessage
         }
@@ -346,7 +346,7 @@ object MessageHandler {
         if (SettingsManager.chatsAutoDownloadVoiceMessage()) {
             messageRealmObjects
                 .flatMap { message ->
-                    message.attachmentRealmObjects.map { attach -> Pair(attach, message.account) }
+                    message.referencesRealmObjects.map { attach -> Pair(attach, message.account) }
                 }
                 .filter { pair: Pair<ReferenceRealmObject, AccountJid> ->
                     pair.first.isVoice && pair.first.filePath == null
@@ -469,7 +469,7 @@ object MessageHandler {
             this.resource = message.from?.resourceOrNull ?: Resourcepart.EMPTY
             this.markupText = bodies.second
             this.delayTimestamp = DelayInformation.from(message)?.stamp?.time
-            this.attachmentRealmObjects = HttpFileUploadManager.parseMessageWithReference(message) ?: null
+            this.referencesRealmObjects = HttpFileUploadManager.parseMessageWithReference(message) ?: null
             this.groupchatUserId = groupchatUserId
             this.forwardedIds = forwardIdRealmObjects
             this.isRegularReceived = isRegularMessage

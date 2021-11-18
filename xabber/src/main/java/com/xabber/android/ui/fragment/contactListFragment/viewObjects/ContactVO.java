@@ -185,8 +185,8 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
             if (ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid()) != null) {
                 String chatState = ChatStateManager.getInstance().getFullChatStateString(contact.getAccount(), contact.getContactJid());
                 messageText = StringUtilsKt.wrapWithColorTag(chatState, accountColorIndicatorLight);
-            } else if (lastMessage.hasAttachments() && lastMessage.getAttachmentRealmObjects().size() > 0) {
-                ReferenceRealmObject referenceRealmObject = lastMessage.getAttachmentRealmObjects().get(0);
+            } else if (lastMessage.hasReferences() && lastMessage.getReferencesRealmObjects().size() > 0) {
+                ReferenceRealmObject referenceRealmObject = lastMessage.getReferencesRealmObjects().get(0);
                 if (referenceRealmObject.isVoice()) {
                     StringBuilder voiceText = new StringBuilder();
                     voiceText.append(Application.getInstance().getResources().getString(R.string.voice_message));
@@ -207,10 +207,10 @@ public class ContactVO extends AbstractFlexibleItem<ContactVO.ViewHolder> {
                         messageText = StringUtilsKt.wrapWithColorTag(referenceRealmObject.getTitle().trim(), accountColorIndicator);
                     }
                 }
-            } else if (lastMessage.getAttachmentRealmObjects() != null
-                    && lastMessage.getAttachmentRealmObjects().size() !=0
-                    && lastMessage.getAttachmentRealmObjects().get(0).getFilePath() != null) {
-                messageText = new File(lastMessage.getAttachmentRealmObjects().get(0).getFilePath()).getName();
+            } else if (lastMessage.getReferencesRealmObjects() != null
+                    && lastMessage.getReferencesRealmObjects().size() !=0
+                    && lastMessage.getReferencesRealmObjects().get(0).getFilePath() != null) {
+                messageText = new File(lastMessage.getReferencesRealmObjects().get(0).getFilePath()).getName();
             } else if (ChatAction.available.toString().equals(lastMessage.getAction())) {
                 messageText = StringUtilsKt.wrapWithColorTag(lastMessage.getText().trim(), accountColorIndicator);
             } else {

@@ -118,7 +118,7 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             referenceRealmObject.setFileUrl(imageUrl);
             imageReferenceRealmObjects.add(referenceRealmObject);
         } else {
-            RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getAttachmentRealmObjects();
+            RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getReferencesRealmObjects();
 
             for (ReferenceRealmObject referenceRealmObject : referenceRealmObjects) {
                 if (referenceRealmObject.isImage()) imageReferenceRealmObjects.add(referenceRealmObject);

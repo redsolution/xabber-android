@@ -54,7 +54,7 @@ data class ChatListItemData(
 
             val lastMessage = chat.lastMessage
             val forwardedCount = lastMessage?.forwardedIds?.size ?: 0
-            val attachmentsCount = lastMessage?.attachmentRealmObjects?.size ?: 0
+            val attachmentsCount = lastMessage?.referencesRealmObjects?.size ?: 0
 
             val color700 =
                 ColorManager.getInstance().accountPainter.getAccountColorWithTint(account, 700)
@@ -129,7 +129,7 @@ data class ChatListItemData(
                     attachmentsCount > 0 -> when {
                         lastMessage.text.isNullOrEmpty() -> {
                             coloredMemberNameOrNull + getColoredAttachmentDisplayName(
-                                context, lastMessage.attachmentRealmObjects, color500
+                                context, lastMessage.referencesRealmObjects, color500
                             )
                         }
                         else -> {
@@ -169,7 +169,7 @@ data class ChatListItemData(
                         when {
                             lastMessage.text.isNullOrEmpty() -> {
                                 getColoredAttachmentDisplayName(
-                                    context, lastMessage.attachmentRealmObjects, color500
+                                    context, lastMessage.referencesRealmObjects, color500
                                 ) ?: ""
                             }
                             else -> lastMessage.text.tryToDecode().toString()

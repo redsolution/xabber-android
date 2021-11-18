@@ -412,7 +412,7 @@ object MessageNotificationManager : OnLoadListener {
 
     private fun getNotificationText(message: MessageRealmObject): String {
         val forwardedCount = message.forwardedIds?.size ?: 0
-        val attachmentsCount = message.attachmentRealmObjects?.size ?: 0
+        val attachmentsCount = message.referencesRealmObjects?.size ?: 0
 
         fun String.tryToDecode() =
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
@@ -441,7 +441,7 @@ object MessageNotificationManager : OnLoadListener {
             attachmentsCount > 0 ->
                 if (message.text.isNullOrEmpty()) {
                     getColoredAttachmentDisplayName(
-                        context, message.attachmentRealmObjects, -1
+                        context, message.referencesRealmObjects, -1
                     ) ?: ""
                 } else {
                     message.text.tryToDecode().toString()

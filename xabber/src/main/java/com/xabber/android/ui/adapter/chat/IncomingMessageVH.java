@@ -92,8 +92,8 @@ public class IncomingMessageVH  extends MessageVH {
         boolean imageAttached = false;
         boolean imageOnly = true;
 
-        if(messageRealmObject.hasAttachments()) {
-            for (ReferenceRealmObject a : messageRealmObject.getAttachmentRealmObjects()){
+        if(messageRealmObject.hasReferences()) {
+            for (ReferenceRealmObject a : messageRealmObject.getReferencesRealmObjects()){
                 if (a.isImage()) {
                     imageAttached = true;
                 } else imageOnly = false;
@@ -102,7 +102,7 @@ public class IncomingMessageVH  extends MessageVH {
                     needTail = false;
                 }
             }
-        } else if (messageRealmObject.hasImage() && messageRealmObject.getAttachmentRealmObjects().get(0).isImage()) {
+        } else if (messageRealmObject.hasImage() && messageRealmObject.getReferencesRealmObjects().get(0).isImage()) {
             if (getMessageTextTv().getText().toString().trim().isEmpty()) {
                 imageAttached = true;
                 needTail = false; //not using the tail for messages with *only* images
@@ -167,7 +167,7 @@ public class IncomingMessageVH  extends MessageVH {
         // hide empty message
         if (messageRealmObject.getText().trim().isEmpty()
                 && !messageRealmObject.hasForwardedMessages()
-                && !messageRealmObject.hasAttachments()) {
+                && !messageRealmObject.hasReferences()) {
             getMessageBalloon().setVisibility(View.GONE);
             getMessageShadow().setVisibility(View.GONE);
             getMessageTime().setVisibility(View.GONE);

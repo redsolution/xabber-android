@@ -97,9 +97,9 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
                 .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                 .findFirst();
 
-        if (messageRealmObject == null || messageRealmObject.getAttachmentRealmObjects() == null
-                || messageRealmObject.getAttachmentRealmObjects().size() <= attachmentIndex
-                || !messageRealmObject.getAttachmentRealmObjects().get(attachmentIndex).isVoice()) {
+        if (messageRealmObject == null || messageRealmObject.getReferencesRealmObjects() == null
+                || messageRealmObject.getReferencesRealmObjects().size() <= attachmentIndex
+                || !messageRealmObject.getReferencesRealmObjects().get(attachmentIndex).isVoice()) {
             return;
         }
 
@@ -109,12 +109,12 @@ public final class VoiceManager implements MediaPlayer.OnCompletionListener, Med
     }
 
     private void voiceClicked(MessageRealmObject message, int attachmentIndex, Long timestamp) {
-        if (message == null || message.getAttachmentRealmObjects() == null
-                || message.getAttachmentRealmObjects().size() <= attachmentIndex
-                || !message.getAttachmentRealmObjects().get(attachmentIndex).isVoice())
+        if (message == null || message.getReferencesRealmObjects() == null
+                || message.getReferencesRealmObjects().size() <= attachmentIndex
+                || !message.getReferencesRealmObjects().get(attachmentIndex).isVoice())
             return;
 
-        ReferenceRealmObject referenceRealmObject = message.getAttachmentRealmObjects().get(attachmentIndex);
+        ReferenceRealmObject referenceRealmObject = message.getReferencesRealmObjects().get(attachmentIndex);
 
         String path;
         if (message.getMessageStatus().equals(MessageStatus.UPLOADING)) {

@@ -68,7 +68,7 @@ public class OutgoingMessageVH extends MessageVH {
             getForwardedMessagesRV().setVisibility(View.GONE);
         }
 
-        if (messageRealmObject.hasAttachments() && messageRealmObject.hasImage()) {
+        if (messageRealmObject.hasReferences() && messageRealmObject.hasImage()) {
             needTail = false;
         }
 
@@ -111,7 +111,7 @@ public class OutgoingMessageVH extends MessageVH {
 
         float border = 3.5f;
 
-        if(messageRealmObject.hasAttachments()) {
+        if(messageRealmObject.hasReferences()) {
             if(messageRealmObject.hasImage()) {
                 getMessageBalloon().setPadding(
                         dipToPx(border, context),

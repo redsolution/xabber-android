@@ -63,7 +63,7 @@ class ImageGrid {
         messageVhExtraData: MessageVhExtraData,
         wholeGridLongTapListener: View.OnLongClickListener? = null,
     ) {
-        val attachmentRealmObjects = messageRealmObject.attachmentRealmObjects
+        val attachmentRealmObjects = messageRealmObject.referencesRealmObjects
 
         if (attachmentRealmObjects.size == 1) {
             getImageView(view, 0)

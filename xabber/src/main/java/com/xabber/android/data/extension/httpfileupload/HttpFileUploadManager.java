@@ -280,7 +280,7 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     public void retrySendFileMessage(final MessageRealmObject messageRealmObject, Context context) {
         List<String> notUploadedFilesPaths = new ArrayList<>();
 
-        for (ReferenceRealmObject referenceRealmObject : messageRealmObject.getAttachmentRealmObjects()) {
+        for (ReferenceRealmObject referenceRealmObject : messageRealmObject.getReferencesRealmObjects()) {
             if (referenceRealmObject.getFileUrl() == null || referenceRealmObject.getFileUrl().isEmpty()){
                 notUploadedFilesPaths.add(referenceRealmObject.getFilePath());
             }
