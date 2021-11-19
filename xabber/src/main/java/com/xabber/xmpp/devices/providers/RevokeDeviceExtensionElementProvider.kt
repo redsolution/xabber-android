@@ -18,11 +18,10 @@ class RevokeDeviceExtensionElementProvider :
                         && DevicesManager.NAMESPACE == parser.namespace
                     ) {
                         parser.next()
-                    } else if (DeviceRevokeExtensionElement.UID_ELEMENT_NAME == parser.name) {
+                    } else if (DeviceRevokeExtensionElement.DEVICE_ELEMENT_NAME == parser.name) {
                         devicesIdsList.add(
                             parser.getAttributeValue(
-                                null,
-                                DeviceRevokeExtensionElement.ID_ATTRIBUTE
+                                null, DeviceRevokeExtensionElement.ID_ATTRIBUTE
                             )
                         )
                     } else {

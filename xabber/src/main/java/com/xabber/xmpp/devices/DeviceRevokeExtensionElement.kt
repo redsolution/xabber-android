@@ -16,13 +16,13 @@ class DeviceRevokeExtensionElement(val ids: List<String>) : ExtensionElement {
         halfOpenElement(elementName)
         xmlnsAttribute(namespace)
         rightAngleBracket()
-        append(ids.map { SimpleNamedElement(UID_ELEMENT_NAME, it) })
+        append(ids.map { SimpleNamedElement(DEVICE_ELEMENT_NAME, it) })
         closeElement(elementName)
     }
 
     companion object {
         const val ELEMENT_NAME = "revoke"
-        const val UID_ELEMENT_NAME = "device"
+        const val DEVICE_ELEMENT_NAME = "device"
         const val ID_ATTRIBUTE = "id"
 
         fun Stanza.hasDeviceRevokeExtensionElement() =
