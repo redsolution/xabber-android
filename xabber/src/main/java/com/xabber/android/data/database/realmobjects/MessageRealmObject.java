@@ -433,7 +433,9 @@ public class MessageRealmObject extends RealmObject {
                     String attachmentName = "";
                     if (message.hasReferences() && message.getReferencesRealmObjects().size() > 0) {
                         ReferenceRealmObject referenceRealmObject = message.getReferencesRealmObjects().get(0);
-                        attachmentName = StringUtilsKt.wrapWithColorTag(referenceRealmObject.getTitle().trim(), color);
+                        if (referenceRealmObject.getTitle() != null) {
+                            attachmentName = StringUtilsKt.wrapWithColorTag(referenceRealmObject.getTitle().trim(), color);
+                        }
                         stringBuilder.append(attachmentName);
                     }
                     if (!message.getText().trim().isEmpty() || !attachmentName.equals(""))
