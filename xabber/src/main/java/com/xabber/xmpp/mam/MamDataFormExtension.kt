@@ -20,11 +20,6 @@ class MamDataFormExtension(
     ids: List<String>? = null,
 ) : DataForm(Type.submit) {
 
-    constructor(
-        with: Jid? = null,
-        start: Date? = null,
-    ) : this(with?.asBareJid().toString(), start)
-
     init {
         addField(
             FormField(FormField.FORM_TYPE).apply {

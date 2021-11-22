@@ -62,13 +62,13 @@ class MamQueryIQ private constructor(
             chat: AbstractChat,
         ) = MamQueryIQ(
             archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
-            dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid),
+            dataFormExtension = MamDataFormExtension(with = chat.contactJid.bareJid.toString()),
         )
 
         fun createMamRequestIqLastSavedMessage(
             accountJid: AccountJid,
         ) = MamQueryIQ(
-            dataFormExtension = MamDataFormExtension(with = accountJid.bareJid),
+            dataFormExtension = MamDataFormExtension(with = accountJid.bareJid.toString()),
             rsmSet = RSMSet(null, "", -1, -1, null, 1, null, -1),
         )
 
@@ -78,7 +78,7 @@ class MamQueryIQ private constructor(
             archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
             dataFormExtension =
             if (chat is RegularChat) {
-                MamDataFormExtension(with = chat.contactJid.bareJid)
+                MamDataFormExtension(with = chat.contactJid.bareJid.toString())
             } else null,
             rsmSet = RSMSet(null, "", -1, -1, null, 1, null, -1),
         )
@@ -99,7 +99,7 @@ class MamQueryIQ private constructor(
             archiveAddress = if (chat is GroupChat) chat.contactJid.bareJid else null,
             dataFormExtension =
             if (chat is RegularChat) {
-                MamDataFormExtension(with = chat.contactJid.bareJid)
+                MamDataFormExtension(with = chat.contactJid.bareJid.toString())
             } else {
                 null
             },
@@ -122,7 +122,7 @@ class MamQueryIQ private constructor(
             is RegularChat ->
                 MamQueryIQ(
                     dataFormExtension = MamDataFormExtension(
-                        with = chat.contactJid.bareJid,
+                        with = chat.contactJid.bareJid.toString(),
                         start = timestamp
                     ),
                     rsmSet = RSMSet(null, null, -1, -1, null, max, null, -1)
