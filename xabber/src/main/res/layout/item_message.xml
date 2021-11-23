@@ -66,6 +66,12 @@
             tools:listitem="@layout/item_file_message"
             android:visibility="gone"/>
 
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/message_map_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
         <com.xabber.android.ui.widget.CustomFlexboxLayout
             android:id="@+id/message_flex_layout"
             android:layout_width="wrap_content"

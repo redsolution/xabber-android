@@ -2,9 +2,13 @@ package com.xabber.android.ui.adapter.chat
 
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
+import android.graphics.ColorFilter
+import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
+import android.preference.PreferenceManager
 import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -15,11 +19,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.StyleRes
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amulyakhare.textdrawable.util.ColorGenerator
+import com.bumptech.glide.Glide
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
@@ -28,6 +34,8 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
+import com.xabber.android.data.extension.references.mutable.geo.thumbnails.GeolocationThumbnailCreator
+import com.xabber.android.data.extension.references.mutable.geo.thumbnails.GeolocationThumbnailRepository
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageStatus
@@ -45,8 +53,15 @@ import com.xabber.android.ui.widget.CustomFlexboxLayout
 import com.xabber.android.ui.widget.ImageGrid
 import io.realm.RealmList
 import io.realm.Sort
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 import rx.subscriptions.CompositeSubscription
 import java.util.*
+import kotlin.math.roundToInt
 
 open class MessageVH(
     itemView: View,
@@ -74,6 +89,8 @@ open class MessageVH(
     protected val progressBar: ProgressBar = itemView.findViewById(R.id.message_progress_bar)
     private val rvFileList: RecyclerView = itemView.findViewById(R.id.file_list_rv)
     private val imageGridContainer: FrameLayout = itemView.findViewById(R.id.image_grid_container_fl)
+
+    private val mapView: AppCompatImageView = itemView.findViewById(R.id.message_map_view)
 
     //todo there are duplicated views! (or else triplicated!)
     private val messageStatusLayout: LinearLayoutCompat = itemView.findViewById(R.id.message_bottom_status)
@@ -276,15 +293,68 @@ open class MessageVH(
         messageRealmObject.referencesRealmObjects?.firstOrNull { it.isGeo }?.let { reference ->
             val lat = reference.latitude
             val lon = reference.longitude
+            //val geoPoint = GeoPoint(lat, lon)
+            val pointerColor = ColorManager.getInstance().accountPainter.getAccountColorWithTint(
+                messageRealmObject.account, 500
+            )
 
-            itemView.setOnClickListener {
-                itemView.context.startActivity(
-                    Intent().apply {
-                        action = Intent.ACTION_VIEW
-                        data = Uri.parse("geo:$lat,$lon?q=\"$lat, $lon\"")
+            GeolocationThumbnailRepository(itemView.context).getOrCreateThumbnail(
+                lon, lat, pointerColor, object : GeolocationThumbnailRepository.OnBitmapReadyCallback {
+                    override fun onBitmapReady(bitmap: Bitmap) {
+                        mapView.visibility = View.VISIBLE
+                        Glide.with(mapView).load(bitmap)
                     }
-                )
-            }
+                }
+            )
+
+//            val context = itemView.context
+//
+//            Configuration.getInstance().load(
+//                itemView.context,
+//                PreferenceManager.getDefaultSharedPreferences(context)
+//            )
+//
+//            mapView.apply {
+//                setOnClickListener {
+//                    context.startActivity(
+//                        Intent().apply {
+//                            action = Intent.ACTION_VIEW
+//                            data = Uri.parse("geo:$lat,$lon?q=\"$lat, $lon\"")
+//                        }
+//                    )
+//                }
+//
+//                overlays.add(
+//                    Marker(this, context).apply {
+//                        icon = context.resources.getDrawable(R.drawable.ic_location).apply {
+//                            setColorFilter(pointerColor, PorterDuff.Mode.MULTIPLY)
+//                        }
+//                        position = geoPoint
+//                    }
+//                )
+//
+//                zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+//                setMultiTouchControls(false)
+//
+//                visibility = View.VISIBLE
+//                setTileSource(TileSourceFactory.MAPNIK)
+//
+//                val creator = GeolocationThumbnailCreator(itemView.context)
+//
+//                layoutParams = layoutParams.apply {
+//                    width = creator.mapWidth.roundToInt()
+//                    height = creator.mapHeight.roundToInt()
+//                }
+//
+//                setHasTransientState(true)
+//
+//                controller?.apply {
+//                    setZoom(16.5)
+//                    setCenter(geoPoint)
+//                }
+//
+//            }
+
         }
     }
 
@@ -316,7 +386,8 @@ open class MessageVH(
     private fun setUpFile(
         referenceRealmObjects: RealmList<ReferenceRealmObject>, vhExtraData: MessageVhExtraData
     ) {
-        referenceRealmObjects.filter { !it.isImage }
+        referenceRealmObjects
+            .filter { !it.isImage && !it.isGeo }
             .also { fileCount = it.size }
             .takeIf { it.isNotEmpty() }
             ?.let {
