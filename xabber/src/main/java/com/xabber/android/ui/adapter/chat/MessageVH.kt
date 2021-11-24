@@ -22,6 +22,7 @@ import androidx.annotation.StyleRes
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amulyakhare.textdrawable.util.ColorGenerator
@@ -89,8 +90,6 @@ open class MessageVH(
     protected val progressBar: ProgressBar = itemView.findViewById(R.id.message_progress_bar)
     private val rvFileList: RecyclerView = itemView.findViewById(R.id.file_list_rv)
     private val imageGridContainer: FrameLayout = itemView.findViewById(R.id.image_grid_container_fl)
-
-    private val mapView: AppCompatImageView = itemView.findViewById(R.id.message_map_view)
 
     //todo there are duplicated views! (or else triplicated!)
     private val messageStatusLayout: LinearLayoutCompat = itemView.findViewById(R.id.message_bottom_status)
@@ -278,83 +277,8 @@ open class MessageVH(
         imageGridContainer.removeAllViews()
         imageGridContainer.visibility = View.GONE
         if (messageRealmObject.hasReferences()) {
-            setUpGeoLocation(messageRealmObject, vhExtraData)
             setUpImage(messageRealmObject, vhExtraData)
             setUpFile(messageRealmObject.referencesRealmObjects, vhExtraData)
-        }
-    }
-
-    private fun setUpGeoLocation(
-        messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData
-    ) {
-        if (!SettingsManager.connectionLoadImages()) {
-            return
-        }
-        messageRealmObject.referencesRealmObjects?.firstOrNull { it.isGeo }?.let { reference ->
-            val lat = reference.latitude
-            val lon = reference.longitude
-            //val geoPoint = GeoPoint(lat, lon)
-            val pointerColor = ColorManager.getInstance().accountPainter.getAccountColorWithTint(
-                messageRealmObject.account, 500
-            )
-
-            GeolocationThumbnailRepository(itemView.context).getOrCreateThumbnail(
-                lon, lat, pointerColor, object : GeolocationThumbnailRepository.OnBitmapReadyCallback {
-                    override fun onBitmapReady(bitmap: Bitmap) {
-                        mapView.visibility = View.VISIBLE
-                        Glide.with(mapView).load(bitmap)
-                    }
-                }
-            )
-
-//            val context = itemView.context
-//
-//            Configuration.getInstance().load(
-//                itemView.context,
-//                PreferenceManager.getDefaultSharedPreferences(context)
-//            )
-//
-//            mapView.apply {
-//                setOnClickListener {
-//                    context.startActivity(
-//                        Intent().apply {
-//                            action = Intent.ACTION_VIEW
-//                            data = Uri.parse("geo:$lat,$lon?q=\"$lat, $lon\"")
-//                        }
-//                    )
-//                }
-//
-//                overlays.add(
-//                    Marker(this, context).apply {
-//                        icon = context.resources.getDrawable(R.drawable.ic_location).apply {
-//                            setColorFilter(pointerColor, PorterDuff.Mode.MULTIPLY)
-//                        }
-//                        position = geoPoint
-//                    }
-//                )
-//
-//                zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-//                setMultiTouchControls(false)
-//
-//                visibility = View.VISIBLE
-//                setTileSource(TileSourceFactory.MAPNIK)
-//
-//                val creator = GeolocationThumbnailCreator(itemView.context)
-//
-//                layoutParams = layoutParams.apply {
-//                    width = creator.mapWidth.roundToInt()
-//                    height = creator.mapHeight.roundToInt()
-//                }
-//
-//                setHasTransientState(true)
-//
-//                controller?.apply {
-//                    setZoom(16.5)
-//                    setCenter(geoPoint)
-//                }
-//
-//            }
-
         }
     }
 

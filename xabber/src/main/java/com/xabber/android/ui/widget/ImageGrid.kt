@@ -1,8 +1,10 @@
 package com.xabber.android.ui.widget
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
@@ -22,8 +24,8 @@ import com.bumptech.glide.request.transition.Transition
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.database.DatabaseManager
-import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.ui.adapter.chat.MessageVhExtraData
 import com.xabber.android.ui.helper.MessageDeliveryStatusHelper
 import com.xabber.android.ui.helper.RoundedBorders
@@ -69,7 +71,21 @@ class ImageGrid {
             getImageView(view, 0)
                 .apply {
                     setOnLongClickListener(wholeGridLongTapListener)
-                    setOnClickListener(clickListener)
+                    if (attachmentRealmObjects[0]?.isGeo == true) {
+                        val ref = attachmentRealmObjects[0]!!
+                        val lon =  ref.longitude
+                        val lat = ref.latitude
+                        setOnClickListener {
+                            context.startActivity(
+                                Intent().apply {
+                                    action = Intent.ACTION_VIEW
+                                    data = Uri.parse("geo:$lat,$lon?q=\"$lat, $lon\"")
+                                }
+                            )
+                        }
+                    } else {
+                        setOnClickListener(clickListener)
+                    }
                 }
                 .also { setupImageViewIntoFlexibleSingleImageCell(attachmentRealmObjects[0]!!, it) }
         } else {

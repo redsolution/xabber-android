@@ -17,6 +17,7 @@ import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.references.ReferencesManager
+import com.xabber.android.data.extension.references.mutable.geo.thumbnails.GeolocationThumbnailRepository
 import com.xabber.android.data.filedownload.DownloadManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
@@ -292,6 +293,11 @@ object MessageHandler {
             this.isRegularReceived = isRegularMessage
         }
 
+        if (referenceRealmObjects?.any(ReferenceRealmObject::isGeo) == true) {
+            GeolocationThumbnailRepository(Application.getInstance().applicationContext)
+                .modifyMessageWithThumbnailIfNeed(messageRealmObject)
+        }
+
         saverBuffer.onNext(messageRealmObject ?: return null)
 
         // remove notifications if get outgoing message with 2 sec delay
@@ -453,6 +459,8 @@ object MessageHandler {
                 )
             }
 
+        val referenceRealmObjects = HttpFileUploadManager.parseMessageWithReference(message) ?: null
+
         val forwardIdRealmObjects =
             parseForwardedMessage(message, messageRealmObject.primaryKey, chat, isRegularMessage)
 
@@ -469,10 +477,15 @@ object MessageHandler {
             this.resource = message.from?.resourceOrNull ?: Resourcepart.EMPTY
             this.markupText = bodies.second
             this.delayTimestamp = DelayInformation.from(message)?.stamp?.time
-            this.referencesRealmObjects = HttpFileUploadManager.parseMessageWithReference(message) ?: null
+            referenceRealmObjects?.let { this.referencesRealmObjects = it }
             this.groupchatUserId = groupchatUserId
             this.forwardedIds = forwardIdRealmObjects
             this.isRegularReceived = isRegularMessage
+        }
+
+        if (referenceRealmObjects?.any(ReferenceRealmObject::isGeo) == true) {
+            GeolocationThumbnailRepository(Application.getInstance().applicationContext)
+                .modifyMessageWithThumbnailIfNeed(messageRealmObject)
         }
 
         if (messageRealmObject != null) {
