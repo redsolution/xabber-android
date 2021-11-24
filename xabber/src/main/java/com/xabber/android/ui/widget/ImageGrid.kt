@@ -79,7 +79,7 @@ class ImageGrid {
                             context.startActivity(
                                 Intent().apply {
                                     action = Intent.ACTION_VIEW
-                                    data = Uri.parse("geo:$lat,$lon?q=\"$lat, $lon\"")
+                                    data = Uri.parse("geo:$lat,$lon?q=$lat,$lon")
                                 }
                             )
                         }
