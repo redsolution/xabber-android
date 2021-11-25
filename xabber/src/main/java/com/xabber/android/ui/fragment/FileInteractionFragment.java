@@ -77,7 +77,6 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
     private static final int REQUEST_IMAGE_CAPTURE = 12;
     public static final int SHARE_ACTIVITY_REQUEST_CODE = 25;
 
-    private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 21;
     private static final int PERMISSIONS_REQUEST_CAMERA = 23;
     private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
     static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 37;
@@ -191,13 +190,6 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case PERMISSIONS_REQUEST_ATTACH_FILE:
-                if (PermissionsRequester.isPermissionGranted(grantResults))
-                    ((ChatActivity) getActivity()).showAttachDialog();
-                else
-                    Toast.makeText(getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT).show();
-                break;
-
             case PERMISSIONS_REQUEST_CAMERA:
                 if (PermissionsRequester.isPermissionGranted(grantResults))
                     startCamera();
@@ -370,10 +362,7 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
             dialog.show();
             return;
         }
-
-        if (PermissionsRequester.requestFileReadPermissionIfNeeded(this, PERMISSIONS_REQUEST_ATTACH_FILE)) {
-            ((ChatActivity) getActivity()).showAttachDialog();
-        }
+        ((ChatActivity) getActivity()).showAttachDialog();
     }
 
     protected void forwardIdsForAttachments(List<String> forwardIds) {

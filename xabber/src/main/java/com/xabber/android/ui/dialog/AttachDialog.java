@@ -17,6 +17,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.xabber.android.R;
 import com.xabber.android.ui.adapter.RecentImagesAdapter;
+import com.xabber.android.ui.helper.PermissionsRequester;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
     private TextView attachSendButtonText;
     private ImageView attachSendButtonIcon;
     private View view;
+    private RecyclerView galleryRecyclerView;
+
+    private static final int PERMISSIONS_REQUEST_ATTACH_FILE = 21;
 
     private Listener listener;
 
@@ -68,14 +72,46 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
         attachSendButtonText.setVisibility(View.INVISIBLE);
         attachSendButtonIcon = view.findViewById(R.id.attach_send_button_icon);
 
-        RecyclerView recyclerView = view.findViewById(R.id.attach_recent_images_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        galleryRecyclerView = view.findViewById(R.id.attach_recent_images_recycler_view);
+        galleryRecyclerView.setLayoutManager(
+                new LinearLayoutManager(
+                        getActivity(), LinearLayoutManager.HORIZONTAL, false
+                )
+        );
 
-        recentImagesAdapter = new RecentImagesAdapter(this);
-        recentImagesAdapter.loadGalleryPhotosAlbums();
-        recyclerView.setAdapter(recentImagesAdapter);
+        if (PermissionsRequester.requestFileReadPermissionIfNeeded(
+                this, PERMISSIONS_REQUEST_ATTACH_FILE)
+        ) {
+            setupImagesRecycler(true);
+        }
 
         return view;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSIONS_REQUEST_ATTACH_FILE){
+            if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                setupImagesRecycler(true);
+            } else {
+                Toast.makeText(
+                        getActivity(), R.string.no_permission_to_read_files, Toast.LENGTH_SHORT
+                ).show();
+            }
+        }
+    }
+
+    private void setupImagesRecycler(boolean visibility) {
+        if (visibility) {
+            galleryRecyclerView.setVisibility(View.VISIBLE);
+
+            recentImagesAdapter = new RecentImagesAdapter(this);
+            recentImagesAdapter.loadGalleryPhotosAlbums();
+            galleryRecyclerView.setAdapter(recentImagesAdapter);
+        } else {
+            galleryRecyclerView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -108,9 +144,11 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.attach_send_button:
-                Set<String> selectedImagePaths = recentImagesAdapter.getSelectedImagePaths();
-                if (!selectedImagePaths.isEmpty()) {
-                    listener.onRecentPhotosSend(new ArrayList<>(selectedImagePaths));
+                if (recentImagesAdapter != null) {
+                    Set<String> selectedImagePaths = recentImagesAdapter.getSelectedImagePaths();
+                    if (!selectedImagePaths.isEmpty()) {
+                        listener.onRecentPhotosSend(new ArrayList<>(selectedImagePaths));
+                    }
                 }
                 break;
             case R.id.attach_camera_button:
