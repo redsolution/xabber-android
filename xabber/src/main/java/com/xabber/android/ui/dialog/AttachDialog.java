@@ -38,6 +38,7 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
         void onGalleryClick();
         void onFilesClick();
         void onCameraClick();
+        void onLocationClick();
     }
 
     public static AttachDialog newInstance(Listener listener) {
@@ -61,6 +62,7 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
         view.findViewById(R.id.attach_file_button).setOnClickListener(this);
         view.findViewById(R.id.attach_camera_button).setOnClickListener(this);
         view.findViewById(R.id.attach_gallery_button).setOnClickListener(this);
+        view.findViewById(R.id.attach_location_button).setOnClickListener(this);
 
         attachSendButtonText = view.findViewById(R.id.attach_send_button_text_view);
         attachSendButtonText.setVisibility(View.INVISIBLE);
@@ -119,6 +121,9 @@ public class AttachDialog extends BottomSheetDialogFragment implements RecentIma
                 break;
             case R.id.attach_gallery_button:
                 listener.onGalleryClick();
+                break;
+            case R.id.attach_location_button:
+                listener.onLocationClick();
                 break;
         }
 

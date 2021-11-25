@@ -8,6 +8,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,8 +29,8 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.file.FileManager;
@@ -336,6 +338,11 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
     public void onCameraClick() {
         if (PermissionsRequester.requestCameraPermissionIfNeeded(this,
                 PERMISSIONS_REQUEST_CAMERA)) startCamera();
+    }
+
+    @Override
+    public void onLocationClick() {
+        Toast.makeText(getContext(), "Boop!", Toast.LENGTH_SHORT).show();
     }
 
     /**
