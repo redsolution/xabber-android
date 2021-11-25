@@ -163,10 +163,7 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-        if (!NetworkManager.isNetworkAvailable()
-                || getState() == ConnectionState.authentication
-                || getState() == ConnectionState.connecting
-        ) {
+        if (!NetworkManager.isNetworkAvailable()) {
             return false;
         }
         if (getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting
