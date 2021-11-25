@@ -8,6 +8,7 @@ import android.util.TypedValue
 import android.view.WindowManager
 import com.xabber.android.R
 import com.xabber.android.data.Application
+import com.xabber.android.data.log.LogManager
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.MapTileProviderBasic
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -39,6 +40,8 @@ internal class GeolocationThumbnailCreator(private val context: Context) {
         lon: Double, lat: Double, pointerColor: Int, onBitmapCreated: (Bitmap) -> Unit
     ) {
         val geoPoint = GeoPoint(lat, lon)
+
+        LogManager.i(this, "RequestThumbnail(lon: $lon, lat: $lat; pointerColor: $pointerColor)")
 
         Application.getInstance().runOnUiThread {
             Configuration.getInstance().load(
