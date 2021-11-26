@@ -582,6 +582,8 @@
 
         <activity android:name=".ui.activity.GroupInviteContactActivity" />
 
+        <activity android:name=".ui.activity.PickGeolocationActivity" />
+
         <!-- Services -->
         <service android:name=".service.XabberService" />
 

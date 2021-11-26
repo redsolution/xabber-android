@@ -8,8 +8,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.Address;
-import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -43,6 +41,7 @@ import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.ui.activity.ChatActivity;
 import com.xabber.android.ui.activity.ImageViewerActivity;
 import com.xabber.android.ui.activity.MessagesActivity;
+import com.xabber.android.ui.activity.PickGeolocationActivity;
 import com.xabber.android.ui.adapter.chat.ForwardedAdapter;
 import com.xabber.android.ui.adapter.chat.MessageVH;
 import com.xabber.android.ui.dialog.AttachDialog;
@@ -76,6 +75,7 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
     public static final int FILE_SELECT_ACTIVITY_REQUEST_CODE = 11;
     private static final int REQUEST_IMAGE_CAPTURE = 12;
     public static final int SHARE_ACTIVITY_REQUEST_CODE = 25;
+    public static final int PICK_LOCATION_REQUEST_CODE = 10;
 
     private static final int PERMISSIONS_REQUEST_CAMERA = 23;
     private static final int PERMISSIONS_REQUEST_DOWNLOAD_FILE = 24;
@@ -130,6 +130,10 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
         }
 
         switch (requestCode) {
+            case PICK_LOCATION_REQUEST_CODE:
+                Toast.makeText(getContext(), "Boop", Toast.LENGTH_SHORT).show();
+                break;
+
             case REQUEST_IMAGE_CAPTURE:
                 addMediaToGallery(currentPicturePath);
                 uploadFile(currentPicturePath);
@@ -334,7 +338,10 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
 
     @Override
     public void onLocationClick() {
-        Toast.makeText(getContext(), "Boop!", Toast.LENGTH_SHORT).show();
+        startActivityForResult(
+                PickGeolocationActivity.Companion.createIntent(getContext(), accountJid),
+                PICK_LOCATION_REQUEST_CODE
+        );
     }
 
     /**
