@@ -294,6 +294,11 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
         }
     }
 
+    fun sendGeolocation(lon: Double, lat: Double){
+        chatFragment?.setInputText("geo:$lon,$lat")
+        chatFragment?.sendMessage()
+    }
+
     private fun handleShareFileUris(uris: ArrayList<Uri>?) {
         if (uris == null || uris.size == 0) {
             Toast.makeText(this, R.string.could_not_get_path_to_file, Toast.LENGTH_SHORT).show()

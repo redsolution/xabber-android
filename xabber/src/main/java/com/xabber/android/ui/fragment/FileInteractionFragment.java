@@ -1,5 +1,8 @@
 package com.xabber.android.ui.fragment;
 
+import static com.xabber.android.ui.activity.PickGeolocationActivity.LAT_RESULT;
+import static com.xabber.android.ui.activity.PickGeolocationActivity.LON_RESULT;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -131,7 +134,12 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
 
         switch (requestCode) {
             case PICK_LOCATION_REQUEST_CODE:
-                Toast.makeText(getContext(), "Boop", Toast.LENGTH_SHORT).show();
+                if (getActivity() instanceof ChatActivity) {
+                    ChatActivity activity = (ChatActivity) getActivity();
+                    double lon = result.getDoubleExtra(LON_RESULT, 0.0);
+                    double lat = result.getDoubleExtra(LAT_RESULT, 0.0);
+                    activity.sendGeolocation(lon, lat);
+                }
                 break;
 
             case REQUEST_IMAGE_CAPTURE:
