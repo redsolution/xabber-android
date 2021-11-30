@@ -9,17 +9,23 @@ import android.preference.PreferenceManager
 import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.createAccountIntent
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.getAccountJid
+import com.xabber.android.data.http.NominatimRetrofitModule
 import com.xabber.android.databinding.PickGeolocationActivityBinding
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
 import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.widget.SearchToolbar
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.events.MapListener
@@ -34,13 +40,15 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class PickGeolocationActivity: ManagedActivity() {
 
+    private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
+        Toast.makeText(this, "Error while gettin location info", Toast.LENGTH_SHORT).show()
+    }
+
     private lateinit var binding: PickGeolocationActivityBinding
     private var pickMarker: Marker? = null
     private var pointerColor: Int = 0
 
     private var myLocationOverlay: MyLocationNewOverlay? = null
-    private val myLocation: GeoPoint?
-        get() = myLocationOverlay?.myLocation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = PickGeolocationActivityBinding.inflate(layoutInflater)
@@ -114,8 +122,6 @@ class PickGeolocationActivity: ManagedActivity() {
                     }
                 }
             }
-
-
         }
     }
 
@@ -199,9 +205,15 @@ class PickGeolocationActivity: ManagedActivity() {
     }
 
     private fun updateLocationInfoBubble(location: GeoPoint?) {
-        // todo load place info from api
-        // todo change to use not only long lat
         if (location != null) {
+            binding.pickgeolocationProgressbar.visibility = View.VISIBLE
+            lifecycleScope.launch(exceptionHandler) {
+                val place = NominatimRetrofitModule.api.fromLonLat(location.longitude, location.latitude)
+                withContext(Dispatchers.Main) {
+                    binding.pickgeolocationLocationTitle.text = place.displayName
+                    binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
+                }
+            }
             binding.pickgeolocationLocationCoordinates.text = "${location.longitude}, ${location.latitude}"
             binding.pickgeolocationLocationSendButton.setOnClickListener {
                 setResult(
