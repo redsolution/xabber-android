@@ -295,8 +295,7 @@ class ChatActivity : ManagedActivity(), OnContactChangedListener, OnMessageUpdat
     }
 
     fun sendGeolocation(lon: Double, lat: Double){
-        chatFragment?.setInputText("geo:$lon,$lat")
-        chatFragment?.sendMessage()
+        chatFragment?.sendMessage(lon, lat)
     }
 
     private fun handleShareFileUris(uris: ArrayList<Uri>?) {

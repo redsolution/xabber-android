@@ -37,6 +37,7 @@ import com.xabber.android.data.extension.delivery.TimeElement;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.extension.groups.GroupInviteManager;
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
+import com.xabber.android.data.extension.references.mutable.geo.thumbnails.GeolocationThumbnailRepository;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.AbstractChat;
 import com.xabber.android.data.message.chat.ChatManager;
@@ -54,6 +55,7 @@ import org.jxmpp.jid.Jid;
 import org.jxmpp.util.XmppDateTime;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -88,23 +90,17 @@ public class MessageManager implements OnPacketListener {
         sendMessage(account, user, text, null);
     }
 
-    public void sendMessage(AccountJid account, ContactJid user, String text, String markupText) {
-        sendMessage(text, markupText, ChatManager.getInstance().getChat(account, user));
+    public void sendGeolocationMessage(
+            AccountJid account, ContactJid user, String text, String markupText,
+            Double lon, Double lat
+    ) {
+        AbstractChat chat = ChatManager.getInstance().getChat(account, user);
 
-        // stop grace period
-        AccountManager.INSTANCE.getAccount(account).stopGracePeriod();
-
-        for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
-            listener.onAction();
-        }
-    }
-
-    private void sendMessage(final String text, final String markupText, final AbstractChat chat) {
         Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
 
         realm.executeTransactionAsync(realm1 -> {
             MessageRealmObject message = MessageRealmObject.createMessageRealmObjectWithOriginId(
-                    chat.getAccount(), chat.getContactJid(), UUID.randomUUID().toString()
+                    account, user, UUID.randomUUID().toString()
             );
             message.setText(text.replaceAll("\0", ""));
             message.setIncoming(false);
@@ -112,8 +108,23 @@ public class MessageManager implements OnPacketListener {
             message.setGroupchatSystem(false);
             message.setTimestamp(new Date().getTime());
             message.setMessageStatus(MessageStatus.NOT_SENT);
-            if (markupText != null) message.setMarkupText(markupText);
-
+            if (markupText != null) {
+                message.setMarkupText(markupText);
+            }
+            if (lon != null && lat != null) {
+                RealmList<ReferenceRealmObject> referenceRealmObjects = new RealmList<>();
+                ReferenceRealmObject geoReference = new ReferenceRealmObject();
+                geoReference.setGeo(true);
+                geoReference.setLongitude(lon);
+                geoReference.setLatitude(lat);
+                referenceRealmObjects.add(geoReference);
+                message.setReferencesRealmObjects(referenceRealmObjects);
+                Application.getInstance().runOnUiThread(() ->
+                        new GeolocationThumbnailRepository(
+                                Application.getInstance().getApplicationContext()
+                        ).modifyMessageWithThumbnailIfNeed(message)
+                );
+            }
             realm1.copyToRealm(message);
 
             chat.sendMessages();
@@ -126,6 +137,17 @@ public class MessageManager implements OnPacketListener {
         for (OnChatUpdatedListener listener : Application.getInstance().getUIListeners(OnChatUpdatedListener.class)){
             listener.onAction();
         }
+
+        // stop grace period
+        AccountManager.INSTANCE.getAccount(account).stopGracePeriod();
+
+        for (OnNewMessageListener listener : Application.getInstance().getUIListeners(OnNewMessageListener.class)){
+            listener.onAction();
+        }
+    }
+
+    public void sendMessage(AccountJid account, ContactJid user, String text, String markupText) {
+        sendGeolocationMessage(account, user, text, markupText, null, null);
     }
 
     public String createFileMessage(AccountJid account, ContactJid user, List<File> files) {

@@ -1,20 +1,13 @@
 package com.xabber.android.data.extension.references;
 
-import android.location.LocationProvider;
 import android.text.Html;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
-import com.xabber.android.data.extension.references.mutable.geo.GeoReferenceExtensionElement;
-import com.xabber.android.data.log.LogManager;
-import com.xabber.android.ui.text.StringUtilsKt;
-import com.xabber.xmpp.groups.GroupMemberExtensionElement;
-import com.xabber.xmpp.groups.GroupExtensionElement;
-import com.xabber.xmpp.groups.GroupMemberContainerExtensionElement;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.extension.references.decoration.Decoration;
 import com.xabber.android.data.extension.references.decoration.Markup;
 import com.xabber.android.data.extension.references.mutable.Forward;
@@ -23,10 +16,16 @@ import com.xabber.android.data.extension.references.mutable.filesharing.FileInfo
 import com.xabber.android.data.extension.references.mutable.filesharing.FileReference;
 import com.xabber.android.data.extension.references.mutable.filesharing.FileSharingExtension;
 import com.xabber.android.data.extension.references.mutable.filesharing.FileSources;
+import com.xabber.android.data.extension.references.mutable.geo.GeoReferenceExtensionElement;
 import com.xabber.android.data.extension.references.mutable.groupchat.GroupchatMemberReference;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceMessageExtension;
 import com.xabber.android.data.extension.references.mutable.voice.VoiceReference;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.ui.text.ClickSpan;
+import com.xabber.android.ui.text.StringUtilsKt;
+import com.xabber.xmpp.groups.GroupExtensionElement;
+import com.xabber.xmpp.groups.GroupMemberContainerExtensionElement;
+import com.xabber.xmpp.groups.GroupMemberExtensionElement;
 
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;

@@ -1078,7 +1078,7 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
         }
     }
 
-    fun sendMessage() {
+    fun sendMessage(lon: Double? = null, lat: Double? = null) {
         val editable = inputEditText.editableText
         val text: String
         var markupText: String? = null
@@ -1147,11 +1147,23 @@ class ChatFragment : FileInteractionFragment(), MessageClickListener,
                 }
             }
         } else if (text.isNotEmpty()) {
-            MessageManager.getInstance().sendMessage(accountJid, contactJid, text, markupText)
+            if (lon != null && lat != null) {
+                MessageManager.getInstance().sendGeolocationMessage(
+                    accountJid, contactJid, text, markupText, lon, lat
+                )
+            } else {
+                MessageManager.getInstance().sendMessage(accountJid, contactJid, text, markupText)
+            }
             scrollDown()
             setFirstUnreadMessageId(null)
         } else {
-            return
+            if (lon != null && lat != null) {
+                MessageManager.getInstance().sendGeolocationMessage(
+                    accountJid, contactJid, text, markupText, lon, lat
+                )
+            } else {
+                return
+            }
         }
         playMessageSound()
         listener?.onMessageSent()

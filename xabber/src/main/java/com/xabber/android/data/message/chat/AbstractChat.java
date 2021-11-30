@@ -25,9 +25,9 @@ import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
-import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.realmobjects.ForwardIdRealmObject;
 import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.database.repositories.MessageRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -42,6 +42,7 @@ import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesManager;
 import com.xabber.android.data.extension.references.decoration.Markup;
+import com.xabber.android.data.extension.references.mutable.geo.GeoReferenceExtensionElement;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.ClipManager;
 import com.xabber.android.data.message.MessageStatus;
@@ -59,6 +60,7 @@ import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.sm.StreamManagementException;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jivesoftware.smackx.geoloc.packet.GeoLocation;
 import org.jxmpp.jid.Jid;
 import org.jxmpp.jid.parts.Resourcepart;
 
@@ -411,12 +413,22 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
         return message;
     }
 
-    private void createFileMessageReferences(Message message, RealmList<ReferenceRealmObject> referenceRealmObjects,
+    private void createFileMessageReferences(Message message,
+                                             RealmList<ReferenceRealmObject> referenceRealmObjects,
                                              StringBuilder builder) {
         for (ReferenceRealmObject referenceRealmObject : referenceRealmObjects) {
             StringBuilder rowBuilder = new StringBuilder();
-            if (builder.length() > 0) rowBuilder.append("\n");
-            rowBuilder.append(referenceRealmObject.getFileUrl());
+            if (builder.length() > 0) {
+                rowBuilder.append("\n");
+            }
+            if (referenceRealmObject.isGeo()) {
+                rowBuilder.append("geo:");
+                rowBuilder.append(referenceRealmObject.getLongitude());
+                rowBuilder.append(",");
+                rowBuilder.append(referenceRealmObject.getLatitude());
+            } else {
+                rowBuilder.append(referenceRealmObject.getFileUrl());
+            }
 
             int begin = getSizeOfEncodedChars(builder.toString());
             builder.append(rowBuilder);
@@ -424,9 +436,18 @@ public abstract class AbstractChat extends BaseEntity implements RealmChangeList
             if (referenceRealmObject.isVoice()) {
                 reference = ReferencesManager.createVoiceReferences(
                         referenceRealmObject, begin, getSizeOfEncodedChars(builder.toString()));
+            } else if (referenceRealmObject.isGeo()){
+                GeoLocation geoLocation = GeoLocation.builder()
+                        .setLon(referenceRealmObject.getLongitude())
+                        .setLat(referenceRealmObject.getLatitude())
+                        .build();
+                List<GeoLocation> list = new ArrayList<>();
+                list.add(geoLocation);
+                reference = new GeoReferenceExtensionElement(list, begin, getSizeOfEncodedChars(builder.toString()));
             } else {
                 reference = ReferencesManager.createMediaReferences(
-                        referenceRealmObject, begin, getSizeOfEncodedChars(builder.toString()));
+                        referenceRealmObject, begin, getSizeOfEncodedChars(builder.toString())
+                );
             }
             message.addExtension(reference);
         }
