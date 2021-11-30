@@ -19,6 +19,10 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, activity, requestCode);
     }
 
+    public static boolean requestLocationPermissionIfNeeded(Activity activity, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION, activity, requestCode);
+    }
+
     public static boolean requestFileReadPermissionIfNeeded(Fragment fragment, int requestCode) {
         return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
     }

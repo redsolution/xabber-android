@@ -2,14 +2,15 @@ package com.xabber.android.ui.activity
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.TypedValue
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.core.widget.doOnTextChanged
+import android.widget.Toast
 import com.xabber.android.R
+import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.createAccountIntent
 import com.xabber.android.data.entity.AccountJid
@@ -17,20 +18,29 @@ import com.xabber.android.data.getAccountJid
 import com.xabber.android.databinding.PickGeolocationActivityBinding
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
+import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.widget.SearchToolbar
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class PickGeolocationActivity: ManagedActivity() {
 
     private lateinit var binding: PickGeolocationActivityBinding
     private var pickMarker: Marker? = null
     private var pointerColor: Int = 0
+
+    private var myLocationOverlay: MyLocationNewOverlay? = null
+    private val myLocation: GeoPoint?
+        get() = myLocationOverlay?.myLocation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = PickGeolocationActivityBinding.inflate(layoutInflater)
@@ -64,10 +74,70 @@ class PickGeolocationActivity: ManagedActivity() {
             //todo make request
         }
 
+        binding.pickgeolocationMyGeolocation.setOnClickListener {
+            tryToGetMyLocation()
+        }
+
+        binding.pickgeolocationLocationBottomRoot.setOnClickListener {
+            /* ignore to avoid interception of clicks by mapview */
+        }
+
         binding.searchToolbar.title = getString(R.string.chat_screen__dialog_title__pick_location)
 
         setupMap()
         super.onCreate(savedInstanceState)
+    }
+
+    private fun tryToGetMyLocation(){
+        if (PermissionsRequester.requestLocationPermissionIfNeeded(this, REQUEST_LOCATION_PERMISSION_CODE)) {
+            myLocationOverlay = MyLocationNewOverlay(binding.pickgeolocationMapView).apply {
+                enableMyLocation()
+                enableFollowLocation()
+            }
+            binding.pickgeolocationMapView.apply {
+                overlays.add(myLocationOverlay)
+                Application.getInstance().runOnUiThreadDelay(1000) {
+                    controller.setZoom(15.0)
+                    binding.pickgeolocationMyGeolocation.setImageResource(R.drawable.ic_crosshairs_gps)
+                    Application.getInstance().runOnUiThreadDelay(1500) {
+                        addMapListener(
+                            object: MapListener {
+                                override fun onScroll(event: ScrollEvent?): Boolean {
+                                    binding.pickgeolocationMyGeolocation.setImageResource(R.drawable.ic_crosshairs_question)
+                                    removeMapListener(this)
+                                    return true
+                                }
+
+                                override fun onZoom(event: ZoomEvent?): Boolean { return false }
+                            }
+                        )
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    override fun onStop() {
+        myLocationOverlay?.disableFollowLocation()
+        myLocationOverlay?.disableMyLocation()
+        super.onStop()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_LOCATION_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                tryToGetMyLocation()
+            } else {
+                Toast.makeText(this, "shit!", Toast.LENGTH_SHORT).show() //todo show Error
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun setStatusBarColor(accountJid: AccountJid) {
@@ -84,7 +154,6 @@ class PickGeolocationActivity: ManagedActivity() {
 
     private fun setupMap() {
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
-
         binding.pickgeolocationMapView.apply {
             overlays.add(
                 MapEventsOverlay(
@@ -155,6 +224,8 @@ class PickGeolocationActivity: ManagedActivity() {
             createAccountIntent(context, PickGeolocationActivity::class.java, accountJid)
         const val LAT_RESULT = "com.xabber.android.ui.activity.LAT_RESULT"
         const val LON_RESULT = "com.xabber.android.ui.activity.LON_RESULT"
+
+        private const val REQUEST_LOCATION_PERMISSION_CODE = 10
     }
 
 }

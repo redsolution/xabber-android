@@ -11,8 +11,7 @@
         android:id="@+id/search_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ProgressBar
         android:id="@+id/pickgeolocation_progressbar"
@@ -24,6 +23,36 @@
         android:indeterminate="true"
         android:visibility="visible" />
 
+    <org.osmdroid.views.MapView
+        android:id="@+id/pickgeolocation_map_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/pickgeolocation_progressbar"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/pickgeolocation_my_geolocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pickgeolocation_progressbar"
+
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="48dp"
+
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="8dp"
+        android:paddingLeft="8dp"
+        android:paddingEnd="8dp"
+        android:paddingRight="8dp"
+
+        android:elevation="16dp"
+        android:background="@drawable/edit_text_rounded_corners_background_grey"
+        android:src="@drawable/ic_crosshairs_question" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pickgeolocation_recycler_view"
         android:layout_width="match_parent"
@@ -33,33 +62,20 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/pickgeolocation_map_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/pickgeolocation_progressbar"
-        app:layout_constraintBottom_toBottomOf="parent" >
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" />
-    </org.osmdroid.views.MapView>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/pickgeolocation_location_bottom_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
         android:layout_marginBottom="24dp"
-        android:layout_marginStart="48dp"
-        android:layout_marginLeft="48dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginRight="48dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginLeft="36dp"
+        android:layout_marginEnd="36dp"
+        android:layout_marginRight="36dp"
 
         app:layout_constraintBottom_toBottomOf="parent"
 
+        android:elevation="16dp"
         android:background="@drawable/edit_text_rounded_corners_background_grey"
         android:visibility="gone"
         tools:visibility="visible">
@@ -81,6 +97,7 @@
             app:layout_constraintEnd_toStartOf="@id/pickgeolocation_location_send_button"
             app:layout_constraintRight_toLeftOf="@id/pickgeolocation_location_send_button"
 
+            android:ellipsize="marquee"
             android:maxLines="2"
             android:textStyle="bold"
             tools:text="Red square, 1" />
