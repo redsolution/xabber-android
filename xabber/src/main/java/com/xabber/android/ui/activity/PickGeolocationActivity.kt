@@ -17,6 +17,7 @@ import com.xabber.android.data.getAccountJid
 import com.xabber.android.databinding.PickGeolocationActivityBinding
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
+import com.xabber.android.ui.widget.SearchToolbar
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -39,30 +40,32 @@ class PickGeolocationActivity: ManagedActivity() {
                 accountJid, 500
             )
             binding.pickgeolocationLocationSendButton.setColorFilter(pointerColor)
-            setToolbarColor(accountJid)
+
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
+                binding.searchToolbar.color =
+                    ColorManager.getInstance().accountPainter.getAccountRippleColor(
+                        accountJid
+                    )
+            } else {
+                val typedValue = TypedValue()
+                this.theme.resolveAttribute(R.attr.bars_color, typedValue, true)
+                binding.searchToolbar.color = typedValue.data
+            }
+
             setStatusBarColor(accountJid)
         }
 
-        binding.pickgeolocationToolbarBackButton.setOnClickListener { finish() }
-        binding.pickgeolocationToolbarSearchButton.setOnClickListener {
-            binding.pickgeolocationtoolbarGreetingsView.visibility = View.GONE
-            binding.pickgeolocationToolbarSearchView.visibility = View.VISIBLE
-            binding.pickgeolocationToolbarEdittext.requestFocus()
-            (getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.showSoftInput(
-                binding.pickgeolocationToolbarEdittext, InputMethodManager.SHOW_IMPLICIT
-            )
+        binding.searchToolbar.onBackPressedListener = SearchToolbar.OnBackPressedListener {
+            setResult(RESULT_CANCELED)
+            finish()
         }
-        binding.pickgeolocationToolbarClearButton.setOnClickListener {
-            binding.pickgeolocationToolbarEdittext.setText("")
+
+        binding.searchToolbar.onTextChangedListener = SearchToolbar.OnTextChangedListener {
+            //todo make request
         }
-        binding.pickgeolocationToolbarEdittext.doOnTextChanged { text, start, before, count ->
-            if (text.isNullOrEmpty()) {
-                binding.pickgeolocationToolbarClearButton.visibility = View.GONE
-            } else {
-                binding.pickgeolocationToolbarClearButton.visibility = View.VISIBLE
-                //todo make request
-            }
-        }
+
+        binding.searchToolbar.title = getString(R.string.chat_screen__dialog_title__pick_location)
+
         setupMap()
         super.onCreate(savedInstanceState)
     }
@@ -76,20 +79,6 @@ class PickGeolocationActivity: ManagedActivity() {
             val typedValue = TypedValue()
             this.theme.resolveAttribute(R.attr.bars_color, typedValue, true)
             StatusBarPainter.instanceUpdateWIthColor(this, typedValue.data)
-        }
-    }
-
-    private fun setToolbarColor(accountJid: AccountJid) {
-        if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-            binding.root.setBackgroundColor(
-                ColorManager.getInstance().accountPainter.getAccountRippleColor(
-                    accountJid
-                )
-            )
-        } else {
-            val typedValue = TypedValue()
-            this.theme.resolveAttribute(R.attr.bars_color, typedValue, true)
-            binding.root.setBackgroundColor(typedValue.data)
         }
     }
 
