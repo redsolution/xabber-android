@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 1080
-        versionName '3.0.1(1080)'
+        versionCode 1082
+        versionName '3.0.1(1082)'
         vectorDrawables.useSupportLibrary = true
     }
 
