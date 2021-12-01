@@ -8,10 +8,9 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.TypedValue
 import android.view.View
-import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.lifecycleScope
 import com.xabber.android.R
-import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.createAccountIntent
 import com.xabber.android.data.entity.AccountJid
@@ -21,15 +20,15 @@ import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.PickGeolocationActivityBinding
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
+import com.xabber.android.ui.helper.ObservableOsmLocationProvider
 import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.widget.SearchToolbar
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
-import org.osmdroid.events.MapListener
-import org.osmdroid.events.ScrollEvent
-import org.osmdroid.events.ZoomEvent
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
@@ -91,32 +90,34 @@ class PickGeolocationActivity: ManagedActivity() {
         super.onCreate(savedInstanceState)
     }
 
-    private fun tryToGetMyLocation(){
-        if (PermissionsRequester.requestLocationPermissionIfNeeded(this, REQUEST_LOCATION_PERMISSION_CODE)) {
-            myLocationOverlay = MyLocationNewOverlay(binding.pickgeolocationMapView).apply {
-                enableMyLocation()
-                enableFollowLocation()
-            }
-            binding.pickgeolocationMapView.apply {
-                overlays.add(myLocationOverlay)
-                Application.getInstance().runOnUiThreadDelay(1000) {
-                    controller.setZoom(15.0)
-                    binding.pickgeolocationMyGeolocation.setImageResource(R.drawable.ic_crosshairs_gps)
-                    Application.getInstance().runOnUiThreadDelay(1500) {
-                        addMapListener(
-                            object: MapListener {
-                                override fun onScroll(event: ScrollEvent?): Boolean {
-                                    binding.pickgeolocationMyGeolocation.setImageResource(R.drawable.ic_crosshairs_question)
-                                    removeMapListener(this)
-                                    return true
-                                }
+    private fun tryToGetMyLocation() {
+        fun createMyLocationsOverlay() {
+            val locationsProvider = ObservableOsmLocationProvider(binding.pickgeolocationMapView.context)
+            locationsProvider.stateLiveData.observe(this) { state -> updateMyLocationButton(state) }
+            myLocationOverlay = MyLocationNewOverlay(locationsProvider, binding.pickgeolocationMapView)
+            myLocationOverlay?.enableMyLocation()
+            binding.pickgeolocationMapView.overlays.add(myLocationOverlay)
+        }
 
-                                override fun onZoom(event: ZoomEvent?): Boolean { return false }
-                            }
-                        )
+        fun centerOnMyLocation() {
+            lifecycleScope.launch {
+                repeat(15) {
+                    if (myLocationOverlay?.myLocation != null) {
+                        myLocationOverlay?.enableFollowLocation()
+                        binding.pickgeolocationMapView.controller.setZoom(16.5)
+                        cancel()
                     }
+                    delay(300)
                 }
+                //todo possible show error while location retrieving
             }
+        }
+
+        if (PermissionsRequester.requestLocationPermissionIfNeeded(this, REQUEST_LOCATION_PERMISSION_CODE)) {
+            if (myLocationOverlay == null) {
+                createMyLocationsOverlay()
+            }
+            centerOnMyLocation()
         }
     }
 
@@ -134,8 +135,6 @@ class PickGeolocationActivity: ManagedActivity() {
         if (requestCode == REQUEST_LOCATION_PERMISSION_CODE) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 tryToGetMyLocation()
-            } else {
-                Toast.makeText(this, "shit!", Toast.LENGTH_SHORT).show() //todo show Error
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -183,6 +182,22 @@ class PickGeolocationActivity: ManagedActivity() {
 
             setHasTransientState(true)
         }
+    }
+
+    private fun updateMyLocationButton(locationStatus: ObservableOsmLocationProvider.LocationState) {
+        fun updateButton(@DrawableRes drawableId: Int) {
+            binding.pickgeolocationMyGeolocation.setImageResource(drawableId)
+        }
+        updateButton(
+            when (locationStatus) {
+                ObservableOsmLocationProvider.LocationState.LocationReceived -> {
+                    R.drawable.ic_crosshairs_gps
+                }
+                ObservableOsmLocationProvider.LocationState.LocationNotFound -> {
+                    R.drawable.ic_crosshairs_question
+                }
+            }
+        )
     }
 
     private fun updatePickMarker(location: GeoPoint) {
