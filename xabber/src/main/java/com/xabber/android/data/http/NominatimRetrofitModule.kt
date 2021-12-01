@@ -34,11 +34,17 @@ object NominatimRetrofitModule {
     interface NominatimApi {
         @GET("reverse?format=jsonv2")
         suspend fun fromLonLat(@Query("lon") lon: Double, @Query("lat") lat: Double): Place
+
+        @GET("search?format=jsonv2")
+        suspend fun search(@Query("q") searchString: String): List<Place>
     }
 }
 
 @Serializable
 data class Place(
     @SerialName("display_name")
-    val displayName: String
+    val displayName: String,
+
+    val lon: Double,
+    val lat: Double,
 )

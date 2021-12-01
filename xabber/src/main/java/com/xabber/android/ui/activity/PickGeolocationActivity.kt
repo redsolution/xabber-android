@@ -10,14 +10,17 @@ import android.util.TypedValue
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.createAccountIntent
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.getAccountJid
 import com.xabber.android.data.http.NominatimRetrofitModule
+import com.xabber.android.data.http.Place
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.PickGeolocationActivityBinding
+import com.xabber.android.ui.adapter.FoundPlacesRecyclerViewAdapter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
 import com.xabber.android.ui.helper.ObservableOsmLocationProvider
@@ -39,8 +42,11 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 class PickGeolocationActivity: ManagedActivity() {
 
     private lateinit var binding: PickGeolocationActivityBinding
+
     private var pickMarker: Marker? = null
     private var pointerColor: Int = 0
+
+    private val foundPlacesAdapter = FoundPlacesRecyclerViewAdapter()
 
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
@@ -72,8 +78,18 @@ class PickGeolocationActivity: ManagedActivity() {
             finish()
         }
 
-        binding.searchToolbar.onTextChangedListener = SearchToolbar.OnTextChangedListener {
-            //todo make request
+        binding.pickgeolocationRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@PickGeolocationActivity)
+            adapter = foundPlacesAdapter
+        }
+
+        binding.searchToolbar.onTextChangedListener = SearchToolbar.OnTextChangedListener { searchString ->
+            lifecycleScope.launch {
+                binding.pickgeolocationProgressbar.visibility = View.VISIBLE
+                val foundPlacesList = NominatimRetrofitModule.api.search(searchString)
+                setupSearchList(foundPlacesList)
+                binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
+            }
         }
 
         binding.pickgeolocationMyGeolocation.setOnClickListener {
@@ -88,6 +104,16 @@ class PickGeolocationActivity: ManagedActivity() {
 
         setupMap()
         super.onCreate(savedInstanceState)
+    }
+
+    private fun setupSearchList(list: List<Place>) {
+        if (list.isEmpty()) {
+            binding.pickgeolocationRecyclerView.visibility = View.GONE
+        } else {
+            binding.pickgeolocationRecyclerView.visibility = View.VISIBLE
+            foundPlacesAdapter?.placesList = list
+            foundPlacesAdapter?.notifyDataSetChanged()
+        }
     }
 
     private fun tryToGetMyLocation() {
