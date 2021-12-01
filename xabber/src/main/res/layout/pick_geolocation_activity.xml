@@ -17,16 +17,19 @@
         android:id="@+id/pickgeolocation_progressbar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="-8dp"
 
         app:layout_constraintTop_toBottomOf="@id/search_toolbar"
         style="?android:attr/progressBarStyleHorizontal"
         android:indeterminate="true"
-        android:visibility="visible" />
+        android:visibility="invisible"
+        tools:visibility="visible" />
 
     <org.osmdroid.views.MapView
         android:id="@+id/pickgeolocation_map_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="-8dp"
         app:layout_constraintTop_toBottomOf="@id/pickgeolocation_progressbar"
         app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -97,10 +100,12 @@
             app:layout_constraintEnd_toStartOf="@id/pickgeolocation_location_send_button"
             app:layout_constraintRight_toLeftOf="@id/pickgeolocation_location_send_button"
 
+            android:visibility="gone"
+            tools:visibility="visible"
             android:ellipsize="marquee"
             android:maxLines="2"
-            android:textStyle="bold"
-            tools:text="Red square, 1" />
+            tools:text="Red square, 1"
+            android:textColor="@color/black"/>
 
         <TextView
             android:id="@+id/pickgeolocation_location_coordinates"
@@ -114,6 +119,7 @@
             android:paddingRight="8dp"
 
             app:layout_constraintTop_toBottomOf="@id/pickgeolocation_location_title"
+            app:layout_goneMarginTop="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintEnd_toStartOf="@id/pickgeolocation_location_send_button"

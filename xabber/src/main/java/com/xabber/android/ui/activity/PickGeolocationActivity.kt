@@ -17,15 +17,14 @@ import com.xabber.android.data.createAccountIntent
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.getAccountJid
 import com.xabber.android.data.http.NominatimRetrofitModule
+import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.PickGeolocationActivityBinding
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
 import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.widget.SearchToolbar
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.osmdroid.config.Configuration
 import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.events.MapListener
@@ -39,10 +38,6 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class PickGeolocationActivity: ManagedActivity() {
-
-    private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
-        Toast.makeText(this, "Error while gettin location info", Toast.LENGTH_SHORT).show()
-    }
 
     private lateinit var binding: PickGeolocationActivityBinding
     private var pickMarker: Marker? = null
@@ -207,12 +202,15 @@ class PickGeolocationActivity: ManagedActivity() {
     private fun updateLocationInfoBubble(location: GeoPoint?) {
         if (location != null) {
             binding.pickgeolocationProgressbar.visibility = View.VISIBLE
-            lifecycleScope.launch(exceptionHandler) {
+            lifecycleScope.launch(CoroutineExceptionHandler { _, ex ->
+                binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
+                binding.pickgeolocationLocationTitle.visibility = View.GONE
+                LogManager.exception(this, ex)
+            }) {
                 val place = NominatimRetrofitModule.api.fromLonLat(location.longitude, location.latitude)
-                withContext(Dispatchers.Main) {
-                    binding.pickgeolocationLocationTitle.text = place.displayName
-                    binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
-                }
+                binding.pickgeolocationLocationTitle.text = place.displayName
+                binding.pickgeolocationLocationTitle.visibility = View.VISIBLE
+                binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
             }
             binding.pickgeolocationLocationCoordinates.text = "${location.longitude}, ${location.latitude}"
             binding.pickgeolocationLocationSendButton.setOnClickListener {
