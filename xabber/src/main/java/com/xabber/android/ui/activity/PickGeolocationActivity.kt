@@ -38,6 +38,7 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.util.*
 
 class PickGeolocationActivity: ManagedActivity() {
 
@@ -111,8 +112,8 @@ class PickGeolocationActivity: ManagedActivity() {
             binding.pickgeolocationRecyclerView.visibility = View.GONE
         } else {
             binding.pickgeolocationRecyclerView.visibility = View.VISIBLE
-            foundPlacesAdapter?.placesList = list
-            foundPlacesAdapter?.notifyDataSetChanged()
+            foundPlacesAdapter.placesList = list
+            foundPlacesAdapter.notifyDataSetChanged()
         }
     }
 
@@ -248,7 +249,10 @@ class PickGeolocationActivity: ManagedActivity() {
                 binding.pickgeolocationLocationTitle.visibility = View.GONE
                 LogManager.exception(this, ex)
             }) {
-                val place = NominatimRetrofitModule.api.fromLonLat(location.longitude, location.latitude)
+                val lang = Locale.getDefault().language
+                val place = NominatimRetrofitModule.api.fromLonLat(
+                    location.longitude, location.latitude, lang
+                )
                 binding.pickgeolocationLocationTitle.text = place.displayName
                 binding.pickgeolocationLocationTitle.visibility = View.VISIBLE
                 binding.pickgeolocationProgressbar.visibility = View.INVISIBLE

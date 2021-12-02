@@ -33,7 +33,11 @@ object NominatimRetrofitModule {
 
     interface NominatimApi {
         @GET("reverse?format=jsonv2")
-        suspend fun fromLonLat(@Query("lon") lon: Double, @Query("lat") lat: Double): Place
+        suspend fun fromLonLat(
+            @Query("lon") lon: Double,
+            @Query("lat") lat: Double,
+            @Query("accept-language") language: String,
+        ): Place
 
         @GET("search?format=jsonv2")
         suspend fun search(@Query("q") searchString: String): List<Place>
