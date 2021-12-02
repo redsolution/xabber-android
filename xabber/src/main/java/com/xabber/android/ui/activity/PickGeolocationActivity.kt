@@ -3,6 +3,8 @@ package com.xabber.android.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -124,6 +126,7 @@ class PickGeolocationActivity: ManagedActivity() {
             locationsProvider.stateLiveData.observe(this) { state -> updateMyLocationButton(state) }
             myLocationOverlay = MyLocationNewOverlay(locationsProvider, binding.pickgeolocationMapView)
             myLocationOverlay?.enableMyLocation()
+            myLocationOverlay?.isDrawAccuracyEnabled
             binding.pickgeolocationMapView.overlays.add(myLocationOverlay)
         }
 
@@ -210,6 +213,10 @@ class PickGeolocationActivity: ManagedActivity() {
 
             setHasTransientState(true)
         }
+
+        if (PermissionsRequester.hasLocationPermission()) {
+            tryToGetMyLocation()
+        }
     }
 
     private fun updateMyLocationButton(locationStatus: ObservableOsmLocationProvider.LocationState) {
@@ -234,6 +241,8 @@ class PickGeolocationActivity: ManagedActivity() {
                 icon = resources.getDrawable(R.drawable.ic_location).apply {
                     setColorFilter(pointerColor, PorterDuff.Mode.MULTIPLY)
                 }
+                /* Ignore just to avoid showing a strange standard osm bubble on marker click */
+                setOnMarkerClickListener { _, _ -> false }
             }
             binding.pickgeolocationMapView.overlays.add(pickMarker)
         }
@@ -258,7 +267,10 @@ class PickGeolocationActivity: ManagedActivity() {
                 binding.pickgeolocationLocationTitle.visibility = View.VISIBLE
                 binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
             }
-            binding.pickgeolocationLocationCoordinates.text = "${location.longitude}, ${location.latitude}"
+            val coordFormatString = "%.4f"
+            binding.pickgeolocationLocationCoordinates.text =
+                "${coordFormatString.format(location.longitude)}, ${coordFormatString.format(location.latitude)}"
+
             binding.pickgeolocationLocationSendButton.setOnClickListener {
                 setResult(
                     RESULT_OK,

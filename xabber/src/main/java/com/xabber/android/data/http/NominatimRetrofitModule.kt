@@ -52,7 +52,8 @@ data class Place(
     val address: Address? = null,
 )
 
-val Place.prettyName: String get() = address?.prettyAddress ?: displayName
+val Place.prettyName: String
+get() = address?.prettyAddress?.takeIf { it.isNotEmpty() } ?: displayName
 
 @Serializable
 data class Address(
@@ -66,9 +67,14 @@ data class Address(
     val country: String? = null,
 )
 
-private val Address.prettyAddress: String get() =
-    (if (road == null) {
-        listOfNotNull(neighbourhood, allotments, village, city, country)
-    } else {
-        listOfNotNull(road, houseNumber, neighbourhood, allotments, village, city, state)
-    }).joinToString(separator = ", ")
+private val Address.prettyAddress: String
+get() = listOfNotNull(
+    road,
+    houseNumber?.takeIf { !road.isNullOrEmpty() },
+    neighbourhood,
+    allotments,
+    village,
+    city,
+    state,
+    country?.takeIf { road.isNullOrEmpty() }
+).joinToString(separator = ", ")

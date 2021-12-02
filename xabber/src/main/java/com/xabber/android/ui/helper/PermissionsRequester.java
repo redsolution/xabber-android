@@ -76,6 +76,10 @@ public class PermissionsRequester {
         return checkPermission(Manifest.permission.CAMERA);
     }
 
+    public static boolean  hasLocationPermission() {
+        return checkPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+
     private static boolean checkAndRequestPermission(String permission, Activity activity, int requestCode) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
