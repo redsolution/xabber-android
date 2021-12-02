@@ -43,19 +43,19 @@ object DevicesManager : OnPacketListener {
     }
 
     //dirt hack to increase counter possible useless
-    fun beforeLogin(connectionItem: ConnectionItem) {
-        val account = AccountManager.getAccount(connectionItem.account)
-        LogManager.d("XToken", "beforeLogin; prev counter: ${connectionItem.connectionSettings.device.counter}")
-        account?.connectionSettings?.device?.apply {
-            counter++
-        }?.also {
-            LogManager.d("XToken", "beforeLogin; new counter: ${connectionItem.connectionSettings.device.counter}")
-            connectionItem.connectionSettings.device = it
-            connectionItem.connectionSettings.password = it.getPasswordString()
-        }
-        AccountRepository.saveAccountToRealm(account)
-
-    }
+//    fun beforeLogin(connectionItem: ConnectionItem) {
+//        val account = AccountManager.getAccount(connectionItem.account)
+//        LogManager.d("XToken", "beforeLogin; prev counter: ${connectionItem.connectionSettings.device.counter}")
+//        account?.connectionSettings?.device?.apply {
+//            counter++
+//        }?.also {
+//            LogManager.d("XToken", "beforeLogin; new counter: ${connectionItem.connectionSettings.device.counter}")
+//            connectionItem.connectionSettings.device = it
+//            connectionItem.connectionSettings.password = it.getPasswordString()
+//        }
+//        AccountRepository.saveAccountToRealm(account)
+//
+//    }
 
     fun afterLogin(connection: XMPPTCPConnection) {
         val accountJid = AccountJid.from(
