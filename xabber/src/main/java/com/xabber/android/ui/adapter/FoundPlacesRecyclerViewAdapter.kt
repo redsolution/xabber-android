@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.xabber.android.R
 import com.xabber.android.data.http.Place
+import com.xabber.android.data.http.prettyName
 
 class FoundPlacesRecyclerViewAdapter(
     var placesList: List<Place> = listOf()
@@ -14,7 +15,7 @@ class FoundPlacesRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: PlaceVH, position: Int) {
         holder.itemView.findViewById<TextView>(android.R.id.text1).text =
-            placesList[position].displayName
+            placesList[position].prettyName
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceVH {

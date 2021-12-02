@@ -18,6 +18,7 @@ import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.getAccountJid
 import com.xabber.android.data.http.NominatimRetrofitModule
 import com.xabber.android.data.http.Place
+import com.xabber.android.data.http.prettyName
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.PickGeolocationActivityBinding
 import com.xabber.android.ui.adapter.FoundPlacesRecyclerViewAdapter
@@ -253,7 +254,7 @@ class PickGeolocationActivity: ManagedActivity() {
                 val place = NominatimRetrofitModule.api.fromLonLat(
                     location.longitude, location.latitude, lang
                 )
-                binding.pickgeolocationLocationTitle.text = place.displayName
+                binding.pickgeolocationLocationTitle.text = place.prettyName
                 binding.pickgeolocationLocationTitle.visibility = View.VISIBLE
                 binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
             }

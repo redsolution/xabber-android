@@ -46,9 +46,29 @@ object NominatimRetrofitModule {
 
 @Serializable
 data class Place(
-    @SerialName("display_name")
-    val displayName: String,
-
+    @SerialName("display_name") val displayName: String,
     val lon: Double,
     val lat: Double,
+    val address: Address? = null,
 )
+
+val Place.prettyName: String get() = address?.prettyAddress ?: displayName
+
+@Serializable
+data class Address(
+    @SerialName("house_number") val houseNumber: String? = null,
+    val road: String? = null,
+    val state: String? = null,
+    val neighbourhood: String? = null,
+    val allotments: String? = null,
+    val village: String? = null,
+    val city: String? = null,
+    val country: String? = null,
+)
+
+private val Address.prettyAddress: String get() =
+    (if (road == null) {
+        listOfNotNull(neighbourhood, allotments, village, city, country)
+    } else {
+        listOfNotNull(road, houseNumber, neighbourhood, allotments, village, city, state)
+    }).joinToString(separator = ", ")
