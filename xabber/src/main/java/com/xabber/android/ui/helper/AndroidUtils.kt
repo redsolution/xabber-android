@@ -1,14 +1,21 @@
 package com.xabber.android.ui.helper
 
+import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Point
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.VectorDrawable
+import android.os.Build
 import android.util.TypedValue
 import android.view.Display
 import android.view.Surface
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.ColorInt
+import java.lang.IllegalArgumentException
 
 fun Activity.tryToHideKeyboardIfNeed() {
     this.currentFocus?.let { focusedView ->
@@ -95,4 +102,15 @@ fun dipToPxFloat(dip: Float, context: Context): Float {
         dip,
         context.resources.displayMetrics
     )
+}
+
+@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+fun Drawable.getBitmap(): Bitmap {
+    val bitmap: Bitmap = Bitmap.createBitmap(
+        intrinsicWidth, intrinsicHeight, Bitmap.Config.ARGB_8888
+    )
+    val canvas = Canvas(bitmap)
+    setBounds(0, 0, canvas.width, canvas.height)
+    draw(canvas)
+    return bitmap
 }

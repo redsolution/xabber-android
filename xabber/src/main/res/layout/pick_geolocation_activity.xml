@@ -104,7 +104,7 @@
             tools:visibility="visible"
             android:ellipsize="marquee"
             android:maxLines="2"
-            android:textSize="16sp"
+            android:textSize="18sp"
             tools:text="Red square, 1"
             android:textColor="@color/black"/>
 

@@ -1,4 +1,4 @@
-package com.xabber.android.ui.helper
+package com.xabber.android.ui.helper.osm
 
 import android.content.Context
 import android.location.Location

@@ -3,14 +3,15 @@ package com.xabber.android.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.xabber.android.R
@@ -26,8 +27,10 @@ import com.xabber.android.databinding.PickGeolocationActivityBinding
 import com.xabber.android.ui.adapter.FoundPlacesRecyclerViewAdapter
 import com.xabber.android.ui.color.ColorManager
 import com.xabber.android.ui.color.StatusBarPainter
-import com.xabber.android.ui.helper.ObservableOsmLocationProvider
 import com.xabber.android.ui.helper.PermissionsRequester
+import com.xabber.android.ui.helper.getBitmap
+import com.xabber.android.ui.helper.osm.CustomMyLocationOsmOverlay
+import com.xabber.android.ui.helper.osm.ObservableOsmLocationProvider
 import com.xabber.android.ui.widget.SearchToolbar
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.cancel
@@ -122,11 +125,31 @@ class PickGeolocationActivity: ManagedActivity() {
 
     private fun tryToGetMyLocation() {
         fun createMyLocationsOverlay() {
-            val locationsProvider = ObservableOsmLocationProvider(binding.pickgeolocationMapView.context)
-            locationsProvider.stateLiveData.observe(this) { state -> updateMyLocationButton(state) }
-            myLocationOverlay = MyLocationNewOverlay(locationsProvider, binding.pickgeolocationMapView)
+            val locationsProvider = ObservableOsmLocationProvider(
+                binding.pickgeolocationMapView.context
+            )
+
+            locationsProvider.stateLiveData.observe(this) { state ->
+                updateMyLocationButton(state)
+            }
+
+            val pointer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ContextCompat.getDrawable(this, R.drawable.ic_my_location_circle)?.apply {
+                    colorFilter = PorterDuffColorFilter(
+                        pointerColor, PorterDuff.Mode.SRC_ATOP
+                    )
+                }?.getBitmap()
+            } else null
+
+            myLocationOverlay = CustomMyLocationOsmOverlay(
+                binding.pickgeolocationMapView,
+                locationsProvider,
+                pointerColor,
+                pointer
+            )
+
             myLocationOverlay?.enableMyLocation()
-            myLocationOverlay?.isDrawAccuracyEnabled
+
             binding.pickgeolocationMapView.overlays.add(myLocationOverlay)
         }
 
