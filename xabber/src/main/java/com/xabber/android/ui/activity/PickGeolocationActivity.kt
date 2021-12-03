@@ -3,12 +3,12 @@ package com.xabber.android.ui.activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.util.TypedValue
 import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
@@ -66,18 +66,8 @@ class PickGeolocationActivity: ManagedActivity() {
             )
             binding.pickgeolocationLocationSendButton.setColorFilter(pointerColor)
 
-            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-                binding.searchToolbar.color =
-                    ColorManager.getInstance().accountPainter.getAccountRippleColor(
-                        accountJid
-                    )
-            } else {
-                val typedValue = TypedValue()
-                this.theme.resolveAttribute(R.attr.bars_color, typedValue, true)
-                binding.searchToolbar.color = typedValue.data
-            }
-
-            setStatusBarColor(accountJid)
+            colorizeToolbar()
+            colorizeStatusBar()
         }
 
         binding.searchToolbar.onBackPressedListener = SearchToolbar.OnBackPressedListener {
@@ -194,15 +184,19 @@ class PickGeolocationActivity: ManagedActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun setStatusBarColor(accountJid: AccountJid) {
-        StatusBarPainter.instanceUpdateWithDefaultColor(this)
+    private fun colorizeToolbar() {
+        binding.searchToolbar.color =
+            if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
+                Color.WHITE
+            } else {
+                Color.BLACK
+            }
+    }
+
+    private fun colorizeStatusBar() {
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
-            StatusBarPainter.instanceUpdateWithAccountName(this, accountJid)
-            StatusBarPainter.instanceUpdateWithDefaultColor(this)
-        } else {
-            val typedValue = TypedValue()
-            this.theme.resolveAttribute(R.attr.bars_color, typedValue, true)
-            StatusBarPainter.instanceUpdateWIthColor(this, typedValue.data)
+            window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            StatusBarPainter.instanceUpdateWIthColor(this, Color.WHITE)
         }
     }
 

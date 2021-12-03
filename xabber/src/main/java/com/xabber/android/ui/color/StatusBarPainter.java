@@ -1,7 +1,5 @@
 package com.xabber.android.ui.color;
 
-import android.app.Activity;
-import android.graphics.Color;
 import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager;
@@ -9,7 +7,6 @@ import android.view.WindowManager;
 import androidx.fragment.app.FragmentActivity;
 
 import com.xabber.android.data.entity.AccountJid;
-
 
 public class StatusBarPainter {
 
