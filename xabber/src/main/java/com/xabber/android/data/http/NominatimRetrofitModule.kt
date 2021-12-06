@@ -7,6 +7,7 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.osmdroid.util.GeoPoint
 import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -51,6 +52,8 @@ data class Place(
     val lat: Double,
     val address: Address? = null,
 )
+
+fun Place.toGeoPoint() = GeoPoint(lat, lon)
 
 val Place.prettyName: String
 get() = address?.prettyAddress?.takeIf { it.isNotEmpty() } ?: displayName

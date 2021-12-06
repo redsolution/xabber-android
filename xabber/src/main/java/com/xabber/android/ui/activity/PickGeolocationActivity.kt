@@ -22,6 +22,7 @@ import com.xabber.android.data.getAccountJid
 import com.xabber.android.data.http.NominatimRetrofitModule
 import com.xabber.android.data.http.Place
 import com.xabber.android.data.http.prettyName
+import com.xabber.android.data.http.toGeoPoint
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.PickGeolocationActivityBinding
 import com.xabber.android.ui.adapter.FoundPlacesRecyclerViewAdapter
@@ -31,6 +32,8 @@ import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.helper.getBitmap
 import com.xabber.android.ui.helper.osm.CustomMyLocationOsmOverlay
 import com.xabber.android.ui.helper.osm.ObservableOsmLocationProvider
+import com.xabber.android.ui.helper.tryToHideKeyboardIfNeed
+import com.xabber.android.ui.widget.DividerItemDecoration
 import com.xabber.android.ui.widget.SearchToolbar
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.cancel
@@ -44,7 +47,9 @@ import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import rx.subjects.PublishSubject
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class PickGeolocationActivity: ManagedActivity() {
 
@@ -53,9 +58,35 @@ class PickGeolocationActivity: ManagedActivity() {
     private var pickMarker: Marker? = null
     private var pointerColor: Int = 0
 
-    private val foundPlacesAdapter = FoundPlacesRecyclerViewAdapter()
+    private val foundPlacesAdapter = FoundPlacesRecyclerViewAdapter(
+        onPlaceClickListener = {
+            myLocationOverlay?.disableFollowLocation()
+            binding.pickgeolocationMapView.controller.animateTo(it.toGeoPoint(), 16.5, 1)
+            binding.pickgeolocationMapView.invalidate()
+            binding.pickgeolocationRecyclerView.visibility = View.GONE
+            if (pickMarker != null ) {
+                binding.pickgeolocationLocationBottomRoot.visibility = View.VISIBLE
+            }
+            binding.pickgeolocationMyGeolocation.visibility = View.VISIBLE
+            tryToHideKeyboardIfNeed()
+        }
+    )
 
     private var myLocationOverlay: MyLocationNewOverlay? = null
+
+    private val searchObservable = PublishSubject.create<String>()
+
+    init {
+        searchObservable.debounce(500, TimeUnit.MILLISECONDS)
+            .subscribe {
+                lifecycleScope.launch {
+                    binding.pickgeolocationProgressbar.visibility = View.VISIBLE
+                    val foundPlacesList = NominatimRetrofitModule.api.search(it)
+                    setupSearchList(foundPlacesList)
+                    binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
+                }
+            }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = PickGeolocationActivityBinding.inflate(layoutInflater)
@@ -76,26 +107,20 @@ class PickGeolocationActivity: ManagedActivity() {
         }
 
         binding.pickgeolocationRecyclerView.apply {
-            layoutManager = LinearLayoutManager(this@PickGeolocationActivity)
+            val llm = LinearLayoutManager(this@PickGeolocationActivity)
+            layoutManager = llm
             adapter = foundPlacesAdapter
+            addItemDecoration(DividerItemDecoration(context, llm.orientation))
         }
 
-        binding.searchToolbar.onTextChangedListener = SearchToolbar.OnTextChangedListener { searchString ->
-            lifecycleScope.launch {
-                binding.pickgeolocationProgressbar.visibility = View.VISIBLE
-                val foundPlacesList = NominatimRetrofitModule.api.search(searchString)
-                setupSearchList(foundPlacesList)
-                binding.pickgeolocationProgressbar.visibility = View.INVISIBLE
-            }
+        binding.searchToolbar.onTextChangedListener = SearchToolbar.OnTextChangedListener {
+            searchObservable.onNext(it)
         }
 
-        binding.pickgeolocationMyGeolocation.setOnClickListener {
-            tryToGetMyLocation()
-        }
+        binding.pickgeolocationMyGeolocation.setOnClickListener { tryToGetMyLocation() }
 
-        binding.pickgeolocationLocationBottomRoot.setOnClickListener {
-            /* ignore to avoid interception of clicks by mapview */
-        }
+        /* ignore to avoid interception of clicks by mapview */
+        binding.pickgeolocationLocationBottomRoot.setOnClickListener { }
 
         binding.searchToolbar.title = getString(R.string.chat_screen__dialog_title__pick_location)
 
@@ -106,7 +131,13 @@ class PickGeolocationActivity: ManagedActivity() {
     private fun setupSearchList(list: List<Place>) {
         if (list.isEmpty()) {
             binding.pickgeolocationRecyclerView.visibility = View.GONE
+            if (pickMarker != null ) {
+                binding.pickgeolocationLocationBottomRoot.visibility = View.VISIBLE
+            }
+            binding.pickgeolocationMyGeolocation.visibility = View.VISIBLE
         } else {
+            binding.pickgeolocationLocationBottomRoot.visibility = View.GONE
+            binding.pickgeolocationMyGeolocation.visibility = View.GONE
             binding.pickgeolocationRecyclerView.visibility = View.VISIBLE
             foundPlacesAdapter.placesList = list
             foundPlacesAdapter.notifyDataSetChanged()

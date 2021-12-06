@@ -10,18 +10,23 @@ import com.xabber.android.data.http.Place
 import com.xabber.android.data.http.prettyName
 
 class FoundPlacesRecyclerViewAdapter(
-    var placesList: List<Place> = listOf()
+    var placesList: List<Place> = listOf(), val onPlaceClickListener: (Place) -> Unit,
 ): RecyclerView.Adapter<FoundPlacesRecyclerViewAdapter.PlaceVH>() {
 
     override fun onBindViewHolder(holder: PlaceVH, position: Int) {
-        holder.itemView.findViewById<TextView>(android.R.id.text1).text =
-            placesList[position].prettyName
+        holder.itemView.findViewById<TextView>(R.id.text).apply {
+            val place = placesList[position]
+            text = place.prettyName
+            setOnClickListener {
+                onPlaceClickListener(place)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceVH {
         return PlaceVH(
             LayoutInflater.from(parent.context).inflate(
-                android.R.layout.activity_list_item, parent, false
+                R.layout.found_places_item, parent, false
             ).apply {
                 setBackgroundColor(resources.getColor(R.color.white))
             }

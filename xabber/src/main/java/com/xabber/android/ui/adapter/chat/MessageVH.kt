@@ -269,7 +269,8 @@ open class MessageVH(
 
     private fun setupNonExternalGeo(messageRealmObject: MessageRealmObject){
         messageRealmObject.referencesRealmObjects?.firstOrNull { it.isGeo }?.let {
-            if (!SettingsManager.useExternalLocation() && !it.filePath.isNullOrEmpty()) return@let
+            if (SettingsManager.useExternalLocation() && !it.filePath.isNullOrEmpty()) return@let
+            if (!it.filePath.isNullOrEmpty()) return@let
 
             itemView.findViewById<RelativeLayout>(R.id.include_non_external_geolocation).apply {
             visibility = View.VISIBLE
