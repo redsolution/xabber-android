@@ -119,11 +119,13 @@ public class MessageManager implements OnPacketListener {
                 geoReference.setLatitude(lat);
                 referenceRealmObjects.add(geoReference);
                 message.setReferencesRealmObjects(referenceRealmObjects);
-                Application.getInstance().runOnUiThread(() ->
-                        new GeolocationThumbnailRepository(
-                                Application.getInstance().getApplicationContext()
-                        ).modifyMessageWithThumbnailIfNeed(message)
-                );
+                if (SettingsManager.useExternalLocation()) {
+                    Application.getInstance().runOnUiThread(() ->
+                            new GeolocationThumbnailRepository(
+                                    Application.getInstance().getApplicationContext()
+                            ).modifyMessageWithThumbnailIfNeed(message)
+                    );
+                }
             }
             realm1.copyToRealm(message);
 

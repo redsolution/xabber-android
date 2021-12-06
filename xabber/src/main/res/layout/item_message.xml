@@ -52,6 +52,10 @@
             android:paddingBottom="2dp"
             android:visibility="gone"/>
 
+        <include android:id="@+id/include_non_external_geolocation"
+            layout="@layout/non_external_location_item"
+            android:visibility="gone"/>
+
         <FrameLayout
             android:id="@+id/image_grid_container_fl"
             android:layout_width="wrap_content"

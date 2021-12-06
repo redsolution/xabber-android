@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
@@ -346,10 +347,23 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
 
     @Override
     public void onLocationClick() {
-        startActivityForResult(
-                PickGeolocationActivity.Companion.createIntent(getContext(), accountJid),
-                PICK_LOCATION_REQUEST_CODE
-        );
+        if (SettingsManager.useExternalLocation()) {
+            startActivityForResult(
+                    PickGeolocationActivity.Companion.createIntent(getContext(), accountJid),
+                    PICK_LOCATION_REQUEST_CODE
+            );
+        } else {
+            (new AlertDialog.Builder(getContext()))
+                    .setMessage(R.string.use_external_dialog_body)
+                    .setTitle(R.string.use_external_dialog_title)
+                    .setPositiveButton(R.string.use_external_dialog_enable_button, (dialog, which) -> {
+                        SettingsManager.setUseExternalLocation(true);
+                        onLocationClick();
+                    })
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> { })
+                    .create()
+                    .show();
+        }
     }
 
     /**

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="wrap_content"
+    android:layout_height="56dp"
+
+    android:maxWidth="280dp"
+    android:orientation="vertical"
+    android:paddingEnd="4dp"
+    android:paddingRight="4dp">
+
+    <ImageView
+        android:id="@+id/location_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerVertical="true"
+        android:background="?attr/round_background"
+        android:paddingLeft="11dp"
+        android:paddingRight="11dp"
+        android:tint="?attr/shevron_file_icons_color"
+        app:srcCompat="@drawable/ic_location_circle" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+
+        android:layout_marginRight="8dp"
+        android:layout_toEndOf="@id/location_icon"
+
+        android:layout_toRightOf="@id/location_icon"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/location_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:ellipsize="middle"
+            android:maxWidth="196dp"
+
+            android:minWidth="140dp"
+
+            android:singleLine="true"
+            android:text="@string/message_location_title"
+            android:textColor="?attr/file_message_text_color"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/location_coordinates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:maxWidth="196dp"
+            android:minWidth="140dp"
+
+            android:textColor="?attr/file_message_text_color"
+            tools:text="0 bytes" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</RelativeLayout>

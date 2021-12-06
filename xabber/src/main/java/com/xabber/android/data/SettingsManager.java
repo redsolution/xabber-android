@@ -30,7 +30,6 @@ import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.WakeLockManager;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
@@ -478,6 +477,15 @@ public class SettingsManager implements OnInitializedListener, OnSharedPreferenc
     public static boolean chatsStateNotification() {
         return getBoolean(R.string.chats_state_notification_key,
                 R.bool.chats_state_notification_default);
+    }
+
+    public static boolean useExternalLocation() {
+        return getBoolean(R.string.use_external_locations_key,
+                R.bool.use_external_locations_default);
+    }
+
+    public static void setUseExternalLocation(boolean useExternalLocation) {
+        setBoolean(R.string.use_external_locations_key, useExternalLocation);
     }
 
     public static boolean chatsAttention() {

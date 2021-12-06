@@ -105,6 +105,7 @@
     <string name="chats_attention_sound_summary">Choose ringtoneHolder</string>
     <string name="connection_load_vcard">Load vCard\nLoad and update contact\'s personal info and avatar. Disable to reduce traffic usage.</string>
     <string name="connection_load_images">Load images\nLoad images from file URL automatically. Disable to reduce traffic usage.</string>
+    <string name="use_external_locations_title">Use third-party mapping service \nIf enabled, OpenStreetMap and Nominatim services will be used to display map snippets and return geocode information for given coordinates.</string>
     <string name="connection_compress_image_on_upload_title">Compress images\nCompress images on upload to reduce traffic usage. Some servers may have upload size restrictions, use this option to avoid it.</string>
     <string name="connection_auto_download_voice_message">Download media files\nAutomatically download media files to local storage</string>
     <string name="connection_dns_resolver_type_dns_java_resolver">DNSJavaResolver</string>

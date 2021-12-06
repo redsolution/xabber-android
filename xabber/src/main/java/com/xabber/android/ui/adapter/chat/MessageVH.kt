@@ -2,13 +2,9 @@ package com.xabber.android.ui.adapter.chat
 
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.Bitmap
-import android.graphics.ColorFilter
-import android.graphics.PorterDuff
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
-import android.preference.PreferenceManager
 import android.text.Html
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -19,14 +15,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.StyleRes
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amulyakhare.textdrawable.util.ColorGenerator
-import com.bumptech.glide.Glide
 import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.SettingsManager
@@ -35,8 +28,6 @@ import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.extension.groups.GroupPrivacyType
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
-import com.xabber.android.data.extension.references.mutable.geo.thumbnails.GeolocationThumbnailCreator
-import com.xabber.android.data.extension.references.mutable.geo.thumbnails.GeolocationThumbnailRepository
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.MessageStatus
@@ -54,15 +45,8 @@ import com.xabber.android.ui.widget.CustomFlexboxLayout
 import com.xabber.android.ui.widget.ImageGrid
 import io.realm.RealmList
 import io.realm.Sort
-import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.CustomZoomButtonsController
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 import rx.subscriptions.CompositeSubscription
 import java.util.*
-import kotlin.math.roundToInt
 
 open class MessageVH(
     itemView: View,
@@ -250,7 +234,7 @@ open class MessageVH(
         }
 
         setupTime(messageRealmObject)
-        setupImageOrFile(messageRealmObject, vhExtraData)
+        setupReferences(messageRealmObject, vhExtraData)
     }
 
     protected fun setupTime(messageRealmObject: MessageRealmObject) {
@@ -272,13 +256,35 @@ open class MessageVH(
         bottomMessageTime.text = time
     }
 
-    private fun setupImageOrFile(messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData) {
+    private fun setupReferences(messageRealmObject: MessageRealmObject, vhExtraData: MessageVhExtraData) {
         rvFileList.visibility = View.GONE
         imageGridContainer.removeAllViews()
         imageGridContainer.visibility = View.GONE
         if (messageRealmObject.hasReferences()) {
             setUpImage(messageRealmObject, vhExtraData)
             setUpFile(messageRealmObject.referencesRealmObjects, vhExtraData)
+            setupNonExternalGeo(messageRealmObject)
+        }
+    }
+
+    private fun setupNonExternalGeo(messageRealmObject: MessageRealmObject){
+        messageRealmObject.referencesRealmObjects?.firstOrNull { it.isGeo }?.let {
+            if (!SettingsManager.useExternalLocation() && !it.filePath.isNullOrEmpty()) return@let
+
+            itemView.findViewById<RelativeLayout>(R.id.include_non_external_geolocation).apply {
+            visibility = View.VISIBLE
+
+                setOnClickListener { _ ->
+                    context.startActivity(
+                        Intent().apply {
+                            action = Intent.ACTION_VIEW
+                            data = Uri.parse("geo:${it.latitude},${it.longitude}?q=${it.latitude},${it.longitude}")
+                        }
+                    )
+                }
+                val coordFormatString = "%.4f"
+                findViewById<TextView>(R.id.location_coordinates).text = "${coordFormatString.format(it.longitude)}, ${coordFormatString.format(it.latitude)}"
+            }
         }
     }
 

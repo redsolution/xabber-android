@@ -268,6 +268,9 @@
     <string name="chats_state_notification_key">chats_state_notification</string>
     <bool name="chats_state_notification_default">true</bool>
 
+    <string name="use_external_locations_key">use_external_locations_key</string>
+    <bool name="use_external_locations_default">true</bool>
+
     <string name="chats_attention_key">chats_attention</string>
     <bool name="chats_attention_default">true</bool>
 

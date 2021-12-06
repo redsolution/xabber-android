@@ -293,7 +293,9 @@ object MessageHandler {
             this.isRegularReceived = isRegularMessage
         }
 
-        if (referenceRealmObjects?.any(ReferenceRealmObject::isGeo) == true) {
+        if (referenceRealmObjects?.any(ReferenceRealmObject::isGeo) == true
+            && SettingsManager.useExternalLocation()
+        ) {
             GeolocationThumbnailRepository(Application.getInstance().applicationContext)
                 .modifyMessageWithThumbnailIfNeed(messageRealmObject)
         }
@@ -483,7 +485,9 @@ object MessageHandler {
             this.isRegularReceived = isRegularMessage
         }
 
-        if (referenceRealmObjects?.any(ReferenceRealmObject::isGeo) == true) {
+        if (referenceRealmObjects?.any(ReferenceRealmObject::isGeo) == true
+            && SettingsManager.useExternalLocation()
+        ) {
             GeolocationThumbnailRepository(Application.getInstance().applicationContext)
                 .modifyMessageWithThumbnailIfNeed(messageRealmObject)
         }
