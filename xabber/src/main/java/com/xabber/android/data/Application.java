@@ -75,6 +75,7 @@ import com.xabber.android.ui.color.ColorManager;
 
 import org.jivesoftware.smack.provider.ProviderFileLoader;
 import org.jivesoftware.smack.provider.ProviderManager;
+import org.osmdroid.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -340,6 +341,8 @@ public class Application extends android.app.Application {
                     .penaltyLog()
                     .build());
         }
+
+        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
 
         onApplicationStarted();
 
