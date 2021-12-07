@@ -114,20 +114,31 @@ fun getColoredAttachmentDisplayName(
                     )
                 }
             } else {
-                if (singleAttachment.isImage) {
-                    attachmentBuilder.append(
-                        context.resources.getQuantityString(
-                            R.plurals.recent_chat__last_message__images,
-                            1
+                when {
+                    singleAttachment.isGeo -> {
+                        attachmentBuilder.append(
+                            context.resources.getQuantityString(
+                                R.plurals.recent_chat__last_message__locations,
+                                1
+                            )
                         )
-                    )
-                } else {
-                    attachmentBuilder.append(
-                        context.resources.getQuantityString(
-                            R.plurals.recent_chat__last_message__files,
-                            1
+                    }
+                    singleAttachment.isImage -> {
+                        attachmentBuilder.append(
+                            context.resources.getQuantityString(
+                                R.plurals.recent_chat__last_message__images,
+                                1
+                            )
                         )
-                    )
+                    }
+                    else -> {
+                        attachmentBuilder.append(
+                            context.resources.getQuantityString(
+                                R.plurals.recent_chat__last_message__files,
+                                1
+                            )
+                        )
+                    }
                 }
                 if (singleAttachment.fileSize != null && singleAttachment.fileSize != 0L) {
                     attachmentBuilder
@@ -156,22 +167,34 @@ fun getColoredAttachmentDisplayName(
                 }
             }
             if (isAllAttachmentsOfOneType) {
-                if (references[0].isImage) {
-                    attachmentBuilder.append(
-                        context.resources.getQuantityString(
-                            R.plurals.recent_chat__last_message__images,
-                            references.size,
-                            references.size
+                when {
+                    references[0].isGeo -> {
+                        attachmentBuilder.append(
+                            context.resources.getQuantityString(
+                                R.plurals.recent_chat__last_message__locations,
+                                references.size,
+                                references.size
+                            )
                         )
-                    )
-                } else {
-                    attachmentBuilder.append(
-                        context.resources.getQuantityString(
-                            R.plurals.recent_chat__last_message__files,
-                            references.size,
-                            references.size
+                    }
+                    references[0].isImage -> {
+                        attachmentBuilder.append(
+                            context.resources.getQuantityString(
+                                R.plurals.recent_chat__last_message__images,
+                                references.size,
+                                references.size
+                            )
                         )
-                    )
+                    }
+                    else -> {
+                        attachmentBuilder.append(
+                            context.resources.getQuantityString(
+                                R.plurals.recent_chat__last_message__files,
+                                references.size,
+                                references.size
+                            )
+                        )
+                    }
                 }
             } else {
                 attachmentBuilder.append(

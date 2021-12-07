@@ -138,6 +138,10 @@
     <string name="dialog_circle_settings__header">Circle settings</string>
     <string name="dialog_circle_settings__button_apply">Apply</string>
     <string name="contact_list__placeholder">Please select a contact to view details</string>
+    <plurals name="recent_chat__last_message__locations">
+        <item quantity="one">Location</item>
+        <item quantity="other">%d Locations</item>
+    </plurals>
     <plurals name="recent_chat__last_message__images">
         <item quantity="one">Image</item>
         <item quantity="other">%d images</item>
