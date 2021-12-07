@@ -123,10 +123,14 @@ public class HttpFileUploadManager implements OnLoadListener, OnAccountRemovedLi
     }
 
     public static String getMimeType(String path) {
-        String extension = path.substring(path.lastIndexOf(".")).substring(1);
-        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        if (type == null || type.isEmpty()) type = "*/*";
-        return type;
+        try {
+            String extension = path.substring(path.lastIndexOf(".")).substring(1);
+            String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            if (type == null || type.isEmpty()) type = "*/*";
+            return type;
+        } catch (Exception e) {
+            return "*/*";
+        }
     }
 
     public static RealmList<ReferenceRealmObject> parseMessageWithReference(Stanza packet) {
