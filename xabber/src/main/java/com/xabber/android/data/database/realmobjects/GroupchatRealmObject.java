@@ -50,6 +50,7 @@ public class GroupchatRealmObject extends RealmObject {
     private long notificationTimestamp;
     private String retractVersion;
     private int lastPosition;
+    private String meMemberId;
 
     public GroupchatRealmObject() {
         this.primary = UUID.randomUUID().toString();
@@ -212,5 +213,9 @@ public class GroupchatRealmObject extends RealmObject {
 
     public int getLastPosition() { return lastPosition; }
     public void setLastPosition(int lastPosition) { this.lastPosition = lastPosition; }
+
+    public String getMeMemberId() { return meMemberId; }
+
+    public void setMeMemberId(String meMemberId) { this.meMemberId = meMemberId; }
 
 }

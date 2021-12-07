@@ -78,6 +78,7 @@ public class GroupchatRepository {
                         groupchatRealmObject = new GroupchatRealmObject(groupChat.getAccount(),
                                 groupChat.getContactJid());
 
+                    groupchatRealmObject.setMeMemberId(groupchatRealmObject.getMeMemberId());
                     groupchatRealmObject.setOwner(groupChat.getOwner());
                     groupchatRealmObject.setName(groupChat.getName());
                     groupchatRealmObject.setPrivacy(groupChat.getPrivacyType());
@@ -121,7 +122,7 @@ public class GroupchatRepository {
                         gro.getMembership(), gro.getPrivacy(), gro.getOwner(), gro.getName(),
                         gro.getDescription(), gro.getMembersCount(), gro.getPinnedMessageId(),
                         gro.getMembersListVersion(), gro.getResource(), gro.getLastPosition(),
-                        gro.getNotificationState(), gro.getRetractVersion()));
+                        gro.getNotificationState(), gro.getRetractVersion(), gro.getMeMemberId()));
             } catch (Exception e){
                 LogManager.exception(LOG_TAG, e);
             }
