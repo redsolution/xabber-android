@@ -74,7 +74,7 @@
         android:id="@+id/show_settings_button"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:srcCompat="@drawable/ic_menu_new"
+        app:srcCompat="@drawable/ic_menu_variant"
         android:background="@color/transparent"
         android:layout_weight="1"/>
 
