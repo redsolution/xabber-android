@@ -139,6 +139,8 @@ open class MessageVH(
                     )
                 )
                 messageHeader.visibility = View.VISIBLE
+            } else {
+                messageHeader.visibility = View.GONE
             }
         } else {
             messageHeader.visibility = View.GONE
