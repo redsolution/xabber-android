@@ -736,6 +736,52 @@ object GroupMemberManager {
                             && groupchatJid.bareJid.equals(packet.getFrom().asBareJid())
                             && accountJid.bareJid.equals(packet.getTo().asBareJid())
                         ) {
+                            DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
+                                realm.executeTransaction { realm1 ->
+                                    packet.listOfMembers.map { memberExtension ->
+                                        (realm1.where(GroupMemberRealmObject::class.java)
+                                            .equalTo(
+                                                GroupMemberRealmObject.Fields.ACCOUNT_JID,
+                                                accountJid.toString()
+                                            )
+                                            .equalTo(
+                                                GroupMemberRealmObject.Fields.GROUP_JID,
+                                                groupchatJid.toString()
+                                            )
+                                            .equalTo(
+                                                GroupMemberRealmObject.Fields.MEMBER_ID,
+                                                memberExtension.id
+                                            )
+                                            .findFirst()
+                                            ?: GroupMemberRealmObject.createGroupMemberRealmObject(
+                                                accountJid, groupchatJid, memberExtension.id
+                                            ))
+                                            ?.apply {
+                                                role = GroupMemberRealmObject.Role.valueOf(
+                                                    memberExtension.role
+                                                )
+                                                nickname = memberExtension.nickname
+                                                badge = memberExtension.badge
+                                                memberExtension.jid?.let { jid = it }
+                                                memberExtension.lastPresent?.let {
+                                                    lastSeen = it
+                                                }
+                                                memberExtension.avatarInfo?.let {
+                                                    avatarHash = it.id
+                                                    avatarUrl = it.url.toString()
+                                                }
+                                                memberExtension.subscription?.let {
+                                                    subscriptionState =
+                                                        GroupMemberRealmObject.SubscriptionState.valueOf(
+                                                            it
+                                                        )
+                                                }
+                                            }
+                                            ?.let { gmro -> realm1.insertOrUpdate(gmro) }
+                                    }
+                                }
+                            }
+
                             packet.listOfMembers.map { memberExtension ->
                                 chat.meMemberId = memberExtension.id
                                 ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
