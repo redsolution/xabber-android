@@ -27,6 +27,7 @@ import com.xabber.android.data.database.DatabaseManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.database.realmobjects.ReferenceRealmObject
 import com.xabber.android.data.extension.groups.GroupPrivacyType
+import com.xabber.android.data.extension.groups.isMe
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.references.mutable.voice.VoiceManager
 import com.xabber.android.data.log.LogManager

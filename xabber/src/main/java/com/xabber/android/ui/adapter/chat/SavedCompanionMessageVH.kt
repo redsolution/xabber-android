@@ -12,6 +12,7 @@ import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.entity.ContactJid.ContactJidCreateException
 import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
+import com.xabber.android.data.extension.groups.isMe
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager
 

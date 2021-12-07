@@ -16,6 +16,7 @@ import com.xabber.android.data.database.repositories.MessageRepository
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupMemberManager.getGroupMemberById
 import com.xabber.android.data.extension.groups.GroupMemberManager.getMe
+import com.xabber.android.data.extension.groups.isMe
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.message.chat.AbstractChat
 import com.xabber.android.data.message.chat.GroupChat

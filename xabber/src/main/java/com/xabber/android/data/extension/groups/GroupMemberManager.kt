@@ -150,13 +150,13 @@ object GroupMemberManager {
             DatabaseManager.getInstance().defaultRealmInstance.where(GroupMemberRealmObject::class.java)
                 .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, group.account.toString())
                 .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, group.contactJid.toString())
-                .equalTo(GroupMemberRealmObject.Fields.IS_ME, true)
+                .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, group.meMemberId)
                 .findFirst()
         } else DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
             realm.where(GroupMemberRealmObject::class.java)
                 .equalTo(GroupMemberRealmObject.Fields.ACCOUNT_JID, group.account.toString())
                 .equalTo(GroupMemberRealmObject.Fields.GROUP_JID, group.contactJid.toString())
-                .equalTo(GroupMemberRealmObject.Fields.IS_ME, true)
+                .equalTo(GroupMemberRealmObject.Fields.MEMBER_ID, group.meMemberId)
                 .findFirst()
                 ?.let { realm.copyFromRealm(it) }
         }
@@ -727,68 +727,24 @@ object GroupMemberManager {
 
     fun requestMe(accountJid: AccountJid, groupchatJid: ContactJid) {
         Application.getInstance().runInBackgroundNetworkUserRequest {
-            (ChatManager.getInstance()
-                .getChat(accountJid, groupchatJid) as? GroupChat)?.let { chat ->
+            (ChatManager.getInstance().getChat(accountJid, groupchatJid) as? GroupChat)?.let { chat ->
                 try {
-                    AccountManager
-                        .getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
-                            GroupchatMembersQueryIQ(chat).apply { queryId = "" }
-                        ) { packet ->
-                            if (packet is GroupchatMembersResultIQ
-                                && groupchatJid.bareJid.equals(packet.getFrom().asBareJid())
-                                && accountJid.bareJid.equals(packet.getTo().asBareJid())
-                            ) {
-                                DatabaseManager.getInstance().defaultRealmInstance.use { realm ->
-                                    realm.executeTransaction { realm1 ->
-                                        packet.listOfMembers.map { memberExtension ->
-                                            (realm1.where(GroupMemberRealmObject::class.java)
-                                                .equalTo(
-                                                    GroupMemberRealmObject.Fields.ACCOUNT_JID,
-                                                    accountJid.toString()
-                                                )
-                                                .equalTo(
-                                                    GroupMemberRealmObject.Fields.GROUP_JID,
-                                                    groupchatJid.toString()
-                                                )
-                                                .equalTo(
-                                                    GroupMemberRealmObject.Fields.MEMBER_ID,
-                                                    memberExtension.id
-                                                )
-                                                .findFirst()
-                                                ?: GroupMemberRealmObject.createGroupMemberRealmObject(
-                                                    accountJid, groupchatJid, memberExtension.id
-                                                ))
-                                                ?.apply {
-                                                    role = GroupMemberRealmObject.Role.valueOf(
-                                                        memberExtension.role
-                                                    )
-                                                    nickname = memberExtension.nickname
-                                                    badge = memberExtension.badge
-                                                    memberExtension.jid?.let { jid = it }
-                                                    memberExtension.lastPresent?.let {
-                                                        lastSeen = it
-                                                    }
-                                                    memberExtension.avatarInfo?.let {
-                                                        avatarHash = it.id
-                                                        avatarUrl = it.url.toString()
-                                                    }
-                                                    memberExtension.subscription?.let {
-                                                        subscriptionState =
-                                                            GroupMemberRealmObject.SubscriptionState.valueOf(
-                                                                it
-                                                            )
-                                                    }
-                                                    isMe = true
-                                                }
-                                                ?.let { gmro -> realm1.insertOrUpdate(gmro) }
-                                        }
-                                    }
-                                }
-                                Application.getInstance()
-                                    .getUIListeners(OnGroupchatRequestListener::class.java)
-                                    .forEachOnUi { it.onMeReceived(accountJid, groupchatJid) }
+                    AccountManager.getAccount(accountJid)?.connection?.sendIqWithResponseCallback(
+                        GroupchatMembersQueryIQ(chat).apply { queryId = "" }
+                    ) { packet ->
+                        if (packet is GroupchatMembersResultIQ
+                            && groupchatJid.bareJid.equals(packet.getFrom().asBareJid())
+                            && accountJid.bareJid.equals(packet.getTo().asBareJid())
+                        ) {
+                            packet.listOfMembers.map { memberExtension ->
+                                chat.meMemberId = memberExtension.id
+                                ChatManager.getInstance().saveOrUpdateChatDataToRealm(chat)
                             }
+                            Application.getInstance()
+                                .getUIListeners(OnGroupchatRequestListener::class.java)
+                                .forEachOnUi { it.onMeReceived(accountJid, groupchatJid) }
                         }
+                    }
                 } catch (e: Exception) {
                     LogManager.exception(this.javaClass.simpleName, e)
                 }
@@ -952,3 +908,6 @@ object GroupMemberManager {
     }
 
 }
+
+val GroupMemberRealmObject.isMe: Boolean
+get() = (ChatManager.getInstance().getChat(accountJid, groupJid) as? GroupChat)?.let { it.meMemberId == memberId } ?: false

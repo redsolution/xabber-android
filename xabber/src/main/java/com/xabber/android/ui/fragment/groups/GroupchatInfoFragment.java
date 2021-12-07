@@ -22,6 +22,7 @@ import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.extension.groups.GroupIndexType;
 import com.xabber.android.data.extension.groups.GroupMemberManager;
+import com.xabber.android.data.extension.groups.GroupMemberManagerKt;
 import com.xabber.android.data.extension.groups.GroupMembershipType;
 import com.xabber.android.data.extension.groups.GroupPrivacyType;
 import com.xabber.android.data.extension.groups.GroupsManager;
@@ -278,8 +279,8 @@ public class GroupchatInfoFragment extends Fragment implements OnGroupchatReques
                     new ArrayList<>(GroupMemberManager.INSTANCE.getCurrentGroupMembers((GroupChat) groupChat));
 
             Collections.sort(list, (o1, o2) -> {
-                if (o1.isMe() && !o2.isMe()) return -1;
-                if (o2.isMe() && !o1.isMe()) return 1;
+                if (GroupMemberManagerKt.isMe(o1) && !GroupMemberManagerKt.isMe(o2)) return -1;
+                if (GroupMemberManagerKt.isMe(o2) && !GroupMemberManagerKt.isMe(o1)) return 1;
                 return 0;
             });
 

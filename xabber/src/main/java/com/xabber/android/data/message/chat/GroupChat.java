@@ -47,6 +47,8 @@ public class GroupChat extends AbstractChat {
 
     private String retractVersion;
 
+    private String meMemberId;
+
     public GroupChat(@NonNull AccountJid account, @NonNull ContactJid user) {
         super(account, user);
     }
@@ -186,4 +188,11 @@ public class GroupChat extends AbstractChat {
     public String getRetractVersion() { return retractVersion; }
     public void setRetractVersion(String retractVersion) { this.retractVersion = retractVersion; }
 
+    public String getMeMemberId() {
+        return meMemberId;
+    }
+
+    public void setMeMemberId(String meMemberId) {
+        this.meMemberId = meMemberId;
+    }
 }

@@ -15,6 +15,7 @@ import com.xabber.android.data.extension.delivery.getTimeElement
 import com.xabber.android.data.extension.delivery.hasTimeElement
 import com.xabber.android.data.extension.groups.GroupInviteManager
 import com.xabber.android.data.extension.groups.GroupMemberManager
+import com.xabber.android.data.extension.groups.isMe
 import com.xabber.android.data.extension.httpfileupload.HttpFileUploadManager
 import com.xabber.android.data.extension.references.ReferencesManager
 import com.xabber.android.data.extension.references.mutable.geo.thumbnails.GeolocationThumbnailRepository

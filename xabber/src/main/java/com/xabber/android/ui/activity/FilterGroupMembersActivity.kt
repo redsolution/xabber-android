@@ -17,6 +17,7 @@ import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 import com.xabber.android.data.entity.AccountJid
 import com.xabber.android.data.entity.ContactJid
 import com.xabber.android.data.extension.groups.GroupMemberManager
+import com.xabber.android.data.extension.groups.isMe
 import com.xabber.android.data.message.chat.ChatManager
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.OnGroupchatRequestListener

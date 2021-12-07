@@ -33,7 +33,6 @@ public class GroupMemberRealmObject extends RealmObject {
 
     private String subscriptionState = SubscriptionState.both.toString();
 
-    private boolean isMe = false;
     private boolean isBlocked = false;
     private boolean isKicked = false;
 
@@ -105,11 +104,6 @@ public class GroupMemberRealmObject extends RealmObject {
     }
 
     public String getMemberId() { return memberId; }
-
-    public boolean isMe() { return isMe; }
-    public void setMe(boolean me) {
-        if (me) isMe = true;
-    }
 
     public String getJid() {
         return jid;

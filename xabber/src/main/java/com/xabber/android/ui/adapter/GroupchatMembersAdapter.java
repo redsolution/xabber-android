@@ -18,6 +18,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.extension.groups.GroupMemberManagerKt;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.chat.GroupChat;
 import com.xabber.android.ui.color.ColorManager;
@@ -105,7 +106,7 @@ public class GroupchatMembersAdapter extends RecyclerView.Adapter<GroupchatMembe
             holder.memberRole.setVisibility(View.GONE);
         }
 
-        if (bindMember.isMe()) {
+        if (GroupMemberManagerKt.isMe(bindMember)) {
             holder.memberStatus.setText(holder.itemView.getContext().getText(R.string.groupchat_this_is_you));
             holder.memberStatus.setTextColor(
                     ColorManager.getInstance().getAccountPainter().getAccountColorWithTint(chat.getAccount(), 500)

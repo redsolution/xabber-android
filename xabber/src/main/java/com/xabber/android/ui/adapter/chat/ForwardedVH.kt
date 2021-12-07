@@ -10,6 +10,7 @@ import com.xabber.android.R
 import com.xabber.android.data.SettingsManager
 import com.xabber.android.data.database.realmobjects.MessageRealmObject
 import com.xabber.android.data.entity.ContactJid
+import com.xabber.android.data.extension.groups.isMe
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.data.roster.RosterManager
 import com.xabber.android.ui.color.ColorManager

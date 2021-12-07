@@ -12,6 +12,7 @@ import com.xabber.android.R
 import com.xabber.android.data.Application
 import com.xabber.android.data.database.realmobjects.GroupMemberRealmObject
 import com.xabber.android.data.extension.groups.GroupMemberManager
+import com.xabber.android.data.extension.groups.isMe
 import com.xabber.android.data.message.chat.GroupChat
 import com.xabber.android.ui.OnGroupMemberRightsListener
 import com.xabber.android.ui.activity.GroupchatMemberActivity
