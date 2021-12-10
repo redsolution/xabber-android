@@ -31,13 +31,14 @@ import com.xabber.android.data.extension.devices.DevicesManager;
 import com.xabber.android.ui.OnDevicesSessionsUpdatedListener;
 import com.xabber.android.ui.adapter.SessionAdapter;
 import com.xabber.android.ui.color.BarPainter;
+import com.xabber.android.ui.fragment.DeviceInfoBottomSheetDialog;
 import com.xabber.android.ui.helper.AndroidUtilsKt;
 
 import org.jivesoftware.smack.packet.IQ;
 
 import java.util.List;
 
-public class ActiveSessionsActivity extends ManagedActivity implements SessionAdapter.Listener,
+public class AccountDevicesActivity extends ManagedActivity implements SessionAdapter.Listener,
         OnDevicesSessionsUpdatedListener {
 
     private SessionAdapter adapter;
@@ -51,12 +52,11 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     private View contentView;
 
     private boolean isDeviceManagementEnabled = false;
-    private SessionVO currentSession;
 
     private AccountItem accountItem;
 
     public static Intent createIntent(Context context, AccountJid account) {
-        return IntentHelpersKt.createAccountIntent(context, ActiveSessionsActivity.class, account);
+        return IntentHelpersKt.createAccountIntent(context, AccountDevicesActivity.class, account);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         }
         toolbar.setNavigationOnClickListener(v -> finish());
-        toolbar.setTitle(R.string.account_active_sessions);
+        toolbar.setTitle(R.string.account_devices);
 
         BarPainter barPainter = new BarPainter(this, toolbar);
         barPainter.updateWithAccountName(account);
@@ -102,7 +102,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
         // other sessions
         if (isDeviceManagementEnabled) {
             RecyclerView recyclerView = findViewById(R.id.rvSessions);
-            adapter = new SessionAdapter(this);
+            adapter = new SessionAdapter(account, this);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setAdapter(adapter);
             recyclerView.setNestedScrollingEnabled(false);
@@ -116,9 +116,6 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
             tvTokensUnavailable.setVisibility(View.GONE);
             tvTokensUnavailableHeader.setVisibility(View.GONE);
             getSessionsData();
-
-            findViewById(R.id.current_session_root).setOnClickListener(v -> showChangeDescriptionDialog());
-
         } else {
             tvTokensUnavailable.setVisibility(View.VISIBLE);
             tvTokensUnavailable.setText(
@@ -161,7 +158,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
 
                     @Override
                     public void onError() {
-                        Toast.makeText(ActiveSessionsActivity.this,
+                        Toast.makeText(AccountDevicesActivity.this,
                                 R.string.account_active_sessions_error, Toast.LENGTH_LONG).show();
                     }
                 });
@@ -192,7 +189,7 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
                     @Override
                     public void onError() {
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(ActiveSessionsActivity.this,
+                        Toast.makeText(AccountDevicesActivity.this,
                                 R.string.account_active_sessions_error, Toast.LENGTH_LONG).show();
                     }
                 }
@@ -200,84 +197,36 @@ public class ActiveSessionsActivity extends ManagedActivity implements SessionAd
     }
 
     private void setCurrentSession(SessionVO session) {
-        currentSession = session;
         if (session.getDescription() != null && !session.getDescription().isEmpty()) {
             tvCurrentClient.setText(session.getDescription());
         } else {
             tvCurrentClient.setText(session.getClient());
         }
-        tvCurrentDevice.setText(session.getDevice());
+        tvCurrentDevice.setText(session.getClient() + ", " + session.getDevice());
         tvCurrentIPAddress.setText(session.getIp());
         tvCurrentDate.setText(session.getLastAuth());
+
+        findViewById(R.id.current_session_root).setOnClickListener(v -> {
+                    DeviceInfoBottomSheetDialog fragment = DeviceInfoBottomSheetDialog.Companion
+                            .newInstance(accountItem.getAccount(), session, true);
+                    fragment.setOnDismissListener(d -> refreshData());
+                    fragment.show(getSupportFragmentManager(), DeviceInfoBottomSheetDialog.TAG);
+                }
+            );
     }
 
     @Override
-    public void onItemClick(String tokenUID) {
-        showTerminateSessionDialog(tokenUID);
-    }
-
-    private void showChangeDescriptionDialog() {
-        EditText descriptionEditText = new EditText(this);
-        descriptionEditText.setMaxLines(1);
-
-        FrameLayout container = new FrameLayout(this);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-        );
-
-        params.leftMargin = AndroidUtilsKt.dipToPx(20f, this);
-        params.rightMargin = AndroidUtilsKt.dipToPx(16f, this);
-
-        descriptionEditText.setLayoutParams(params);
-        container.addView(descriptionEditText);
-
-        if (currentSession != null && currentSession.getDescription() != null) {
-            descriptionEditText.setText(currentSession.getDescription());
-        }
-
-        new AlertDialog.Builder(this)
-                .setTitle("Device description") //todo use right resources strings
-                .setView(container)
-                .setPositiveButton("Set description", (dialog, which) ->
-                        DevicesManager.INSTANCE.sendChangeDeviceDescriptionRequest(
-                                accountItem.getConnection(),
-                                currentSession.getUid(),
-                                descriptionEditText.getText().toString(),
-                                packet -> Application.getInstance().runOnUiThread(() -> {
-                                    if (packet instanceof IQ && ((IQ)packet).getType() == IQ.Type.result) {
-                                        refreshData();
-                                    }
-                                }),
-                                exception -> Application.getInstance().runOnUiThread(() ->
-                                        Toast.makeText(
-                                                this,
-                                                "Failed to set token description",
-                                                Toast.LENGTH_SHORT
-                                        ).show())
-                        )
-                )
-                .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel())
-                .create()
-                .show();
+    public void onItemClick(SessionVO token) {
+        DeviceInfoBottomSheetDialog.Companion
+                .newInstance(accountItem.getAccount(), token, false)
+                .show(getSupportFragmentManager(), DeviceInfoBottomSheetDialog.TAG);
     }
 
     private void showTerminateAllSessionsDialog() {
-        new AlertDialog.Builder(ActiveSessionsActivity.this)
+        new AlertDialog.Builder(AccountDevicesActivity.this)
                 .setMessage(R.string.terminate_all_sessions_title)
                 .setPositiveButton(R.string.button_terminate, (dialogInterface, i) -> {
                     DevicesManager.INSTANCE.sendRevokeAllDevicesRequest(accountItem.getConnection());
-                    getSessionsData();
-                })
-                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())
-                .create()
-                .show();
-    }
-
-    private void showTerminateSessionDialog(final String uid) {
-        new AlertDialog.Builder(ActiveSessionsActivity.this)
-                .setMessage(R.string.terminate_session_title)
-                .setPositiveButton(R.string.button_terminate, (dialogInterface, i) -> {
-                    DevicesManager.INSTANCE.sendRevokeDeviceRequest(accountItem.getConnection(), uid);
                     getSessionsData();
                 })
                 .setNegativeButton(R.string.cancel, (dialogInterface, i) -> dialogInterface.cancel())

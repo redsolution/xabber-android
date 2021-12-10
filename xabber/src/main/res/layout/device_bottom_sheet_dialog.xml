@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?android:attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:id="@+id/devices_description_root"
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+
+        <TextView
+            android:id="@+id/devices_description_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+
+            android:layout_centerVertical="true"
+
+            tools:text="Xabber for web"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="20sp" />
+
+        <View
+            android:id="@+id/devices_edit_divider"
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/devices_edit_icon"
+            android:layout_toStartOf="@id/devices_edit_icon"
+
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+
+            android:background="@color/grey_700" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/devices_edit_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_edit_grey_24dp"
+
+            android:paddingEnd="20dp"
+            android:paddingRight="20dp"
+            android:paddingStart="20dp"
+            android:paddingLeft="20dp"
+
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/devices_status_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/devices_status_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="32dp"
+            android:src="@drawable/ic_device_status" />
+
+        <View
+            android:id="@+id/devices_status_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/grey_700" />
+
+        <TextView
+            android:id="@+id/devices_status_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+
+            android:layout_marginEnd="16dp"
+
+            android:layout_marginRight="16dp"
+            android:layout_toEndOf="@+id/devices_status_icon"
+            android:layout_toRightOf="@id/devices_status_icon"
+
+            tools:text="Online"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/devices_status_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+
+            android:layout_below="@id/devices_status_value"
+            android:layout_toEndOf="@id/devices_status_icon"
+            android:layout_toRightOf="@id/devices_status_icon"
+
+            android:text="@string/device__info__status__label"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/devices_device_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/devices_device_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="32dp"
+            android:src="@drawable/ic_devices" />
+
+        <View
+            android:id="@+id/devices_device_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_toRightOf="@id/devices_device_icon"
+            android:background="@color/grey_700" />
+
+        <TextView
+            android:id="@+id/devices_device_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+
+            android:layout_marginEnd="16dp"
+
+            android:layout_marginRight="16dp"
+            android:layout_toEndOf="@+id/devices_device_icon"
+            android:layout_toRightOf="@id/devices_device_icon"
+
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            tools:text="PC Macintosh Intel, Firefox" />
+
+        <TextView
+            android:id="@+id/devices_device_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@id/devices_device_value"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+
+            android:layout_marginBottom="16dp"
+            android:layout_toEndOf="@id/devices_device_icon"
+            android:layout_toRightOf="@id/devices_device_icon"
+
+            android:text="@string/device__info__device__label"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/devices_client_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/devices_client_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="32dp"
+            android:src="@drawable/ic_client" />
+
+        <View
+            android:id="@+id/devices_client_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_toRightOf="@id/devices_client_icon"
+            android:background="@color/grey_700" />
+
+        <TextView
+            android:id="@+id/devices_client_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+
+            android:layout_marginEnd="16dp"
+
+            android:layout_marginRight="16dp"
+            android:layout_toEndOf="@+id/devices_client_icon"
+            android:layout_toRightOf="@id/devices_client_icon"
+
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            tools:text="Xabber for Web" />
+
+        <TextView
+            android:id="@+id/devices_client_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@id/devices_client_value"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+
+            android:layout_marginBottom="16dp"
+            android:layout_toEndOf="@id/devices_client_icon"
+            android:layout_toRightOf="@id/devices_client_icon"
+
+            android:text="@string/device__info__client__label"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/devices_ip_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/devices_ip_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="32dp"
+            android:src="@drawable/ic_ip" />
+
+        <View
+            android:id="@+id/devices_ip_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_toRightOf="@id/devices_ip_icon"
+            android:background="@color/grey_700" />
+
+        <TextView
+            android:id="@+id/devices_ip_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+
+            android:layout_marginEnd="16dp"
+
+            android:layout_marginRight="16dp"
+            android:layout_toEndOf="@+id/devices_ip_icon"
+            android:layout_toRightOf="@id/devices_ip_icon"
+
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            tools:text="127.0.0.1" />
+
+        <TextView
+            android:id="@+id/devices_ip_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@id/devices_ip_value"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+
+            android:layout_marginBottom="16dp"
+            android:layout_toEndOf="@id/devices_ip_icon"
+            android:layout_toRightOf="@id/devices_ip_icon"
+
+            android:text="@string/device__info__ip__label"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/devices_expire_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/devices_expire_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="32dp"
+            android:src="@drawable/ic_expires" />
+
+        <View
+            android:id="@+id/devices_expire_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_toRightOf="@id/devices_expire_icon"
+            android:background="@color/grey_700" />
+
+        <TextView
+            android:id="@+id/devices_expire_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+
+            android:layout_marginEnd="16dp"
+
+            android:layout_marginRight="16dp"
+            android:layout_toEndOf="@+id/devices_expire_icon"
+            android:layout_toRightOf="@id/devices_expire_icon"
+
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="16sp"
+            tools:text="5 minutes" />
+
+        <TextView
+            android:id="@+id/devices_expire_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@id/devices_expire_value"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+
+            android:layout_marginBottom="16dp"
+            android:layout_toEndOf="@id/devices_expire_icon"
+            android:layout_toRightOf="@id/devices_expire_icon"
+
+            android:text="@string/device__info__expire__label"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/devices_terminate_root"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/devices_terminate_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="32dp"
+            android:src="@drawable/ic_baseline_delete_24" />
+
+        <View
+            android:id="@+id/devices_terminate_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_toRightOf="@id/devices_terminate_icon"
+            android:background="@color/grey_700" />
+
+        <TextView
+            android:id="@+id/devices_terminate_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+
+            android:layout_toEndOf="@+id/devices_terminate_icon"
+            android:layout_toRightOf="@id/devices_terminate_icon"
+
+            android:layout_centerInParent="true"
+
+            android:textColor="@color/red_500"
+            android:textSize="16sp"
+            android:textAllCaps="true"
+            android:textAppearance="?android:attr/textAppearanceButton"
+            android:text="@string/device__info__terminate_session__button" />
+
+    </RelativeLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

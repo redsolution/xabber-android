@@ -45,15 +45,13 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_default"
-        >
+        android:layout_below="@id/toolbar_default">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/contentView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                >
+                android:visibility="gone">
 
                 <LinearLayout
                     android:orientation="vertical"
@@ -70,43 +68,57 @@
                         android:layout_marginBottom="4dp"
                         android:textStyle="bold"
                         android:textColor="@color/android_default_accent_color"
-                        android:text="@string/account_current_session"
-                        />
-
-                    <include
-                        android:id="@+id/current_session_root"
-                        layout="@layout/item_session"
-                        android:clickable="false"
-                        android:focusable="false"
-                        />
+                        android:text="@string/account_current_session" />
 
                     <LinearLayout
-                        android:id="@+id/llTerminateAll"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?android:attr/selectableItemBackground">
+                        android:background="@color/white">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="16dp"
-                            android:textSize="16sp"
-                            android:textColor="@color/red_500"
-                            android:text="@string/account_terminate_all_sessions"
-                            />
-
-                        <View
+                        <include
+                            android:id="@+id/current_session_root"
+                            layout="@layout/item_session"
                             android:layout_width="match_parent"
-                            android:layout_height="1px"
-                            android:layout_marginLeft="16dp"
-                            android:layout_marginStart="16dp"
-                            android:background="?attr/contact_list_subgroup_separator"
-                            />
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:focusable="false" />
+
+                        <LinearLayout
+                            android:id="@+id/llTerminateAll"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?android:attr/selectableItemBackground">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="16dp"
+                                android:textSize="16sp"
+                                android:textColor="@color/red_500"
+                                android:text="@string/account_terminate_all_sessions" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1px"
+                                android:layout_marginLeft="16dp"
+                                android:layout_marginStart="16dp"
+                                android:background="?attr/contact_list_subgroup_separator" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/devices__logs_out__hint"/>
 
                     <TextView
                         android:id="@+id/tvActiveSessions"
@@ -118,8 +130,7 @@
                         android:layout_marginBottom="4dp"
                         android:textStyle="bold"
                         android:textColor="@color/android_default_accent_color"
-                        android:text="@string/account_active_sessions"
-                        />
+                        android:text="@string/account_active_sessions" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rvSessions"
@@ -127,7 +138,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:overScrollMode="never"
-                        />
+                        android:background="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:text="@string/devices__bottom_label"/>
 
                 </LinearLayout>
 

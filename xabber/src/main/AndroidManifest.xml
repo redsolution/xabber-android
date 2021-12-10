@@ -549,7 +549,7 @@
                 android:value="com.xabber.android.ui.activity.ChatActivity" />
         </activity>
 
-        <activity android:name=".ui.activity.ActiveSessionsActivity" />
+        <activity android:name=".ui.activity.AccountDevicesActivity" />
 
         <activity android:name=".ui.activity.QRCodeScannerActivity"
             android:screenOrientation="portrait"/>

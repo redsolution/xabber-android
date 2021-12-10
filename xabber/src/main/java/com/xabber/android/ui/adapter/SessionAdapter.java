@@ -9,7 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
+import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.devices.SessionVO;
+import com.xabber.android.data.roster.PresenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +20,22 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
 
     private List<SessionVO> items;
     private final Listener listener;
+    private final AccountJid accountJid;
 
     public interface Listener {
-        void onItemClick(String tokenUID);
+        void onItemClick(SessionVO token);
     }
 
     public SessionAdapter(Listener listener) {
         this.items = new ArrayList<>();
         this.listener = listener;
+        this.accountJid = null;
+    }
+
+    public SessionAdapter(AccountJid accountJid, Listener listener) {
+        this.items = new ArrayList<>();
+        this.listener = listener;
+        this.accountJid = accountJid;
     }
 
     public void setItems(List<SessionVO> items) {
@@ -56,10 +66,18 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
         } else {
             holder.tvClient.setText(session.getClient());
         }
-        holder.tvDevice.setText(session.getDevice());
+        holder.tvDevice.setText(session.getClient() + ", " + session.getDevice());
         holder.tvIPAddress.setText(session.getIp());
-        holder.tvDate.setText(session.getLastAuth());
-        holder.itemView.setOnClickListener(view -> listener.onItemClick(session.getUid()));
+
+        if (accountJid != null) {
+            holder.tvDate.setText(
+                    session.createSmartLastSeen(accountJid, PresenceManager.INSTANCE).toLowerCase()
+            );
+        } else {
+            holder.tvDate.setText(session.getLastAuth());
+        }
+
+        holder.itemView.setOnClickListener(view -> listener.onItemClick(session));
     }
 
     @Override

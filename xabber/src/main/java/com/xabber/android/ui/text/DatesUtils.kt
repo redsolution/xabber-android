@@ -1,5 +1,7 @@
 package com.xabber.android.ui.text
 
+import android.content.Context
+import com.xabber.android.R
 import java.text.DateFormat
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
@@ -101,4 +103,38 @@ fun Date.isYesterday(): Boolean {
 fun Date.getDayOfWeek(locale: Locale = Locale.ROOT): String? {
     val c = Calendar.getInstance().apply { time = this@getDayOfWeek }[Calendar.DAY_OF_WEEK]
     return DateFormatSymbols(locale).weekdays[c]
+}
+
+
+fun Long.getHumanReadableEstimatedTime(context: Context): String {
+    require(this >= 0) { "Duration must be greater than zero!" }
+
+    val currentTime = System.currentTimeMillis() / 1000
+    var secondsLeft: Long = this - currentTime
+
+    val MILLIS_IN_DAY: Long = 86400
+    val MILLIS_IN_HOUR: Long = 3600
+    val MILLIS_IN_MINUTE: Long = 60
+
+    val days = secondsLeft / MILLIS_IN_DAY
+    secondsLeft -= days * MILLIS_IN_DAY
+
+    val hours = secondsLeft / MILLIS_IN_HOUR
+    secondsLeft -= hours * MILLIS_IN_HOUR
+
+    val minutes = (secondsLeft / MILLIS_IN_MINUTE).toInt()
+
+    val resources = context.resources
+
+    return when {
+        days >= 1 -> resources.getQuantityString(R.plurals.estimated_in_days, days.toInt(), days)
+        hours >= 1 -> resources.getQuantityString(R.plurals.estimated_in_hours, hours.toInt(), hours)
+        minutes >= 1 -> resources.getQuantityString(R.plurals.estimated_in_minutes, minutes, minutes)
+        secondsLeft >= 1 -> resources.getQuantityString(
+            R.plurals.estimated_in_seconds,
+            secondsLeft.toInt(),
+            secondsLeft
+        )
+        else -> ""
+    }
 }

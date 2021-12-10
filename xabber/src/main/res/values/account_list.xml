@@ -20,4 +20,21 @@
     <string name="account_push_state_enabled" comment="settings_account__label_push_notifications_hint_enabled">Push-notifications enabled</string>
     <string name="account__toolbar_item__button_filter_chats">Filter chats</string>
     <string name="settings_account__label_state_disconnected">Disconnected</string>
+
+    <string name="device__info__status__label">Status</string>
+    <string name="device__info__status__label_last_seen">Last seen</string>
+    <string name="device__info__device__label">Device</string>
+    <string name="device__info__client__label">Client</string>
+    <string name="device__info__ip__label">IP address</string>
+    <string name="device__info__expire__label">Expires at</string>
+    <string name="device__info__rename__button">Rename</string>
+    <string name="device__info__terminate_session__button">Terminate session</string>
+
+    <string name="devices__bottom_label">You can terminate sessions you don\'t need. Official Xabber clients wipe all user data from device upon session termination.</string>
+    <string name="devices__logs_out__hint">Logs out all devices except this one.</string>
+
+    <string name="devices__dialog__device_description">Device description</string>
+    <string name="devices__dialog__set_description">Set description</string>
+    <string name="devices__dialog__failed_to_set_description">Failed to set token description</string>
+
 </resources>

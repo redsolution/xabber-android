@@ -470,8 +470,8 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                     } else startActivity(AccountSyncActivity.createIntent(this, account));
                 } else startActivity(TutorialActivity.createIntent(this));
                 break;
-            case SESSIONS:
-                startActivity(ActiveSessionsActivity.createIntent(this, account));
+            case DEVICES:
+                startActivity(AccountDevicesActivity.createIntent(this, account));
                 break;
         }
     }
