@@ -44,6 +44,7 @@ import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.CustomZoomButtonsDisplay
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -246,7 +247,8 @@ class PickGeolocationActivity: ManagedActivity() {
                 )
             )
 
-            zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+            zoomController.setVisibility(CustomZoomButtonsController.Visibility.ALWAYS)
+            zoomController.display.setPositions(false, CustomZoomButtonsDisplay.HorizontalPosition.RIGHT, CustomZoomButtonsDisplay.VerticalPosition.CENTER)
 
             setMultiTouchControls(true)
 
