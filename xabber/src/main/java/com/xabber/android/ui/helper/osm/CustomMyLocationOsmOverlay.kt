@@ -1,6 +1,7 @@
 package com.xabber.android.ui.helper.osm
 
 import android.graphics.Bitmap
+import android.graphics.PointF
 import androidx.annotation.ColorInt
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
@@ -13,10 +14,16 @@ class CustomMyLocationOsmOverlay @JvmOverloads constructor(
     @ColorInt indicatorColor: Int = 0,
     pointer: Bitmap? = null
 ): MyLocationNewOverlay(myLocationProvider, mapView) {
-        init {
-            mCirclePaint.color = indicatorColor
-            pointer?.let {
-                setDirectionArrow(it, it)
-            }
+
+
+    init {
+        mCirclePaint.color = indicatorColor
+        pointer?.let {
+            setDirectionArrow(it, it)
         }
+        setPersonHotspot(
+            20.0f * mScale + 0.5f,
+            20.0f * mScale + 0.5f
+        )
+    }
 }
