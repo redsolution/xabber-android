@@ -282,6 +282,8 @@
     <color name="black_text_secondary">#8a000000</color>
     <color name="black_text">#de000000</color>
 
+    <color name="gray_text_600">#BF757575</color>
+
     <color name="white">#FFFFFF</color>
     <color name="white_dividers">#1fffffff</color>
     <color name="white_text_disabled">#4dffffff</color>

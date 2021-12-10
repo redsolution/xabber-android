@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize">
@@ -35,9 +34,9 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:fontFamily="sans-serif-medium"
-            tools:text="Choose recipient"
             android:textColor="?attr/contact_list_contact_name_text_color"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            tools:text="Choose recipient" />
 
         <ImageView
             android:id="@+id/search_toolbar_search_button"
@@ -76,9 +75,10 @@
             android:layout_toLeftOf="@id/search_toolbar_clear_button"
             android:background="@color/transparent"
             android:hint="@string/type_here_to_search"
+            android:inputType="textNoSuggestions"
+            android:textColorHint="@color/gray_text_600"
             android:textSize="16sp"
-            android:textStyle="normal"
-            android:inputType="textNoSuggestions"/>
+            android:textStyle="normal" />
 
         <ImageView
             android:id="@+id/search_toolbar_clear_button"
