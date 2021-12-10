@@ -240,6 +240,7 @@
     <string name="chat_screen__dialog_title__pick_location">Pick location</string>
     <string name="use_external_dialog_title">Mapping service disabled</string>
     <string name="use_external_dialog_body">Location picker requires external mapping services, which are currently disabled.</string>
+    <string name="enable_geolocation_dialog_body">Location tracking disabled</string>
     <string name="use_external_dialog_enable_button">Enable</string>
     <string name="message_location_title">Geolocation</string>
 </resources>
