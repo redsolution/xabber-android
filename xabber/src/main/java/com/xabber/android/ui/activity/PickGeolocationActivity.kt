@@ -1,11 +1,13 @@
 package com.xabber.android.ui.activity
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -44,6 +46,7 @@ import org.osmdroid.events.MapEventsReceiver
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.CustomZoomButtonsDisplay
 import org.osmdroid.views.overlay.MapEventsOverlay
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
@@ -189,11 +192,27 @@ class PickGeolocationActivity: ManagedActivity() {
         }
 
         if (PermissionsRequester.requestLocationPermissionIfNeeded(this, REQUEST_LOCATION_PERMISSION_CODE)) {
-            if (myLocationOverlay == null) {
-                createMyLocationsOverlay()
+            if (isLocationAllowed()) {
+                if (myLocationOverlay == null) {
+                    createMyLocationsOverlay()
+                }
+                centerOnMyLocation()
+            } else {
+                showDialogNeedToEnableLocations()
             }
-            centerOnMyLocation()
         }
+    }
+
+    private fun showDialogNeedToEnableLocations(){
+        AlertDialog.Builder(this)
+            .setMessage(R.string.enable_geolocation_dialog_body)
+            .setPositiveButton(R.string.use_external_dialog_enable_button
+            ) { _, _ ->
+                startActivity(
+                    Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                )
+            }.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     override fun onStop() {
@@ -231,6 +250,11 @@ class PickGeolocationActivity: ManagedActivity() {
         }
     }
 
+    private fun isLocationAllowed(): Boolean {
+        return (getSystemService(LOCATION_SERVICE) as? LocationManager)?.getProviders(true)?.isNotEmpty()
+            ?: false
+    }
+
     private fun setupMap() {
         Configuration.getInstance().load(this, PreferenceManager.getDefaultSharedPreferences(this))
         binding.pickgeolocationMapView.apply {
@@ -246,7 +270,8 @@ class PickGeolocationActivity: ManagedActivity() {
                 )
             )
 
-            zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+            zoomController.setVisibility(CustomZoomButtonsController.Visibility.ALWAYS)
+            zoomController.display.setPositions(false, CustomZoomButtonsDisplay.HorizontalPosition.RIGHT, CustomZoomButtonsDisplay.VerticalPosition.CENTER)
 
             setMultiTouchControls(true)
 
