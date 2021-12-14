@@ -59,11 +59,4 @@
         android:textColor="?android:textColorSecondary"
         tools:text="127.0.0.1" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:background="?attr/contact_list_subgroup_separator" />
-
 </LinearLayout>

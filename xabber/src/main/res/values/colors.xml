@@ -418,6 +418,7 @@
     <color name="account_register_blue_dark">#1565c0</color>
 
     <color name="contact_list_background">#FFE8EBEE</color>
+    <color name="preference_list_background">#FFF</color>
 
     <color name="patreon_coral">#F96854</color>
     <color name="android_default_accent_color">#FF019284</color>

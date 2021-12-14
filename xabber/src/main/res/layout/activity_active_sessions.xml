@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -51,6 +52,7 @@
                 android:id="@+id/contentView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                card_view:cardElevation="0dp"
                 android:visibility="gone">
 
                 <LinearLayout
@@ -74,7 +76,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:background="@color/white">
+                        android:background="?attr/preference_list_background">
 
                         <include
                             android:id="@+id/current_session_root"
@@ -100,13 +102,6 @@
                                 android:textSize="16sp"
                                 android:textColor="@color/red_500"
                                 android:text="@string/account_terminate_all_sessions" />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1px"
-                                android:layout_marginLeft="16dp"
-                                android:layout_marginStart="16dp"
-                                android:background="?attr/contact_list_subgroup_separator" />
 
                         </LinearLayout>
 
@@ -138,7 +133,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:overScrollMode="never"
-                        android:background="@color/white" />
+                        android:background="?attr/preference_list_background" />
 
                     <TextView
                         android:layout_width="match_parent"

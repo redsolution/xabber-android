@@ -44,6 +44,7 @@
         <item name="chat_unread_messages_background">@array/account_200</item>
 
         <item name="contact_list_background">@color/contact_list_background</item>
+        <item name="preference_list_background">@color/white</item>
 
         <item name="current_chat_background">@array/account_50</item>
         <item name="contact_list_contact_archived_background">@color/grey_200</item>
@@ -131,7 +132,7 @@
         <item name="windowActionModeOverlay">true</item>
 
         <!-- for hardware button menu -->
-        <item name="panelBackground">?attr/colorPrimary</item>
+<!--        <item name="panelBackground">?attr/colorPrimary</item>-->
 
         <item name="recent_chats_background">@color/black</item>
 
@@ -141,11 +142,16 @@
         <item name="chat_input_background">@color/black</item>
         <item name="chat_input_button_color">@color/grey_500</item>
         <item name="chat_send_button_color">@array/account_400</item>
+
         <item name="chat_incoming_balloon">@array/account_chat_incoming_balloon</item>
         <item name="chat_incoming_balloon_pressed">@array/account_contact_list_subgroup_background_dark</item>
+        <item name="chat_incoming_forwarded_balloon">@array/account_contact_list_subgroup_background_dark</item>
+        <item name="chat_incoming_forwarded_balloon_pressed">@array/account_200</item>
+
         <item name="chat_unread_messages_background">@array/account_200</item>
 
         <item name="contact_list_background">@color/black</item>
+        <item name="preference_list_background">@color/black</item>
 
         <item name="current_chat_background">@array/account_contact_list_subgroup_background_dark</item>
         <item name="contact_list_contact_archived_background">@color/black</item>
@@ -190,12 +196,12 @@
         <item name="round_background">@drawable/round_shape_dark</item>
         <item name="message_background">@color/message_color_state_dark</item>
         <item name="forwarded_outgoing_message_background">@color/outgoing_forwarded_color_state_dark</item>
-        <item name="android:navigationBarColor">?attr/bars_color</item>
+<!--        <item name="android:navigationBarColor">?attr/bars_color</item>-->
         <item name="unread_counter_text_color">@color/black</item>
         <item name="attachment_close_button_icon">@drawable/ic_down_circle_dark</item>
         <item name="file_message_text_color">@color/grey_400</item>
         <item name="shevron_file_icons_color">@color/grey_300</item>
-        <item name="android:colorEdgeEffect">@color/grey_500</item>
+<!--        <item name="android:colorEdgeEffect">@color/grey_500</item>-->
 
         <item name="standard_text_color">@color/grey_500</item>
         <item name="standard_background_color">@color/black</item>
