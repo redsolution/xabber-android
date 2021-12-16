@@ -72,7 +72,7 @@ class DeviceInfoBottomSheetDialog : BottomSheetDialogFragment() {
             session.expire.toLongOrNull()?.let { Date(it) }?.getDateTimeText() ?: session.expire
 
         binding.devicesTerminateRoot.setOnClickListener {
-            showTerminateSessionDialog(accountJid, session.uid)
+            showTerminateSessionDialog(accountJid, session.uid, session)
         }
 
         binding.devicesEditIcon.visibility = if (isCurrent) View.VISIBLE else View.GONE
@@ -83,10 +83,11 @@ class DeviceInfoBottomSheetDialog : BottomSheetDialogFragment() {
         }
     }
 
-    private fun showTerminateSessionDialog(accountJid: AccountJid, deviceUid: String) {
+    private fun showTerminateSessionDialog(accountJid: AccountJid, deviceUid: String, session: SessionVO) {
         AlertDialog.Builder(context)
             .setMessage(R.string.terminate_session_title)
             .setPositiveButton(R.string.button_terminate) { _, _ ->
+                removeItemCallback(session)
                 AccountManager.getAccount(accountJid)?.connection?.let {
                     sendRevokeDeviceRequest(it, deviceUid)
                 }
@@ -159,18 +160,21 @@ class DeviceInfoBottomSheetDialog : BottomSheetDialogFragment() {
 
     companion object {
 
+        private lateinit var removeItemCallback: (SessionVO) -> (Void)
+
         const val TAG = "com.xabber.android.ui.fragment.DeviceInfoBottomSheetDialog"
 
         private const val IS_CURRENT = "com.xabber.android.ui.fragment.DeviceInfoBottomSheetDialog.IS_CURRENT"
         private const val SESSION_KEY = "com.xabber.android.ui.fragment.DeviceInfoBottomSheetDialog.SESSION_KEY"
         private const val ACCOUNT_JID_KEY = "com.xabber.android.ui.fragment.DeviceInfoBottomSheetDialog.ACCOUNT_JID_KEY"
 
-        fun newInstance(accountJid: AccountJid, currentSession: SessionVO, isCurrent: Boolean) =
+        fun newInstance(accountJid: AccountJid, currentSession: SessionVO, isCurrent: Boolean, itemCallback: (SessionVO) -> (Void)) =
             DeviceInfoBottomSheetDialog().apply {
                 arguments = Bundle().apply {
                     putBoolean(IS_CURRENT, isCurrent)
                     putParcelable(SESSION_KEY, currentSession)
                     putParcelable(ACCOUNT_JID_KEY, accountJid)
+                    removeItemCallback = itemCallback
                 }
             }
 

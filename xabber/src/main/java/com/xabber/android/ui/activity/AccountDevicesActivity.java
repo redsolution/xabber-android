@@ -140,7 +140,7 @@ public class AccountDevicesActivity extends ManagedActivity implements SessionAd
         super.onPause();
     }
 
-    private void refreshData(){
+    private void refreshData() {
         DevicesManager.INSTANCE.requestSessions(
                 accountItem.getConnectionSettings().getDevice().getId(),
                 accountItem.getConnection(),
@@ -166,7 +166,9 @@ public class AccountDevicesActivity extends ManagedActivity implements SessionAd
 
     @Override
     public void onAction() {
-        Application.getInstance().runOnUiThread(() -> { if (isDeviceManagementEnabled) refreshData();} );
+        Application.getInstance().runOnUiThread(() -> {
+            if (isDeviceManagementEnabled) refreshData();
+        });
     }
 
     private void getSessionsData() {
@@ -193,7 +195,7 @@ public class AccountDevicesActivity extends ManagedActivity implements SessionAd
                                 R.string.account_active_sessions_error, Toast.LENGTH_LONG).show();
                     }
                 }
-            );
+        );
     }
 
     private void setCurrentSession(SessionVO session) {
@@ -208,17 +210,26 @@ public class AccountDevicesActivity extends ManagedActivity implements SessionAd
 
         findViewById(R.id.current_session_root).setOnClickListener(v -> {
                     DeviceInfoBottomSheetDialog fragment = DeviceInfoBottomSheetDialog.Companion
-                            .newInstance(accountItem.getAccount(), session, true);
+                            .newInstance(accountItem.getAccount(), session, true,
+                                    it -> {
+                                        return null;
+                                    });
                     fragment.setOnDismissListener(d -> refreshData());
                     fragment.show(getSupportFragmentManager(), DeviceInfoBottomSheetDialog.TAG);
                 }
-            );
+        );
     }
 
     @Override
     public void onItemClick(SessionVO token) {
         DeviceInfoBottomSheetDialog.Companion
-                .newInstance(accountItem.getAccount(), token, false)
+                .newInstance(accountItem.getAccount(), token, false,
+                        it -> {
+                            adapter.remove(it);
+                            terminateAll.setVisibility(adapter.isListEmpty() ? View.GONE : View.VISIBLE);
+                            tvActiveSessions.setVisibility(adapter.isListEmpty() ? View.GONE : View.VISIBLE);
+                            return null;
+                        })
                 .show(getSupportFragmentManager(), DeviceInfoBottomSheetDialog.TAG);
     }
 

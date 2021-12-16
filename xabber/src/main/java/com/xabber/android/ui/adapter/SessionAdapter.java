@@ -51,6 +51,20 @@ public class SessionAdapter extends RecyclerView.Adapter<SessionAdapter.SessionH
         return ids;
     }
 
+    public void remove(SessionVO sessionVO) {
+        int position = getPosition(sessionVO);
+        items.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public boolean isListEmpty() {
+        return items.isEmpty();
+    }
+
+    public int getPosition(SessionVO sessionVO) {
+        return items.indexOf(sessionVO);
+    }
+
     @NonNull
     @Override
     public SessionHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

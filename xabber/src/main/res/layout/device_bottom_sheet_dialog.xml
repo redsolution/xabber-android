@@ -375,19 +375,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-
-            android:layout_toEndOf="@+id/devices_terminate_icon"
-            android:layout_toRightOf="@id/devices_terminate_icon"
-
             android:layout_centerInParent="true"
+            android:layout_marginEnd="16dp"
 
-            android:textColor="@color/red_500"
-            android:textSize="16sp"
+            android:layout_marginRight="16dp"
+            android:layout_toEndOf="@+id/devices_terminate_icon"
+
+            android:layout_toRightOf="@id/devices_terminate_icon"
+            android:text="@string/device__info__terminate_session__button"
             android:textAllCaps="true"
             android:textAppearance="?android:attr/textAppearanceButton"
-            android:text="@string/device__info__terminate_session__button" />
+            android:textColor="@color/red_500"
+            android:textSize="16sp" />
 
     </RelativeLayout>
 
