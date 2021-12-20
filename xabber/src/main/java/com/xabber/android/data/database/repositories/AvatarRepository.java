@@ -21,6 +21,8 @@ import io.realm.RealmResults;
 
 public class AvatarRepository {
 
+    private static final String LOG_TAG = AvatarRepository.class.getSimpleName();
+
     public static Map<BareJid, String> getPepHashesMapFromRealm() {
         Map<BareJid, String> pepHashes = new HashMap<>();
         Realm realm = null;
@@ -161,4 +163,20 @@ public class AvatarRepository {
         });
     }
 
+    public static void deleteAvatarFromRealm(final String contactJid) {
+        Application.getInstance().runInBackground(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 ->
+                        realm1.where(AvatarRealmObject.class)
+                                .equalTo(AvatarRealmObject.Fields.CONTACT_JID, contactJid)
+                                .findAll()
+                                .deleteAllFromRealm()
+                );
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null) realm.close(); }
+        });
+    }
 }

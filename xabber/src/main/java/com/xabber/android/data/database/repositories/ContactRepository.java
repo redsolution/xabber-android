@@ -129,16 +129,27 @@ public class ContactRepository {
         });
     }
 
-    public static void removeContacts(AccountJid account) {
+    public static void removeContacts(AccountJid accountJid) {
         Application.getInstance().runInBackground(() -> {
             Realm realm = null;
             try {
                 realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 ->
-                        realm1.where(ContactRealmObject.class)
-                                .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, account.toString())
-                                .findAll()
-                                .deleteAllFromRealm());
+                realm.executeTransaction(realm1 -> {
+                    ContactRealmObject[] contactRealmObjects = realm1
+                            .where(ContactRealmObject.class)
+                            .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid.toString())
+                            .findAll().toArray(new ContactRealmObject[0]);
+
+                    // Delete the user's own avatar
+                    AvatarRepository.deleteAvatarFromRealm(accountJid.getBareJid().toString());
+
+                    for (ContactRealmObject contactRealmObject: contactRealmObjects) {
+                        if (contactRealmObject != null) {
+                            AvatarRepository.deleteAvatarFromRealm(contactRealmObject.getContactJid());
+                            contactRealmObject.deleteFromRealm();
+                        }
+                    }
+                });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
             } finally {
