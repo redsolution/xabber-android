@@ -1,6 +1,7 @@
 package com.xabber.android.data.extension.devices
 
 import android.util.Base64
+import com.xabber.android.data.database.realmobjects.DeviceRealmObject
 import com.xabber.android.data.log.LogManager
 import com.xabber.xmpp.devices.IncomingNewDeviceIQ
 import com.xabber.xmpp.smack.HmacPasswordGenerator
@@ -19,6 +20,7 @@ data class DeviceVO(val id: String, val secret: String, val expire: Long, var co
         LogManager.d("XTOKEN", "getPasswordString() with secret: $secret and counter: $counter; and result is: $result")
         return result
     }
+    fun toDeviceRealmObject(): DeviceRealmObject = DeviceRealmObject(this.id, this.secret, this.expire, this.counter)
 }
 
 fun IncomingNewDeviceIQ.getDeviceElement() = DeviceVO(this.uid, this.secret, this.expire)

@@ -9,6 +9,7 @@ import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.realmobjects.DeviceRealmObject;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.devices.DeviceVO;
 import com.xabber.android.data.log.LogManager;
 
 import org.jxmpp.jid.Jid;
@@ -77,9 +78,10 @@ public class AccountRepository {
                     accountRealmObject.setPassword(password);
 
                     if (connectionSettings.getDevice() != null){
-                        accountRealmObject.setDevice(
-                                DeviceRealmObject.createFromDevice(connectionSettings.getDevice())
-                        );
+                        DeviceVO deviceVO = connectionSettings.getDevice();
+                        DeviceRealmObject deviceRealmObject = deviceVO.toDeviceRealmObject();
+                        DeviceRepository.saveOrUpdateDeviceToRealm(deviceRealmObject);
+                        accountRealmObject.setDevice(deviceRealmObject);
                     } else {
                         accountRealmObject.setDevice(null);
                     }

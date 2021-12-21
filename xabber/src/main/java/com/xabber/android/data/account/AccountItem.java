@@ -380,6 +380,8 @@ public class AccountItem extends ConnectionItem implements Comparable<AccountIte
 
     void setDevice(DeviceVO device) { getConnectionSettings().setDevice(device); }
 
+    DeviceVO getDevice() { return getConnectionSettings().getDevice(); }
+
     /**
      * Remove password and update notification if {@link #storePassword} is disabled.
      */

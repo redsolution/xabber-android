@@ -392,11 +392,13 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
 
         // remove all data from database
         ContactRepository.removeContacts(account)
+
         GroupInviteRepository.removeAllInvitesRelatedToAccount(account)
         GroupMemberManager.removeAllAccountRelatedGroupMembers(account)
         MessageRepository.removeAccountMessagesFromRealm(account)
         GroupchatRepository.removeAccountRelatedGroupsFromRealm(account)
         RegularChatRepository.removeAllAccountRelatedRegularChatsFromRealm(account)
+        DeviceRepository.removeDeviceFromRealm(getAccount(account)?.device?.id)
 
         val wasEnabled = accountItem.isEnabled
         accountItem.isEnabled = false

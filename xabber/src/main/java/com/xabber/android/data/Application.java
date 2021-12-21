@@ -82,6 +82,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -561,6 +562,16 @@ public class Application extends android.app.Application {
                 LogManager.exception(runnable, e);
             }
         });
+    }
+
+    public <T> T runInBackground(final Callable<T> callable, Class<T> clazz) throws ExecutionException, InterruptedException {
+        return clazz.cast(backgroundExecutor.submit(() -> {
+            try {
+                callable.call();
+            } catch (Exception e) {
+                LogManager.exception(callable, e);
+            }
+        }).get());
     }
 
     public void runInBackgroundNetwork(final Runnable runnable) {
