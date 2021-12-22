@@ -13,6 +13,7 @@ import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.AccountRealmObject;
 import com.xabber.android.data.database.realmobjects.EmailRealmObject;
 import com.xabber.android.data.database.realmobjects.SocialBindingRealmObject;
 import com.xabber.android.data.database.realmobjects.SyncStateRealmObject;
@@ -702,23 +703,29 @@ public class XabberAccountManager implements OnLoadListener {
         }
 
         Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
                 realm.executeTransaction(realm1 -> {
-                    List<SyncStateRealmObject> oldItems = realm1
-                            .where(SyncStateRealmObject.class)
+                    List<AccountRealmObject> accounts = realm1
+                            .where(AccountRealmObject.class)
                             .findAll();
-                    for (SyncStateRealmObject item : oldItems)
-                        item.deleteFromRealm();
 
-                    List<SyncStateRealmObject> resultRealm = realm1.copyToRealmOrUpdate(realmItems);
-                    LogManager.d(this, resultRealm.size() + " syncState items was saved to Realm");
+                    String jid;
+                    if (accounts.isEmpty()) {
+                        realmItems.deleteAllFromRealm();
+                    } else {
+                        for (AccountRealmObject account : accounts) {
+                            jid = account.getUserName() + "@" + account.getServerName();
+                            SyncStateRealmObject syncStateRealmObjects =
+                                    realm1.where(SyncStateRealmObject.class)
+                                            .equalTo(SyncStateRealmObject.Fields.JID, jid)
+                                            .findFirst();
+                            if (syncStateRealmObjects != null)
+                                realm1.copyToRealmOrUpdate(syncStateRealmObjects);
+                        }
+                    }
                 });
             } catch (Exception e) {
                 LogManager.exception(this, e);
-            } finally {
-                if (realm != null) realm.close();
             }
         });
     }

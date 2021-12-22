@@ -11,6 +11,7 @@ import com.xabber.android.data.message.chat.GroupChat;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -21,9 +22,7 @@ public class GroupchatRepository {
 
     public static void removeGroupChatFromRealm(GroupChat groupChat) {
         Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
                 realm.executeTransaction(realm1 -> {
                     GroupchatRealmObject gcro = realm1.where(GroupchatRealmObject.class)
                             .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, groupChat.getAccount().toString())
@@ -33,28 +32,24 @@ public class GroupchatRepository {
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally {
-                if (realm != null) realm.close();
             }
         });
     }
 
     public static void removeAccountRelatedGroupsFromRealm(final AccountJid account) {
         Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
-                realm.executeTransaction(realm1 -> realm1.where(GroupchatRealmObject.class)
-                        .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, account.toString())
-                        .findAll()
-                        .deleteAllFromRealm()
-                );
+            try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
+                realm.executeTransaction(realm1 -> {
+                    List<GroupchatRealmObject> chats = realm1.where(GroupchatRealmObject.class)
+                            .equalTo(GroupchatRealmObject.Fields.ACCOUNT_JID, account.toString())
+                            .findAll();
+                    for (GroupchatRealmObject chat : chats) {
+                        VCardRepository.deleteVCardFromRealm(chat.getGroupchatJid());
+                        chat.deleteFromRealm();
+                    }
+                });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally {
-                if (realm != null) {
-                    realm.close();
-                }
             }
         });
     }

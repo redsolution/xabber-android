@@ -399,6 +399,7 @@ object AccountManager : OnLoadListener, OnUnloadListener, OnWipeListener, OnAuth
         GroupchatRepository.removeAccountRelatedGroupsFromRealm(account)
         RegularChatRepository.removeAllAccountRelatedRegularChatsFromRealm(account)
         DeviceRepository.removeDeviceFromRealm(getAccount(account)?.device?.id)
+        SyncStateRepository.removeSyncState(accountItem.account.bareJid.toString())
 
         val wasEnabled = accountItem.isEnabled
         accountItem.isEnabled = false

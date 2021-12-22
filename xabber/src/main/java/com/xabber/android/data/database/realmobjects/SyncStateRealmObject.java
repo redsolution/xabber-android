@@ -12,6 +12,10 @@ import io.realm.annotations.Required;
 
 public class SyncStateRealmObject extends RealmObject {
 
+    public static class Fields {
+        public static final String JID = "jid";
+    }
+
     @PrimaryKey
     @Required
     private String id;

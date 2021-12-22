@@ -84,5 +84,20 @@ public class VCardRepository {
         });
     }
 
-
+    public static void deleteVCardFromRealm(final ContactJid contactJid) {
+        Application.getInstance().runInBackground(() -> {
+            try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();) {
+                realm.executeTransaction(realm1 -> {
+                    VCardRealmObject vCard = realm1.where(VCardRealmObject.class)
+                            .equalTo(VCardRealmObject.Fields.CONTACT_JID, contactJid.toString())
+                            .findFirst();
+                    if (vCard != null) {
+                        vCard.deleteFromRealm();
+                    }
+                });
+            } catch (Exception e) {
+                LogManager.exception(LOG_TAG, e);
+            }
+        });
+    }
 }

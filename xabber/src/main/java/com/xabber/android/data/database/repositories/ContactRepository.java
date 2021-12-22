@@ -102,9 +102,7 @@ public class ContactRepository {
 
     public static void removeContacts(final Collection<RosterContact> contacts) {
         Application.getInstance().runInBackground(() -> {
-            Realm realm = null;
-            try {
-                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            try (Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance()) {
                 realm.executeTransaction(realm1 -> {
                     for (RosterContact contact : contacts) {
                         String accountJid = contact.getAccount().getFullJid().asBareJid().toString();
@@ -115,15 +113,14 @@ public class ContactRepository {
                                 .equalTo(ContactRealmObject.Fields.ACCOUNT_JID, accountJid)
                                 .equalTo(ContactRealmObject.Fields.CONTACT_JID, contactJid)
                                 .findFirst();
-                        if (contactRealmObject != null)
+                        if (contactRealmObject != null) {
+                            VCardRepository.deleteVCardFromRealm(contact.getContactJid());
                             contactRealmObject.deleteFromRealm();
+                        }
                     }
                 });
             } catch (Exception e) {
                 LogManager.exception(LOG_TAG, e);
-            } finally {
-                if (realm != null)
-                    realm.close();
             }
 
         });
