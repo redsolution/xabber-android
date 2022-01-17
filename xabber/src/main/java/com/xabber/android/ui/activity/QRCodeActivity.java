@@ -123,14 +123,14 @@ public class QRCodeActivity extends ManagedActivity {
                 toolbar.setBackgroundColor(
                         ColorManager.getInstance().getAccountPainter().getDefaultRippleColor()
                 );
-                findViewById(R.id.fragment_container).setBackgroundColor(Color.WHITE);
+                findViewById(R.id.content_container).setBackgroundColor(Color.WHITE);
             } else {
                 TypedValue typedValue = new TypedValue();
                 getTheme().resolveAttribute(R.attr.bars_color, typedValue, true);
                 toolbar.setBackgroundColor(typedValue.data);
                 toolbar.setTitleTextColor(Color.WHITE);
                 getWindow().setStatusBarColor(typedValue.data);
-                findViewById(R.id.fragment_container).setBackgroundColor(Color.BLACK);
+                findViewById(R.id.content_container).setBackgroundColor(Color.BLACK);
             }
         }
     }

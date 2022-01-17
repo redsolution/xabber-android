@@ -58,7 +58,7 @@ class GroupInviteContactActivity : ManagedActivity(), Toolbar.OnMenuItemClickLis
         barPainter = BarPainter(this, toolbar)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().add(
-                R.id.fragment_container,
+                R.id.content_container,
                 GroupchatInviteContactFragment.newInstance(account, groupContactJid),
                 GroupchatInviteContactFragment.LOG_TAG
             ).commit()

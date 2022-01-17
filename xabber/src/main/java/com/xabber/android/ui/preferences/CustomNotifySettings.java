@@ -78,7 +78,7 @@ public class CustomNotifySettings extends ManagedActivity {
         if (savedInstanceState == null) {
             Key key = Key.createKey(account, user, group, phraseID);
             if (key == null) finish();
-            getFragmentManager().beginTransaction().add(R.id.fragment_container,
+            getFragmentManager().beginTransaction().add(R.id.content_container,
                     CustomNotifSettingsFragment.createInstance(this, key)).commit();
         }
     }

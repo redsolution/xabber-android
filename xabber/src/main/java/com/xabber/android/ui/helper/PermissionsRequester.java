@@ -14,9 +14,10 @@ public class PermissionsRequester {
 
     public static final int REQUEST_PERMISSION_GALLERY = 4;
     public static final int REQUEST_PERMISSION_CAMERA = 5;
+    public static final int REQUEST_READ_EXTERNAL_STORAGE = 5;
 
     public static boolean requestFileReadPermissionIfNeeded(Activity activity, int requestCode) {
-        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, activity, requestCode);
+        return checkAndRequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, activity, requestCode);
     }
 
     public static boolean requestLocationPermissionIfNeeded(Activity activity, int requestCode) {
@@ -24,11 +25,11 @@ public class PermissionsRequester {
     }
 
     public static boolean requestFileReadPermissionIfNeeded(Fragment fragment, int requestCode) {
-        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
+        return checkAndRequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
     public static boolean requestFileReadPermissionIfNeeded(androidx.fragment.app.Fragment fragment, int requestCode) {
-        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
+        return checkAndRequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
     public static boolean requestFileWritePermissionIfNeeded(Fragment fragment, int requestCode) {

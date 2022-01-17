@@ -92,9 +92,9 @@
             android:layout_toEndOf="@+id/devices_status_icon"
             android:layout_toRightOf="@id/devices_status_icon"
 
-            tools:text="Online"
             android:textColor="?android:attr/textColorPrimary"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            tools:text="Online" />
 
         <TextView
             android:id="@+id/devices_status_label"

@@ -27,7 +27,7 @@ public class ChatGlobalSettings extends ManagedActivity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new ChatGlobalSettingsFragment()).commit();
+                    .add(R.id.content_container, new ChatGlobalSettingsFragment()).commit();
         }
     }
 }

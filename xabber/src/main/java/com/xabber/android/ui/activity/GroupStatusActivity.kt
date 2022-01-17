@@ -46,7 +46,7 @@ class GroupStatusActivity : ManagedActivity() {
                 .getChat(intent.getAccountJid(), intent.getContactJid())
             if (group != null && group is GroupChat)
                 supportFragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, GroupStatusFragment(group))
+                    .add(R.id.content_container, GroupStatusFragment(group))
                     .commit()
         } else finish()
 

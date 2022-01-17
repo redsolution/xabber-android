@@ -5,7 +5,8 @@ import com.xabber.xmpp.groups.GroupExtensionElement
 import org.jivesoftware.smack.packet.ExtensionElement
 import org.jivesoftware.smack.util.XmlStringBuilder
 
-class InviteMessageExtensionElement(
+class
+InviteMessageExtensionElement(
     private val groupJid: ContactJid, private val reason: String?
 ) : ExtensionElement {
 

@@ -49,7 +49,7 @@ class GroupDefaultRestrictionsActivity : ManagedActivity() {
             if (group != null && group is GroupChat)
                 supportFragmentManager.beginTransaction()
                     .add(
-                        R.id.fragment_container,
+                        R.id.content_container,
                         GroupDefaultRestrictionsFragment(group),
                         GroupDefaultRestrictionsFragment.TAG
                     ).commit()

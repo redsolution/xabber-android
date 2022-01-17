@@ -17,7 +17,7 @@ class AddActivity : ManagedActivity() {
         setContentView(R.layout.add_activity)
         setupToolbar()
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, AddFragment())
+            .add(R.id.content_container, AddFragment())
             .commit()
     }
 

@@ -28,7 +28,6 @@ import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
-import com.xabber.android.data.IntentHelpersKt;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.ui.color.BarPainter;
@@ -59,7 +58,7 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
 
         toolbar = (Toolbar) findViewById(R.id.toolbar_default);
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction().add(R.id.fragment_container,
+            getFragmentManager().beginTransaction().add(R.id.content_container,
                     AccountAddFragment.newInstance()).commit();
         }
         if (SettingsManager.interfaceTheme() == SettingsManager.InterfaceTheme.light) {
@@ -102,7 +101,7 @@ public class AccountAddActivity extends ManagedActivity implements Toolbar.OnMen
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_add_account) {
             ((AccountAddFragment) getFragmentManager()
-                    .findFragmentById(R.id.fragment_container)).addAccount();
+                    .findFragmentById(R.id.content_container)).addAccount();
             return true;
         } else {
             return super.onOptionsItemSelected(item);

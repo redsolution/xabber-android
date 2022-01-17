@@ -100,7 +100,7 @@ public class PhraseEditor extends BasePhrasePreferences implements ConfirmDialog
     protected void onPause() {
         super.onPause();
 
-        ((PhraseEditorFragment) getFragmentManager().findFragmentById(R.id.fragment_container))
+        ((PhraseEditorFragment) getFragmentManager().findFragmentById(R.id.content_container))
                 .saveChanges();
     }
 

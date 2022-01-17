@@ -78,7 +78,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
         boolean isSaveButtonEnabled = false;
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, AccountInfoEditFragment.newInstance(account)).commit();
+                    .add(R.id.content_container, AccountInfoEditFragment.newInstance(account)).commit();
         } else {
             isSaveButtonEnabled = savedInstanceState.getBoolean(ARGUMENT_SAVE_BUTTON_ENABLED);
         }
@@ -108,7 +108,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
-            ((AccountInfoEditFragment) getFragmentManager().findFragmentById(R.id.fragment_container)).saveVCard();
+            ((AccountInfoEditFragment) getFragmentManager().findFragmentById(R.id.content_container)).saveVCard();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -117,7 +117,7 @@ public class AccountInfoEditActivity extends ManagedActivity implements Toolbar.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getFragmentManager().findFragmentById(R.id.fragment_container).onActivityResult(requestCode,
+        getFragmentManager().findFragmentById(R.id.content_container).onActivityResult(requestCode,
                 resultCode, data);
     }
 

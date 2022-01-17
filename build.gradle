@@ -1,19 +1,30 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.kotlin_version = '1.5.30'
+    ext {
+        kotlinVersion = '1.6.10'
+        vbpdVersion = '1.5.3'
+        rxVersion = '3.1.2'
+        rxAndroidVersion = '3.0.0'
+        retrofitVersion = '2.9.0'
+    }
     repositories {
         jcenter()
         google()
     }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:deprecation"
+        }
+    }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.0'
-        classpath "io.realm:realm-gradle-plugin:6.0.2"
+        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath "io.realm:realm-gradle-plugin:10.9.0"
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.4'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
+        classpath 'com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.7'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
         classpath 'com.google.gms:google-services:4.3.10'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
     }
 }
 

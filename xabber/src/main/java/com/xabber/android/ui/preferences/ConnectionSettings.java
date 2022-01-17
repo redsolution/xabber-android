@@ -27,7 +27,7 @@ public class ConnectionSettings extends ManagedActivity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new ConnectionSettingsFragment()).commit();
+                    .add(R.id.content_container, new ConnectionSettingsFragment()).commit();
         }
     }
 }

@@ -57,7 +57,7 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
             inflateMenu(R.menu.toolbar_add_contact)
 
             setOnMenuItemClickListener {
-                (supportFragmentManager.findFragmentById(R.id.fragment_container) as ContactAdder?)?.addContact()
+                (supportFragmentManager.findFragmentById(R.id.content_container) as ContactAdder?)?.addContact()
                 return@setOnMenuItemClickListener true
             }
         }
@@ -80,7 +80,7 @@ class ContactAddActivity : ManagedActivity(), ContactAddFragment.Listener {
             supportFragmentManager
                 .beginTransaction()
                 .add(
-                    R.id.fragment_container,
+                    R.id.content_container,
                     newInstance(intent.getAccountJid(), intent.getContactJid())
                 )
                 .commit()

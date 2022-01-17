@@ -20,7 +20,7 @@ public abstract class BasePhrasePreferences extends ManagedActivity
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new PhraseEditorFragment()).commit();
+                    .add(R.id.content_container, new PhraseEditorFragment()).commit();
         }
     }
 

@@ -87,7 +87,7 @@ public class BlockedListActivity extends ManagedActivity implements BlockedListA
         barPainter = new BarPainter(this, toolbar);
 
         RecyclerView recyclerView = new RecyclerView(this);
-        ((RelativeLayout)findViewById(R.id.fragment_container)).addView(recyclerView);
+        ((RelativeLayout)findViewById(R.id.content_container)).addView(recyclerView);
 
 
 

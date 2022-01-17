@@ -96,7 +96,7 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, ContactEditFragment.newInstance(account, user)).commit();
+                    .add(R.id.content_container, ContactEditFragment.newInstance(account, user)).commit();
         }
 
     }
@@ -145,7 +145,7 @@ public class ContactEditActivity extends ManagedActivity implements OnContactCha
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_save) {
-            ((ContactEditFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container)).saveChanges();
+            ((ContactEditFragment) getSupportFragmentManager().findFragmentById(R.id.content_container)).saveChanges();
             finish();
         }
         return false;

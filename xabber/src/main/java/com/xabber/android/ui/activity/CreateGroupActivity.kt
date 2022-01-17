@@ -79,7 +79,7 @@ class CreateGroupActivity : ManagedActivity(), CreateGroupFragment.Listener {
             supportFragmentManager
                 .beginTransaction()
                 .add(
-                    R.id.fragment_container,
+                    R.id.content_container,
                     CreateGroupFragment.newInstance(isIncognito),
                     FRAGMENT_TAG
                 )

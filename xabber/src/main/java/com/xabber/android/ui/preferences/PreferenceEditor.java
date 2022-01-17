@@ -70,7 +70,7 @@ public class PreferenceEditor extends ManagedActivity implements OnAddAccountCli
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new PreferencesFragment()).commit();
+                    .add(R.id.content_container, new PreferencesFragment()).commit();
         }
 
         // Force request sound. This will set default value if not specified.

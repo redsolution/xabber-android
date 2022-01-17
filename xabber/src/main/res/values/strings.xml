@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Permissions -->
+    <string name="no_permission_to_read_files_toast">No permission to read files</string>
+    <string name="request_to_camera">Need photo permission to get photo</string>
+    <string name="no_permission_to_camera_toast">No permission for camera</string>
+
+    <!-- Shared Values -->
+    <string name="feature_not_created">This feature has not been implemented yet</string>
+
+    <!-- ToolbarFragment -->
+    <string name="signup_toolbar_title_1">Sign Up</string>
+    <string name="signup_toolbar_title_2">Username</string>
+    <string name="signup_toolbar_title_3">Password</string>
+    <string name="signup_toolbar_title_4">Profile Image</string>
+    <string name="toolbar_skip_button_label">Skip</string>
+
+    <!-- StartFragment -->
+    <string name="xabber_image_content_description">Xabber application icon</string>
+    <string name="start_title_label">Xabber</string>
+    <string name="start_subtitle_label">World\'s best XMPP experience</string>
+    <string name="start_login_button_label">Connect existing account</string>
+    <string name="start_signup_button_label">Create new account</string>
+    <string name="start_comment_label">New accounts are created for free on xabber.org domain.You can use Xabber to connect to any compatible XMPP account on any server.</string>
+
+    <!-- SignupFragment -->
+    <string name="signup_title_label_1">Let’s get Started!\nWhat’s your name?</string>
+    <string name="signup_edit_text_label_1">Nickname</string>
+    <string name="signup_subtitle_1">Use the name or a nickname you are most comfortable with. Your name will be visible to other users of the XMPP network.</string>
+    <string name="signup_next_button">Next</string>
+
+    <string name="signup_title_label_2">Great! Now, choose a username for people to find you on Xabber.</string>
+    <string name="signup_edit_text_label_2">username</string>
+    <string name="signup_subtitle_2">The account will be created on xabber.org server. It can be used to communicate with users of other servers.</string>
+    <string name="signup_error_subtitle_2">Sorry! That username isn’t available.</string>
+    <string name="signup_success_subtitle_2">✓ Nice! That username is available.</string>
+
+    <string name="signup_title_label_3">Shiny! Time to pick a secure password for your account.</string>
+    <string name="signup_edit_text_label_3">password</string>
+    <string name="signup_subtitle_3">Using a strong password is vital for your safety. We recommend you use unique passwords and password manager apps to keep track of them.</string>
+
+    <string name="signup_title_label_4">Nice! Now set up a profile image best representing your identity.</string>
+
+    <!-- AvatarBottomSheet -->
+    <string name="signup_bottom_sheet_button_emoji_label">Use Emoji</string>
+    <string name="signup_bottom_sheet_button_selfie_label">Take Selfie</string>
+    <string name="signup_bottom_sheet_button_chose_label">Choose Image</string>
+    <string name="permission_request_camera_error_text">Xabber Requires Access to Camera.</string>
+    <string name="permission_request_chose_image_error_text">Xabber Requires Access to Camera.</string>
+</resources>

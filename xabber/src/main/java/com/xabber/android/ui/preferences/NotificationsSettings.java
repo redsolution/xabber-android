@@ -30,17 +30,17 @@ public class NotificationsSettings extends ManagedActivity {
         if (savedInstanceState == null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 getFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, new ChannelSettingsFragment()).commit();
+                        .add(R.id.content_container, new ChannelSettingsFragment()).commit();
             else getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new NotificationsSettingsFragment()).commit();
+                    .add(R.id.content_container, new NotificationsSettingsFragment()).commit();
         }
     }
 
     public void restartFragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             getFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new ChannelSettingsFragment()).commit();
+                    .replace(R.id.content_container, new ChannelSettingsFragment()).commit();
         else getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, new NotificationsSettingsFragment()).commit();
+                .replace(R.id.content_container, new NotificationsSettingsFragment()).commit();
     }
 }

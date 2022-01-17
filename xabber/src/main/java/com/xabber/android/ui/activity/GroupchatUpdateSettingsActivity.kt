@@ -49,7 +49,7 @@ class GroupchatUpdateSettingsActivity : ManagedActivity() {
             intent.getAccountJid(), intent.getContactJid()
         ) as? GroupChat)?.let { groupChat ->
             supportFragmentManager.beginTransaction().add(
-                R.id.fragment_container,
+                R.id.content_container,
                 GroupUpdateSettingsFragment(groupChat), FRAGMENT_TAG
             ).commit()
         }

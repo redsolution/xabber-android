@@ -117,7 +117,7 @@ public class GroupSettingsActivity extends ManagedActivity implements
                 default:
                     finish();
             }
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, fragment, settingsType.name()).commit();
+            getSupportFragmentManager().beginTransaction().add(R.id.content_container, fragment, settingsType.name()).commit();
         }
     }
 

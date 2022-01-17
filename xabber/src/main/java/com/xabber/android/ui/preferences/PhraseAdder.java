@@ -60,7 +60,7 @@ public class PhraseAdder extends BasePhrasePreferences {
             case R.id.action_save:
 
                 boolean success = ((PhraseEditorFragment) getFragmentManager()
-                        .findFragmentById(R.id.fragment_container)).saveChanges();
+                        .findFragmentById(R.id.content_container)).saveChanges();
 
                 if (success) {
                     Integer index = PhraseManager.getInstance().getLastIndex();
