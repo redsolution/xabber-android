@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:maxHeight="384dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/avatar_background" >
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/details_swipe"
+        android:id="@+id/bottom_sheet_swipe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -17,38 +19,41 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TableLayout
+        android:id="@+id/palette"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
+        android:layout_margin="32dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/details_swipe">
+        app:layout_constraintStart_toEndOf="@+id/avatarBackground"
+        app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_swipe">
 
         <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/green_400"
-                android:layout_width="64dp"
+                android:id="@+id/green_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/green_400" />
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/orange_400"
-                android:layout_width="64dp"
+                android:id="@+id/orange_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/orange_400" />
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/red_400"
-                android:layout_width="64dp"
+                android:id="@+id/red_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/red_400" />
         </TableRow>
 
         <TableRow
@@ -56,25 +61,28 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/blue_400"
-                android:layout_width="64dp"
+                android:id="@+id/blue_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/blue_400" />
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/indigo_400"
-                android:layout_width="64dp"
+                android:id="@+id/indigo_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/indigo_400" />
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/purple_400"
-                android:layout_width="64dp"
+                android:id="@+id/purple_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/purple_400" />
         </TableRow>
 
         <TableRow
@@ -82,56 +90,97 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/lime_400"
+                android:id="@+id/lime_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_width="64dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/lime_400" />
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/pink_400"
+                android:id="@+id/pink_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_width="64dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/pink_400" />
 
             <com.google.android.material.imageview.ShapeableImageView
-                android:src="@drawable/round_shape"
-                android:tint="@color/amber_400"
+                android:id="@+id/amber_tint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_margin="8dp"
-                android:layout_width="64dp"
-                android:layout_height="64dp" />
+                android:src="@drawable/round_shape"
+                android:tint="@color/amber_400" />
         </TableRow>
     </TableLayout>
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/shapeableImageView"
+    <androidx.cardview.widget.CardView
+        android:clickable="true"
+        android:focusable="true"
+        android:id="@+id/avatarBackground"
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:layout_margin="32dp"
-        android:src="@drawable/round_shape"
-        android:tint="@color/blue_400"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        app:cardBackgroundColor="@color/blue_400"
+        app:cardCornerRadius="64dp"
+        app:layout_constraintBottom_toBottomOf="@+id/palette"
+        app:layout_constraintEnd_toStartOf="@+id/palette"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/palette">
 
-    <com.google.android.material.imageview.ShapeableImageView
+        <TextView
+            android:id="@+id/emoji_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/default_emoji_avatar"
+            android:textColor="@color/black"
+            android:textSize="48sp" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/edit_background"
+        android:clickable="true"
+        android:focusable="true"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_margin="4dp"
-        android:src="@drawable/round_shape"
-        android:tint="@color/grey_400"
-        app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView"
-        app:layout_constraintEnd_toEndOf="@+id/shapeableImageView" />
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@color/grey_400"
+        app:layout_constraintBottom_toBottomOf="@+id/avatarBackground"
+        app:layout_constraintEnd_toEndOf="@+id/avatarBackground" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="48sp"
-        android:text="💩"
-        app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView"
-        app:layout_constraintEnd_toEndOf="@+id/shapeableImageView"
-        app:layout_constraintStart_toStartOf="@+id/shapeableImageView"
-        app:layout_constraintTop_toTopOf="@+id/shapeableImageView" />
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@null"
+            app:srcCompat="@drawable/ic_edit_outline_24"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/save_button"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="32dp"
+        android:gravity="center"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:text="@string/save_btn_label"
+        android:textAllCaps="false"
+        android:textSize="17sp"
+        android:theme="@style/SignUpButtonNext"
+        app:cornerRadius="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/palette" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -176,8 +176,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
     }
 
     private fun AppCompatActivity.initStartupFragment() {
+//        supportFragmentManager.beginTransaction()
+//            .replace(R.id.content_container, StartFragment(), FragmentTag.Start.toString())
+//            .commit()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.content_container, StartFragment(), FragmentTag.Start.toString())
+            .replace(R.id.content_container, SignupFragment.newInstance(4), FragmentTag.Signup4.toString())
             .commit()
     }
 

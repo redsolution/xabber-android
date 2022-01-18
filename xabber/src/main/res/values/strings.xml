@@ -47,4 +47,8 @@
     <string name="signup_bottom_sheet_button_chose_label">Choose Image</string>
     <string name="permission_request_camera_error_text">Xabber Requires Access to Camera.</string>
     <string name="permission_request_chose_image_error_text">Xabber Requires Access to Camera.</string>
+
+    <!-- EmojiAvatarBottomSheet -->
+    <string name="default_emoji_avatar">💩</string>
+    <string name="save_btn_label">Save</string>
 </resources>
