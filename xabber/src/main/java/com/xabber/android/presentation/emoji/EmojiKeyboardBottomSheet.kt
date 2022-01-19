@@ -8,24 +8,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.recyclerview.widget.GridLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
 import com.xabber.android.R
-import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.FragmentEmojiKeyboardBinding
 import com.xabber.android.presentation.emoji.key.EmojiKeyAdapter
 import com.xabber.android.presentation.emoji.type.EmojiTypeAdapter
 import com.xabber.android.presentation.util.setFragmentResult
-import java.io.*
+import com.xabber.android.util.AppConstants
+import com.xabber.android.util.AppConstants.EMOJI_KEY_REQUEST_KEY
+import com.xabber.android.util.AppConstants.EMOJI_KEY_RESPONSE_KEY
 
 class EmojiKeyboardBottomSheet : BottomSheetDialogFragment() {
 
     private val binding by viewBinding(FragmentEmojiKeyboardBinding::bind)
+    private val viewModel = EmojiKeyboardViewModel()
     private var keysAdapter: EmojiKeyAdapter? = null
     private var typesAdapter: EmojiTypeAdapter? = null
     private lateinit var dataset: Map<Int, List<String>>
@@ -54,7 +52,7 @@ class EmojiKeyboardBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dataset = getDataset()
+        dataset = viewModel.getEmojiMap(resources)
         with(binding) {
             with(recyclerViewKeys) {
                 adapter = EmojiKeyAdapter {
@@ -78,49 +76,12 @@ class EmojiKeyboardBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun onEmojiClick(emoji: String) {
-        setFragmentResult(
-            "EMOJI", bundleOf(
-                "qwe" to emoji
-            )
-        )
+        setFragmentResult(EMOJI_KEY_REQUEST_KEY, bundleOf(EMOJI_KEY_RESPONSE_KEY to emoji))
         dismiss()
     }
 
     private fun onEmojiTypeClick(emojiType: Int) {
         keysAdapter!!.submitList(dataset[emojiType])
-    }
-
-    private fun getDataset(): Map<Int, List<String>> {
-        val ins: InputStream = resources.openRawResource(R.raw.emojis)
-        val writer = StringWriter()
-        val buffer = CharArray(1024)
-        runCatching {
-            val reader = BufferedReader(InputStreamReader(ins, "UTF-8"))
-            var n: Int = reader.read(buffer)
-            while (n != -1) {
-                writer.write(buffer, 0, n)
-                n = reader.read(buffer)
-            }
-        }.also {
-            ins.close()
-        }.onFailure {
-            LogManager.e(this::class.java.simpleName, it.stackTraceToString())
-        }
-
-        val jsonString = writer.toString()
-        val collectionType = object : TypeToken<List<EmojiType>>() {}.type
-        val dataset: List<EmojiType> =
-            Gson().fromJson(jsonString, collectionType)
-
-        val resultMap: Map<Int, List<String>> =
-            dataset.toMap()
-                .map {
-                    val key = emojiTypes[it.key]!!
-                    val value = it.value.map { list -> list[0] }
-                    key to value
-                }.toMap()
-
-        return resultMap
     }
 
     companion object {
@@ -136,19 +97,4 @@ class EmojiKeyboardBottomSheet : BottomSheetDialogFragment() {
             "flags" to R.drawable.flags,
         )
     }
-}
-
-data class EmojiType(
-    @SerializedName("emojis")
-    val list: List<List<String>>,
-    @SerializedName("type")
-    val name: String
-)
-
-fun List<EmojiType>.toMap(): Map<String, List<List<String>>> {
-    val map = this.map {
-        it.name to it.list
-    }.toMap()
-
-    return map
 }

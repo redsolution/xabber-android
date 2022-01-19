@@ -2,6 +2,7 @@ package com.xabber.android.presentation.emoji
 
 import android.app.Dialog
 import android.content.DialogInterface
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,11 +15,18 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.xabber.android.R
 import com.xabber.android.databinding.FragmentEmojiAvatarBinding
+import com.xabber.android.databinding.FragmentSignupBinding
+import com.xabber.android.presentation.base.FragmentTag
+import com.xabber.android.presentation.main.MainActivity
+import com.xabber.android.presentation.signup.SignupFragment
 import com.xabber.android.presentation.util.setFragmentResultListener
+import com.xabber.android.util.AppConstants.EMOJI_KEY_REQUEST_KEY
+import com.xabber.android.util.AppConstants.EMOJI_KEY_RESPONSE_KEY
 
 class EmojiAvatarBottomSheet : BottomSheetDialogFragment() {
 
     private val binding by viewBinding(FragmentEmojiAvatarBinding::bind)
+    private val viewModel = EmojiAvatarViewModel()
     private lateinit var palette: Map<ImageView, Int>
 
     override fun onCreateView(
@@ -73,7 +81,12 @@ class EmojiAvatarBottomSheet : BottomSheetDialogFragment() {
                 EmojiKeyboardBottomSheet().show(requireFragmentManager(), null)
             }
             saveButton.setOnClickListener {
-
+                val bitmap = viewModel.getBitmapFromView(requireContext(), binding.avatarBackground)
+                val fragment =
+                    requireFragmentManager().findFragmentByTag(FragmentTag.Signup4.toString()) as SignupFragment
+                fragment.setAvatar(bitmap)
+                viewModel.saveBitmapToFile(bitmap, requireContext().cacheDir)
+                dismiss()
             }
         }
     }
@@ -81,11 +94,9 @@ class EmojiAvatarBottomSheet : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setFragmentResultListener(
-            "EMOJI"
-        ) { _, result ->
-            result.getString("qwe")?.let { note ->
-                binding.emojiText.text = note
+        setFragmentResultListener(EMOJI_KEY_REQUEST_KEY) { _, result ->
+            result.getString(EMOJI_KEY_RESPONSE_KEY)?.let { emoji ->
+                binding.emojiText.text = emoji
             }
         }
     }

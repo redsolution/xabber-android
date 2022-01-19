@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.ListAdapter
 import com.xabber.android.databinding.ItemEmojiTypeBinding
 
 class EmojiTypeAdapter(
-    private val onClick: (Int) -> Unit
+    private val onTypeClick: (Int) -> Unit
 ) : ListAdapter<Int, EmojiTypeViewHolder>(DiffUtilCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmojiTypeViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemEmojiTypeBinding.inflate(inflater, parent, false)
-        return EmojiTypeViewHolder(binding, onClick)
+        return EmojiTypeViewHolder(binding, onTypeClick)
     }
 
     override fun onBindViewHolder(holder: EmojiTypeViewHolder, position: Int) =

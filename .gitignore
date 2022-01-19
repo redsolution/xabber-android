@@ -11,3 +11,5 @@ app/manifest-merger-release-report.txt
 *google-services.json
 *social_keys.xml
 fingerprints
+/xabber/storeDev/release/output-metadata.json
+/xabber/src/main/java/com/xabber/android/util/AppConstants.kt

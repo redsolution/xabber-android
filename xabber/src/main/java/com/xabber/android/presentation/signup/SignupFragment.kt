@@ -21,6 +21,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.setPadding
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -38,13 +39,13 @@ import com.xabber.android.util.dp
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.jxmpp.jid.parts.Resourcepart
 import retrofit2.HttpException
 import kotlin.properties.Delegates
 
 
-open class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibilityListener {
+class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibilityListener {
 
     private val binding by viewBinding(FragmentSignupBinding::bind)
 
@@ -54,8 +55,6 @@ open class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVi
     private var password by Delegates.notNull<String>()
     private val compositeDisposable = CompositeDisposable()
     private val viewModel = SignupViewModel()
-
-
 
     override fun onVisibilityChanged(visible: Boolean) {
         if (visible)
@@ -67,7 +66,7 @@ open class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setKeyboardVisibilityListener(this)
+        setKeyboardVisibilityListener(this@SignupFragment)
 
         stepCounter = requireArguments().getInt(STEP_COUNTER_TAG)
         username = requireArguments().getString(USERNAME_TAG) ?: ""
@@ -224,18 +223,28 @@ open class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVi
 
 
             override fun onGlobalLayout() {
-                val estimatedKeyboardHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    EstimatedKeyboardDP.toFloat(), binding.root.resources.displayMetrics)
-                binding.root.getWindowVisibleDisplayFrame(rect)
-                val heightDiff = binding.root.rootView.height - (rect.bottom - rect.top)
-                val isShown = heightDiff >= estimatedKeyboardHeight
+                lifecycleScope.launch(Dispatchers.IO) {
+                    while (true) {
+                        if (view != null) {
+                            withContext(Dispatchers.Main) {
+                                val estimatedKeyboardHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                    EstimatedKeyboardDP.toFloat(), binding.root.resources.displayMetrics)
+                                binding.root.getWindowVisibleDisplayFrame(rect)
+                                val heightDiff = binding.root.rootView.height - (rect.bottom - rect.top)
+                                val isShown = heightDiff >= estimatedKeyboardHeight
 
-                if (isShown == alreadyOpen) {
-                    LogManager.i("Keyboard state", "Ignoring global layout change...");
-                    return
+                                if (isShown == alreadyOpen) {
+                                    LogManager.i("Keyboard state", "Ignoring global layout change...")
+                                    this@launch.cancel()
+                                }
+                                alreadyOpen = isShown
+                                onKeyboardVisibilityListener.onVisibilityChanged(isShown)
+                                this@launch.cancel()
+                            }
+                        }
+                        delay(1000 / 60)
+                    }
                 }
-                alreadyOpen = isShown
-                onKeyboardVisibilityListener.onVisibilityChanged(isShown)
             }
         })
     }

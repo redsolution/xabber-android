@@ -2,7 +2,7 @@
 buildscript {
     ext {
         kotlinVersion = '1.6.10'
-        vbpdVersion = '1.5.3'
+        vbpdVersion = '1.5.6'
         rxVersion = '3.1.2'
         rxAndroidVersion = '3.0.0'
         retrofitVersion = '2.9.0'

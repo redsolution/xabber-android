@@ -40,6 +40,7 @@ import com.xabber.android.ui.activity.AccountActivity
 import com.xabber.android.ui.fragment.AccountInfoEditFragment.REQUEST_TAKE_PHOTO
 import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.helper.PermissionsRequester.*
+import com.xabber.android.util.AppConstants.TEMP_FILE_NAME
 import com.xabber.xmpp.avatar.UserAvatarManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -67,8 +68,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
 
     private var avatarData: ByteArray? = null
 
-    private val TEMP_FILE_NAME = "cropped"
-
     private val KB_SIZE_IN_BYTES: Int = 1024
     private var FINAL_IMAGE_SIZE: Int = 0
     private var MAX_IMAGE_RESIZE: Int = 256
@@ -76,7 +75,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
 
         initStartupFragment()
         setToolbar(ToolbarFragment())
@@ -166,21 +164,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
                     val fragment = supportFragmentManager.findFragmentByTag(FragmentTag.Signup4.toString())
                     (fragment as SignupFragment).setAvatar(result.uri)
                     newAvatarImageUri = result.uri
-                    handleCrop(resultCode, data!!)
+                    handleCrop(resultCode)
                 }
             }
 
-            requestCode == Crop.REQUEST_CROP -> handleCrop(resultCode, data!!)
+            requestCode == Crop.REQUEST_CROP -> handleCrop(resultCode)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun AppCompatActivity.initStartupFragment() {
-//        supportFragmentManager.beginTransaction()
-//            .replace(R.id.content_container, StartFragment(), FragmentTag.Start.toString())
-//            .commit()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.content_container, SignupFragment.newInstance(4), FragmentTag.Signup4.toString())
+            .replace(R.id.content_container, StartFragment(), FragmentTag.Start.toString())
             .commit()
     }
 
@@ -344,7 +339,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
                 .start(this)
     }
 
-    private fun handleCrop(resultCode: Int, result: Intent) {
+    private fun handleCrop(resultCode: Int) {
         when (resultCode) {
             RESULT_OK -> checkAvatarSizeAndPublish()
             Crop.RESULT_ERROR -> {

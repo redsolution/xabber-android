@@ -14,6 +14,8 @@ import com.xabber.android.R
 import com.xabber.android.databinding.FragmentAvatarBinding
 import com.xabber.android.presentation.emoji.EmojiAvatarBottomSheet
 import com.xabber.android.presentation.main.MainActivity
+import com.xabber.android.presentation.util.setFragmentResultListener
+import com.xabber.android.util.AppConstants
 
 class AvatarBottomSheet : BottomSheetDialogFragment() {
 
