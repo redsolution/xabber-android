@@ -9,6 +9,7 @@
     <string name="feature_not_created">This feature has not been implemented yet</string>
 
     <!-- ToolbarFragment -->
+    <string name="signin_toolbar_title">Sign In</string>
     <string name="signup_toolbar_title_1">Sign Up</string>
     <string name="signup_toolbar_title_2">Username</string>
     <string name="signup_toolbar_title_3">Password</string>
@@ -22,6 +23,14 @@
     <string name="start_login_button_label">Connect existing account</string>
     <string name="start_signup_button_label">Create new account</string>
     <string name="start_comment_label">New accounts are created for free on xabber.org domain.You can use Xabber to connect to any compatible XMPP account on any server.</string>
+
+
+    <!-- SigninFragment -->
+    <string name="signin_title_label">Hi! Connect to your existing XMPP ID</string>
+    <string name="signin_edit_text_jid_label">username@xabber.com</string>
+    <string name="signin_edit_text_password_label">password</string>
+    <string name="signin_subtitle_label">If you don\'t have an account yet, press here to sign up for an account on xabber.org server.</string>
+    <string name="signin_connect_button_label">Connect</string>
 
     <!-- SignupFragment -->
     <string name="signup_title_label_1">Let’s get Started!\nWhat’s your name?</string>
@@ -49,6 +58,6 @@
     <string name="permission_request_chose_image_error_text">Xabber Requires Access to Camera.</string>
 
     <!-- EmojiAvatarBottomSheet -->
-    <string name="default_emoji_avatar">💩</string>
+    <string name="default_emoji_avatar">👽</string>
     <string name="save_btn_label">Save</string>
 </resources>

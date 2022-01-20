@@ -16,7 +16,6 @@ import com.xabber.android.databinding.FragmentEmojiKeyboardBinding
 import com.xabber.android.presentation.emoji.key.EmojiKeyAdapter
 import com.xabber.android.presentation.emoji.type.EmojiTypeAdapter
 import com.xabber.android.presentation.util.setFragmentResult
-import com.xabber.android.util.AppConstants
 import com.xabber.android.util.AppConstants.EMOJI_KEY_REQUEST_KEY
 import com.xabber.android.util.AppConstants.EMOJI_KEY_RESPONSE_KEY
 

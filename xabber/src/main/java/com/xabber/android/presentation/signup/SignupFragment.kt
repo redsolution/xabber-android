@@ -15,9 +15,11 @@ import android.util.TypedValue
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.addTextChangedListener
@@ -66,8 +68,6 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setKeyboardVisibilityListener(this@SignupFragment)
-
         stepCounter = requireArguments().getInt(STEP_COUNTER_TAG)
         username = requireArguments().getString(USERNAME_TAG) ?: ""
         host = requireArguments().getString(HOST_TAG) ?: ""
@@ -78,14 +78,26 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
             3 -> (activity as MainActivity).setToolbarTitle(R.string.signup_toolbar_title_3)
             4 -> (activity as MainActivity).setToolbarTitle(R.string.signup_toolbar_title_4)
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
 
         with(binding) {
             changeSubtitleColor(R.color.grey_600)
 
+            signupEditText.setOnFocusChangeListener { _, hasFocused ->
+                when  {
+                    hasFocused ->
+                        signupEditText.hint = ""
+                    !hasFocused && signupEditText.text.isNotEmpty() ->
+                        signupEditText.hint = ""
+                    else ->
+                        signupEditText.hint = resources.getString(
+                            when (stepCounter) {
+                                1 -> R.string.signup_edit_text_label_1
+                                2 -> R.string.signup_edit_text_label_2
+                                else -> R.string.signup_edit_text_label_3
+                            }
+                        )
+                }
+            }
             when (stepCounter) {
                 1 -> {
                     signupEditText.addTextChangedListener(object : TextWatcher {
@@ -93,6 +105,10 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                         override fun afterTextChanged(p0: Editable?) {
                             val name: String = p0.toString()
+                            signupEditText.hint = if (name.isEmpty())
+                                resources.getString(R.string.signup_edit_text_label_1)
+                            else
+                                ""
                             btnNext.isEnabled = name.length > 1
                         }
                     })
@@ -114,6 +130,10 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                         override fun afterTextChanged(p0: Editable?) {
                             compositeDisposable.clear()
                             val username: String = p0.toString()
+                            signupEditText.hint = if (username.isEmpty())
+                                resources.getString(R.string.signup_edit_text_label_2)
+                            else
+                                ""
                             if (username.length > 3) {
                                 (activity as MainActivity).setProgressBarAnimation(true)
                                 compositeDisposable.add(
@@ -159,6 +179,10 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                         override fun afterTextChanged(p0: Editable?) {
                             password = p0.toString()
+                            signupEditText.hint = if (password.isEmpty())
+                                resources.getString(R.string.signup_edit_text_label_3)
+                            else
+                                ""
                             btnNext.isEnabled = password.length > 4
                         }
                     })
@@ -201,10 +225,20 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                         AvatarBottomSheet().show(parentFragmentManager, null)
                     }
 
+                    btnNext.setOnClickListener {
+                        Toast.makeText(
+                            requireContext(),
+                            resources.getString(R.string.feature_not_created)
+                            , Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
                     // clearBackstack<SignupFragment>()
                 }
             }
         }
+
+        setKeyboardVisibilityListener(this@SignupFragment)
     }
 
     override fun onDestroy() {
@@ -251,12 +285,10 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
 
     fun setAvatar(uri: Uri?) {
         with(binding) {
-            profileImageEmoji.setPadding(0.dp)
             Glide.with(this@SignupFragment)
                 .load(uri)
                 .apply(
                     RequestOptions()
-                    .placeholder(R.drawable.ic_baseline_insert_emoticon_24)
                     .centerCrop()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)

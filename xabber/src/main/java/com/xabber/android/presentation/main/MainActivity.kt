@@ -112,15 +112,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
                 fragment = supportFragmentManager.findFragmentByTag(FragmentTag.Signup3.toString())
                 if (fragment != null && fragment.isHidden) {
                     showFragment(fragment)
+                    setToolbarTitle(R.string.signup_toolbar_title_3)
                 } else {
                     fragment = supportFragmentManager.findFragmentByTag(FragmentTag.Signup2.toString())
                     if (fragment != null && fragment.isHidden) {
                         showFragment(fragment)
+                        setToolbarTitle(R.string.signup_toolbar_title_2)
                     }
                     else {
                         fragment = supportFragmentManager.findFragmentByTag(FragmentTag.Signup1.toString())
-                        if (fragment != null && fragment.isHidden)
+                        if (fragment != null && fragment.isHidden) {
                             showFragment(fragment)
+                            setToolbarTitle(R.string.signup_toolbar_title_1)
+                        }
                     }
                 }
             }

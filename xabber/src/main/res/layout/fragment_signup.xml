@@ -115,7 +115,6 @@
             android:id="@+id/profile_image_emoji"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="64dp"
             android:layout_gravity="center"
             app:srcCompat="@drawable/ic_baseline_insert_emoticon_24"/>
     </com.google.android.material.card.MaterialCardView>

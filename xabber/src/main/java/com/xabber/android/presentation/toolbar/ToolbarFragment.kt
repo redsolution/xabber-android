@@ -24,7 +24,11 @@ class ToolbarFragment: BaseFragment(R.layout.fragment_toolbar) {
         }
 
         binding.btnSkip.setOnClickListener {
-
+            Toast.makeText(
+                requireContext(),
+                resources.getString(R.string.feature_not_created)
+                , Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

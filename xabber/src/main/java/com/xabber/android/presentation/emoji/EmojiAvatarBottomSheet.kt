@@ -2,22 +2,21 @@ package com.xabber.android.presentation.emoji
 
 import android.app.Dialog
 import android.content.DialogInterface
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.xabber.android.R
 import com.xabber.android.databinding.FragmentEmojiAvatarBinding
-import com.xabber.android.databinding.FragmentSignupBinding
 import com.xabber.android.presentation.base.FragmentTag
-import com.xabber.android.presentation.main.MainActivity
 import com.xabber.android.presentation.signup.SignupFragment
 import com.xabber.android.presentation.util.setFragmentResultListener
 import com.xabber.android.util.AppConstants.EMOJI_KEY_REQUEST_KEY
@@ -27,7 +26,6 @@ class EmojiAvatarBottomSheet : BottomSheetDialogFragment() {
 
     private val binding by viewBinding(FragmentEmojiAvatarBinding::bind)
     private val viewModel = EmojiAvatarViewModel()
-    private lateinit var palette: Map<ImageView, Int>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,16 +51,28 @@ class EmojiAvatarBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        palette = mapOf(
-            binding.greenTint to R.color.green_400,
-            binding.orangeTint to R.color.orange_400,
-            binding.redTint to R.color.red_400,
-            binding.blueTint to R.color.blue_400,
-            binding.indigoTint to R.color.indigo_400,
-            binding.purpleTint to R.color.purple_400,
-            binding.limeTint to R.color.lime_400,
-            binding.pinkTint to R.color.pink_400,
-            binding.amberTint to R.color.amber_400,
+        val palette = mapOf(
+            binding.greenTint to R.color.green_100,
+            binding.orangeTint to R.color.orange_100,
+            binding.redTint to R.color.red_100,
+            binding.blueTint to R.color.blue_100,
+            binding.indigoTint to R.color.indigo_100,
+            binding.purpleTint to R.color.purple_100,
+            binding.limeTint to R.color.lime_100,
+            binding.pinkTint to R.color.pink_100,
+            binding.amberTint to R.color.amber_100,
+        )
+
+        val toggles = mapOf(
+            binding.greenTint to binding.greenTintToggle,
+            binding.orangeTint to binding.orangeTintToggle,
+            binding.redTint to binding.redTintToggle,
+            binding.blueTint to binding.blueTintToggle,
+            binding.indigoTint to binding.indigoTintToggle,
+            binding.purpleTint to binding.purpleTintToggle,
+            binding.limeTint to binding.limeTintToggle,
+            binding.pinkTint to binding.pinkTintToggle,
+            binding.amberTint to binding.amberTintToggle,
         )
 
         palette.forEach { mapElem ->
@@ -70,10 +80,15 @@ class EmojiAvatarBottomSheet : BottomSheetDialogFragment() {
                 binding.avatarBackground.setCardBackgroundColor(
                     ContextCompat.getColor(requireContext(), mapElem.value)
                 )
+                for (t in toggles) {
+                    t.value.isVisible = false
+                }
+                toggles[mapElem.key]!!.isVisible = true
             }
         }
 
         with(binding) {
+            toggles[binding.blueTint]!!.isVisible = true
             avatarBackground.setOnClickListener {
                 EmojiKeyboardBottomSheet().show(requireFragmentManager(), null)
             }

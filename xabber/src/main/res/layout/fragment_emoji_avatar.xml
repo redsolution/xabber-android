@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:maxHeight="384dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/avatar_background" >
+    android:background="@drawable/avatar_background"
+    android:maxHeight="384dp">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/bottom_sheet_swipe"
@@ -22,145 +22,252 @@
         android:id="@+id/palette"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/avatarBackground"
-        app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_swipe">
+        app:layout_constraintStart_toStartOf="@+id/center_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_swipe"
+        android:layout_marginStart="12dp">
 
         <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <RelativeLayout
                 android:id="@+id/green_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/green_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/green_400"
+                android:background="@drawable/round_shape">
 
-            <com.google.android.material.imageview.ShapeableImageView
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/green_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/orange_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/orange_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/orange_400"
+                android:background="@drawable/round_shape">
 
-            <com.google.android.material.imageview.ShapeableImageView
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/orange_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/red_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/red_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/red_400"
+                android:background="@drawable/round_shape">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/red_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
         </TableRow>
 
         <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <RelativeLayout
                 android:id="@+id/blue_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/blue_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/blue_400"
+                android:background="@drawable/round_shape">
 
-            <com.google.android.material.imageview.ShapeableImageView
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/blue_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/indigo_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/indigo_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/indigo_400"
+                android:background="@drawable/round_shape">
 
-            <com.google.android.material.imageview.ShapeableImageView
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/indigo_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/purple_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/purple_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/purple_400"
+                android:background="@drawable/round_shape">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/purple_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
         </TableRow>
 
         <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <RelativeLayout
                 android:id="@+id/lime_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/lime_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/lime_400"
+                android:background="@drawable/round_shape">
 
-            <com.google.android.material.imageview.ShapeableImageView
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/lime_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/pink_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/pink_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/pink_400"
+                android:background="@drawable/round_shape">
 
-            <com.google.android.material.imageview.ShapeableImageView
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/pink_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/amber_tint"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_margin="8dp"
-                android:src="@drawable/round_shape"
-                android:tint="@color/amber_400" />
+                android:layout_margin="4dp"
+                android:backgroundTint="@color/amber_400"
+                android:background="@drawable/round_shape">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/amber_tint_toggle"
+                    android:visibility="gone"
+                    android:src="@drawable/stroke_shape"
+                    android:layout_margin="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </RelativeLayout>
         </TableRow>
     </TableLayout>
 
-    <androidx.cardview.widget.CardView
+    <RelativeLayout
+        android:id="@+id/emoji"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="12dp"
         android:clickable="true"
         android:focusable="true"
-        android:id="@+id/avatarBackground"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        app:cardBackgroundColor="@color/blue_400"
-        app:cardCornerRadius="64dp"
         app:layout_constraintBottom_toBottomOf="@+id/palette"
-        app:layout_constraintEnd_toStartOf="@+id/palette"
+        app:layout_constraintEnd_toStartOf="@+id/center_guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/palette">
+        app:layout_constraintTop_toTopOf="@+id/palette"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="12dp">
 
-        <TextView
-            android:id="@+id/emoji_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/default_emoji_avatar"
-            android:textColor="@color/black"
-            android:textSize="48sp" />
+        <androidx.cardview.widget.CardView
+            android:id="@+id/avatarBackground"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/blue_100"
+            app:cardCornerRadius="64dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    </androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/emoji_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/default_emoji_avatar"
+                android:textColor="@color/black"
+                android:textSize="48sp" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/edit_background"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_margin="4dp"
-        app:cardCornerRadius="16dp"
-        app:cardBackgroundColor="@color/grey_400"
-        app:layout_constraintBottom_toBottomOf="@+id/avatarBackground"
-        app:layout_constraintEnd_toEndOf="@+id/avatarBackground" >
+        </androidx.cardview.widget.CardView>
 
-        <ImageButton
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@null"
-            app:srcCompat="@drawable/ic_edit_outline_24"
-            tools:ignore="SpeakableTextPresentCheck" />
-    </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignEnd="@id/avatarBackground"
+            android:layout_alignRight="@id/avatarBackground"
+            android:layout_alignBottom="@id/avatarBackground"
+            android:layout_margin="4dp"
+            app:cardBackgroundColor="@color/grey_100"
+            app:cardCornerRadius="24dp"
+            app:layout_constraintBottom_toBottomOf="@+id/avatarBackground"
+            app:layout_constraintEnd_toEndOf="@+id/avatarBackground">
+
+            <ImageButton
+                android:id="@+id/edit_background"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:background="@null"
+                app:srcCompat="@drawable/ic_edit_material_24"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/save_button"
@@ -181,6 +288,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/palette" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/center_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
