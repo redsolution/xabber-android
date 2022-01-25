@@ -10,7 +10,7 @@
         android:id="@+id/btnBack"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:srcCompat="@drawable/ic_material_arrow_left_24"
+        app:srcCompat="@drawable/ic_material_chevron_left_variant_24"
         app:layout_constraintDimensionRatio="25:44"
         android:layout_marginLeft="6dp"
         app:layout_constraintBottom_toBottomOf="parent"

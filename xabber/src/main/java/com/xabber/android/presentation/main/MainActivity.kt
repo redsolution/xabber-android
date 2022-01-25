@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
@@ -25,9 +24,6 @@ import com.soundcloud.android.crop.Crop
 import com.theartofdev.edmodo.cropper.CropImage
 import com.xabber.android.R
 import com.xabber.android.data.Application
-import com.xabber.android.data.account.AccountManager
-import com.xabber.android.data.entity.AccountJid
-import com.xabber.android.data.extension.avatar.AvatarManager
 import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.ActivityMainNewBinding
@@ -38,21 +34,12 @@ import com.xabber.android.presentation.start.StartFragment
 import com.xabber.android.presentation.toolbar.ToolbarFragment
 import com.xabber.android.ui.activity.AccountActivity
 import com.xabber.android.ui.fragment.AccountInfoEditFragment.REQUEST_TAKE_PHOTO
-import com.xabber.android.ui.helper.PermissionsRequester
 import com.xabber.android.ui.helper.PermissionsRequester.*
 import com.xabber.android.util.AppConstants.TEMP_FILE_NAME
-import com.xabber.xmpp.avatar.UserAvatarManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import org.apache.commons.io.FileUtils
-import org.jivesoftware.smackx.vcardtemp.packet.VCard
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-import java.net.URL
 import java.util.*
-import kotlin.concurrent.schedule
 
 // TODO("Переименовать xml после избавления от легаси")
 // TODO("Сделать переворот без потери состояния")
@@ -63,15 +50,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
     private var filePhotoUri: Uri? = null
     private var newAvatarImageUri: Uri? = null
 
-//    var accountJid: AccountJid? = null
-    lateinit var imageFileType: String
-
-    private var avatarData: ByteArray? = null
-
-    private val KB_SIZE_IN_BYTES: Int = 1024
-    private var FINAL_IMAGE_SIZE: Int = 0
-    private var MAX_IMAGE_RESIZE: Int = 256
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -80,21 +58,26 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
         setToolbar(ToolbarFragment())
         supportFragmentManager.addOnBackStackChangedListener {
             var fragmentContent = supportFragmentManager.findFragmentById(R.id.content_container)
-            val fragmentToolbar = supportFragmentManager.findFragmentById(R.id.toolbar_container)
+            val fragmentToolbar =
+                supportFragmentManager.findFragmentById(R.id.toolbar_container) as ToolbarFragment
 
-            if (fragmentContent != null){
+            if (fragmentContent != null) {
                 if (fragmentContent is SignupFragment)
                     fragmentContent.closeKeyboard()
             }
 
             binding.toolbarContainer.isVisible = supportFragmentManager.backStackEntryCount > 0
 
-            fragmentContent = supportFragmentManager.findFragmentByTag(FragmentTag.Signup4.toString())
+            fragmentContent =
+                supportFragmentManager.findFragmentByTag(FragmentTag.Signup4.toString())
 
-            if (fragmentContent != null)
-                (fragmentToolbar as ToolbarFragment).showSkipButton(true)
-            else
-                (fragmentToolbar as ToolbarFragment).showSkipButton(false)
+            if (fragmentContent != null) {
+                fragmentToolbar.showSkipButton(true)
+                fragmentToolbar.showBackButton(false)
+            } else {
+                fragmentToolbar.showSkipButton(false)
+                fragmentToolbar.showBackButton(true)
+            }
         }
     }
 
@@ -154,7 +137,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        LogManager.d("onActivityResult", requestCode.toString())
         when {
             requestCode == Crop.REQUEST_PICK && resultCode == RESULT_OK ->
                 data?.data?.let { beginCropProcess(it) }
@@ -165,14 +147,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
             requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE -> {
                 val result = CropImage.getActivityResult(data)
                 if (resultCode == RESULT_OK) {
-                    val fragment = supportFragmentManager.findFragmentByTag(FragmentTag.Signup4.toString())
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(FragmentTag.Signup4.toString())
                     (fragment as SignupFragment).setAvatar(result.uri)
                     newAvatarImageUri = result.uri
-                    handleCrop(resultCode)
+                    // handleCrop(resultCode)
                 }
             }
 
-            requestCode == Crop.REQUEST_CROP -> handleCrop(resultCode)
+//            requestCode == Crop.REQUEST_CROP ->
+//                handleCrop(resultCode)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -321,8 +305,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
 
     private fun startCrop(srcUri: Uri) {
         val cR = Application.getInstance().applicationContext.contentResolver
-        imageFileType = cR.getType(srcUri)!!
-        if (imageFileType == "image/png")
+        if (cR.getType(srcUri)!! == "image/png")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
                 CropImage.activity(srcUri).setAspectRatio(1, 1)
                     .setOutputCompressFormat(Bitmap.CompressFormat.PNG)
@@ -339,156 +322,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
                     .start(this)
             else
                 Crop.of(srcUri, newAvatarImageUri)
-                .asSquare()
-                .start(this)
+                    .asSquare()
+                    .start(this)
     }
 
-    private fun handleCrop(resultCode: Int) {
-        when (resultCode) {
-            RESULT_OK -> checkAvatarSizeAndPublish()
-            Crop.RESULT_ERROR -> {
-                Toast.makeText(this, R.string.error_during_crop, Toast.LENGTH_SHORT).show()
-                newAvatarImageUri = null
-            }
-        }
-    }
-
-    private fun checkAvatarSizeAndPublish() {
-        if (newAvatarImageUri != null) {
-            val file = File(newAvatarImageUri!!.path!!)
-            if (file.length() / KB_SIZE_IN_BYTES > 35) {
-                Toast.makeText(
-                    this,
-                    "Image is too big, commencing additional processing!",
-                    Toast.LENGTH_LONG
-                ).show()
-                resize(newAvatarImageUri!!)
-                return
-            }
-            Toast.makeText(this, "Started Avatar Publishing!", Toast.LENGTH_LONG).show()
-
-            LogManager.d("checkAvatarSizeAndPublish", newAvatarImageUri.toString())
-            FINAL_IMAGE_SIZE = MAX_IMAGE_RESIZE
-            MAX_IMAGE_RESIZE = 256
-            saveAvatar()
-        }
-    }
-
-    private fun resize(src: Uri) {
-        LogManager.d("resize", src.toString())
-        Glide.with(this).asBitmap().load(src)
-            .override(AccountActivity.MAX_IMAGE_RESIZE, AccountActivity.MAX_IMAGE_RESIZE)
-            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
-            .into(object : CustomTarget<Bitmap?>() {
-                override fun onResourceReady(
-                    resource: Bitmap,
-                    transition: Transition<in Bitmap?>?
-                ) {
-                    Application.getInstance().runInBackgroundUserRequest {
-                        val stream = ByteArrayOutputStream()
-                        if (imageFileType == "image/png") {
-                            resource.compress(Bitmap.CompressFormat.PNG, 90, stream)
-                        } else resource.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-                        val data = stream.toByteArray()
-                        if (data.size > 35 * KB_SIZE_IN_BYTES) {
-                            AccountActivity.MAX_IMAGE_RESIZE =
-                                AccountActivity.MAX_IMAGE_RESIZE - AccountActivity.MAX_IMAGE_RESIZE / 8
-                            if (AccountActivity.MAX_IMAGE_RESIZE == 0) {
-                                Toast.makeText(
-                                    baseContext,
-                                    R.string.error_during_image_processing,
-                                    Toast.LENGTH_LONG
-                                )
-                                    .show()
-                                return@runInBackgroundUserRequest
-                            }
-                            resize(src)
-                            return@runInBackgroundUserRequest
-                        }
-                        resource.recycle()
-                        try {
-                            stream.close()
-                        } catch (e: IOException) {
-                            LogManager.e("resize", e.toString())
-                        }
-                        val rotatedImage: Uri? =
-                            if (imageFileType == "image/png") {
-                                FileManager.savePNGImage(data, "resize")
-                            } else {
-                                FileManager.saveImage(data, "resize")
-                            }
-                        if (rotatedImage == null) return@runInBackgroundUserRequest
-                        try {
-                            newAvatarImageUri?.path?.let {
-                                FileUtils.writeByteArrayToFile(
-                                    File(it),
-                                    data
-                                )
-                            }
-                        } catch (e: IOException) {
-                            LogManager.e("resize", e.toString())
-                        }
-                        Application.getInstance().runOnUiThread { checkAvatarSizeAndPublish() }
-                    }
-                }
-
-                override fun onLoadFailed(errorDrawable: Drawable?) {
-                    super.onLoadFailed(errorDrawable)
-                    Toast.makeText(
-                        baseContext,
-                        R.string.error_during_image_processing,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {}
-            })
-    }
-
-    private fun saveAvatar() {
-//        val userAvatarManager =
-//            UserAvatarManager.getInstanceFor(AccountManager.getAccount(accountJid)?.connection)
-//        if (newAvatarImageUri != null) {
-//            try {
-//                if (userAvatarManager.isSupportedByServer) {
-//                    avatarData = VCard.getBytes(URL(newAvatarImageUri.toString()))
-//                    val sh1 = AvatarManager.getAvatarHash(avatarData)
-//                    AvatarManager.getInstance()
-//                        .onAvatarReceived(accountJid!!.fullJid.asBareJid(), sh1, avatarData, "xep")
-//                }
-//            } catch (e: Exception) {
-//                LogManager.exception(this, e)
+//    private fun handleCrop(resultCode: Int) {
+//        when (resultCode) {
+//            RESULT_OK -> checkAvatarSizeAndPublish()
+//            Crop.RESULT_ERROR -> {
+//                Toast.makeText(this, R.string.error_during_crop, Toast.LENGTH_SHORT).show()
+//                newAvatarImageUri = null
 //            }
 //        }
-        Application.getInstance().runInBackgroundUserRequest {
-            if (avatarData != null) {
-                try {
-//                    if (imageFileType == "image/png") {
-//                        userAvatarManager.publishAvatar(
-//                            avatarData,
-//                            AccountActivity.FINAL_IMAGE_SIZE,
-//                            AccountActivity.FINAL_IMAGE_SIZE
-//                        )
-//                    } else userAvatarManager.publishAvatarJPG(
-//                        avatarData,
-//                        AccountActivity.FINAL_IMAGE_SIZE,
-//                        AccountActivity.FINAL_IMAGE_SIZE
-//                    )
-                    Application.getInstance().runOnUiThread {
-                        Toast.makeText(baseContext, "Avatar published!", Toast.LENGTH_LONG)
-                            .show()
-                    }
-                } catch (e: Exception) {
-                    LogManager.exception(this, e)
-                    Application.getInstance().runOnUiThread {
-                        Toast.makeText(
-                            baseContext,
-                            "Avatar publishing failed",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-                }
-            }
-        }
-    }
+//    }
 }

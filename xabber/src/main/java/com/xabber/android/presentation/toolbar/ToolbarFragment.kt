@@ -1,13 +1,11 @@
 package com.xabber.android.presentation.toolbar
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.core.view.isVisible
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.xabber.android.R
-import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.FragmentToolbarBinding
 import com.xabber.android.presentation.base.BaseFragment
 import com.xabber.android.presentation.main.MainActivity
@@ -26,10 +24,13 @@ class ToolbarFragment: BaseFragment(R.layout.fragment_toolbar) {
         binding.btnSkip.setOnClickListener {
             Toast.makeText(
                 requireContext(),
-                resources.getString(R.string.feature_not_created)
-                , Toast.LENGTH_SHORT
+                resources.getString(R.string.feature_not_created), Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    fun showBackButton(flag: Boolean) {
+        binding.btnBack.isVisible = flag
     }
 
     fun setToolbarTitle(titleId: Int) {

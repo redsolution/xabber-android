@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
@@ -37,16 +36,16 @@
         android:layout_marginEnd="48dp"
         android:layout_marginRight="48dp"
         android:background="@drawable/button_background"
+        android:elevation="4dp"
         android:hint="@string/signup_edit_text_label_1"
-        android:inputType="textPersonName"
+        android:inputType="textNoSuggestions"
         android:textColor="@color/grey_900"
-        android:textColorHint="@color/grey_600"
+        android:textColorHint="@color/grey_400"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signup_title"
-        android:textCursorDrawable="@drawable/edit_text_cursor"
-        android:paddingHorizontal="100dp" />
+        android:textCursorDrawable="@drawable/edit_text_cursor" />
 
     <TextView
         android:id="@+id/signup_subtitle"
@@ -124,11 +123,10 @@
         android:visibility="gone"
         android:id="@+id/profile_photo_background"
         android:layout_width="64dp"
+        android:layout_margin="6dp"
         android:layout_height="64dp"
-        android:layout_marginEnd="92dp"
-        android:layout_marginRight="92dp"
         app:cardCornerRadius="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/profile_image_background"
         app:layout_constraintBottom_toBottomOf="@+id/profile_image_background">
 
         <ImageView

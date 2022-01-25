@@ -1,49 +1,64 @@
 package com.xabber.android.presentation.signup
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.isVisible
+import androidx.core.net.toUri
 import androidx.core.view.setPadding
 import androidx.core.view.updateLayoutParams
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.xabber.android.R
+import com.xabber.android.data.Application
+import com.xabber.android.data.account.AccountManager
 import com.xabber.android.data.entity.AccountJid
+import com.xabber.android.data.extension.avatar.AvatarManager
+import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.FragmentSignupBinding
 import com.xabber.android.presentation.avatar.AvatarBottomSheet
+import com.xabber.android.presentation.base.APP_FM_BACKSTACK_NONE
 import com.xabber.android.presentation.base.BaseFragment
 import com.xabber.android.presentation.base.FragmentTag
 import com.xabber.android.presentation.main.MainActivity
-import com.xabber.android.presentation.toolbar.ToolbarFragment
+import com.xabber.android.presentation.start.StartFragment
+import com.xabber.android.ui.activity.AccountActivity
+import com.xabber.android.util.AppConstants.TEMP_FILE_NAME
 import com.xabber.android.util.dp
+import com.xabber.xmpp.avatar.UserAvatarManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
+import org.apache.commons.io.FileUtils
+import org.jivesoftware.smackx.vcardtemp.packet.VCard
+import org.jxmpp.jid.impl.JidCreate.domainBareFrom
+import org.jxmpp.jid.parts.Domainpart
+import org.jxmpp.jid.parts.Localpart
 import org.jxmpp.jid.parts.Resourcepart
-import retrofit2.HttpException
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.net.URL
 import kotlin.properties.Delegates
 
 
@@ -57,6 +72,18 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
     private var password by Delegates.notNull<String>()
     private val compositeDisposable = CompositeDisposable()
     private val viewModel = SignupViewModel()
+    var accountJid: AccountJid? = null
+
+    private val newAvatarImageUri: Uri by lazy {
+        File(requireContext().cacheDir, TEMP_FILE_NAME).toUri()
+    }
+
+    private var avatarData: ByteArray? = null
+    private var imageFileType: String? = null
+
+    private val KB_SIZE_IN_BYTES: Int = 1024
+    private var FINAL_IMAGE_SIZE: Int = 0
+    private var MAX_IMAGE_RESIZE: Int = 256
 
     override fun onVisibilityChanged(visible: Boolean) {
         if (visible)
@@ -72,6 +99,7 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
         username = requireArguments().getString(USERNAME_TAG) ?: ""
         host = requireArguments().getString(HOST_TAG) ?: ""
         password = requireArguments().getString(PASSWORD_TAG) ?: ""
+        accountJid = requireArguments().getParcelable(ACCOUNT_JID_TAG)
         when (stepCounter) {
             1 -> (activity as MainActivity).setToolbarTitle(R.string.signup_toolbar_title_1)
             2 -> (activity as MainActivity).setToolbarTitle(R.string.signup_toolbar_title_2)
@@ -115,8 +143,11 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
 
                     btnNext.setOnClickListener {
                         closeKeyboard()
-                        add(newInstance(2, signupEditText.text.toString(), host), FragmentTag.Signup2.toString())
-                        hide(this@SignupFragment)
+                        replace(
+                            newInstance(2, signupEditText.text.toString(), host),
+                            FragmentTag.Signup2.toString()
+                        )
+//                        hide(this@SignupFragment)
                     }
                 }
                 2 -> {
@@ -128,27 +159,54 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                         override fun afterTextChanged(p0: Editable?) {
-                            compositeDisposable.clear()
-                            val username: String = p0.toString()
-                            signupEditText.hint = if (username.isEmpty())
+
+                            btnNext.isEnabled = false
+                            signupSubtitle.text = resources.getString(R.string.signup_subtitle_2)
+                            changeSubtitleColor(R.color.grey_600)
+
+                            signupEditText.removeTextChangedListener(this)
+                            signupEditText.setText(p0.toString().lowercase().replace(' ', '.'))
+                            signupEditText.addTextChangedListener(this)
+                            signupEditText.setSelection(signupEditText.text.length)
+
+                            if (p0.toString() != signupEditText.text.toString()) {
+                                signupSubtitle.text =
+                                    resources.getString(R.string.signup_error_subtitle_2)
+                                changeSubtitleColor(R.color.red_600)
+                                btnNext.isEnabled = false
+                            }
+
+                            signupEditText.hint = if (p0.toString().isEmpty())
                                 resources.getString(R.string.signup_edit_text_label_2)
                             else
                                 ""
-                            if (username.length > 3) {
+                            if (p0.toString().length > 3) {
                                 (activity as MainActivity).setProgressBarAnimation(true)
+                                compositeDisposable.clear()
                                 compositeDisposable.add(
-                                    viewModel.checkIfNameAvailable(username, host)
+                                    viewModel.checkIfNameAvailable(p0.toString().trimStart(), host)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
+                                        .doAfterSuccess {
+                                            username = p0.toString().trimStart()
+                                            signupSubtitle.text =
+                                                resources.getString(R.string.signup_success_subtitle_2)
+                                            changeSubtitleColor(R.color.blue_600)
+                                            btnNext.isEnabled = true
+                                        }
+                                        .doOnDispose {
+                                            btnNext.isEnabled = false
+                                            signupSubtitle.text =
+                                                resources.getString(R.string.signup_subtitle_2)
+                                            changeSubtitleColor(R.color.grey_600)
+                                            (activity as MainActivity).setProgressBarAnimation(false)
+                                        }
                                         .doFinally {
                                             (activity as MainActivity).setProgressBarAnimation(false)
                                         }
-                                        .subscribe({
-                                            signupSubtitle.text = resources.getString(R.string.signup_success_subtitle_2)
-                                            changeSubtitleColor(R.color.blue_600)
-                                            btnNext.isEnabled = true
-                                        }, {
-                                            signupSubtitle.text = resources.getString(R.string.signup_error_subtitle_2)
+                                        .subscribe({}, {
+                                            signupSubtitle.text =
+                                                resources.getString(R.string.signup_error_subtitle_2)
                                             changeSubtitleColor(R.color.red_600)
                                             btnNext.isEnabled = false
                                             logError(it)
@@ -164,8 +222,7 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
 
                     btnNext.setOnClickListener {
                         closeKeyboard()
-                        add(newInstance(3, username, host), FragmentTag.Signup3.toString())
-                        hide(this@SignupFragment)
+                        replace(newInstance(3, username, host), FragmentTag.Signup3.toString())
                     }
                 }
                 3 -> {
@@ -183,29 +240,46 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                                 resources.getString(R.string.signup_edit_text_label_3)
                             else
                                 ""
-                            btnNext.isEnabled = password.length > 4
+                            btnNext.isEnabled = password.length > 5
                         }
                     })
 
                     btnNext.setOnClickListener {
-//                        (activity as MainActivity).setProgressBarAnimation(true)
-//                        compositeDisposable.add(
-//                            viewModel.registerAccount(username, host, password)
-//                                .subscribeOn(Schedulers.io())
-//                                .observeOn(AndroidSchedulers.mainThread())
-//                                .doFinally {
-//                                    (activity as MainActivity).setProgressBarAnimation(false)
-//                                }
-//                                .subscribe({
-//                                    (activity as MainActivity).accountJid =
-//                                        AccountJid.from(it.username, it.domain, Resourcepart.EMPTY)
-//                                    closeKeyboard()
-//                                }, {
-//                                    logError(it)
-//                                })
-//                        )
-                        add(newInstance(4, username, host), FragmentTag.Signup4.toString())
-                        hide(this@SignupFragment)
+                        (activity as MainActivity).setProgressBarAnimation(true)
+                        compositeDisposable.clear()
+                        compositeDisposable.add(
+                            viewModel.registerAccount(username, host, password)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .doAfterSuccess {
+                                    accountJid = AccountJid.from(
+                                        Localpart.from(it.username),
+                                        domainBareFrom(
+                                            Domainpart.from(it.domain)
+                                        ),
+                                        Resourcepart.EMPTY
+                                    )
+                                    closeKeyboard()
+                                    clearBackstack()
+                                    replace(
+                                        newInstance(4, username, host),
+                                        FragmentTag.Signup4.toString(),
+                                        APP_FM_BACKSTACK_NONE
+                                    )
+                                    remove(
+                                        parentFragmentManager.findFragmentByTag(FragmentTag.Start.toString()) as StartFragment
+                                    )
+                                }
+                                .doOnDispose {
+                                    (activity as MainActivity).setProgressBarAnimation(false)
+                                }
+                                .doFinally {
+                                    (activity as MainActivity).setProgressBarAnimation(false)
+                                }
+                                .subscribe({}, {
+                                    logError(it)
+                                })
+                        )
                     }
                 }
                 4 -> {
@@ -226,14 +300,12 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                     }
 
                     btnNext.setOnClickListener {
+//                        checkAvatarSizeAndPublish()
                         Toast.makeText(
                             requireContext(),
-                            resources.getString(R.string.feature_not_created)
-                            , Toast.LENGTH_SHORT
+                            resources.getString(R.string.feature_not_created), Toast.LENGTH_SHORT
                         ).show()
                     }
-
-                    // clearBackstack<SignupFragment>()
                 }
             }
         }
@@ -323,7 +395,149 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
     }
 
     private fun changeSubtitleColor(@ColorRes colorId: Int) {
-        binding.signupSubtitle.setTextColor(ResourcesCompat.getColor(resources, colorId, requireContext().theme))
+        binding.signupSubtitle.setTextColor(
+            ResourcesCompat.getColor(
+                resources,
+                colorId,
+                requireContext().theme
+            )
+        )
+    }
+
+    private fun checkAvatarSizeAndPublish() {
+        val file = File(newAvatarImageUri.path!!)
+        if (file.length() / KB_SIZE_IN_BYTES > 35) {
+            Toast.makeText(
+                requireContext(),
+                "Image is too big, commencing additional processing!",
+                Toast.LENGTH_LONG
+            ).show()
+            resize(newAvatarImageUri)
+            return
+        }
+        Toast.makeText(requireContext(), "Started Avatar Publishing!", Toast.LENGTH_LONG).show()
+
+        FINAL_IMAGE_SIZE = MAX_IMAGE_RESIZE
+        MAX_IMAGE_RESIZE = 256
+        saveAvatar()
+    }
+
+    private fun resize(src: Uri) {
+        LogManager.d("resize", src.toString())
+        Glide.with(this).asBitmap().load(src)
+            .override(AccountActivity.MAX_IMAGE_RESIZE, AccountActivity.MAX_IMAGE_RESIZE)
+            .diskCacheStrategy(DiskCacheStrategy.NONE).skipMemoryCache(true)
+            .into(object : CustomTarget<Bitmap?>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap?>?
+                ) {
+                    Application.getInstance().runInBackgroundUserRequest {
+                        val cR = Application.getInstance().applicationContext.contentResolver
+                        imageFileType = cR.getType(newAvatarImageUri)
+                        val stream = ByteArrayOutputStream()
+                        if (imageFileType == "image/png") {
+                            resource.compress(Bitmap.CompressFormat.PNG, 90, stream)
+                        } else resource.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+                        val data = stream.toByteArray()
+                        if (data.size > 35 * KB_SIZE_IN_BYTES) {
+                            AccountActivity.MAX_IMAGE_RESIZE =
+                                AccountActivity.MAX_IMAGE_RESIZE - AccountActivity.MAX_IMAGE_RESIZE / 8
+                            if (AccountActivity.MAX_IMAGE_RESIZE == 0) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    R.string.error_during_image_processing,
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                                return@runInBackgroundUserRequest
+                            }
+                            resize(src)
+                            return@runInBackgroundUserRequest
+                        }
+                        resource.recycle()
+                        try {
+                            stream.close()
+                        } catch (e: IOException) {
+                            LogManager.e("resize", e.toString())
+                        }
+                        val rotatedImage: Uri? =
+                            if (imageFileType == "image/png") {
+                                FileManager.savePNGImage(data, "resize")
+                            } else {
+                                FileManager.saveImage(data, "resize")
+                            }
+                        if (rotatedImage == null) return@runInBackgroundUserRequest
+                        try {
+                            newAvatarImageUri.path?.let {
+                                FileUtils.writeByteArrayToFile(
+                                    File(it),
+                                    data
+                                )
+                            }
+                        } catch (e: IOException) {
+                            LogManager.e("resize", e.toString())
+                        }
+                        Application.getInstance().runOnUiThread { checkAvatarSizeAndPublish() }
+                    }
+                }
+
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    super.onLoadFailed(errorDrawable)
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.error_during_image_processing,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {}
+            })
+    }
+
+    private fun saveAvatar() {
+        val userAvatarManager =
+            UserAvatarManager.getInstanceFor(AccountManager.getAccount(accountJid)?.connection)
+        try {
+            if (userAvatarManager.isSupportedByServer) {
+                avatarData = VCard.getBytes(URL(newAvatarImageUri.toString()))
+                val sh1 = AvatarManager.getAvatarHash(avatarData)
+                AvatarManager.getInstance()
+                    .onAvatarReceived(accountJid!!.fullJid.asBareJid(), sh1, avatarData, "xep")
+            }
+        } catch (e: Exception) {
+            LogManager.exception(this, e)
+        }
+        Application.getInstance().runInBackgroundUserRequest {
+            if (avatarData != null) {
+                try {
+                    if (imageFileType == "image/png") {
+                        userAvatarManager.publishAvatar(
+                            avatarData,
+                            AccountActivity.FINAL_IMAGE_SIZE,
+                            AccountActivity.FINAL_IMAGE_SIZE
+                        )
+                    } else userAvatarManager.publishAvatarJPG(
+                        avatarData,
+                        AccountActivity.FINAL_IMAGE_SIZE,
+                        AccountActivity.FINAL_IMAGE_SIZE
+                    )
+                    Application.getInstance().runOnUiThread {
+                        Toast.makeText(requireContext(), "Avatar published!", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                } catch (e: Exception) {
+                    LogManager.exception(this, e)
+                    Application.getInstance().runOnUiThread {
+                        Toast.makeText(
+                            requireContext(),
+                            "Avatar publishing failed",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
     }
 
     companion object {
@@ -332,13 +546,15 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
         private const val USERNAME_TAG = "USERNAME_TAG"
         private const val HOST_TAG = "HOST_TAG"
         private const val PASSWORD_TAG = "PASSWORD_TAG"
+        private const val ACCOUNT_JID_TAG = "ACCOUNT_JID_TAG"
 
         @JvmStatic
         fun newInstance(
             stepCounter: Int = 1,
             username: String = "",
             host: String = "",
-            password: String = ""
+            password: String = "",
+            jid: AccountJid? = null
         ): SignupFragment {
             val args = Bundle()
             val fragment = SignupFragment()
@@ -347,6 +563,7 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
             args.putString(USERNAME_TAG, username)
             args.putString(HOST_TAG, host)
             args.putString(PASSWORD_TAG, password)
+            args.putParcelable(ACCOUNT_JID_TAG, jid)
 
             fragment.arguments = args
             return fragment

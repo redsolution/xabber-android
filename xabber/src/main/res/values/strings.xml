@@ -9,7 +9,8 @@
     <string name="feature_not_created">This feature has not been implemented yet</string>
 
     <!-- ToolbarFragment -->
-    <string name="signin_toolbar_title">Sign In</string>
+    <string name="signin_toolbar_title_1">Sign In</string>
+    <string name="signin_toolbar_title_2">Server features</string>
     <string name="signup_toolbar_title_1">Sign Up</string>
     <string name="signup_toolbar_title_2">Username</string>
     <string name="signup_toolbar_title_3">Password</string>
@@ -26,11 +27,26 @@
 
 
     <!-- SigninFragment -->
-    <string name="signin_title_label">Hi! Connect to your existing XMPP ID</string>
+    <string name="signin_title_label_1">Hi! Connect to your existing XMPP ID</string>
+    <string name="signin_title_label_template_2">Hang on there a second! Checking if %1$s supports all necessary features.</string>
     <string name="signin_edit_text_jid_label">username@xabber.com</string>
     <string name="signin_edit_text_password_label">password</string>
-    <string name="signin_subtitle_label">If you don\'t have an account yet, press here to sign up for an account on xabber.org server.</string>
+    <string name="signin_subtitle_label_1">If you don\'t have an account yet, press here to sign up for an account on xabber.org server.</string>
+    <string name="signin_subtitle_label_2">Shiny! Everything\'s fine! Press the button below and start messaging r-r-right away!!</string>
+    <string name="signin_rock_button_label">Let\'s rock!</string>
+    <string name="signin_subtitle_error_message">Invalid username or password</string>
     <string name="signin_connect_button_label">Connect</string>
+
+    <string name="feature_name_1">Communicating with server</string>
+    <string name="feature_name_2">Checking credentials</string>
+    <string name="feature_name_3">Requesting sever capabilities</string>
+    <string name="feature_name_4">Message archive</string>
+    <string name="feature_name_5">Synchronization</string>
+    <string name="feature_name_6">Push notifications</string>
+    <string name="feature_name_7">Message editing</string>
+    <string name="feature_name_8">Device management</string>
+    <string name="feature_name_9">Publish-subscribe</string>
+    <string name="feature_name_10">File upload</string>
 
     <!-- SignupFragment -->
     <string name="signup_title_label_1">Let’s get Started!\nWhat’s your name?</string>

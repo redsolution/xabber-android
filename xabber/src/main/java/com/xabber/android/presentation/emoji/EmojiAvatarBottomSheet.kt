@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -88,7 +86,7 @@ class EmojiAvatarBottomSheet : BottomSheetDialogFragment() {
         }
 
         with(binding) {
-            toggles[binding.blueTint]!!.isVisible = true
+            toggles[blueTint]!!.isVisible = true
             avatarBackground.setOnClickListener {
                 EmojiKeyboardBottomSheet().show(requireFragmentManager(), null)
             }
@@ -96,7 +94,9 @@ class EmojiAvatarBottomSheet : BottomSheetDialogFragment() {
                 EmojiKeyboardBottomSheet().show(requireFragmentManager(), null)
             }
             saveButton.setOnClickListener {
-                val bitmap = viewModel.getBitmapFromView(requireContext(), binding.avatarBackground)
+                val avatar = avatarBackground
+                avatar.radius = 0F
+                val bitmap = viewModel.getBitmapFromView(requireContext(), avatar)
                 val fragment =
                     requireFragmentManager().findFragmentByTag(FragmentTag.Signup4.toString()) as SignupFragment
                 fragment.setAvatar(bitmap)
