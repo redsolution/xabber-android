@@ -289,5 +289,6 @@
     <color name="white_text_disabled">#4dffffff</color>
     <color name="white_text_secondary">#b3ffffff</color>
     <color name="white_text">#ffffff</color>
+    <color name="grey_text">#99616161</color>
 
 </resources>

@@ -27,6 +27,7 @@ import com.xabber.android.data.Application
 import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.ActivityMainNewBinding
+import com.xabber.android.presentation.base.APP_FM_BACKSTACK
 import com.xabber.android.presentation.base.BaseFragment
 import com.xabber.android.presentation.base.FragmentTag
 import com.xabber.android.presentation.signup.SignupFragment
@@ -55,28 +56,31 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
         setContentView(binding.root)
 
         initStartupFragment()
-        setToolbar(ToolbarFragment())
+        setToolbar()
         supportFragmentManager.addOnBackStackChangedListener {
             var fragmentContent = supportFragmentManager.findFragmentById(R.id.content_container)
             val fragmentToolbar =
-                supportFragmentManager.findFragmentById(R.id.toolbar_container) as ToolbarFragment
+                supportFragmentManager.findFragmentById(R.id.toolbar_container) as? ToolbarFragment
 
             if (fragmentContent != null) {
                 if (fragmentContent is SignupFragment)
                     fragmentContent.closeKeyboard()
             }
 
-            binding.toolbarContainer.isVisible = supportFragmentManager.backStackEntryCount > 0
 
             fragmentContent =
                 supportFragmentManager.findFragmentByTag(FragmentTag.Signup4.toString())
 
+            binding.toolbarContainer.isVisible = supportFragmentManager.backStackEntryCount > 1 ||
+                    fragmentContent != null
+
+
             if (fragmentContent != null) {
-                fragmentToolbar.showSkipButton(true)
-                fragmentToolbar.showBackButton(false)
+                fragmentToolbar?.showSkipButton(true)
+                fragmentToolbar?.showBackButton(false)
             } else {
-                fragmentToolbar.showSkipButton(false)
-                fragmentToolbar.showBackButton(true)
+                fragmentToolbar?.showSkipButton(false)
+                fragmentToolbar?.showBackButton(true)
             }
         }
     }
@@ -84,8 +88,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
     override fun onBackPressed() {
         var fragment: Fragment?
         when (supportFragmentManager.backStackEntryCount) {
-            0 -> finish()
-            1 -> {
+            1 -> finish()
+            2 -> {
                 fragment = supportFragmentManager.findFragmentByTag(FragmentTag.Start.toString())
                 if (fragment != null && fragment.isHidden)
                     showFragment(fragment)
@@ -164,6 +168,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
     private fun AppCompatActivity.initStartupFragment() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.content_container, StartFragment(), FragmentTag.Start.toString())
+            .addToBackStack(APP_FM_BACKSTACK)
             .commit()
     }
 
@@ -173,9 +178,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
             .commit()
     }
 
-    fun setToolbar(fragment: BaseFragment) {
+    fun setToolbar(fragment: BaseFragment = ToolbarFragment()) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.toolbar_container, fragment)
+            .replace(R.id.toolbar_container, fragment, FragmentTag.Toolbar.toString())
             .commit()
         binding.toolbarContainer.visibility = View.GONE
     }
@@ -186,16 +191,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main_new) {
             (fragment as ToolbarFragment).setToolbarTitle(titleId)
     }
 
-    fun popBackStackFragment() {
-        onBackPressed()
-    }
-
-    fun setProgressBarAnimation(isAnimate: Boolean) {
-        binding.progressBar.visibility =
-//            if (isAnimate)
-//                View.VISIBLE
-//            else
-                View.GONE
+    fun showToolbarBackButton(flag: Boolean) {
+        val fragment = supportFragmentManager.findFragmentById(R.id.toolbar_container)
+        if (fragment != null)
+            (fragment as ToolbarFragment).showBackButton(flag)
     }
 
     fun onTakePhoto() {

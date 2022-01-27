@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
+    android:background="@color/white"
     android:layout_height="56dp">
 
     <ImageView
@@ -13,6 +14,7 @@
         app:srcCompat="@drawable/ic_material_chevron_left_variant_24"
         app:layout_constraintDimensionRatio="25:44"
         android:layout_marginLeft="6dp"
+        android:focusable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

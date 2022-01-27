@@ -1,9 +1,14 @@
 package com.xabber.android.presentation.signin
 
+import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.text.*
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
@@ -12,10 +17,13 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.xabber.android.R
 import com.xabber.android.databinding.FragmentSigninBinding
 import com.xabber.android.presentation.base.BaseFragment
+import com.xabber.android.presentation.base.FragmentTag
 import com.xabber.android.presentation.main.MainActivity
 import com.xabber.android.presentation.signin.feature.FeatureAdapter
 import com.xabber.android.presentation.signin.feature.State
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import com.xabber.android.presentation.signup.SignupFragment
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -26,18 +34,23 @@ class SigninFragment : BaseFragment(R.layout.fragment_signin) {
     private val binding by viewBinding(FragmentSigninBinding::bind)
     private val viewModel = SigninViewModel()
     private var featureAdapter: FeatureAdapter? = null
-    private val compositeDisposable = CompositeDisposable()
-    lateinit var host: String
+    var host: String = "dev.xabber.org"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        host = requireArguments().getString(HOST_TAG) ?: ""
-        if (host.isEmpty())
-            remove(this)
+        compositeDisposable.add(viewModel.getHost()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ host ->
+                this.host = host.list[0].name
+            }, this@SigninFragment::logError)
+        )
 
         (activity as MainActivity).setToolbarTitle(R.string.signin_toolbar_title_1)
         with(binding) {
+            signinSubtitle1.text = getSubtitleClickableSpan()
+            signinSubtitle1.movementMethod = LinkMovementMethod.getInstance()
             signinJidEditText.setOnFocusChangeListener { _, hasFocused ->
                 when {
                     hasFocused ->
@@ -78,7 +91,8 @@ class SigninFragment : BaseFragment(R.layout.fragment_signin) {
                             requireContext().theme
                         )
                     )
-                    signinSubtitle1.text = resources.getString(R.string.signin_subtitle_label_1)
+                    signinSubtitle1.text = getSubtitleClickableSpan()
+                    signinSubtitle1.movementMethod = LinkMovementMethod.getInstance()
                 }
             })
             signinPasswordEditText.addTextChangedListener(object : TextWatcher {
@@ -97,9 +111,18 @@ class SigninFragment : BaseFragment(R.layout.fragment_signin) {
                             requireContext().theme
                         )
                     )
-                    signinSubtitle1.text = resources.getString(R.string.signin_subtitle_label_1)
+                    signinSubtitle1.text = getSubtitleClickableSpan()
+                    signinSubtitle1.movementMethod = LinkMovementMethod.getInstance()
                 }
             })
+            signinPasswordEditText.setOnEditorActionListener { _, i, _ ->
+                if (i == EditorInfo.IME_ACTION_DONE) {
+                    btnConnect.performClick()
+                    closeKeyboard()
+                    return@setOnEditorActionListener true
+                }
+                return@setOnEditorActionListener false
+            }
             with(rvFeature) {
                 adapter = FeatureAdapter()
                     .also { featureAdapter = it }
@@ -113,12 +136,13 @@ class SigninFragment : BaseFragment(R.layout.fragment_signin) {
                             if (list.filter { it.nameResId == R.string.feature_name_4 }
                                     .count() == 1) {
                                 (activity as MainActivity).setToolbarTitle(R.string.signin_toolbar_title_2)
+                                (activity as MainActivity).showToolbarBackButton(false)
                                 signinTitle.text = String.format(
                                     resources.getString(R.string.signin_title_label_template_2),
                                     host
                                 )
-                                signinJidEditText.isVisible = false
-                                signinPasswordEditText.isVisible = false
+                                signinJidEditText.visibility = View.GONE
+                                signinPasswordEditText.visibility = View.GONE
                                 signinSubtitle1.isVisible = false
                                 btnConnect.isVisible = false
                             }
@@ -135,11 +159,10 @@ class SigninFragment : BaseFragment(R.layout.fragment_signin) {
 //                                    State.Error
                                 if (viewModel.isServerFeatures) {
                                     featureAdapter?.submitList(list)
-                                    featureAdapter?.notifyDataSetChanged()
+                                    featureAdapter?.notifyItemChanged(list.lastIndex)
                                 }
                                 if (list.filter { it.nameResId == R.string.feature_name_10 }
                                         .count() == 1) {
-                                    divider.isVisible = true
                                     signinSubtitle2.isVisible = true
                                     btnRock.isVisible = true
                                     btnRock.setOnClickListener {
@@ -183,9 +206,54 @@ class SigninFragment : BaseFragment(R.layout.fragment_signin) {
         }
     }
 
+    private fun closeKeyboard() {
+        (requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+            binding.signinPasswordEditText.windowToken,
+            0
+        )
+    }
+
+    private fun getSubtitleClickableSpan(): Spannable {
+        val spannable =
+            SpannableStringBuilder(resources.getString(R.string.signin_subtitle_label_1))
+        spannable.setSpan(
+            ForegroundColorSpan(
+                ResourcesCompat.getColor(
+                    resources,
+                    R.color.blue_600,
+                    requireContext().theme
+                )
+            ),
+            34,
+            44,
+            Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+        )
+        spannable.setSpan(
+            object : ClickableSpan() {
+                override fun onClick(p0: View) {
+                    parentFragmentManager.popBackStack()
+                    replace(
+                        SignupFragment.newInstance(
+                            stepCounter = 1,
+                            host = host
+                        ), FragmentTag.Signup1.toString()
+                    )
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.isUnderlineText = false
+                }
+            },
+            34,
+            44,
+            Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+        )
+        return spannable
+    }
+
     override fun onDestroy() {
         featureAdapter = null
-        compositeDisposable.clear()
         super.onDestroy()
     }
 }

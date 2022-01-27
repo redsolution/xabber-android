@@ -18,7 +18,7 @@ class ToolbarFragment: BaseFragment(R.layout.fragment_toolbar) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnBack.setOnClickListener {
-            (activity as MainActivity).popBackStackFragment()
+            (activity as MainActivity).onBackPressed()
         }
 
         binding.btnSkip.setOnClickListener {

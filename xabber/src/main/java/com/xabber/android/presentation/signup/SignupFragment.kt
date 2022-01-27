@@ -12,12 +12,14 @@ import android.text.TextWatcher
 import android.text.method.PasswordTransformationMethod
 import android.util.TypedValue
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import androidx.core.view.setPadding
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
@@ -36,17 +38,15 @@ import com.xabber.android.data.extension.file.FileManager
 import com.xabber.android.data.log.LogManager
 import com.xabber.android.databinding.FragmentSignupBinding
 import com.xabber.android.presentation.avatar.AvatarBottomSheet
-import com.xabber.android.presentation.base.APP_FM_BACKSTACK_NONE
+import com.xabber.android.presentation.base.APP_FM_BACKSTACK
 import com.xabber.android.presentation.base.BaseFragment
 import com.xabber.android.presentation.base.FragmentTag
 import com.xabber.android.presentation.main.MainActivity
-import com.xabber.android.presentation.start.StartFragment
 import com.xabber.android.ui.activity.AccountActivity
 import com.xabber.android.util.AppConstants.TEMP_FILE_NAME
 import com.xabber.android.util.dp
 import com.xabber.xmpp.avatar.UserAvatarManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.*
 import org.apache.commons.io.FileUtils
@@ -70,7 +70,6 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
     private var username by Delegates.notNull<String>()
     private var host by Delegates.notNull<String>()
     private var password by Delegates.notNull<String>()
-    private val compositeDisposable = CompositeDisposable()
     private val viewModel = SignupViewModel()
     var accountJid: AccountJid? = null
 
@@ -126,10 +125,25 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                         )
                 }
             }
+            signupEditText.setOnEditorActionListener { _, i, _ ->
+                if (i == EditorInfo.IME_ACTION_DONE) {
+                    btnNext.performClick()
+                    closeKeyboard()
+                    return@setOnEditorActionListener true
+                }
+                return@setOnEditorActionListener false
+            }
             when (stepCounter) {
                 1 -> {
                     signupEditText.addTextChangedListener(object : TextWatcher {
-                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+                        override fun beforeTextChanged(
+                            p0: CharSequence?,
+                            p1: Int,
+                            p2: Int,
+                            p3: Int
+                        ) {
+                        }
+
                         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                         override fun afterTextChanged(p0: Editable?) {
                             val name: String = p0.toString()
@@ -181,7 +195,6 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                             else
                                 ""
                             if (p0.toString().length > 3) {
-                                (activity as MainActivity).setProgressBarAnimation(true)
                                 compositeDisposable.clear()
                                 compositeDisposable.add(
                                     viewModel.checkIfNameAvailable(p0.toString().trimStart(), host)
@@ -199,10 +212,6 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                                             signupSubtitle.text =
                                                 resources.getString(R.string.signup_subtitle_2)
                                             changeSubtitleColor(R.color.grey_600)
-                                            (activity as MainActivity).setProgressBarAnimation(false)
-                                        }
-                                        .doFinally {
-                                            (activity as MainActivity).setProgressBarAnimation(false)
                                         }
                                         .subscribe({}, {
                                             signupSubtitle.text =
@@ -245,7 +254,9 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                     })
 
                     btnNext.setOnClickListener {
-                        (activity as MainActivity).setProgressBarAnimation(true)
+                        progressBar.isVisible = true
+                        btnNext.isEnabled = false
+                        btnNext.text = ""
                         compositeDisposable.clear()
                         compositeDisposable.add(
                             viewModel.registerAccount(username, host, password)
@@ -261,20 +272,17 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                                     )
                                     closeKeyboard()
                                     clearBackstack()
+                                    clearBackstack(null)
                                     replace(
                                         newInstance(4, username, host),
                                         FragmentTag.Signup4.toString(),
-                                        APP_FM_BACKSTACK_NONE
-                                    )
-                                    remove(
-                                        parentFragmentManager.findFragmentByTag(FragmentTag.Start.toString()) as StartFragment
+                                        APP_FM_BACKSTACK
                                     )
                                 }
                                 .doOnDispose {
-                                    (activity as MainActivity).setProgressBarAnimation(false)
-                                }
-                                .doFinally {
-                                    (activity as MainActivity).setProgressBarAnimation(false)
+                                    progressBar.isVisible = false
+                                    btnNext.isEnabled = true
+                                    btnNext.text = resources.getString(R.string.signup_next_button)
                                 }
                                 .subscribe({}, {
                                     logError(it)
@@ -309,13 +317,7 @@ class SignupFragment : BaseFragment(R.layout.fragment_signup), OnKeyboardVisibil
                 }
             }
         }
-
         setKeyboardVisibilityListener(this@SignupFragment)
-    }
-
-    override fun onDestroy() {
-        compositeDisposable.clear()
-        super.onDestroy()
     }
 
     private fun setKeyboardVisibilityListener(onKeyboardVisibilityListener: OnKeyboardVisibilityListener) {

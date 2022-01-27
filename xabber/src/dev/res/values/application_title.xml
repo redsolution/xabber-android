@@ -13,8 +13,8 @@
 -->
 <resources>
     <string name="application_title_short">Xabber</string>
-    <string name="application_title_full">Xabber Dev</string>
-    <string name="application_title_prefix">Dev</string>
+    <string name="application_title_full">Xabber NG</string>
+    <string name="application_title_prefix">NG</string>
     <string name="caps_entity_node">https://www.xabber.com/</string>
     <string name="xabber_xmpp_host">xabber.org</string>
 </resources>

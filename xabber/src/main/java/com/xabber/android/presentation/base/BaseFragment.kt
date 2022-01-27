@@ -5,12 +5,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.xabber.android.R
 import com.xabber.android.data.log.LogManager
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 const val APP_FM_BACKSTACK = "APP_FM_BACKSTACK"
 const val APP_FM_BACKSTACK_NONE = "APP_FM_BACKSTACK_NONE"
 const val CONTENT_CONTAINER_ID = R.id.content_container
 
 enum class FragmentTag(fragmentTag: String) {
+    Toolbar("Toolbar"),
     Start("Start"),
     Signup1("SignUp_1"),
     Signup2("SignUp_2"),
@@ -20,6 +22,13 @@ enum class FragmentTag(fragmentTag: String) {
 }
 
 abstract class BaseFragment(@LayoutRes contentLayoutId: Int) : Fragment(contentLayoutId) {
+
+    protected val compositeDisposable = CompositeDisposable()
+
+    override fun onDestroy() {
+        compositeDisposable.clear()
+        super.onDestroy()
+    }
 
 //    protected fun <T : Fragment> add(
 //        fragment: T,

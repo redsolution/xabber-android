@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:paddingVertical="8dp"
     xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
@@ -10,10 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginEnd="64dp"
-        android:layout_marginRight="64dp"
         android:textColor="@color/black_text"
-        android:singleLine="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true"
@@ -24,11 +23,9 @@
         android:id="@+id/feature_result"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_margin="8dp"
         android:visibility="visible"
         tools:src="@drawable/ic_material_check_circle_24"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentBottom="true" />
 
@@ -38,8 +35,6 @@
         android:layout_height="24dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="8dp"
         android:visibility="visible" />
 </RelativeLayout>

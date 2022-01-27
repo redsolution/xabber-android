@@ -430,6 +430,7 @@
     <color name="status_color_in_contact_list">#96616161</color>
 
     <color name="forwarded_background_color">#007aff</color>
+    <color name="border_color">#1ABBDEFB</color>
 
     <item name="contact_list_contact_small_right_icon_alpha_light" format="float" type="dimen">0.2</item>
     <item name="contact_list_contact_small_right_icon_alpha_dark" format="float" type="dimen">0.2</item>

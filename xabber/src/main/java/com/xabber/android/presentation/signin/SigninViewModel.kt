@@ -2,15 +2,22 @@ package com.xabber.android.presentation.signin
 
 import androidx.lifecycle.ViewModel
 import com.xabber.android.R
+import com.xabber.android.data.dto.HostListDto
+import com.xabber.android.data.repository.AccountRepository
 import com.xabber.android.presentation.signin.feature.Feature
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 
 const val JID_REGEX = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
 
 class SigninViewModel : ViewModel() {
+
+    val accountRepository = AccountRepository()
+
+    fun getHost(): Single<HostListDto> = accountRepository.getHostList()
 
     var _features = mutableListOf(
         Feature(R.string.feature_name_1),
