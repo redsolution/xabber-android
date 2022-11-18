@@ -46,6 +46,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_title_full"
         android:theme="@style/Theme"
+        android:usesCleartextTraffic="true"
         tools:replace="label, icon, allowBackup"
         android:requestLegacyExternalStorage="true"
         android:hardwareAccelerated="true">
