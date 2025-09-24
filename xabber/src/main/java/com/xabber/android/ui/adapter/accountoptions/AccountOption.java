@@ -5,10 +5,9 @@ import androidx.annotation.StringRes;
 
 import com.xabber.android.R;
 
-public enum  AccountOption {
+public enum AccountOption {
     CONNECTION_SETTINGS(R.drawable.ic_settings_grey600_24dp, R.string.account_connection_settings),
     SESSIONS(R.drawable.ic_key, R.string.account_connected_devices),
-    VCARD(R.drawable.ic_vcard_contact_info_24dp, R.string.account_vcard),
     SYNCHRONIZATION(R.drawable.ic_cloud_sync, R.string.account_sync),
     COLOR(R.drawable.ic_color_lens_grey600_24dp, R.string.account_color),
     BLOCK_LIST(R.drawable.ic_block_grey600_24dp, R.string.blocked_contacts),
@@ -49,5 +48,4 @@ public enum  AccountOption {
     public static AccountOption[] getValues() {
         return AccountOption.values();
     }
-
 }

@@ -44,7 +44,7 @@ import org.greenrobot.eventbus.ThreadMode;
  * @author alexander.ivanov
  */
 public abstract class ManagedActivity extends AppCompatActivity {
-
+    private boolean isEventBusRegistered = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ActivityManager.getInstance().onCreate(this);
@@ -53,20 +53,30 @@ public abstract class ManagedActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        EventBus.getDefault().register(this);
+        if (!isEventBusRegistered) {
+            EventBus.getDefault().register(this); // Line 56
+            isEventBusRegistered = true;
+        }
         ActivityManager.getInstance().onResume(this);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        EventBus.getDefault().unregister(this);
+        if (isEventBusRegistered) {
+            EventBus.getDefault().unregister(this);
+            isEventBusRegistered = false;
+        }
         ActivityManager.getInstance().onPause(this);
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
+        if (isEventBusRegistered) {
+            EventBus.getDefault().unregister(this);
+            isEventBusRegistered = false;
+        }
         ActivityManager.getInstance().onDestroy(this);
         super.onDestroy();
     }

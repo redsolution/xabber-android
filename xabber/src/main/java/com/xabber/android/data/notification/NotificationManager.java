@@ -119,7 +119,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         handler = new Handler();
         providers = new ArrayList<>();
         clearNotifications = PendingIntent.getActivity(
-                application, 0, ClearNotificationsActivity.createIntent(application), 0
+                application, 0, ClearNotificationsActivity.createIntent(application), PendingIntent.FLAG_IMMUTABLE
         );
 
         stopVibration = new Runnable() {
@@ -247,7 +247,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         taskStackBuilder.addNextIntentWithParentStack(top.getIntent());
 
         notificationBuilder.setContentIntent(
-                taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+                taskStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT| PendingIntent.FLAG_IMMUTABLE)
         );
 
         if (ticker != null) {
@@ -363,7 +363,7 @@ public class NotificationManager implements OnInitializedListener, OnAccountChan
         }
 
         persistentNotificationBuilder.setContentIntent(PendingIntent.getActivity(
-                application, 0, persistentIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                application, 0, persistentIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE)
         );
 
         notify(PERSISTENT_NOTIFICATION_ID, persistentNotificationBuilder.build());

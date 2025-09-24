@@ -49,6 +49,7 @@
     <ImageButton
         android:id="@+id/show_calls_button"
         android:layout_width="0dp"
+        android:visibility="gone"
         android:layout_height="match_parent"
         app:srcCompat="@drawable/ic_call_white"
         android:background="@color/transparent"

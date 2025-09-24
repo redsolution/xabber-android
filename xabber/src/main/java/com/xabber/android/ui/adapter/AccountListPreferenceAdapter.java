@@ -1,9 +1,5 @@
 package com.xabber.android.ui.adapter;
 
-/**
- * Created by valery.miller on 29.08.17.
- */
-
 import android.app.Activity;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -39,11 +35,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
-    @SuppressWarnings("WeakerAccess")
-    static final String LOG_TAG = AccountListAdapter.class.getSimpleName();
-    @SuppressWarnings("WeakerAccess")
+    static final String LOG_TAG = AccountListPreferenceAdapter.class.getSimpleName();
     List<AccountItem> accountItems;
-    @SuppressWarnings("WeakerAccess")
     Listener listener;
     Activity activity;
 
@@ -123,12 +116,8 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
     }
 
     public interface Listener {
-        void onAccountClick(AccountJid account);
-
         void onEditAccountStatus(AccountItem accountItem);
-
         void onEditAccount(AccountItem accountItem);
-
         void onDeleteAccount(AccountItem accountItem);
     }
 
@@ -139,7 +128,6 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
         TextView name;
         TextView status;
         SwitchCompat enabledSwitch;
-
 
         AccountViewHolder(View itemView) {
             super(itemView);
@@ -152,7 +140,7 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             // I used on click listener instead of on checked change listener to avoid callback in onBindViewHolder
             enabledSwitch.setOnClickListener(this);
 
-            itemView.setOnClickListener(this);
+            // Removed itemView.setOnClickListener to disable navigation to AccountActivity
             itemView.setOnCreateContextMenuListener(this);
         }
 
@@ -166,16 +154,10 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
 
             AccountItem accountItem = accountItems.get(adapterPosition);
 
-            switch (v.getId()) {
-                case R.id.item_account_switch:
-                    AccountManager.INSTANCE.setEnabled(
-                            accountItem.getAccount(), enabledSwitch.isChecked()
-                    );
-                    break;
-                default:
-                    if (listener != null) {
-                        listener.onAccountClick(accountItem.getAccount());
-                    }
+            if (v.getId() == R.id.item_account_switch) {
+                AccountManager.INSTANCE.setEnabled(
+                        accountItem.getAccount(), enabledSwitch.isChecked()
+                );
             }
         }
 
@@ -199,8 +181,6 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
             menu.findItem(R.id.action_account_edit_status).setOnMenuItemClickListener(this);
             menu.findItem(R.id.action_account_edit).setOnMenuItemClickListener(this);
             menu.findItem(R.id.action_account_delete).setOnMenuItemClickListener(this);
-
-
         }
 
         @Override
@@ -217,18 +197,15 @@ public class AccountListPreferenceAdapter extends RecyclerView.Adapter {
                 case R.id.action_account_edit_status:
                     listener.onEditAccountStatus(accountItem);
                     return true;
-
                 case R.id.action_account_edit:
                     listener.onEditAccount(accountItem);
                     return true;
                 case R.id.action_account_delete:
                     listener.onDeleteAccount(accountItem);
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
     }
-
 }
-

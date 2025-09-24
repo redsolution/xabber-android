@@ -1,18 +1,18 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.frogermcs.androiddevmetrics'
-apply plugin: "kotlinx-serialization"
+//apply plugin: 'com.frogermcs.androiddevmetrics'
+//apply plugin: "kotlinx-serialization"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
     buildToolsVersion '29.0.3'
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 1082
-        versionName '3.0.1(1082)'
+        targetSdkVersion 35
+        versionCode 1085
+        versionName '3.0.3(1085)'
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -200,12 +200,12 @@ dependencies {
     implementation "net.gcardone.junidecode:junidecode:0.4.1" //Apache-2.0 License
 
     // leak canary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:2.14'
 
     // block canary
-    debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
-    releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
+//    debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
+//    releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
 
     // test
     testImplementation 'junit:junit:4.12'
@@ -226,6 +226,11 @@ dependencies {
 }
 
 configurations {
-    all*.exclude group: 'xpp3', module: 'xpp3'
-    all*.exclude group: 'com.google.guava', module:'guava-jdk5'
+    all {
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'com.google.guava', module: 'guava-jdk5'
+        exclude group: 'com.google.guava', module: 'guava'
+        exclude group: 'junit', module: 'junit-dep'
+        exclude module: 'android.car' // Explicitly exclude android.car.jar
+    }
 }

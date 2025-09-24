@@ -24,9 +24,8 @@ import android.os.StrictMode;
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
-import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
-import com.github.moduth.blockcanary.BlockCanary;
-import com.squareup.leakcanary.LeakCanary;
+//import com.frogermcs.androiddevmetrics.AndroidDevMetrics;
+//import com.github.moduth.blockcanary.BlockCanary;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -317,32 +316,8 @@ public class Application extends android.app.Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        if (BuildConfig.DEBUG) {
-            /* Leak Canary */
-            if (LeakCanary.isInAnalyzerProcess(this)) {
-                // This process is dedicated to LeakCanary for heap analysis.
-                // You should not init your app in this process.
-                return;
-            }
-            LeakCanary.install(this);
-
-            /* Block Canary */
-            BlockCanary.install(this, new AppBlockCanaryContext()).start();
-
-            /* Android Dev Metrics */
-            AndroidDevMetrics.initWith(this);
-
-            /* Strict Mode */
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                    .detectDiskWrites()
-                    .detectNetwork()
-                    .penaltyLog()
-                    .build());
-        }
-
+        instance = this;
         onApplicationStarted();
-
         Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         addManagers();
         LogManager.i(this, "onCreate finished...");

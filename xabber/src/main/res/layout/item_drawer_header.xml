@@ -85,6 +85,7 @@
                         android:layout_gravity="right"
                         android:layout_marginRight="6dp"
                         android:paddingTop="12dp"
+                        android:visibility="gone"
                         android:paddingBottom="12dp"
                         app:srcCompat="@drawable/ic_moon_rotated_45" />
                 </FrameLayout>
@@ -94,6 +95,7 @@
             <LinearLayout
                 android:id="@+id/drawer_header_action_xabber_account"
                 android:orientation="vertical"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"

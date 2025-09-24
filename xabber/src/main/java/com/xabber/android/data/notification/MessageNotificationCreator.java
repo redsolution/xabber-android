@@ -486,13 +486,13 @@ public class MessageNotificationCreator {
         );
         intent.putExtra(ChatActivity.EXTRA_NEED_SCROLL_TO_UNREAD, true);
         return PendingIntent.getActivities(Application.getInstance(), chat.getNotificationId(),
-                new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT);
+                new Intent[]{backIntent, intent}, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private PendingIntent createBundleContentIntent() {
         return PendingIntent.getActivity(context, MESSAGE_BUNDLE_NOTIFICATION_ID,
                 MainActivity.createClearStackIntent(context),
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     private static NotifyPrefs getCustomPrefs(MessageNotificationManager.Chat chat) {

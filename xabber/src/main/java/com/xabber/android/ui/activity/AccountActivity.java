@@ -374,23 +374,13 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
 
     private void updateOptions() {
         AccountOption.SYNCHRONIZATION.setDescription(getString(R.string.account_sync_summary));
-
         AccountOption.CONNECTION_SETTINGS.setDescription(account.getFullJid().asBareJid().toString());
-
-        AccountOption.VCARD.setDescription(getString(R.string.account_vcard_summary));
-
         AccountOption.COLOR.setDescription(ColorManager.getInstance().getAccountPainter().getAccountColorName(account));
-
         updateBlockListOption();
-
         AccountOption.SERVER_INFO.setDescription(getString(R.string.account_server_info_description));
-
         AccountOption.CHAT_HISTORY.setDescription(getString(R.string.account_history_options_summary));
-
         AccountOption.BOOKMARKS.setDescription(getString(R.string.account_bookmarks_summary));
-
         AccountOption.DELETE_ACCOUNT.setDescription(getString(R.string.account_delete_summary));
-
         accountOptionsAdapter.notifyDataSetChanged();
     }
 
@@ -428,10 +418,7 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
     public void onAccountOptionClick(AccountOption option) {
         switch (option) {
             case CONNECTION_SETTINGS:
-                startAccountSettingsActivity();
-                break;
-            case VCARD:
-                startActivity(AccountInfoEditActivity.createIntent(this, account));
+                startActivity(AccountSettingsActivity.createIntent(this, account));
                 break;
             case COLOR:
                 runColorPickerDialog();
@@ -475,7 +462,6 @@ public class AccountActivity extends ManagedActivity implements AccountOptionsAd
                 break;
         }
     }
-
     private void startAccountSettingsActivity() {
         startActivity(AccountSettingsActivity.createIntent(this, account));
     }

@@ -358,7 +358,7 @@ public class ChatStateManager implements OnDisconnectListener, OnPacketListener,
             Intent intent = ComposingPausedReceiver.createIntent(
                     Application.getInstance(), account, user);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                    Application.getInstance(), 0, intent, 0);
+                    Application.getInstance(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
             calendar.add(Calendar.MILLISECOND, PAUSE_TIMEOUT);

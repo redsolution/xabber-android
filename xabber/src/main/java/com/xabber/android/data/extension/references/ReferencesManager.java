@@ -1,5 +1,6 @@
 package com.xabber.android.data.extension.references;
 
+import android.annotation.SuppressLint;
 import android.text.Html;
 import android.util.Pair;
 
@@ -126,6 +127,7 @@ public class ReferencesManager {
         return locations;
     }
 
+    @SuppressLint("SuspiciousIndentation")
     @NonNull
     public static List<FileSharingExtension> getVoiceFromReferences(Stanza packet) {
         List<ExtensionElement> elements = packet.getExtensions(ReferenceElement.ELEMENT, ReferenceElement.NAMESPACE);

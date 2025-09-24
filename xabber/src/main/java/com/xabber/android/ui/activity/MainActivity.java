@@ -271,7 +271,6 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             finish();
             return;
         }
-
         Application.getInstance().addUIListener(OnAccountChangedListener.class, this);
         Application.getInstance().addUIListener(OnMessageUpdatedListener.class, this);
 
@@ -424,12 +423,12 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         getBottomBarFragment().setChatStateIcon(chatListState);
     }
 
-    private void exit() {
-        Application.getInstance().requestToClose();
-        showDialog(DIALOG_CLOSE_APPLICATION_ID);
-        // Close activity if application was not killed yet.
-        new Handler().postDelayed(this::finish, CLOSE_ACTIVITY_AFTER_DELAY);
-    }
+//    private void exit() {
+//        Application.getInstance().requestToClose();
+//        showDialog(DIALOG_CLOSE_APPLICATION_ID);
+//        // Close activity if application was not killed yet.
+//        new Handler().postDelayed(this::finish, CLOSE_ACTIVITY_AFTER_DELAY);
+//    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
@@ -522,9 +521,9 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             case R.id.drawer_action_about:
                 startActivity(AboutActivity.createIntent(this));
                 break;
-            case R.id.drawer_action_exit:
-                exit();
-                break;
+//            case R.id.drawer_action_exit:
+//                exit();
+//                break;
             case R.id.drawer_header_action_xmpp_accounts:
                 startActivity(PreferenceEditor.createIntent(this));
                 break;

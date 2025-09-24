@@ -55,6 +55,7 @@
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:theme="@style/BlueButton"
             android:textColor="@color/account_register_blue"

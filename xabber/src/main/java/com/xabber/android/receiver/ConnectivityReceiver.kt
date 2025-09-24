@@ -14,11 +14,13 @@
  */
 package com.xabber.android.receiver
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import com.xabber.android.data.connection.NetworkManager
 import com.xabber.android.data.log.LogManager
 
@@ -32,16 +34,19 @@ class ConnectivityReceiver : BroadcastReceiver() {
     private var isRegistered = false
 
     override fun onReceive(context: Context, intent: Intent) {
-        LogManager.i(this, "onReceive " + intent.action)
+        LogManager.i(this, "onReceive ${intent.action}")
         NetworkManager.getInstance().onNetworkChange()
     }
 
+    @SuppressLint("WrongConstant")
     fun requestRegister(context: Context) {
         if (!isRegistered) {
-            context.registerReceiver(
-                this,
-                IntentFilter().apply { addAction(ConnectivityManager.CONNECTIVITY_ACTION) }
-            )
+            val filter = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.registerReceiver(this, filter, Context.RECEIVER_NOT_EXPORTED)
+            } else {
+                context.registerReceiver(this, filter)
+            }
             isRegistered = true
         }
     }
@@ -56,5 +61,4 @@ class ConnectivityReceiver : BroadcastReceiver() {
             LogManager.exception(this::class.java.simpleName, e)
         }
     }
-
 }

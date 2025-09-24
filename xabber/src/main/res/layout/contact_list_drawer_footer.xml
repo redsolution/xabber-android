@@ -63,6 +63,7 @@
         android:id="@+id/drawer_action_exit"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:visibility="gone"
         android:background="@drawable/ripple_background"
         android:gravity="center_vertical"
         android:paddingLeft="16dp"

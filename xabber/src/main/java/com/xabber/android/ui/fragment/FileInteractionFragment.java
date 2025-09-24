@@ -1,8 +1,10 @@
 package com.xabber.android.ui.fragment;
 
+import static android.content.Context.RECEIVER_NOT_EXPORTED;
 import static com.xabber.android.ui.activity.PickGeolocationActivity.LAT_RESULT;
 import static com.xabber.android.ui.activity.PickGeolocationActivity.LON_RESULT;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -12,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Looper;
@@ -23,6 +26,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
@@ -433,10 +437,15 @@ public class FileInteractionFragment extends Fragment implements MessageVH.FileL
         }
     }
 
+    @SuppressLint({"UnspecifiedRegisterReceiverFlag", "WrongConstant"})
     void registerOpusBroadcastReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(OpusEvent.ACTION_OPUS_UI_RECEIVER);
-        getActivity().registerReceiver(opusReceiver, filter);
+        if (Build.VERSION.SDK_INT >= 34) { // API 34 (Upside Down Cake)
+            getActivity().registerReceiver(opusReceiver, filter, 4); // 4 = RECEIVER_NOT_EXPORTED
+        } else {
+            getActivity().registerReceiver(opusReceiver, filter);
+        }
     }
 
     void unregisterOpusBroadcastReceiver() {

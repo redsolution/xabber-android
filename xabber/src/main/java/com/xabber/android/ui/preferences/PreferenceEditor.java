@@ -136,10 +136,10 @@ public class PreferenceEditor extends ManagedActivity implements OnAddAccountCli
         Application.getInstance().runOnUiThread(() -> startActivity(AccountAddActivity.createIntent(this)));
     }
 
-    @Override
-    public void onAccountClick(AccountJid account) {
-        startActivity(AccountActivity.createIntent(this, account));
-    }
+//    @Override
+//    public void onAccountClick(AccountJid account) {
+//        startActivity(AccountActivity.createIntent(this, account));
+//    }
 
     @Override
     public void onEditAccountStatus(AccountItem accountItem) {

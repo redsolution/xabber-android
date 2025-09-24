@@ -24,6 +24,6 @@ public class NotificationCancelReceiver extends BroadcastReceiver {
                 NotificationCancelReceiver.class);
 
         return PendingIntent.getBroadcast(
-                Application.getInstance().getApplicationContext(), 0, intent, 0);
+                Application.getInstance().getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 }

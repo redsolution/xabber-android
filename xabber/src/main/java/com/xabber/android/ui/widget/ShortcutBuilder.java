@@ -38,7 +38,7 @@ public class ShortcutBuilder {
             if (manager != null && manager.isRequestPinShortcutSupported()) {
                 ShortcutInfo shortcutInfo = createShortcutInfo(context, contact);
                 Intent callbackIntent = manager.createShortcutResultIntent(shortcutInfo);
-                PendingIntent successCallback = PendingIntent.getBroadcast(context, 0, callbackIntent, 0);
+                PendingIntent successCallback = PendingIntent.getBroadcast(context, 0, callbackIntent, PendingIntent.FLAG_IMMUTABLE);
                 manager.requestPinShortcut(shortcutInfo, successCallback.getIntentSender());
                 return null;
             }

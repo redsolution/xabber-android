@@ -283,10 +283,10 @@ public class MainActivitySettingsFragment extends Fragment implements View.OnCli
         else ivReorder.setVisibility(View.GONE);
     }
 
-    @Override
-    public void onAccountClick(AccountJid account) {
-        startActivity(AccountActivity.createIntent(getActivity(), account));
-    }
+//    @Override
+//    public void onAccountClick(AccountJid account) {
+//        startActivity(AccountActivity.createIntent(getActivity(), account));
+//    }
 
     @Override
     public void onEditAccountStatus(AccountItem accountItem) {
