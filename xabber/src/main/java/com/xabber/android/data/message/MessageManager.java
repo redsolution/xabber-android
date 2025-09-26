@@ -88,6 +88,7 @@ public class MessageManager implements OnPacketListener {
      */
     public void sendMessage(AccountJid account, ContactJid user, String text) {
         sendMessage(account, user, text, null);
+
     }
 
     public void sendGeolocationMessage(

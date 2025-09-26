@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.connection.CertificateManager;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.RosterManager;
@@ -44,7 +45,6 @@ import java.util.WeakHashMap;
 public class ActivityManager implements OnUnloadListener {
 
     private static final String EXTRA_TASK_INDEX = "com.xabber.android.data.ActivityManager.EXTRA_TASK_INDEX";
-
     private static final boolean LOG = true;
     private static ActivityManager instance;
 
@@ -79,6 +79,7 @@ public class ActivityManager implements OnUnloadListener {
         activities = new ArrayList<>();
         nextTaskIndex = 0;
         taskIndexes = new WeakHashMap<>();
+
     }
 
     /**
@@ -201,6 +202,7 @@ public class ActivityManager implements OnUnloadListener {
         for (AccountJid accountItem: AccountManager.INSTANCE.getEnabledAccounts()) {
             AccountManager.INSTANCE.getAccount(accountItem).stopGracePeriod();
         }
+
     }
 
     /**

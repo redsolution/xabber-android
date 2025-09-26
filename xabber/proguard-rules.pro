@@ -201,5 +201,8 @@
 -dontwarn org.xbill.DNS.spi.DNSJavaNameServiceDescriptor
 -optimizations !code/allocation/variable
 
+-keep class org.xbill.DNS.** { *; }
+-dontwarn org.xbill.DNS.**
+
 # Marshmallow Notification
 -dontwarn android.app.Notification

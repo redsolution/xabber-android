@@ -22,6 +22,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -39,6 +40,7 @@ import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.CommonState;
+import com.xabber.android.data.database.DatabaseManager;
 import com.xabber.android.data.database.repositories.AccountRepository;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
@@ -94,6 +96,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
      * Select contact to be invited to the room was requested.
      */
     public static final int CODE_OPEN_CHAT = 301;
+    private static boolean hasLoggedSchema = false; // Flag to ensure schema is logged only once
 
     private static final long CLOSE_ACTIVITY_AFTER_DELAY = 300;
 
@@ -259,6 +262,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
 
     private void openChat(BaseEntity entity, String text) {
         openChat(entity.getAccount(), entity.getContactJid(), text);
+
     }
 
     @Override
@@ -337,6 +341,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         setStatusBarColor();
 
         updateUnreadCount();
+
     }
 
     @Override
@@ -453,6 +458,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         if (view.getId() == R.id.toolbar_default) {
             getContactListFragment().scrollTo(0);
         }
+
+
     }
 
     @Override
@@ -520,6 +527,21 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
                 break;
             case R.id.drawer_action_about:
                 startActivity(AboutActivity.createIntent(this));
+                Log.d("TEST", "11 11 11 11 11 11 11");
+
+                Application.getInstance().runInBackground(() -> {
+                    Log.d("TEST", "22 22 22 22 22 22 22");
+
+                    try {
+                        Log.i("TEST", "Attempting to log Realm schema details");
+                        DatabaseManager.getInstance().logSchemaDetails();
+                        Log.i("TEST", "Realm schema details logged");
+                        hasLoggedSchema = true; // Set flag to prevent repeated logging
+                    } catch (Exception e) {
+                        Log.e("TEST", String.valueOf(e));
+                    }
+                });
+
                 break;
 //            case R.id.drawer_action_exit:
 //                exit();
@@ -586,6 +608,8 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
         showMenuFragment();
         getBottomBarFragment().setChatStateIcon(ChatListFragment.ChatListState.RECENT);
         setStatusBarColor();
+
+
     }
 
     @Override
@@ -678,6 +702,7 @@ public class MainActivity extends ManagedActivity implements OnAccountChangedLis
             fTrans.replace(R.id.container, contentFragment);
             fTrans.commit();
         }
+
     }
 
     private void showContactListFragment() {
