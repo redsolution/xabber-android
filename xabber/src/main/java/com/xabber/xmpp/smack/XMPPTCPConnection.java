@@ -603,7 +603,7 @@ public class XMPPTCPConnection extends AbstractXMPPConnection {
                     }
 
                     // support legacy SSL
-                    if (ConnectionConfiguration.SecurityMode.legacy == config.getSecurityMode()) {
+                    if (SecurityMode.disabled == config.getSecurityMode()) {
                         try {
                             proceedTLSReceived();
                         } catch (Exception e) {
