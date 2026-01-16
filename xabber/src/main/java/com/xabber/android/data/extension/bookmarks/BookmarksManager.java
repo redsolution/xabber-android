@@ -76,7 +76,7 @@ public class BookmarksManager implements OnAuthenticatedListener {
 
         if (!SettingsManager.syncBookmarksOnStart()) return;
 
-        cleanCache(account);
+//        cleanCache(account);
 
         List<BookmarkedConference> conferences;
 
@@ -193,13 +193,6 @@ public class BookmarksManager implements OnAuthenticatedListener {
         }
     }
 
-    public void cleanCache(AccountJid accountJid) {
-        AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
-        if (accountItem != null) {
-            BookmarkManager bookmarkManager = BookmarkManager.getBookmarkManager(accountItem.getConnection());
-            bookmarkManager.cleanCache();
-        }
-    }
 
     private boolean isBookmarkCheckedByXabber(AccountJid account) {
         List<BookmarkedURL> urls = getUrlFromBookmarks(account);

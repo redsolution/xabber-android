@@ -153,7 +153,7 @@ public class BookmarksActivity extends ManagedActivity implements Toolbar.OnMenu
     private List<BookmarkVO> getBookmarks(boolean cleanCache) {
         final List<BookmarkVO> bookmarksList = new ArrayList<>();
 
-        if (cleanCache) BookmarksManager.getInstance().cleanCache(accountItem.getAccount());
+//        if (cleanCache) BookmarksManager.getInstance().cleanCache(accountItem.getAccount());
 
         // urls
         List<BookmarkedURL> bookmarkedURLs =

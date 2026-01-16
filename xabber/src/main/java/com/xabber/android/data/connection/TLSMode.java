@@ -45,7 +45,7 @@ public enum TLSMode {
         else if (this == required)
             return SecurityMode.required;
         else if (this == legacy)
-            return SecurityMode.legacy;
+            return SecurityMode.disabled;
         else
             throw new IllegalStateException();
     }

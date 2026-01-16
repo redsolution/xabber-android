@@ -2,11 +2,13 @@
 buildscript {
     ext.kotlin_version = '1.5.30'
     repositories {
+        mavenCentral()
         jcenter()
         google()
         maven { url 'https://jitpack.io' }
         maven { url 'https://maven.aliyun.com/repository/public' }
-
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url 'https://www.igniterealtime.org/archiva/repository/maven/' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.0'
@@ -21,11 +23,14 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenCentral()
         mavenLocal()
-        jcenter()
         google()
+        jcenter()
         maven { url 'https://jitpack.io' }
         maven { url 'https://maven.aliyun.com/repository/public' }
-
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url 'https://www.igniterealtime.org/archiva/repository/maven/' }
+        maven { url 'https://igniterealtime.org/repo/'}
     }
 }
