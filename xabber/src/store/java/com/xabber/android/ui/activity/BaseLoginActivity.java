@@ -6,26 +6,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.gson.Gson;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.DefaultLogger;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
-import com.twitter.sdk.android.core.TwitterConfig;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.SettingsManager;
@@ -55,17 +41,12 @@ import rx.subscriptions.CompositeSubscription;
  */
 
 public abstract class BaseLoginActivity extends ManagedActivity implements
-        GoogleApiClient.OnConnectionFailedListener, XAccountLinksFragment.Listener,
+        XAccountLinksFragment.Listener,
         AddEmailDialogFragment.Listener, ConfirmEmailDialogFragment.Listener, OnSocialBindListener {
 
     private final static String LOG_TAG = BaseLoginActivity.class.getSimpleName();
 
     // twitter auth
-    private TwitterAuthClient twitterAuthClient;
-    private Callback<TwitterSession> twitterSessionCallback;
-
-    // google auth
-    private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
     private static final String GOOGLE_TOKEN_SERVER = "https://www.googleapis.com/oauth2/v4/token";
 
@@ -87,113 +68,103 @@ public abstract class BaseLoginActivity extends ManagedActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // twitter auth
-        if (twitterAuthClient != null)
-            twitterAuthClient.onActivityResult(requestCode, resultCode, data);
-        // google auth
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
     }
 
     public void loginGoogle() {
-        initGoogleAuth();
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+//        initGoogleAuth();
+//        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+//        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     public void loginTwitter() {
-        initTwitterAuth();
-        twitterAuthClient.authorize(this, twitterSessionCallback);
+//        initTwitterAuth();
+//        twitterAuthClient.authorize(this, twitterSessionCallback);
     }
 
     private void initGoogleAuth() {
-        if (mGoogleApiClient != null) return;
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestServerAuthCode(getString(R.string.SOCIAL_AUTH_GOOGLE_KEY), false)
-                .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+//        if (mGoogleApiClient != null) return;
+//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                .requestServerAuthCode(getString(R.string.SOCIAL_AUTH_GOOGLE_KEY), false)
+//                .build();
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .enableAutoManage(this, this)
+//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+//                .build();
     }
 
     private void disableGoogleAuth() {
-        if (mGoogleApiClient == null) return;
-        mGoogleApiClient.stopAutoManage(this);
-        mGoogleApiClient.disconnect();
+//        if (mGoogleApiClient == null) return;
+//        mGoogleApiClient.stopAutoManage(this);
+//        mGoogleApiClient.disconnect();
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 
-    private void handleSignInResult(GoogleSignInResult result) {
-        if (result.isSuccess()) {
-            GoogleSignInAccount acct = result.getSignInAccount();
-
-            if (acct != null) {
-                final String googleAuthCode = acct.getServerAuthCode();
-
-                Application.getInstance().runInBackground(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
-                                    new NetHttpTransport(),
-                                    JacksonFactory.getDefaultInstance(),
-                                    GOOGLE_TOKEN_SERVER,
-                                    getString(R.string.SOCIAL_AUTH_GOOGLE_KEY),
-                                    getString(R.string.SOCIAL_AUTH_GOOGLE_SECRET),
-                                    googleAuthCode,
-                                    "").execute();
-                            final String token = tokenResponse.getAccessToken();
-                            Application.getInstance().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    String credentials = gson.toJson(new AuthManager.AccessToken(token));
-                                    onSocialAuthSuccess(AuthManager.PROVIDER_GOOGLE, credentials);
-                                }
-                            });
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        } else Toast.makeText(this, R.string.auth_google_error, Toast.LENGTH_LONG).show();
+    private void handleSignInResult() {
+//        if (result.isSuccess()) {
+//            GoogleSignInAccount acct = result.getSignInAccount();
+//
+//            if (acct != null) {
+//                final String googleAuthCode = acct.getServerAuthCode();
+//
+//                Application.getInstance().runInBackground(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        try {
+//                            GoogleTokenResponse tokenResponse = new GoogleAuthorizationCodeTokenRequest(
+//                                    new NetHttpTransport(),
+//                                    JacksonFactory.getDefaultInstance(),
+//                                    GOOGLE_TOKEN_SERVER,
+//                                    getString(R.string.SOCIAL_AUTH_GOOGLE_KEY),
+//                                    getString(R.string.SOCIAL_AUTH_GOOGLE_SECRET),
+//                                    googleAuthCode,
+//                                    "").execute();
+//                            final String token = tokenResponse.getAccessToken();
+//                            Application.getInstance().runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    String credentials = gson.toJson(new AuthManager.AccessToken(token));
+//                                    onSocialAuthSuccess(AuthManager.PROVIDER_GOOGLE, credentials);
+//                                }
+//                            });
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//            }
+//        } else Toast.makeText(this, R.string.auth_google_error, Toast.LENGTH_LONG).show();
     }
 
     private void initTwitterAuth() {
-        if (twitterAuthClient != null && twitterSessionCallback != null) return;
-        TwitterConfig config = new TwitterConfig.Builder(this)
-                .logger(new DefaultLogger(Log.DEBUG))
-                .twitterAuthConfig(new TwitterAuthConfig(
-                        getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY),
-                        getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET)))
-                .debug(true)
-                .build();
-        Twitter.initialize(config);
-        twitterAuthClient = new TwitterAuthClient();
-        twitterSessionCallback = new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                String token = result.data.getAuthToken().token;
-                String secret = result.data.getAuthToken().secret;
-                if (token != null && secret != null) {
-                    String credentials = gson.toJson(new AuthManager.TwitterAccessToken(
-                            new AuthManager.TwitterTokens(secret, token),
-                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET),
-                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY)));
-                    onSocialAuthSuccess(AuthManager.PROVIDER_TWITTER, credentials);
-                }
-            }
-
-            @Override
-            public void failure(TwitterException exception) {
-                Toast.makeText(BaseLoginActivity.this, R.string.auth_twitter_error, Toast.LENGTH_SHORT).show();
-            }
-        };
+//        if (twitterAuthClient != null && twitterSessionCallback != null) return;
+//        TwitterConfig config = new TwitterConfig.Builder(this)
+//                .logger(new DefaultLogger(Log.DEBUG))
+//                .twitterAuthConfig(new TwitterAuthConfig(
+//                        getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY),
+//                        getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET)))
+//                .debug(true)
+//                .build();
+//        Twitter.initialize(config);
+//        twitterAuthClient = new TwitterAuthClient();
+//        twitterSessionCallback = new Callback<TwitterSession>() {
+//            @Override
+//            public void success(Result<TwitterSession> result) {
+//                String token = result.data.getAuthToken().token;
+//                String secret = result.data.getAuthToken().secret;
+//                if (token != null && secret != null) {
+//                    String credentials = gson.toJson(new AuthManager.TwitterAccessToken(
+//                            new AuthManager.TwitterTokens(secret, token),
+//                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_SECRET),
+//                            getResources().getString(R.string.SOCIAL_AUTH_TWITTER_KEY)));
+//                    onSocialAuthSuccess(AuthManager.PROVIDER_TWITTER, credentials);
+//                }
+//            }
+//
+//            @Override
+//            public void failure(TwitterException exception) {
+//                Toast.makeText(BaseLoginActivity.this, R.string.auth_twitter_error, Toast.LENGTH_SHORT).show();
+//            }
+//        };
     }
 
     protected abstract void onSocialAuthSuccess(final String provider, final String credentials);

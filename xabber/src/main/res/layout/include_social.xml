@@ -10,7 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
         <View
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_centerVertical="true"
@@ -22,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:padding="8dp"
+            android:visibility="gone"
             android:background="@color/white"
             android:textColor="@color/black_text_secondary"
             android:text="Social Login"
@@ -43,6 +46,7 @@
             android:id="@+id/ivGoogle"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:visibility="gone"
             android:src="@drawable/ic_google_plus"
             android:layout_weight="1"
             />
@@ -51,7 +55,7 @@
             android:id="@+id/ivTwitter"
             android:layout_width="48dp"
             android:layout_height="48dp"
-
+            android:visibility="gone"
             android:src="@drawable/ic_twitter"
             android:layout_weight="1"
             />
@@ -60,8 +64,8 @@
             android:id="@+id/ivEmail"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:visibility="gone"
             android:src="@drawable/ic_email_circle"
-            android:visibility="visible"
             android:layout_weight="1"
             />
 

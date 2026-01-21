@@ -17,8 +17,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.safetynet.SafetyNet;
-import com.google.android.gms.safetynet.SafetyNetApi;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.xabber.android.R;
@@ -272,8 +270,8 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     @Override
     protected void onSocialAuthSuccess(String provider, String credentials) {
         XabberAccount account = XabberAccountManager.getInstance().getAccount();
-        if (account != null) bindSocial(provider, credentials);
-        else socialLogin(provider, credentials);
+//        if (account != null) bindSocial(provider, credentials);
+//        else socialLogin(provider, credentials);
     }
 
     @Override
@@ -533,41 +531,41 @@ public class XabberLoginActivity extends BaseLoginActivity implements XAccountSi
     /** CAPTCHA */
 
     private void getCaptchaToken(final SignUpRepo signUpRepo) {
-        SafetyNet.getClient(this).verifyWithRecaptcha(getString(R.string.RECAPTCHA_KEY))
-                .addOnSuccessListener(this,
-                        new OnSuccessListener<SafetyNetApi.RecaptchaTokenResponse>() {
-                            @Override
-                            public void onSuccess(SafetyNetApi.RecaptchaTokenResponse response) {
-                                // Indicates communication with reCAPTCHA service was
-                                // successful.
-                                String userResponseToken = response.getTokenResult();
-                                if (!userResponseToken.isEmpty()) {
-                                    // Validate the user response token using the
-                                    // reCAPTCHA siteverify API.
-                                    Log.d(CAPTCHA_TOKEN, "Success: " + userResponseToken);
-                                    signUpRepo.setCaptchaToken(userResponseToken);
-                                    signUp(signUpRepo);
-                                }
-                            }
-                        })
-                .addOnFailureListener(this,
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                if (e instanceof ApiException) {
-                                    // An error occurred when communicating with the
-                                    // reCAPTCHA service. Refer to the status code to
-                                    // handle the error appropriately.
-                                    ApiException apiException = (ApiException) e;
-                                    int statusCode = apiException.getStatusCode();
-                                    Log.d(CAPTCHA_TOKEN, "Error: "
-                                            + CommonStatusCodes.getStatusCodeString(statusCode));
-                                } else {
-                                    // A different, unknown type of error occurred.
-                                    Log.d(CAPTCHA_TOKEN, "Error: " + e.getMessage());
-                                }
-                            }
-                        });
+//        SafetyNet.getClient(this).verifyWithRecaptcha(getString(R.string.RECAPTCHA_KEY))
+//                .addOnSuccessListener(this,
+//                        new OnSuccessListener<SafetyNetApi.RecaptchaTokenResponse>() {
+//                            @Override
+//                            public void onSuccess(SafetyNetApi.RecaptchaTokenResponse response) {
+//                                // Indicates communication with reCAPTCHA service was
+//                                // successful.
+//                                String userResponseToken = response.getTokenResult();
+//                                if (!userResponseToken.isEmpty()) {
+//                                    // Validate the user response token using the
+//                                    // reCAPTCHA siteverify API.
+//                                    Log.d(CAPTCHA_TOKEN, "Success: " + userResponseToken);
+//                                    signUpRepo.setCaptchaToken(userResponseToken);
+//                                    signUp(signUpRepo);
+//                                }
+//                            }
+//                        })
+//                .addOnFailureListener(this,
+//                        new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@NonNull Exception e) {
+//                                if (e instanceof ApiException) {
+//                                    // An error occurred when communicating with the
+//                                    // reCAPTCHA service. Refer to the status code to
+//                                    // handle the error appropriately.
+//                                    ApiException apiException = (ApiException) e;
+//                                    int statusCode = apiException.getStatusCode();
+//                                    Log.d(CAPTCHA_TOKEN, "Error: "
+//                                            + CommonStatusCodes.getStatusCodeString(statusCode));
+//                                } else {
+//                                    // A different, unknown type of error occurred.
+//                                    Log.d(CAPTCHA_TOKEN, "Error: " + e.getMessage());
+//                                }
+//                            }
+//                        });
     }
 
 }

@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 35
-        versionCode 1088
-        versionName '3.0.3(1088)'
+        versionCode 1089
+        versionName '3.0.3(1089)'
         vectorDrawables.useSupportLibrary = true
     }
 
@@ -117,7 +117,7 @@ android {
 }
 
 if (getGradle().getStartParameter().getTaskRequests().toString().contains("Store")) {
-    apply plugin: 'com.google.gms.google-services'
+//    apply plugin: 'com.google.gms.google-services'
     apply plugin: 'com.google.firebase.crashlytics'
     firebaseCrashlytics {
         nativeSymbolUploadEnabled true
@@ -168,11 +168,11 @@ dependencies {
     implementation 'io.reactivex:rxjava:1.3.0'
 
     // social
-    storeImplementation "com.twitter.sdk.android:twitter:3.0.0"
+//    storeImplementation "com.twitter.sdk.android:twitter:3.0.0"
 
     // gms
-    storeImplementation "com.google.android.gms:play-services-safetynet:17.0.1"
-    storeImplementation "com.google.android.gms:play-services-auth:19.2.0"
+//    storeImplementation "com.google.android.gms:play-services-safetynet:17.0.1"
+//    storeImplementation "com.google.android.gms:play-services-auth:19.2.0"
     storeImplementation ("com.google.api-client:google-api-client-android:1.22.0") {
         exclude module: 'httpclient'
     }
