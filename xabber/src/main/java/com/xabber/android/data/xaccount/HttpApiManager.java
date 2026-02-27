@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.xabber.android.BuildConfig;
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.data.http.ICrowdfundingApi;
 import com.xabber.android.data.http.IPushApi;
 import com.xabber.android.data.http.IXabberCom;
 
@@ -34,7 +33,6 @@ public class HttpApiManager {
 
     private static IXabberApi xabberApi;
     private static IXabberCom xabberCom;
-    private static ICrowdfundingApi crowdfundingApi;
     private static IPushApi pushApi;
 
     private static Retrofit retrofit;
@@ -52,12 +50,6 @@ public class HttpApiManager {
         if (xabberCom == null)
             xabberCom = getRetrofitXabberCom().create(IXabberCom.class);
         return xabberCom;
-    }
-
-    public static ICrowdfundingApi getCrowdfundingApi() {
-        if (crowdfundingApi == null)
-            crowdfundingApi = getCrowdfundingRetrofit().create(ICrowdfundingApi.class);
-        return crowdfundingApi;
     }
 
     public static IPushApi getPushApi() {

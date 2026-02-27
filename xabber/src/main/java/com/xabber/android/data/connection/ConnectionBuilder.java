@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
-import com.xabber.xmpp.smack.SASLXTOKENMechanism;
+import com.xabber.xmpp.smack.SaslHtopMechanism;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
 import com.xabber.xmpp.smack.XMPPTCPConnectionConfiguration;
 
@@ -75,17 +75,16 @@ class ConnectionBuilder {
                 && connectionSettings.getPassword().isEmpty()) {
             // then enable only SASLXOauth2Mechanism
             builder.addEnabledSaslMechanism(SASLXOauth2Mechanism.NAME);
-
             // and set token as password
             builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getToken());
         }
 
-        // X-TOKEN
-        if (connectionSettings.getXToken() != null && !connectionSettings.getXToken().isExpired()) {
-            LogManager.d(LOG_TAG, "Authorization with x-token");
-            SASLAuthentication.registerSASLMechanism(new SASLXTOKENMechanism());
-            builder.addEnabledSaslMechanism(SASLXTOKENMechanism.NAME);
-            builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getXToken().getToken());
+        // HTOP
+        if (connectionSettings.getDevice() != null && !connectionSettings.getDevice().isExpired()) {
+            LogManager.d(LOG_TAG, "Authorization with HTOP");
+            SASLAuthentication.registerSASLMechanism(new SaslHtopMechanism());
+            builder.addEnabledSaslMechanism(SaslHtopMechanism.NAME);
+            builder.setUsernameAndPassword(connectionSettings.getUserName(), connectionSettings.getDevice().getPasswordString());
         }
 
         LogManager.i(LOG_TAG, "new XMPPTCPConnection " + connectionSettings.getServerName());

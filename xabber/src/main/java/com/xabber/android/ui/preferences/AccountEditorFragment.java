@@ -41,7 +41,7 @@ public class AccountEditorFragment extends BaseSettingsFragment {
         addPreferencesFromResource(R.xml.account_editor_xmpp);
         getPreferenceScreen().removePreference(findPreference(getString(R.string.account_sasl_key)));
 
-        AccountManager.getInstance().removeAccountError(listener.getAccount());
+        AccountManager.INSTANCE.removeAccountError(listener.getAccount());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class AccountEditorFragment extends BaseSettingsFragment {
     public void onResume() {
         super.onResume();
         if (listener != null) {
-            if (listener.getAccountItem().getConnectionSettings().getXToken() != null) {
+            if (listener.getAccountItem().getConnectionSettings().getDevice() != null) {
                 findPreference(getString(R.string.account_password_key)).setEnabled(false);
                 findPreference(getString(R.string.account_password_key)).setSummary(getString(R.string.account_password_disabled));
                 findPreference(getString(R.string.account_store_password_key)).setEnabled(false);
@@ -193,7 +193,7 @@ public class AccountEditorFragment extends BaseSettingsFragment {
             return false;
         }
 
-        AccountManager.getInstance().updateAccount(
+        AccountManager.INSTANCE.updateAccount(
                 listener.getAccount(),
                 getBoolean(result, R.string.account_custom_key),
                 getString(result, R.string.account_host_key),

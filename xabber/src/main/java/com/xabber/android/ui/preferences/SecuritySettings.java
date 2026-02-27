@@ -27,7 +27,7 @@ public class SecuritySettings extends ManagedActivity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new SecuritySettingsFragment()).commit();
+                    .add(R.id.content_container, new SecuritySettingsFragment()).commit();
         }
     }
 }

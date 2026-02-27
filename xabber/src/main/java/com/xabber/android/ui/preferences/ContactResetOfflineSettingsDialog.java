@@ -4,7 +4,7 @@ import android.content.Context;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.CircleManager;
 
 public class ContactResetOfflineSettingsDialog extends DialogPreference {
     public ContactResetOfflineSettingsDialog(Context context, AttributeSet attrs) {
@@ -16,7 +16,7 @@ public class ContactResetOfflineSettingsDialog extends DialogPreference {
         super.onDialogClosed(positiveResult);
 
         if (positiveResult) {
-            GroupManager.getInstance().resetShowOfflineModes();
+            CircleManager.getInstance().resetShowOfflineModes();
         }
     }
 }

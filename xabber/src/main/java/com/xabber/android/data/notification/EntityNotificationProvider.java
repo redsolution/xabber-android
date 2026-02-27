@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -15,10 +15,9 @@
 package com.xabber.android.data.notification;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
-public class EntityNotificationProvider<T extends EntityNotificationItem>
-        extends BaseAccountNotificationProvider<T> {
+public class EntityNotificationProvider<T extends EntityNotificationItem> extends BaseAccountNotificationProvider<T> {
 
     public EntityNotificationProvider(int icon) {
         super(icon);
@@ -33,15 +32,13 @@ public class EntityNotificationProvider<T extends EntityNotificationItem>
         throw new UnsupportedOperationException();
     }
 
-    public T get(AccountJid account, UserJid user) {
+    public T get(AccountJid account, ContactJid user) {
         for (T item : items)
-            if (item.getAccount().equals(account)
-                    && item.getUser().equals(user))
-                return item;
+            if (item.getAccount().equals(account) && item.getContactJid().equals(user)) return item;
         return null;
     }
 
-    public boolean remove(AccountJid account, UserJid user) {
+    public boolean remove(AccountJid account, ContactJid user) {
         return remove(get(account, user));
     }
 

@@ -13,4 +13,10 @@
         android:title="@string/chats_state_notification"
         />
 
+    <CheckBoxPreference
+        android:key="@string/use_external_locations_key"
+        android:defaultValue="@bool/use_external_locations_default"
+        android:title="@string/use_external_locations_title"
+        />
+
 </PreferenceScreen>

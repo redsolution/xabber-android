@@ -38,6 +38,7 @@
                 android:targetClass="com.xabber.android.ui.preferences.ContactListSettings"
                 android:targetPackage="@string/application_package" />
         </Preference>
+        <!--
         <ListPreference
             android:title="@string/interface_smiles"
             android:key="@string/interface_smiles_key"
@@ -46,6 +47,7 @@
             android:defaultValue="@string/interface_smiles_default"
             android:summary="%s"
             />
+            -->
 
     </PreferenceCategory>
 

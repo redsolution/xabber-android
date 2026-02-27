@@ -1,15 +1,19 @@
 package com.xabber.android.ui.fragment;
 
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
@@ -24,6 +28,7 @@ public class ImageViewerFragment extends Fragment {
     private static final String IMAGE_PATH = "IMAGE_PATH";
     private static final String IMAGE_URL = "IMAGE_URL";
     private static final String ATTACHMENT_ID = "ATTACHMENT_ID";
+    private static int imageSize;
 
     private ImageView ivPhoto;
     private ProgressBar progressBar;
@@ -51,6 +56,7 @@ public class ImageViewerFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        setImageSize();
         // get params
         Bundle args = getArguments();
         if (args == null) return;
@@ -68,7 +74,7 @@ public class ImageViewerFragment extends Fragment {
 
         // setup image
         progressBar.setVisibility(View.VISIBLE);
-        Glide.with(getActivity()).load(source)
+        Glide.with(getActivity()).load(source).override(imageSize)
             .listener(new RequestListener<Drawable>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model,
@@ -87,7 +93,20 @@ public class ImageViewerFragment extends Fragment {
                     return false;
                 }
             })
+            .fitCenter()
             .into(ivPhoto);
+    }
+
+    private void setImageSize() {
+        if (getActivity() != null) {
+            WindowManager wm = getActivity().getWindowManager();
+            Display display = wm.getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            if (size.x >= size.y) {
+                imageSize = size.x;
+            } else imageSize = size.y;
+        }
     }
 
     public void showError(String message) {

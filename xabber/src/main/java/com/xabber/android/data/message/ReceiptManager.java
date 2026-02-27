@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -14,20 +14,23 @@
  */
 package com.xabber.android.data.message;
 
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
-import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.connection.ConnectionItem;
-import com.xabber.android.data.connection.StanzaSender;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.MessageItem;
-import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.log.LogManager;
+import android.os.Looper;
 
-import org.greenrobot.eventbus.EventBus;
-import org.jivesoftware.smack.ConnectionCreationListener;
-import org.jivesoftware.smack.XMPPConnection;
+import com.xabber.android.data.Application;
+import com.xabber.android.data.account.AccountItem;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionItem;
+import com.xabber.android.data.connection.OnPacketListener;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
+import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.groups.GroupsManager;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.ui.OnMessageUpdatedListener;
+import com.xabber.xmpp.groups.GroupExtensionElement;
+import com.xabber.xmpp.sid.UniqueIdsHelper;
+
+import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnectionRegistry;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
@@ -48,70 +51,63 @@ import io.realm.Realm;
  */
 public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener {
 
+    private static final String LOG_TAG = ReceiptManager.class.getSimpleName();
+
     private static ReceiptManager instance;
 
     static {
-        // TODO: change to ifSubscribed when isSubscribedToMyPresence will work and problem with thread element will be solved
         DeliveryReceiptManager.setDefaultAutoReceiptMode(DeliveryReceiptManager.AutoReceiptMode.disabled);
-
     }
 
     public static ReceiptManager getInstance() {
-        if (instance == null) {
-            instance = new ReceiptManager();
-        }
+        if (instance == null) instance = new ReceiptManager();
 
         return instance;
     }
 
     private ReceiptManager() {
-        XMPPConnectionRegistry.addConnectionCreationListener(new ConnectionCreationListener() {
-            @Override
-            public void connectionCreated(final XMPPConnection connection) {
-                DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(ReceiptManager.this);
-                //DeliveryReceiptManager.getInstanceFor(connection).autoAddDeliveryReceiptRequests();
-            }
-        });
-
+        XMPPConnectionRegistry.addConnectionCreationListener(connection ->
+                DeliveryReceiptManager.getInstanceFor(connection).addReceiptReceivedListener(ReceiptManager.this));
     }
 
     @Override
     public void onStanza(ConnectionItem connection, Stanza packet) {
-        if (!(connection instanceof AccountItem)) {
-            return;
-        }
+        if (!(connection instanceof AccountItem)) return;
+
         final AccountJid account = ((AccountItem) connection).getAccount();
         final Jid from = packet.getFrom();
-        if (from == null) {
-            return;
-        }
-        if (!(packet instanceof Message)) {
-            return;
-        }
+
+        if (!(packet instanceof Message) || from == null) return;
+
         final Message message = (Message) packet;
+
+        boolean isGroup = message.hasExtension(GroupExtensionElement.ELEMENT, GroupsManager.SYSTEM_MESSAGE_NAMESPACE)
+                || message.hasExtension(GroupExtensionElement.ELEMENT, GroupExtensionElement.NAMESPACE);
+
         if (message.getType() == Message.Type.error) {
-            Application.getInstance().runInBackgroundUserRequest(new Runnable() {
-                @Override
-                public void run() {
-                    markAsError(account, message);
-                }
-            });
+            if (message.getError().getCondition().equals(XMPPError.Condition.service_unavailable)){
+                LogManager.e(LOG_TAG, "Got service unavailable error to message! But message status <b>WAS NOT<b> "
+                        + "set to error");
+            } else Application.getInstance().runInBackground(() -> markAsError(account, message));
         } else {
-            // TODO setDefaultAutoReceiptMode should be used
             for (ExtensionElement packetExtension : message.getExtensions()) {
                 if (packetExtension instanceof DeliveryReceiptRequest) {
-                    String id = AbstractChat.getStanzaId(message);
-                    if (id == null) {
-                        continue;
-                    }
+                    String id = UniqueIdsHelper.getStanzaIdBy(
+                            message, isGroup ? from.asBareJid().toString() : account.getBareJid().toString());
+
+                    if (id == null) continue;
+
                     Message receipt = new Message(from);
                     receipt.addExtension(new DeliveryReceipt(id));
                     // the key problem is Thread - smack does not keep it in auto reply
                     receipt.setThread(message.getThread());
                     receipt.setType(Message.Type.chat);
                     try {
-                        StanzaSender.sendStanza(account, receipt);
-                    } catch (NetworkException e) {
+                        AccountManager.INSTANCE
+                                .getAccount(account)
+                                .getConnection()
+                                .sendStanza(receipt);
+                    } catch (InterruptedException | SmackException.NotConnectedException e) {
                         LogManager.exception(this, e);
                     }
                 }
@@ -120,46 +116,61 @@ public class ReceiptManager implements OnPacketListener, ReceiptReceivedListener
     }
 
     private void markAsError(final AccountJid account, final Message message) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.ACCOUNT, account.toString())
-                .equalTo(MessageItem.Fields.STANZA_ID, AbstractChat.getStanzaId(message)).findFirst();
-        if (first != null) {
-            first.setError(true);
-            XMPPError error = message.getError();
-            if (error != null) {
-                String errorStr = error.toString();
-                String descr = error.getDescriptiveText(null);
-                first.setErrorDescription(errorStr + "\n" + descr);
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            realm.executeTransaction(realm1 -> {
+                MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                        .equalTo(MessageRealmObject.Fields.ACCOUNT, account.toString())
+                        .equalTo(MessageRealmObject.Fields.ORIGIN_ID, message.getStanzaId())
+                        .findFirst();
+                if (first != null) {
+                    first.setMessageStatus(MessageStatus.ERROR);
+                    XMPPError error = message.getError();
+                    if (error != null) {
+                        String errorStr = error.toString();
+                        String descr = error.getDescriptiveText();
+                        first.setErrorDescription(errorStr + "\n" + descr);
+                    }
+                }
+            });
+            for (OnMessageUpdatedListener listener :
+                    Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                listener.onAction();
             }
-        }
-        realm.commitTransaction();
-        realm.close();
-        EventBus.getDefault().post(new MessageUpdateEvent(account));
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
     }
 
     @Override
     public void onReceiptReceived(Jid fromJid, final Jid toJid, final String receiptId, Stanza stanza) {
         DeliveryReceipt receipt = DeliveryReceipt.from((Message) stanza);
 
-        if (receipt == null) {
-            return;
-        }
+        if (receipt == null) return;
 
-        markAsDelivered(toJid, receiptId);
+        Application.getInstance().runInBackground(() -> markAsReceived(toJid, receiptId));
     }
 
-    private void markAsDelivered(final Jid toJid, final String receiptId) {
-        Realm realm = MessageDatabaseManager.getInstance().getNewBackgroundRealm();
-        realm.beginTransaction();
-        MessageItem first = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.STANZA_ID, receiptId).findFirst();
-        if (first != null) {
-            first.setDelivered(true);
+    private void markAsReceived(final Jid toJid, final String receiptId) {
+        Realm realm = null;
+        try {
+            realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+            realm.executeTransaction(realm1 -> {
+                MessageRealmObject first = realm1.where(MessageRealmObject.class)
+                        .equalTo(MessageRealmObject.Fields.STANZA_ID, receiptId).findFirst();
+                first.setMessageStatus(MessageStatus.RECEIVED);
+            });
+
+            for (OnMessageUpdatedListener listener
+                    : Application.getInstance().getUIListeners(OnMessageUpdatedListener.class)){
+                listener.onAction();
+            }
+        } catch (Exception e) {
+            LogManager.exception(LOG_TAG, e);
+        } finally {
+            if (realm != null && Looper.getMainLooper() != Looper.getMainLooper()) realm.close();
         }
-        realm.commitTransaction();
-        realm.close();
-        EventBus.getDefault().post(new MessageUpdateEvent());
     }
+
 }

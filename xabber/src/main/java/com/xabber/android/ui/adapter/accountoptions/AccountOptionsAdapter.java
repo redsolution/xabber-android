@@ -1,15 +1,14 @@
 package com.xabber.android.ui.adapter.accountoptions;
 
-
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountItem;
-
 import com.xabber.android.data.xaccount.XabberAccountManager;
 
 public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionViewHolder>
@@ -68,15 +67,17 @@ public class AccountOptionsAdapter extends RecyclerView.Adapter<AccountOptionVie
             }
         }
 
-        if (accountOption.equals(AccountOption.SESSIONS)) {
-            if (accountItem.getConnectionSettings().getXToken() != null &&
-                    !accountItem.getConnectionSettings().getXToken().isExpired()) {
+        if (accountOption.equals(AccountOption.DEVICES)) {
+            if (accountItem.getConnectionSettings().getDevice() != null &&
+                    !accountItem.getConnectionSettings().getDevice().isExpired()) {
                 holder.title.setEnabled(true);
                 holder.description.setEnabled(true);
                 holder.description.setText(R.string.account_active_sessions_summary);
             } else {
-                holder.title.setEnabled(false);
-                holder.description.setEnabled(false);
+                //holder.title.setEnabled(false);
+                //holder.description.setEnabled(false);
+                holder.title.setEnabled(true);
+                holder.description.setEnabled(true);
                 holder.description.setText(R.string.account_active_sessions_disabled);
             }
         }

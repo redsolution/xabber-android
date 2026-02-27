@@ -14,9 +14,6 @@
  */
 package com.xabber.android.ui.adapter;
 
-import androidx.core.view.MotionEventCompat;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SwitchCompat;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -26,6 +23,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.view.MotionEventCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountItem;
@@ -102,20 +103,17 @@ public class AccountListAdapter extends RecyclerView.Adapter implements ItemTouc
         accountHolder.avatar.setImageDrawable(
                 AvatarManager.getInstance().getAccountAvatar(accountItem.getAccount()));
 
-        accountHolder.name.setText(AccountManager.getInstance().getVerboseName(accountItem.getAccount()));
+        accountHolder.name.setText(AccountManager.INSTANCE.getVerboseName(accountItem.getAccount()));
         accountHolder.status.setText(accountItem.getState().getStringId());
 
         accountHolder.enabledSwitch.setChecked(accountItem.isEnabled());
 
-        accountHolder.ivAnchor.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (MotionEventCompat.getActionMasked(event) ==
-                        MotionEvent.ACTION_DOWN) {
-                    listener.onStartDrag(accountHolder);
-                }
-                return false;
+        accountHolder.ivAnchor.setOnTouchListener((v, event) -> {
+            if (MotionEventCompat.getActionMasked(event) ==
+                    MotionEvent.ACTION_DOWN) {
+                listener.onStartDrag(accountHolder);
             }
+            return false;
         });
 
         if (showAnchors) accountHolder.ivAnchor.setVisibility(View.VISIBLE);
@@ -165,7 +163,7 @@ public class AccountListAdapter extends RecyclerView.Adapter implements ItemTouc
 
             switch (v.getId()) {
                 case R.id.item_account_switch:
-                    AccountManager.getInstance().setEnabled(accountItem.getAccount(), enabledSwitch.isChecked());
+                    AccountManager.INSTANCE.setEnabled(accountItem.getAccount(), enabledSwitch.isChecked());
 
                     break;
 
@@ -189,7 +187,7 @@ public class AccountListAdapter extends RecyclerView.Adapter implements ItemTouc
             MenuInflater inflater = activity.getMenuInflater();
             inflater.inflate(R.menu.item_account, menu);
 
-            menu.setHeaderTitle(AccountManager.getInstance().getVerboseName(accountItem.getAccount()));
+            menu.setHeaderTitle(AccountManager.INSTANCE.getVerboseName(accountItem.getAccount()));
             menu.findItem(R.id.action_account_edit_status).setVisible(accountItem.isEnabled());
 
             menu.findItem(R.id.action_account_edit_status).setOnMenuItemClickListener(this);

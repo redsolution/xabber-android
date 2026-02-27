@@ -17,4 +17,8 @@
     <string name="saved_statuses">Saved statuses</string>
     <string name="clear_status_history">Clear status history</string>
     <string name="status_message">Status message</string>
+    <string name="online">Online</string>
+    <string name="dialog_status_editor__label_custom_status">Custom status message</string>
+    <string name="dialog_status_editor__label_apply_to_all">Apply to all accounts</string>
+    <string name="offline">Offline</string>
 </resources>

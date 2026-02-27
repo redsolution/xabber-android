@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_contact" comment="dialog_add__label_add_contact">Добавить контакт</string>
+    <string name="create_group" comment="dialog_add__label_create_group">Создать группу</string>
+    <string name="create_incognito_group" comment="dialog_add__label_create_incognito_group">Создать инкогнито группу</string>
+    <string name="choose_account" comment="dialog_add__label_select_account">Выберите аккаунт</string>
+    <string name="add_to" comment="dialog_add__label_add_to">Добавить в</string>
+    <string name="create_to" comment="dialog_add__label_create_to">Создать в</string>
+    <string name="dialog_add__label_add_account">Добавить аккаунт</string>
+    <string name="toolbar__button_add_tooltip">Добавить группу, контакт или аккаунт</string>
+    <string name="dialog_add_contact__error__text_no_accounts">Подключенные аккаунты не найдены.</string>
+    <string name="dialog_add_contact__error__text_input_username">Введите имя пользователя!</string>
+    <string name="dialog_add_contact__error__text_can_not_add_youself">Нельзя добавить в контакты самого себя!</string>
+    <string name="dialog_add_contact__error__text_invalid_jid">Неверный XMPP ID</string>
+    <string name="dialog_add_contact__error__text_already_in_roster">Контакт уже есть в вашем списке контактов!</string>
+</resources>

@@ -12,8 +12,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.xabber.android.data.extension.avatar.AvatarManager;
-import com.xabber.android.data.extension.muc.MUCManager;
-import com.xabber.android.data.message.CrowdfundingChat;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.ui.activity.ChatActivity;
 
@@ -26,14 +24,6 @@ public class ShortcutBuilder {
     public static void updateShortcuts(Context context, List<AbstractContact> contacts) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             List<ShortcutInfo> shortcuts = new ArrayList<>();
-            int added = 0;
-            for (AbstractContact contact : contacts) {
-                if (added == 4) break;
-                else if (!contact.getUser().equals(CrowdfundingChat.getDefaultUser())) {
-                    shortcuts.add(createShortcutInfo(context, contact));
-                    added++;
-                }
-            }
 
             ShortcutManager manager = context.getSystemService(ShortcutManager.class);
             if (manager != null && !shortcuts.isEmpty()) {
@@ -55,8 +45,12 @@ public class ShortcutBuilder {
         }
 
         Intent intent = new Intent();
-        intent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, ChatActivity.createClearTopIntent(context,
-                contact.getAccount(), contact.getUser()));
+        intent.putExtra(
+                Intent.EXTRA_SHORTCUT_INTENT,
+                ChatActivity.Companion.createClearTopIntent(
+                        context, contact.getAccount(), contact.getContactJid()
+                )
+        );
         intent.putExtra(Intent.EXTRA_SHORTCUT_NAME, contact.getName());
         intent.putExtra(Intent.EXTRA_SHORTCUT_ICON, getAvatar(contact));
         return intent;
@@ -68,16 +62,13 @@ public class ShortcutBuilder {
                 .setShortLabel(abstractContact.getName())
                 .setLongLabel(abstractContact.getName())
                 .setIcon(Icon.createWithBitmap(getAvatar(abstractContact)))
-                .setIntent(ChatActivity.createClearTopIntent(context,
-                        abstractContact.getAccount(), abstractContact.getUser()))
+                .setIntent(ChatActivity.Companion.createClearTopIntent(context,
+                        abstractContact.getAccount(), abstractContact.getContactJid()))
                 .build();
     }
 
     private static Bitmap getAvatar(AbstractContact abstractContact) {
-        Bitmap bitmap;
-        if (MUCManager.getInstance().hasRoom(abstractContact.getAccount(), abstractContact.getUser()))
-            bitmap = AvatarManager.getInstance().getRoomBitmap(abstractContact.getUser());
-        else bitmap = AvatarManager.getInstance().getUserBitmap(abstractContact.getUser(), abstractContact.getName());
+        Bitmap bitmap = AvatarManager.getInstance().getContactCircleBitmap(abstractContact.getContactJid(), abstractContact.getName());
         return AvatarManager.getInstance().createShortcutBitmap(bitmap);
     }
 

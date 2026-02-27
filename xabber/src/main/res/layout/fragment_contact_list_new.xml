@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    android:id="@+id/coordinatorLayout"
+<androidx.coordinatorlayout.widget.CoordinatorLayout android:id="@+id/coordinatorLayout"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/contact_list_background"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:clipToPadding="false">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -16,75 +16,57 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/contact_list_default_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            android:contentInsetRight="0dp"
+            android:contentInsetEnd="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetEnd="0dp"
+            android:elevation="4dp"
+            android:background="?attr/bars_color">
+
+            <RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/toolbar_chatlist"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="66dp"
+                    android:clickable="true"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Contacts"
+                    android:textColor="?attr/contact_list_contact_name_text_color"
+                    android:textSize="18sp" />
+
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
+
     </FrameLayout>
-    <RelativeLayout
-        android:id="@+id/info"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:visibility="gone">
+    <include layout="@layout/contactlist_help"/>
 
-        <ImageView
-            android:id="@+id/connected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/xabber_logo_80dp"
-            tools:ignore="ContentDescription" />
-
-        <ImageView
-            android:id="@+id/disconnected"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/xabber_logo_80dp"
-            tools:ignore="ContentDescription" />
-
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/connected"
-            android:layout_centerHorizontal="true"
-            android:text="@string/application_state_starting"
-            android:textColor="?android:attr/textColorSecondary" />
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/text"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dip"
-            android:text="@string/application_action_waiting" />
-
-    </RelativeLayout>
-    <LinearLayout
-        android:id="@+id/placeholderView"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:visibility="gone"
-        >
-
-        <ImageView
-            android:id="@+id/placeholderImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/xabber_logo_80dp"
-            />
-
-        <TextView
-            android:id="@+id/tvPlaceholderMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:text="@string/placeholder_no_unread"
-            android:textColor="?android:attr/textColorSecondary" />
-
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/accounts_list_in_contact_list_recycler"
+        android:layout_width="wrap_content"
+        android:paddingBottom="8dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:overScrollMode="never"
+        android:background="@color/transparent"
+        android:focusable="false"
+        android:clickable="false"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

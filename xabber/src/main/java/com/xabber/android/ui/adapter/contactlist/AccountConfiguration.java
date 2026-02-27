@@ -15,8 +15,7 @@
 package com.xabber.android.ui.adapter.contactlist;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.roster.GroupStateProvider;
-import com.xabber.android.ui.adapter.contactlist.GroupConfiguration;
+import com.xabber.android.data.roster.CircleStateProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,8 +30,8 @@ public class AccountConfiguration extends GroupConfiguration {
     private final TreeMap<String, GroupConfiguration> groups;
 
     public AccountConfiguration(AccountJid account, String group,
-                         GroupStateProvider groupStateProvider) {
-        super(account, group, groupStateProvider);
+                         CircleStateProvider circleStateProvider) {
+        super(account, group, circleStateProvider);
         groups = new TreeMap<>();
     }
 
@@ -61,4 +60,8 @@ public class AccountConfiguration extends GroupConfiguration {
         return Collections.unmodifiableCollection(groups);
     }
 
+    public Collection<GroupConfiguration> getNotSortedGroupConfigurations() {
+        ArrayList<GroupConfiguration> groups = new ArrayList<>(this.groups.values());
+        return Collections.unmodifiableCollection(groups);
+    }
 }

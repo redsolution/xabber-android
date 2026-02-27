@@ -1,21 +1,26 @@
 package com.xabber.android.ui.dialog;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.xabber.android.R;
-import com.xabber.android.data.message.AbstractChat;
 import com.xabber.android.data.message.NotificationState;
+import com.xabber.android.data.message.chat.AbstractChat;
 
 public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnClickListener {
 
+    public static final String TAG = "com.xabber.android.ui.dialog.SnoozeDialog";
+
     private OnSnoozeListener listener;
     private AbstractChat chat;
+    private View view;
 
     public static SnoozeDialog newInstance(AbstractChat chat, OnSnoozeListener listener) {
         SnoozeDialog dialog = new SnoozeDialog();
@@ -24,14 +29,11 @@ public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnCl
         return dialog;
     }
 
-    public interface OnSnoozeListener {
-        void onSnoozed();
-    }
-
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.snooze_dialog, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.snooze_dialog, container, false);
 
         view.findViewById(R.id.itemDisable).setOnClickListener(this);
         view.findViewById(R.id.itemSnooze15m).setOnClickListener(this);
@@ -40,6 +42,13 @@ public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnCl
         view.findViewById(R.id.itemSnooze1d).setOnClickListener(this);
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from((View) view.getParent());
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 
     @Override
@@ -80,4 +89,9 @@ public class SnoozeDialog extends BottomSheetDialogFragment implements View.OnCl
     private int getCurrentTime() {
         return (int) (System.currentTimeMillis() / 1000L);
     }
+
+    public interface OnSnoozeListener {
+        void onSnoozed();
+    }
+
 }

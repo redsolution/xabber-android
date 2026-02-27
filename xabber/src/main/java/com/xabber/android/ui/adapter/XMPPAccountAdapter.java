@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.avatar.AvatarManager;
+import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.ui.color.ColorManager;
 
@@ -81,7 +82,7 @@ public class XMPPAccountAdapter extends RecyclerView.Adapter {
             AccountJid accountJid = AccountJid.from(account.getJid() + "/resource");
             viewHolder.avatar.setImageDrawable(AvatarManager.getInstance().getAccountAvatarForSync(accountJid, colorId));
         } catch (XmppStringprepException e) {
-            e.printStackTrace();
+            LogManager.exception(getClass().getSimpleName(), e);
         }
 
         if (account.isSynchronization() || isAllChecked) {

@@ -12,8 +12,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="?attr/contact_list_background"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:background="?attr/contact_list_background">
 
     <LinearLayout
         android:id="@+id/xmpp_items"

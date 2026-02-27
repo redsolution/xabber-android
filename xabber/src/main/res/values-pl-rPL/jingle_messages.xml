@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_jingle_message__status_network_error">Błąd sieci...</string>
+    <string name="dialog_jingle_message__status_search">Szukaj...</string>
+    <string name="dialog_jingle_message__status_connecting">Łączenie...</string>
+    <string name="dialog_jingle_message__button_switch_video__tooltip">Włącz/wyłącz wideo</string>
+    <string name="dialog_jingle_message__button_mute_microphone__tooltip">Wycisz mikrofon</string>
+    <string name="dialog_jingle_message__button_mute__tooltip">Wycisz</string>
+    <string name="dialog_jingle_message__button_share_screen__tooltip">Udostępnij ekran</string>
+    <string name="dialog_jingle_message__button_accept_call__tooltip">Akceptuj połączenie</string>
+    <string name="dialog_jingle_message__button_decline_call__tooltip">Odrzuć połączenie</string>
+</resources>

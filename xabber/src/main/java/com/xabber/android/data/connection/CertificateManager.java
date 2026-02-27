@@ -2,11 +2,12 @@ package com.xabber.android.data.connection;
 
 
 import android.app.Activity;
+
 import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.listeners.OnAccountRemovedListener;
+import com.xabber.android.data.account.OnAccountRemovedListener;
 import com.xabber.android.data.entity.AccountJid;
 
 import java.util.Map;
@@ -27,8 +28,8 @@ public class CertificateManager implements OnAccountRemovedListener {
         return instance;
     }
 
-    private Map<AccountJid, MemorizingTrustManager> memorizingTrustManagerMap;
-    private Map<AccountJid, MemorizingTrustManager> fileUploadMap;
+    private final Map<AccountJid, MemorizingTrustManager> memorizingTrustManagerMap;
+    private final Map<AccountJid, MemorizingTrustManager> fileUploadMap;
 
     private CertificateManager() {
         this.memorizingTrustManagerMap = new ConcurrentHashMap<>();
@@ -78,4 +79,5 @@ public class CertificateManager implements OnAccountRemovedListener {
         memorizingTrustManagerMap.remove(accountItem.getAccount());
         fileUploadMap.remove(accountItem.getAccount());
     }
+
 }

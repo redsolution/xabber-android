@@ -7,8 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import com.xabber.android.R;
-import com.xabber.android.data.Application;
-import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.RosterManager;
 
@@ -40,8 +38,8 @@ public class GroupDeleteDialogFragment extends DialogFragment implements DialogI
         group = args.getString(ARGUMENT_GROUP, null);
 
         return new AlertDialog.Builder(getActivity())
-                .setMessage(getString(R.string.group_remove_confirm, group))
-                .setPositiveButton(R.string.group_remove, this)
+                .setMessage(getString(R.string.circle_remove_confirm, group))
+                .setPositiveButton(R.string.circle_remove, this)
                 .setNegativeButton(android.R.string.cancel, this)
                 .create();
     }
@@ -52,13 +50,10 @@ public class GroupDeleteDialogFragment extends DialogFragment implements DialogI
             return;
         }
 
-        try {
-            if (account == null)
-                RosterManager.getInstance().removeGroup(group);
-            else
-                RosterManager.getInstance().removeGroup(account, group);
-        } catch (NetworkException e) {
-            Application.getInstance().onError(e);
-        }
+        if (account == null)
+            RosterManager.getInstance().removeGroup(group);
+        else
+            RosterManager.getInstance().removeGroup(account, group);
     }
+
 }

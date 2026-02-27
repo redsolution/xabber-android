@@ -4,16 +4,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.core.app.NavUtils;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,22 +14,32 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.xabber.android.R;
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.Attachment;
-import com.xabber.android.data.database.messagerealm.MessageItem;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
+import com.xabber.android.data.database.realmobjects.MessageRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
 import com.xabber.android.data.filedownload.DownloadManager;
 import com.xabber.android.ui.fragment.ImageViewerFragment;
 import com.xabber.android.ui.helper.PermissionsRequester;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import rx.Observable;
-import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 public class ImageViewerActivity extends AppCompatActivity implements Toolbar.OnMenuItemClickListener {
@@ -48,14 +51,14 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     public static final int SHARE_ACTIVITY_REQUEST_CODE = 25;
 
     private AccountJid accountJid;
-    private RealmList<Attachment> imageAttachments = new RealmList<>();
+    private final RealmList<ReferenceRealmObject> imageReferenceRealmObjects = new RealmList<>();
     private Toolbar toolbar;
     private ViewPager viewPager;
     private ProgressBar progressBar;
     private ImageView ivCancelDownload;
 
-    private CompositeSubscription subscriptions = new CompositeSubscription();
-    private CompositeSubscription attachmentStateSubscription = new CompositeSubscription();
+    private final CompositeSubscription subscriptions = new CompositeSubscription();
+    private final CompositeSubscription attachmentStateSubscription = new CompositeSubscription();
     private boolean waitForSharing;
     private boolean isDownloading;
 
@@ -101,56 +104,49 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         toolbar.setNavigationIcon(R.drawable.ic_arrow_left_white_24dp);
         toolbar.inflateMenu(R.menu.menu_image_viewer);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavUtils.navigateUpFromSameTask(ImageViewerActivity.this);
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> NavUtils.navigateUpFromSameTask(ImageViewerActivity.this));
 
         // get imageAttachments
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        MessageItem messageItem = realm.where(MessageItem.class)
-                .equalTo(MessageItem.Fields.UNIQUE_ID, messageId)
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        MessageRealmObject messageRealmObject = realm
+                .where(MessageRealmObject.class)
+                .equalTo(MessageRealmObject.Fields.PRIMARY_KEY, messageId)
                 .findFirst();
 
         if (imageUrl != null) {
-            Attachment attachment = new Attachment();
-            attachment.setFileUrl(imageUrl);
-            imageAttachments.add(attachment);
+            ReferenceRealmObject referenceRealmObject = new ReferenceRealmObject();
+            referenceRealmObject.setFileUrl(imageUrl);
+            imageReferenceRealmObjects.add(referenceRealmObject);
         } else {
-            RealmList<Attachment> attachments = messageItem.getAttachments();
+            RealmList<ReferenceRealmObject> referenceRealmObjects = messageRealmObject.getReferencesRealmObjects();
 
-            for (Attachment attachment : attachments) {
-                if (attachment.isImage()) imageAttachments.add(attachment);
+            for (ReferenceRealmObject referenceRealmObject : referenceRealmObjects) {
+                if (referenceRealmObject.isImage()) imageReferenceRealmObjects.add(referenceRealmObject);
             }
         }
 
         // get account jid
-        this.accountJid = messageItem.getAccount();
+        this.accountJid = messageRealmObject.getAccount();
+
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
 
         // find views
         progressBar = findViewById(R.id.progressBar);
         ivCancelDownload = findViewById(R.id.ivCancelDownload);
-        ivCancelDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onCancelDownloadClick();
-            }
-        });
+        ivCancelDownload.setOnClickListener(v -> onCancelDownloadClick());
 
         viewPager = findViewById(R.id.viewPager);
         PagerAdapter pagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
-                Attachment attachment = imageAttachments.get(position);
-                return ImageViewerFragment.newInstance(attachment.getFilePath(),
-                        attachment.getFileUrl(), attachment.getUniqueId());
+                ReferenceRealmObject referenceRealmObject = imageReferenceRealmObjects.get(position);
+                return ImageViewerFragment.newInstance(referenceRealmObject.getFilePath(),
+                        referenceRealmObject.getFileUrl(), referenceRealmObject.getUniqueId());
             }
 
             @Override
             public int getCount() {
-                return imageAttachments.size();
+                return imageReferenceRealmObjects.size();
             }
         };
         viewPager.setAdapter(pagerAdapter);
@@ -163,13 +159,15 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
             public void onPageSelected(int position) {
                 updateToolbar();
                 unsubscribeAttachmentState();
-                subscribeForAttachment(imageAttachments.get(position));
+                subscribeForAttachment(imageReferenceRealmObjects.get(position));
             }
 
             @Override
             public void onPageScrollStateChanged(int state) { }
         });
-        if (imageAttachments.size() > imagePosition) subscribeForAttachment(imageAttachments.get(imagePosition));
+        if (imageReferenceRealmObjects.size() > imagePosition) {
+            subscribeForAttachment(imageReferenceRealmObjects.get(imagePosition));
+        }
     }
 
     @Override
@@ -205,33 +203,32 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_DOWNLOAD_FILE:
-                if (PermissionsRequester.isPermissionGranted(grantResults)) {
-                    downloadImage();
-                } else {
-                    onNoWritePermissionError();
-                }
-                break;
+        if (requestCode == PERMISSIONS_REQUEST_DOWNLOAD_FILE) {
+            if (PermissionsRequester.isPermissionGranted(grantResults)) {
+                downloadImage();
+            } else {
+                onNoWritePermissionError();
+            }
         }
     }
 
     private void updateToolbar() {
         int current = 0, total = 0;
         if (viewPager != null) current = viewPager.getCurrentItem() + 1;
-        if (imageAttachments != null) total = imageAttachments.size();
+        if (imageReferenceRealmObjects != null) total = imageReferenceRealmObjects.size();
         toolbar.setTitle(current + " of " + total);
+        toolbar.setTitleTextColor(Color.WHITE);
         setUpMenuOptions(toolbar.getMenu());
     }
 
     private void setUpMenuOptions(Menu menu) {
         int position = viewPager.getCurrentItem();
-        Attachment attachment = imageAttachments.get(position);
-        String filePath = attachment.getFilePath();
-        Long size = attachment.getFileSize();
+        ReferenceRealmObject referenceRealmObject = imageReferenceRealmObjects.get(position);
+        String filePath = referenceRealmObject.getFilePath();
+        Long size = referenceRealmObject.getFileSize();
         menu.findItem(R.id.action_download_image).setVisible(filePath == null && size != null);
         menu.findItem(R.id.action_download_image).setEnabled(!isDownloading);
         menu.findItem(R.id.action_done).setVisible(filePath != null);
@@ -240,15 +237,13 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private void onShareClick() {
         int position = viewPager.getCurrentItem();
-        Attachment attachment = imageAttachments.get(position);
-        String path = attachment.getFilePath();
+        ReferenceRealmObject referenceRealmObject = imageReferenceRealmObjects.get(position);
+        String path = referenceRealmObject.getFilePath();
 
         if (path != null) {
             File file = new File(path);
             if (file.exists()) {
-                startActivityForResult(FileManager.getIntentForShareFile(file),
-                        SHARE_ACTIVITY_REQUEST_CODE);
-                return;
+                startActivityForResult(FileManager.getIntentForShareFile(file), SHARE_ACTIVITY_REQUEST_CODE);
             } else Toast.makeText(this, R.string.FILE_NOT_FOUND, Toast.LENGTH_SHORT).show();
         } else {
             waitForSharing = true;
@@ -258,8 +253,8 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private void onCopyLinkClick() {
         int position = viewPager.getCurrentItem();
-        Attachment attachment = imageAttachments.get(position);
-        String url = attachment.getFileUrl();
+        ReferenceRealmObject referenceRealmObject = imageReferenceRealmObjects.get(position);
+        String url = referenceRealmObject.getFileUrl();
 
         ClipboardManager clipboardManager = ((ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE));
         if (clipboardManager != null) clipboardManager.setPrimaryClip(ClipData.newPlainText(url, url));
@@ -267,14 +262,15 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
     }
 
     private void onImageDownloadClick() {
-        if (PermissionsRequester.requestFileWritePermissionIfNeeded(
-                this, PERMISSIONS_REQUEST_DOWNLOAD_FILE)) downloadImage();
+        if (PermissionsRequester.requestFileWritePermissionIfNeeded(this, PERMISSIONS_REQUEST_DOWNLOAD_FILE)){
+            downloadImage();
+        }
     }
 
     private void downloadImage() {
-        int position = viewPager.getCurrentItem();
-        Attachment attachment = imageAttachments.get(position);
-        DownloadManager.getInstance().downloadFile(attachment, accountJid, this);
+        ReferenceRealmObject referenceRealmObject =
+                imageReferenceRealmObjects.get(viewPager.getCurrentItem());
+        DownloadManager.getInstance().downloadFile(referenceRealmObject, accountJid, this);
     }
 
     private void onCancelDownloadClick() {
@@ -288,19 +284,14 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
 
     private void subscribeForDownloadProgress() {
         subscriptions.add(DownloadManager.getInstance().subscribeForProgress()
-            .doOnNext(new Action1<DownloadManager.ProgressData>() {
-                @Override
-                public void call(DownloadManager.ProgressData progressData) {
-                    onProgressUpdated(progressData);
-                }
-            }).subscribe());
+            .doOnNext(this::onProgressUpdated).subscribe());
     }
 
     private void onProgressUpdated(DownloadManager.ProgressData progressData) {
         int position = viewPager.getCurrentItem();
-        Attachment attachment = imageAttachments.get(position);
+        ReferenceRealmObject referenceRealmObject = imageReferenceRealmObjects.get(position);
 
-        if (progressData.getAttachmentId().equals(attachment.getUniqueId())) {
+        if (progressData.getAttachmentId().equals(referenceRealmObject.getUniqueId())) {
             if (progressData.isCompleted()) {
                 showProgress(false);
                 isDownloading = false;
@@ -337,29 +328,32 @@ public class ImageViewerActivity extends AppCompatActivity implements Toolbar.On
         Toast.makeText(this, R.string.no_permission_to_write_files, Toast.LENGTH_SHORT).show();
     }
 
-    private void subscribeForAttachment(Attachment attachment) {
-        if (attachment == null) return;
-        Realm realm = MessageDatabaseManager.getInstance().getRealmUiThread();
-        Attachment attachmentForSubscribe = realm.where(Attachment.class)
-                .equalTo(Attachment.Fields.UNIQUE_ID, attachment.getUniqueId())
+    private void subscribeForAttachment(ReferenceRealmObject referenceRealmObject) {
+        if (referenceRealmObject == null) return;
+        Realm realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+        ReferenceRealmObject referenceRealmObjectForSubscribe = realm
+                .where(ReferenceRealmObject.class)
+                .equalTo(ReferenceRealmObject.Fields.UNIQUE_ID, referenceRealmObject.getUniqueId())
                 .findFirst();
-
-        if (attachmentForSubscribe == null) return;
-        Observable<Attachment> observable = attachmentForSubscribe.asObservable();
-
-        attachmentStateSubscription.add(observable.doOnNext(new Action1<Attachment>() {
-            @Override
-            public void call(Attachment attachment) {
-                updateToolbar();
-                if (waitForSharing) {
-                    waitForSharing = false;
-                    onShareClick();
-                }
-            }
-        }).subscribe());
+        if (Looper.myLooper() != Looper.getMainLooper()) realm.close();
+        if (referenceRealmObjectForSubscribe == null) return;
+        //TODO FIX THIS
+//        Observable<Attachment> observable = attachmentForSubscribe.asObservable();
+//
+//        attachmentStateSubscription.add(observable.doOnNext(new Action1<Attachment>() {
+//            @Override
+//            public void call(Attachment attachment) {
+//                updateToolbar();
+//                if (waitForSharing) {
+//                    waitForSharing = false;
+//                    onShareClick();
+//                }
+//            }
+//        }).subscribe());
     }
 
     private void unsubscribeAttachmentState() {
         attachmentStateSubscription.clear();
     }
+
 }

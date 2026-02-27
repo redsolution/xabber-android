@@ -6,14 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.core.app.RemoteInput;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.notification.Action;
 import com.xabber.android.data.notification.MessageNotificationManager;
-import com.xabber.android.data.push.SyncManager;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.service.XabberService;
 
 public class NotificationReceiver extends BroadcastReceiver {
 
@@ -29,16 +29,14 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         AccountJid accountJid = intent.getParcelableExtra(KEY_ACCOUNT_JID);
-        if (!Application.getInstance().isServiceStarted()) {
-            MessageNotificationManager.getInstance().onDelayedNotificationAction(createAction(intent));
-            if (accountJid != null)
-                Utils.startXabberServiceCompatWithSyncMode(context, accountJid);
+        if (Application.getInstance().isServiceNotStarted()) {
+            MessageNotificationManager.INSTANCE.onDelayedNotificationAction(createAction(intent));
+            if (accountJid != null) {
+                XabberService.startXabberServiceCompat(context);
+            }
 
         } else {
-            if (!SyncManager.getInstance().isAccountAllowed(accountJid))
-                SyncManager.getInstance().addAllowedAccount(accountJid);
-
-            MessageNotificationManager.getInstance().onNotificationAction(createAction(intent));
+            MessageNotificationManager.INSTANCE.onNotificationAction(createAction(intent));
         }
     }
 
@@ -72,8 +70,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         intent.setAction(NotificationReceiver.ACTION_REPLY);
         intent.putExtra(KEY_NOTIFICATION_ID, notificationId);
         intent.putExtra(KEY_ACCOUNT_JID, (Parcelable) accountJid);
-        return PendingIntent.getBroadcast(context, notificationId,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static PendingIntent createMarkAsReadIntent(Context context, int notificationId, AccountJid accountJid) {
@@ -81,8 +78,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         intent.setAction(NotificationReceiver.ACTION_MARK_AS_READ);
         intent.putExtra(KEY_NOTIFICATION_ID, notificationId);
         intent.putExtra(KEY_ACCOUNT_JID, (Parcelable) accountJid);
-        return PendingIntent.getBroadcast(context, notificationId,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static PendingIntent createMuteIntent(Context context, int notificationId, AccountJid accountJid) {
@@ -90,15 +86,14 @@ public class NotificationReceiver extends BroadcastReceiver {
         intent.setAction(NotificationReceiver.ACTION_MUTE);
         intent.putExtra(KEY_NOTIFICATION_ID, notificationId);
         intent.putExtra(KEY_ACCOUNT_JID, (Parcelable) accountJid);
-        return PendingIntent.getBroadcast(context, notificationId,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static PendingIntent createDeleteIntent(Context context, int notificationId) {
         Intent intent = new Intent(context, NotificationReceiver.class);
         intent.setAction(NotificationReceiver.ACTION_CANCEL);
         intent.putExtra(KEY_NOTIFICATION_ID, notificationId);
-        return PendingIntent.getBroadcast(context, notificationId,
-                intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
+
 }

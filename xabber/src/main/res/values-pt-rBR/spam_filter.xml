@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="spam_filter_limit_message">Este usuário limitou o recebimento de mensagens de contatos sem autorização</string>
+    <string name="spam_filter_limit_subscription">Este usuário tem solicitações de assinatura limitadas. Para solicitar uma assinatura, resolva o captcha:</string>
+    <string name="spam_filter_ban_subscription">Esse usuário não aceita assinaturas. Você só pode conversar com ele se ele mesmo adicionar você.</string>
+    <string name="spam_filter_captcha_correct">Resposta correta. Solicitação de assinatura mostrada para o usuário.</string>
+    <string name="spam_filter_captcha_incorrect">Resposta incorreta. Você não é um spambot, é?</string>
+    <string name="spam_filter_captcha_many_attempts">Para várias tentativas. Tente solicitar a assinatura novamente para gerar o novo captcha</string>
+</resources>

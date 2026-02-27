@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/switch_flashlight"
+        android:checkable="true"
+        android:icon="@drawable/ic_flashlight"
+        android:onClick="switchFlashlight"
+        android:title="Flashlight"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/switch_camera"
+        android:icon="@drawable/ic_camera_switch"
+        android:title="Camera"
+        app:showAsAction="always" />
+
+</menu>

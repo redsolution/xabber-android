@@ -2,14 +2,14 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
+
+import androidx.annotation.Nullable;
 
 import com.xabber.android.R;
 
@@ -41,20 +41,10 @@ public class XAccountSignUpFragment3 extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         btnSignUp = view.findViewById(R.id.btnSignUp);
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onStep3Completed();
-            }
-        });
+        btnSignUp.setOnClickListener(v -> listener.onStep3Completed());
 
         chkAccept = view.findViewById(R.id.chkAccept);
-        chkAccept.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                btnSignUp.setEnabled(isChecked);
-            }
-        });
+        chkAccept.setOnCheckedChangeListener((buttonView, isChecked) -> btnSignUp.setEnabled(isChecked));
 
         WebView webView = view.findViewById(R.id.webView);
         webView.loadUrl(getString(R.string.license_url));

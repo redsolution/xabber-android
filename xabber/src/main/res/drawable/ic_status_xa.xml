@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:top = "1dp"
+        android:left = "1dp"
+        android:right = "1dp"
+        android:bottom = "1dp">
+        <shape
+            android:shape="oval">
+
+            <solid
+                android:color="@color/blue_500"/>
+
+            <stroke
+                android:width="@dimen/account_status_border"
+                android:color="?attr/contact_list_contact_background"/>
+
+            <size
+                android:width="@dimen/account_status"
+                android:height="@dimen/account_status"/>
+        </shape>
+    </item>
+</layer-list>

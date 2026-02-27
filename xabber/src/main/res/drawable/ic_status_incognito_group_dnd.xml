@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+        <shape
+            android:shape="oval">
+            <solid
+                android:color="?attr/contact_list_contact_background"/>
+        </shape>
+    </item>
+
+    <item
+        android:top="1dp"
+        android:left="1dp"
+        android:right="1dp"
+        android:bottom="1dp">
+        <shape
+            android:shape="oval">
+            <solid
+                android:color="@color/red_700"/>
+        </shape>
+    </item>
+
+    <item
+        android:drawable="@drawable/ic_group_incognito"/>
+
+</layer-list>

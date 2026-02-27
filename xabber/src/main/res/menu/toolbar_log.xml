@@ -7,4 +7,9 @@
         app:showAsAction="never"
         />
 
+    <item android:id="@+id/send_all_log_files"
+        android:title="@string/send_all_log_files"
+        app:showAsAction="never"
+        />
+
 </menu>

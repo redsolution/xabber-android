@@ -2,15 +2,15 @@ package com.xabber.android.ui.fragment;
 
 import android.app.Fragment;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
@@ -51,15 +51,12 @@ public class AccountSyncFragment extends Fragment implements XMPPAccountAdapter.
 
         switchSyncAll = (Switch) view.findViewById(R.id.switchSyncAll);
         switchSyncAll.setChecked(SettingsManager.isSyncAllAccounts());
-        switchSyncAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (adapter != null)
-                    adapter.setAllChecked(b);
-                saveSyncSettings();
-            }
+        switchSyncAll.setOnCheckedChangeListener((compoundButton, b) -> {
+            if (adapter != null)
+                adapter.setAllChecked(b);
+            saveSyncSettings();
         });
-        if (AccountManager.getInstance().haveNotAllowedSyncAccounts()) switchSyncAll.setEnabled(false);
+        if (AccountManager.INSTANCE.haveNotAllowedSyncAccounts()) switchSyncAll.setEnabled(false);
 
         setXmppAccounts(XabberAccountManager.getInstance().getXmppAccountsForSync());
 

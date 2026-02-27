@@ -2,8 +2,8 @@ package com.xabber.android.ui.adapter.contactlist;
 
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.roster.AbstractContact;
-import com.xabber.android.data.roster.Group;
-import com.xabber.android.data.roster.GroupManager;
+import com.xabber.android.data.roster.Circle;
+import com.xabber.android.data.roster.CircleManager;
 import com.xabber.android.data.roster.ShowOfflineMode;
 
 import java.util.ArrayList;
@@ -17,17 +17,12 @@ public class ContactListGroupUtils {
     /**
      * List of groups used if contact has no groups.
      */
-    private static final Collection<Group> NO_GROUP_LIST;
+    private static final Collection<Circle> NO_CIRCLE_LIST;
 
     static {
-        Collection<Group> groups = new ArrayList<>(1);
-        groups.add(new Group() {
-            @Override
-            public String getName() {
-                return GroupManager.NO_GROUP;
-            }
-        });
-        NO_GROUP_LIST = Collections.unmodifiableCollection(groups);
+        Collection<Circle> circles = new ArrayList<>(1);
+        circles.add(() -> CircleManager.NO_GROUP);
+        NO_CIRCLE_LIST = Collections.unmodifiableCollection(circles);
     }
 
     /**
@@ -39,7 +34,7 @@ public class ContactListGroupUtils {
             return groupConfiguration;
         }
         groupConfiguration = new GroupConfiguration(
-                accountConfiguration.getAccount(), name, GroupManager.getInstance());
+                accountConfiguration.getAccount(), name, CircleManager.getInstance());
         accountConfiguration.addGroupConfiguration(groupConfiguration);
         return groupConfiguration;
     }
@@ -52,7 +47,7 @@ public class ContactListGroupUtils {
         if (groupConfiguration != null) {
             return groupConfiguration;
         }
-        groupConfiguration = new GroupConfiguration(GroupManager.NO_ACCOUNT, name, GroupManager.getInstance());
+        groupConfiguration = new GroupConfiguration(CircleManager.NO_ACCOUNT, name, CircleManager.getInstance());
         groups.put(name, groupConfiguration);
         return groupConfiguration;
     }
@@ -73,20 +68,10 @@ public class ContactListGroupUtils {
             if (showGroups) {
                 GroupConfiguration groupConfiguration
                         = getGroupConfiguration(accountConfiguration, group);
-//                if (accountConfiguration.isExpanded()) {
-//                    groupConfiguration.setNotEmpty();
-//                    if (groupConfiguration.isExpanded()) {
-//                        groupConfiguration.addAbstractContact(abstractContact);
-//                    }
-//                }
                 groupConfiguration.setNotEmpty();
                 groupConfiguration.addAbstractContact(abstractContact);
-
                 groupConfiguration.increment(online);
             } else {
-//                if (accountConfiguration.isExpanded()) {
-//                    accountConfiguration.addAbstractContact(abstractContact);
-//                }
                 accountConfiguration.addAbstractContact(abstractContact);
             }
             accountConfiguration.increment(online);
@@ -94,9 +79,6 @@ public class ContactListGroupUtils {
             if (showGroups) {
                 GroupConfiguration groupConfiguration = getGroupConfiguration(groups, group);
                 groupConfiguration.setNotEmpty();
-//                if (groupConfiguration.isExpanded()) {
-//                    groupConfiguration.addAbstractContact(abstractContact);
-//                }
                 groupConfiguration.addAbstractContact(abstractContact);
                 groupConfiguration.increment(online);
             } else {
@@ -122,13 +104,13 @@ public class ContactListGroupUtils {
                 return false;
             }
             if (showGroups) {
-                Collection<? extends Group> abstractGroups = abstractContact.getGroups();
+                Collection<? extends Circle> abstractGroups = abstractContact.getGroups();
                 if (abstractGroups.size() == 0) {
-                    abstractGroups = NO_GROUP_LIST;
+                    abstractGroups = NO_CIRCLE_LIST;
                 }
-                for (Group abstractGroup : abstractGroups) {
+                for (Circle abstractCircle : abstractGroups) {
                     GroupConfiguration groupConfiguration = getGroupConfiguration(
-                            accountConfiguration, abstractGroup.getName());
+                            accountConfiguration, abstractCircle.getName());
                     if (online
                             || (groupConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
                             || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.always && groupConfiguration
@@ -141,12 +123,6 @@ public class ContactListGroupUtils {
                         // account N | + | ? | -
                         // ....... E | + | - | -
                         hasVisible = true;
-//                        if (accountConfiguration.isExpanded()) {
-//                            groupConfiguration.setNotEmpty();
-//                            if (groupConfiguration.isExpanded()) {
-//                                groupConfiguration.addAbstractContact(abstractContact);
-//                            }
-//                        }
                         groupConfiguration.setNotEmpty();
                         groupConfiguration.addAbstractContact(abstractContact);
                     }
@@ -156,29 +132,23 @@ public class ContactListGroupUtils {
                 if (online || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
                         || (accountConfiguration.getShowOfflineMode() == ShowOfflineMode.normal && showOffline)) {
                     hasVisible = true;
-//                    if (accountConfiguration.isExpanded()) {
-//                        accountConfiguration.addAbstractContact(abstractContact);
-//                    }
                     accountConfiguration.addAbstractContact(abstractContact);
                 }
             }
             accountConfiguration.increment(online);
         } else {
             if (showGroups) {
-                Collection<? extends Group> abstractGroups = abstractContact.getGroups();
+                Collection<? extends Circle> abstractGroups = abstractContact.getGroups();
                 if (abstractGroups.size() == 0) {
-                    abstractGroups = NO_GROUP_LIST;
+                    abstractGroups = NO_CIRCLE_LIST;
                 }
-                for (Group abstractGroup : abstractGroups) {
+                for (Circle abstractCircle : abstractGroups) {
                     GroupConfiguration groupConfiguration
-                            = getGroupConfiguration(groups, abstractGroup.getName());
+                            = getGroupConfiguration(groups, abstractCircle.getName());
                     if (online || (groupConfiguration.getShowOfflineMode() == ShowOfflineMode.always)
                             || (groupConfiguration.getShowOfflineMode() == ShowOfflineMode.normal && showOffline)) {
                         groupConfiguration.setNotEmpty();
                         hasVisible = true;
-//                        if (groupConfiguration.isExpanded()) {
-//                            groupConfiguration.addAbstractContact(abstractContact);
-//                        }
                         groupConfiguration.addAbstractContact(abstractContact);
                     }
                     groupConfiguration.increment(online);

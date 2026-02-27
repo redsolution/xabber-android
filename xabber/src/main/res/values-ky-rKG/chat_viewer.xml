@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="chat_delay"> %s гө жөнөтүлдү</string>
+    <string name="chat_input_hint">Билдирүүнү териңиз</string>
+    <string name="chat_send">Жөнөтүү</string>
+    <string name="clear_history">Билдирүүлөрдүн тарыхын тазалоо</string>
+    <string name="clear_chat_history_dialog_button">Тазалоо</string>
+    <string name="ENTRY_IS_NOT_AVAILABLE">Контакт байланышта эмес</string>
+    <string name="FILE_NOT_FOUND">Файл табылган жок</string>
+    <string name="message_copy">Көчүрүү</string>
+    <string name="message_appeal">Эстетүү</string>
+    <string name="message_quote">Цитаталар</string>
+    <string name="message_remove">Тарыхтан жок кылуу</string>
+    <string name="message_repeat">Жөнөтүүнү кайталоо</string>
+    <string name="message_otr_show_original">Билдирүүнү көрсөтүү</string>
+    <string name="action_attention_requested">Алар сени чакырышты</string>
+    <string name="action_ban">%1$s тыюу салынган</string>
+    <string name="action_ban_by">%2$s тыюу салынган %1$s</string>
+    <string name="action_invite_error">Чакыруу %s алынган жок</string>
+    <string name="chat_settings">Орнотуулар</string>
+    <string name="export_chat">Жөнөтүү тарыхы</string>
+    <string name="export_chat_done">Тарыхы SD картада сакталды</string>
+    <string name="export_chat_mask">%2$s үчүн %1$s.html</string>
+    <string name="export_chat_send">Сактап алуудан кийин жөнөтүү</string>
+    <string name="export_chat_title">Аты-жөнүңүздү жазыңыз</string>
+    <string name="muc_invite">Маекке чакыруу</string>
+    <string name="occupant_list">Колдонуучулар тизмеги</string>
+    <string name="otr_verification_notify_button">Ачык</string>
+    <string name="otr_verification_notify_button_cancel">Токтотуу</string>
+    <string name="message_open_private_chat">Жеке маекти баштоо</string>
+    <string name="error_description_title">Катачылык тууралуу билдирүү</string>
+    <string name="message_status_sent">Жөнөтүлдү</string>
+    <string name="message_status_delivered">Жеткирилди</string>
+    <string name="message_status_error">Ката</string>
+    <string name="message_status_not_sent">Жөнөтүлүп жатат</string>
+    <string name="muc_role_moderator">Модератор</string>
+    <string name="muc_role_visitor">Конок</string>
+    <string name="button_join_conference">Кошулуу</string>
+    <string name="action_copy_link">Шилтемени көчүрүү</string>
+    <string name="action_download">Жүктөө</string>
+    <string name="action_image_saved">Сүрөт сакталды</string>
+    <string name="toast_could_not_open_file">Файлды ачууга мүмкүнчүлүк болбоду</string>
+    <string name="uploaded_files_count">Жүктөлүүдө.. %s</string>
+    <string name="unread_messages">Жаңы билдирүүлөр</string>
+    <string name="action_new_contact">Жаңы контакт</string>
+</resources>

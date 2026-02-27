@@ -32,7 +32,4 @@
         <item>@color/grey_500</item>
     </array>
 
-    <array name="muc_avatars">
-        <item>@drawable/ic_avatar_muc_72dp</item>
-    </array>
 </resources>

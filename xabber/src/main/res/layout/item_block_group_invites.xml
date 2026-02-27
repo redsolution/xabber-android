@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/bottom_navigation_background"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/iv_group_invite"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="6dp"
+        app:civ_circle_background_color="@color/blue_700"
+        tools:src="@drawable/ic_email_add" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/iv_group_invite"
+        android:layout_marginTop="1dp"
+        android:layout_marginBottom="7dp"
+        android:layout_toLeftOf="@id/group_invites_count"
+        android:layout_toRightOf="@id/iv_group_invite"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/contact_list_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:singleLine="true"
+            android:text="@string/blocked_group_invitations"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/contact_list_item_jid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="marquee"
+            android:gravity="top"
+            android:text="@string/blocked_group_invitations_summary"
+            android:textSize="12sp"
+            app:autoSizeTextType="none" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/group_invites_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="false"
+        android:layout_marginLeft="17dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="17dp"
+        android:paddingLeft="6dp"
+        android:paddingTop="1dp"
+        android:paddingRight="6dp"
+        android:paddingBottom="2dp"
+        android:text="1"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="visible" />
+
+
+</RelativeLayout>

@@ -37,7 +37,7 @@ public class ContactListSettingsFragment extends PreferenceFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(getString(R.string.contacts_show_accounts_key))
-                || key.equals(getString(R.string.contacts_show_groups_key))) {
+                || key.equals(getString(R.string.contacts_show_circles_key))) {
             changeGrouping();
         }
     }
@@ -45,7 +45,7 @@ public class ContactListSettingsFragment extends PreferenceFragment
     private void changeGrouping() {
         boolean grouped = SettingsManager.contactsShowAccounts()
                 || SettingsManager.contactsShowGroups();
-        getPreferenceScreen().findPreference(getString(R.string.contacts_show_empty_groups_key))
+        getPreferenceScreen().findPreference(getString(R.string.contacts_show_empty_circles_key))
                 .setEnabled(grouped);
     }
 

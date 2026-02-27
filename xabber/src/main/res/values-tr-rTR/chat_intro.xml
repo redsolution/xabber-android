@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro_regular_chat">Normal sohbet</string>
+    <string name="intro_regular_chat_text">Bu sohbetteki mesajlar şifrelenmez. Sunucular genellikle geçici iletileri
+        bir arşivde
+        depolar. Bu, kolay cihaz senkronizasyonuna ve sunucu tarafında geçmiş aramasına izin verir, ancak gizlilik riskleri barındırır.
+    </string>
+    <string name="intro_regular_chat_learn">Mesajlaşma hakkında daha fazla bilgi edin</string>
+    <string name="intro_regular_chat_link">https://www.xabber.com/learn/regular</string>
+    <string name="intro_encrypted_chat">Normal sohbet</string>
+    <string name="intro_encrypted_chat_learn">Şifreli sohbetler hakkında daha fazla bilgi edin</string>
+    <string name="intro_encrypted_chat_link">https://www.xabber.com/learn/encrypted</string>
+    <string name="intro_public_group">Herkese açık grup</string>
+    <string name="intro_public_group_text">Bu gruptaki kullanıcıların kimlikleri herkese açıktır, bu nedenle herhangi bir üye gerçek XMPP kimliğini kullanarak
+        seninle iletişime geçebilir.
+    </string>
+    <string name="intro_public_group_learn">Herkese açık gruplar hakkında daha fazla bilgi edin</string>
+    <string name="intro_public_group_link">https://www.xabber.com/learn/groups</string>
+    <string name="intro_incognito_group">Gizli grup</string>
+    <string name="intro_incognito_group_text">Bu gruptaki kullanıcıların kimlikleri birbirinden gizli tutulur, yalnızca
+        grup yöneticileri gerçek XMPP kimliklerine erişebilir. Dikkatli ol, kendini ifşa etme.
+    </string>
+    <string name="intro_incognito_group_learn">Gizli gruplar hakkında daha fazla bilgi edin</string>
+    <string name="intro_incognito_group_link">https://www.xabber.com/learn/incognito</string>
+    <string name="intro_private_chat">Özel sohbet</string>
+    <string name="intro_private_chat_text">Gizli kullanıcıyla özel sohbet. Mesajlar grup sunucusu üzerinden yönlendirilir
+        ve kimlikleriniz birbirinden gizli tutuluyor. Dikkatli ol, kendini ifşa etme.
+    </string>
+    <string name="intro_private_chat_learn">Özel sohbetler hakkında daha fazla bilgi edin</string>
+    <string name="intro_private_chat_link">https://www.xabber.com/learn/private</string>
+</resources>

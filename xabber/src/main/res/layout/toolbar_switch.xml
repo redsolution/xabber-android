@@ -9,7 +9,7 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:paddingRight="8dp"
-        android:paddingLeft="8dp"
+        android:paddingLeft="0dp"
         android:theme="@style/WhiteSwitchStyle"
         android:text="" />
 

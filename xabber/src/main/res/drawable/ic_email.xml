@@ -1,8 +1,11 @@
-<!-- drawable/email.xml -->
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="24dp"
-    android:width="24dp"
+<vector android:height="12dp"
+    android:viewportHeight="24"
     android:viewportWidth="24"
-    android:viewportHeight="24">
-    <path android:fillColor="#fff" android:pathData="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z" />
+    android:width="12dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#FFFFFF"
+        android:fillType="nonZero"
+        android:pathData="M20,8L12,13L4,8L4,6L12,11L20,6M20,4L4,4C2.89,4 2,4.89 2,6L2,18C2,19.1046 2.8954,20 4,20L20,20C21.1046,20 22,19.1046 22,18L22,6C22,4.89 21.1,4 20,4Z"
+        android:strokeColor="#00000000"
+        android:strokeWidth="1"/>
 </vector>

@@ -1,22 +1,23 @@
-/**
- * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
- * This file is part of Xabber project; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License, Version 3.
- *
- * Xabber is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License,
- * along with this program. If not, see http://www.gnu.org/licenses/.
+/*
+  Copyright (c) 2013, Redsolution LTD. All rights reserved.
+
+  This file is part of Xabber project; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License, Version 3.
+
+  Xabber is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License,
+  along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.service;
 
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 
 import com.xabber.android.data.Application;
@@ -25,7 +26,6 @@ import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.notification.NotificationManager;
-import com.xabber.android.data.push.SyncManager;
 
 /**
  * Basic service to work in background.
@@ -52,7 +52,7 @@ public class XabberService extends Service {
         LogManager.i(this, "changeForeground");
         if (needForeground()
                 && Application.getInstance().isInitialized()
-                && !AccountManager.getInstance().getEnabledAccounts().isEmpty()) {
+                && !AccountManager.INSTANCE.getEnabledAccounts().isEmpty()) {
             startForeground(NotificationManager.PERSISTENT_NOTIFICATION_ID,
                     NotificationManager.getInstance().getPersistentNotification());
         } else {
@@ -65,7 +65,6 @@ public class XabberService extends Service {
         int result = super.onStartCommand(intent, flags, startId);
         LogManager.i(this, "onStartCommand");
         Application.getInstance().onServiceStarted();
-        SyncManager.getInstance().onServiceStarted(intent);
         return result;
     }
 
@@ -87,15 +86,21 @@ public class XabberService extends Service {
     }
 
     public boolean needForeground() {
-        if (SyncManager.getInstance().isSyncPeriod()) return true;
-        for (AccountJid accountJid : AccountManager.getInstance().getEnabledAccounts()) {
-            AccountItem accountItem = AccountManager.getInstance().getAccount(accountJid);
+        for (AccountJid accountJid : AccountManager.INSTANCE.getEnabledAccounts()) {
+            AccountItem accountItem = AccountManager.INSTANCE.getAccount(accountJid);
             if (accountItem != null) {
-                if (!accountItem.isPushWasEnabled()
-                        && SyncManager.getInstance().isAccountNeedConnection(accountItem))
-                    return true;
+                return true;
             }
         }
         return false;
     }
+
+    public static void startXabberServiceCompat(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(XabberService.createIntent(context));
+        } else {
+            context.startService(XabberService.createIntent(context));
+        }
+    }
+
 }

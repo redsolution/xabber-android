@@ -1,163 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<com.xabber.android.ui.widget.ChatListItemLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText"
     android:layout_width="match_parent"
     android:layout_height="64dp"
-    android:elevation="1dp">
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:clipToPadding="false"
+    android:background="@drawable/ripple_chat_list_item">
+
+    <View
+        android:id="@+id/accountColorIndicatorBack"
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="@color/amber_700" />
+
+    <View
+        android:id="@+id/accountColorIndicator"
+        android:layout_marginTop="1px"
+        android:layout_marginBottom="1px"
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:background="@color/amber_700" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivAvatar"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:civ_circle_background_color="@color/white"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        tools:src="@tools:sample/avatars"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp" />
+
+    <ImageView
+        android:id="@+id/ivStatus"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/ic_status_combined"
+        android:visibility="visible" />
 
     <TextView
-        android:id="@+id/tvAction"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingRight="12dp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:text="@string/archive_chat"
-        android:textAllCaps="true"
-        android:gravity="right|center"
-        android:drawableRight="@drawable/ic_arcived"
-        android:drawablePadding="12dp"
-        android:background="?attr/action_with_chat_background"
-        android:visibility="gone"
-        />
+        android:id="@+id/tvContactName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:drawablePadding="4dp"
+        android:textSize="14sp"
+        android:textColor="?attr/contact_list_contact_name_text_color"
+        android:fontFamily="sans-serif-medium"
+        android:text="Erik Walton" />
+
+    <github.ankushsachdeva.emojicon.EmojiconTextView
+        android:id="@+id/tvMessageText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textSize="14sp"
+        android:textColor="?attr/contact_list_contact_second_line_text_color"
+        android:text="Hello. How are you?" />
 
     <TextView
-        android:id="@+id/tvActionLeft"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="12dp"
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        android:text="12:30" />
+
+    <ImageView
+        android:id="@+id/ivMessageStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        app:srcCompat="@drawable/ic_message_delivered_14dp" />
+
+    <TextView
+        android:id="@+id/tvUnreadCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="0dp"
+        android:paddingBottom="1dp"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
+        android:background="@drawable/rounded_background_green"
         android:textColor="@color/white"
+        android:textSize="12sp"
         android:textStyle="bold"
-        android:text="@string/archive_chat"
-        android:textAllCaps="true"
-        android:gravity="left|center"
-        android:drawableLeft="@drawable/ic_arcived"
-        android:drawablePadding="12dp"
-        android:background="?attr/action_with_chat_background"
-        android:visibility="gone"
-        />
+        android:text="1"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp" />
 
-    <LinearLayout
-        android:id="@+id/foregroundView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/contact_list_contact_background"
-        >
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        >
-
-        <include layout="@layout/account_color_indicator"/>
-
-        <include layout="@layout/avatar_view"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginRight="8dp"
-            android:layout_toRightOf="@id/avatarView"
-            android:layout_toLeftOf="@id/tvTime"
-            >
-
-            <TextView
-                android:id="@+id/tvContactName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:drawablePadding="4dp"
-                android:textSize="14sp"
-                android:textColor="?attr/contact_list_contact_name_text_color"
-                android:fontFamily="sans-serif-medium"
-                android:text="Erik Walton"
-                />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvOutgoingMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/avatarView"
-            android:layout_marginBottom="12dp"
-            android:text="@string/sender_is_you"
-            android:textColor="@color/green_500" />
-
-        <github.ankushsachdeva.emojicon.EmojiconTextView
-            android:id="@+id/tvMessageText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@id/tvOutgoingMessage"
-            android:layout_toLeftOf="@+id/rlUnread"
-            android:layout_marginBottom="12dp"
-            android:layout_marginRight="8dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textSize="14sp"
-            android:textColor="?attr/contact_list_contact_second_line_text_color"
-            android:text="Hello. How are you?"
-            />
-
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="12dp"
-            android:layout_marginRight="8dp"
-            android:textSize="10sp"
-            android:text="12:30"
-            />
-
-        <RelativeLayout
-            android:id="@+id/rlUnread"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="12dp"
-            android:layout_marginRight="8dp"
-            >
-
-            <ImageView
-                android:id="@+id/ivMessageStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_message_delivered_14dp"
-                />
-
-            <TextView
-                android:id="@+id/tvUnreadCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="0dp"
-                android:paddingBottom="1dp"
-                android:paddingRight="5dp"
-                android:paddingLeft="5dp"
-                android:background="@drawable/rounded_background_green"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:text="1"
-                />
-
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_alignParentBottom="true"
-            android:layout_toRightOf="@+id/avatarView"
-            android:background="?attr/contact_list_subgroup_separator"
-            />
-
-    </RelativeLayout>
-
-    </LinearLayout>
-
-</FrameLayout>
+</com.xabber.android.ui.widget.ChatListItemLayout>

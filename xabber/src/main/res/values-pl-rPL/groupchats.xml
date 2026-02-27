@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_delete_user_messages__header">Usuń wiadomości użytkownika</string>
+    <string name="group_settings_edit__setting_name__hint">Wprowadź nazwę czatu</string>
+    <string name="public_group_settings__header">Ustawienia grupy publicznej</string>
+    <string name="incognito_group_settings__header">Ustawienia grupy Incognito</string>
+    <string name="group_settings__block_list__header">Zablokowane</string>
+</resources>

@@ -20,7 +20,7 @@ public class CacheClearDialog extends DialogPreference {
         super.onDialogClosed(positiveResult);
 
         if (positiveResult) {
-            AccountManager.getInstance().setStatus(StatusMode.unavailable, null);
+            AccountManager.INSTANCE.setStatus(StatusMode.unavailable, null);
             Application.getInstance().requestToClear();
             Application.getInstance().requestToClose();
 

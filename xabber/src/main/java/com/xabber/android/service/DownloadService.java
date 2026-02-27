@@ -3,16 +3,19 @@ package com.xabber.android.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.Looper;
 import android.os.ResultReceiver;
-import androidx.annotation.Nullable;
-import android.util.Log;
+import android.webkit.MimeTypeMap;
 
-import com.xabber.android.data.database.MessageDatabaseManager;
-import com.xabber.android.data.database.messagerealm.Attachment;
+import androidx.annotation.Nullable;
+
+import com.xabber.android.data.Application;
+import com.xabber.android.data.database.DatabaseManager;
+import com.xabber.android.data.database.realmobjects.ReferenceRealmObject;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.file.FileManager;
-import com.xabber.android.utils.HttpClientWithMTM;
+import com.xabber.android.data.log.LogManager;
+import com.xabber.android.data.http.HttpClientWithMTM;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +34,9 @@ public class DownloadService extends IntentService {
     public static final int ERROR_CODE = 3133;
     public static final int COMPLETE_CODE = 3134;
     private static final String XABBER_DIR = "Xabber";
+    private static final String XABBER_AUDIO_DIR = "Xabber Audio";
+    private static final String XABBER_DOCUMENTS_DIR = "Xabber Documents";
+    private static final String XABBER_IMAGES_DIR = "Xabber Images";
 
     public final static String KEY_ATTACHMENT_ID = "attachment_id";
     public final static String KEY_RECEIVER = "receiver";
@@ -63,8 +69,9 @@ public class DownloadService extends IntentService {
         OkHttpClient client = HttpClientWithMTM.getClient(accountJid);
 
         // start download
-        if (client != null) requestFileDownload(fileName, fileSize, url, client);
-        else publishError("Downloading not started");
+        if (client != null) {
+            requestFileDownload(fileName, fileSize, url, client);
+        } else publishError("Downloading not started");
     }
 
     @Override
@@ -73,12 +80,12 @@ public class DownloadService extends IntentService {
         needStop = true;
     }
 
-    private void requestFileDownload(final String fileName, final long fileSize, String url, OkHttpClient client) {
+    private void requestFileDownload(String fileName, final long fileSize, String url, OkHttpClient client) {
         Request request = new Request.Builder().url(url).build();
         try {
             Response response = client.newCall(request).execute();
             if (!response.isSuccessful()) {
-                Log.d(LOG_TAG, "download onFailure " + response.toString());
+                LogManager.e(LOG_TAG, "download onFailure " + response.toString());
                 publishError(response.toString());
                 return;
             }
@@ -91,7 +98,45 @@ public class DownloadService extends IntentService {
                     return;
                 }
 
+            String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+            String fileType = null;
+            if (extension != null) {
+                fileType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+                if (fileType != null) {
+                    int slash = fileType.indexOf("/");
+                    if (slash != -1) {
+                        fileType = fileType.substring(0, slash);
+                    }
+                }
+            }
+            if ("audio".equals(fileType) || (extension != null && extension.equals("ogg"))) {
+                directory = new File(getAudioDownloadDirPath());
+                if (!directory.exists()) {
+                    if (!directory.mkdir()) {
+                        publishError("Directory not created");
+                        return;
+                    }
+                }
+            } else if ("image".equals(fileType)) {
+                directory = new File(getImagesDownloadDirPath());
+                if (!directory.exists()) {
+                    if (!directory.mkdir()) {
+                        publishError("Directory not created");
+                        return;
+                    }
+                }
+            } else {
+                directory = new File(getDocumentsDownloadDirPath());
+                if (!directory.exists()) {
+                    if (!directory.mkdir()) {
+                        publishError("Directory not created");
+                        return;
+                    }
+                }
+            }
+
             // create file
+            fileName = fileName.replaceAll("[^a-zA-Z0-9.\\-]", "_");
             String filePath = directory.getPath() + File.separator + fileName;
             File file = new File(filePath);
 
@@ -105,7 +150,7 @@ public class DownloadService extends IntentService {
 
                 // download
                 FileOutputStream fos = new FileOutputStream(file);
-                byte [] buffer = new byte [8192];
+                byte[] buffer = new byte[8192];
                 int r;
 
                 int downloadedBytes = 0;
@@ -124,26 +169,33 @@ public class DownloadService extends IntentService {
                 fos.flush();
                 fos.close();
 
-                // save path to realm
+                // save path to realmobjects
                 saveAttachmentPathToRealm(file.getPath());
             } else publishError("File not created");
 
         } catch (IOException e) {
-            Log.d(LOG_TAG, "download onFailure " + e.getMessage());
+           LogManager.exception(LOG_TAG, e);
             publishError(e.getMessage());
         }
     }
 
     private void saveAttachmentPathToRealm(final String path) {
-        MessageDatabaseManager.getInstance().getNewBackgroundRealm().executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                Attachment attachment = realm.where(Attachment.class)
-                        .equalTo(Attachment.Fields.UNIQUE_ID, attachmentId).findFirst();
-                attachment.setFilePath(path);
-                publishCompleted();
-            }
+        Application.getInstance().runInBackgroundUserRequest(() -> {
+            Realm realm = null;
+            try {
+                realm = DatabaseManager.getInstance().getDefaultRealmInstance();
+                realm.executeTransaction(realm1 -> {
+                    ReferenceRealmObject referenceRealmObject = realm1.where(ReferenceRealmObject.class)
+                            .equalTo(ReferenceRealmObject.Fields.UNIQUE_ID, attachmentId).findFirst();
+                    if (referenceRealmObject != null) {
+                        referenceRealmObject.setFilePath(path);
+                    }
+                });
+            } catch (Exception e){
+                LogManager.exception(LOG_TAG, e);
+            } finally { if (realm != null && Looper.myLooper() != Looper.getMainLooper()) realm.close(); }
         });
+        publishCompleted();
     }
 
     private void publishProgress(long downloadedBytes, long fileSize) {
@@ -164,8 +216,20 @@ public class DownloadService extends IntentService {
         receiver.send(ERROR_CODE, resultData);
     }
 
-    private static String getDownloadDirPath() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath()
-                + File.separator + XABBER_DIR;
+    private String getDownloadDirPath() {
+        return this.getExternalFilesDir(null).getPath() + File.separator + XABBER_DIR;
     }
+
+    private String getAudioDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_AUDIO_DIR;
+    }
+
+    private String getDocumentsDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_DOCUMENTS_DIR;
+    }
+
+    private String getImagesDownloadDirPath() {
+        return getDownloadDirPath() + File.separator + XABBER_IMAGES_DIR;
+    }
+
 }

@@ -20,24 +20,27 @@ import androidx.annotation.NonNull;
 
 import com.xabber.android.data.account.AccountErrorEvent;
 import com.xabber.android.data.account.AccountItem;
-import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.extension.forward.ForwardComment;
 import com.xabber.android.data.extension.forward.ForwardCommentProvider;
 import com.xabber.android.data.extension.httpfileupload.CustomDataProvider;
 import com.xabber.android.data.extension.references.ReferenceElement;
 import com.xabber.android.data.extension.references.ReferencesProvider;
-import com.xabber.android.data.extension.xtoken.SessionsIQ;
-import com.xabber.android.data.extension.xtoken.SessionsProvider;
-import com.xabber.android.data.extension.xtoken.XTokenIQ;
-import com.xabber.android.data.extension.xtoken.XTokenProvider;
+import com.xabber.android.data.extension.devices.DevicesManager;
 import com.xabber.android.data.log.AndroidLoggingHandler;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.xaccount.HttpConfirmIq;
 import com.xabber.android.data.xaccount.HttpConfirmIqProvider;
-import com.xabber.xmpp.smack.SASLXTOKENMechanism;
+import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIQ;
+import com.xabber.xmpp.groups.rights.GroupchatMemberRightsReplyIqProvider;
+import com.xabber.xmpp.smack.SaslHtopMechanism;
 import com.xabber.xmpp.smack.XMPPTCPConnection;
+import com.xabber.xmpp.devices.IncomingNewDeviceIQ;
+import com.xabber.xmpp.devices.ResultSessionsIQ;
+import com.xabber.xmpp.devices.providers.SessionsProvider;
+import com.xabber.xmpp.devices.providers.DeviceProvider;
 
 import org.greenrobot.eventbus.EventBus;
+import org.jetbrains.annotations.NotNull;
 import org.jivesoftware.smack.AbstractXMPPConnection;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -106,49 +109,58 @@ class ConnectionThread {
     @SuppressWarnings("WeakerAccess")
     void connectAndLogin() {
         AndroidLoggingHandler.reset(new AndroidLoggingHandler());
-        java.util.logging.Logger.getLogger(XMPPTCPConnection.class.getName()).setLevel(Level.FINEST);
-        java.util.logging.Logger.getLogger(AbstractDNSClient.class.getName()).setLevel(Level.FINEST);
-        java.util.logging.Logger.getLogger(AbstractXMPPConnection.class.getName()).setLevel(Level.FINEST);
-        java.util.logging.Logger.getLogger(DNSUtil.class.getName()).setLevel(Level.FINEST);
+        java.util.logging.Logger.getLogger(XMPPTCPConnection.class.getName()).setLevel(Level.ALL);
+        java.util.logging.Logger.getLogger(AbstractDNSClient.class.getName()).setLevel(Level.ALL);
+        java.util.logging.Logger.getLogger(AbstractXMPPConnection.class.getName()).setLevel(Level.ALL);
+        java.util.logging.Logger.getLogger(DNSUtil.class.getName()).setLevel(Level.ALL);
 
         if (connection.getConfiguration().getPassword().isEmpty()) {
             AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
                     AccountErrorEvent.Type.PASS_REQUIRED, "");
 
-            //com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
-            com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+            com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(connectionItem.getAccount(), false);
             EventBus.getDefault().postSticky(accountErrorEvent);
             return;
         }
 
-//        switch (SettingsManager.connectionDnsResolver()) {
-//            case dnsJavaResolver:
-//                LogManager.i(this, "Use DNS Java resolver");
-//                ExtDNSJavaResolver.setup();
-//                break;
-//            case miniDnsResolver:
-//                LogManager.i(this, "Use Mini DNS resolver");
-//                MiniDnsResolver.setup();
-//                break;
-//        }
-
         LogManager.i(this, "Use DNS Java resolver");
         ExtDNSJavaResolver.setup();
 
-        ProviderManager.addExtensionProvider(DataForm.ELEMENT,
-                DataForm.NAMESPACE, new CustomDataProvider());
+        ProviderManager.addExtensionProvider(
+                DataForm.ELEMENT,
+                DataForm.NAMESPACE,
+                new CustomDataProvider()
+        );
 
-        ProviderManager.addExtensionProvider(ForwardComment.ELEMENT,
-                ForwardComment.NAMESPACE, new ForwardCommentProvider());
+        ProviderManager.addExtensionProvider(
+                ForwardComment.ELEMENT,
+                ForwardComment.NAMESPACE,
+                new ForwardCommentProvider()
+        );
 
-        ProviderManager.addExtensionProvider(ReferenceElement.ELEMENT,
-                ReferenceElement.NAMESPACE, new ReferencesProvider());
+        ProviderManager.addExtensionProvider(
+                ReferenceElement.ELEMENT,
+                ReferenceElement.NAMESPACE,
+                new ReferencesProvider()
+        );
 
-        ProviderManager.addIQProvider(XTokenIQ.ELEMENT,
-                XTokenIQ.NAMESPACE, new XTokenProvider());
+        ProviderManager.addIQProvider(
+                IncomingNewDeviceIQ.ELEMENT,
+                IncomingNewDeviceIQ.NAMESPACE,
+                new DeviceProvider()
+        );
 
-        ProviderManager.addIQProvider(SessionsIQ.ELEMENT,
-                SessionsIQ.NAMESPACE, new SessionsProvider());
+        ProviderManager.addIQProvider(
+                ResultSessionsIQ.ELEMENT,
+                ResultSessionsIQ.NAMESPACE,
+                new SessionsProvider()
+        );
+
+        ProviderManager.addIQProvider(
+                GroupchatMemberRightsReplyIQ.ELEMENT,
+                GroupchatMemberRightsReplyIQ.NAMESPACE + GroupchatMemberRightsReplyIQ.HASH_BLOCK,
+                new GroupchatMemberRightsReplyIqProvider()
+        );
 
         try {
             LogManager.i(this, "Trying to connect and login...");
@@ -163,50 +175,87 @@ class ConnectionThread {
                 ProviderManager.addIQProvider(HttpConfirmIq.ELEMENT,
                         HttpConfirmIq.NAMESPACE, new HttpConfirmIqProvider());
 
-                connection.login();
+                if (connectionItem.getConnectionSettings().getDevice() != null) {
+                    DevicesManager.INSTANCE.beforeLogin(connectionItem);
+                    connection.login(
+                            connectionItem.getConnectionSettings().getUserName(),
+                            connectionItem.getConnectionSettings().getDevice().getPasswordString()
+                    );
+                } else {
+                    connection.login();
+                }
 
+                ((AccountItem)connectionItem).setStreamError(false);
             } else {
                 LogManager.i(this, "Already authenticated");
             }
         } catch (SASLErrorException e)  {
             LogManager.exception(this, e);
 
-            if (e.getMechanism().equals(SASLXTOKENMechanism.NAME)) {
-                LogManager.d(this, "Authorization error with x-token: " + e.toString());
-                AccountManager.getInstance().removeXToken(connectionItem.getAccount());
+            if (e.getMechanism().equals(SaslHtopMechanism.NAME)) {
+                switch (e.getSASLFailure().getSASLError()) {
+                    case credentials_expired: {
+                        DevicesManager.INSTANCE.onAccountDeviceRevokedOrExpired(connectionItem.getAccount());
+                        break;
+                    }
+                    case not_authorized: {
+                        DevicesManager.INSTANCE.onPasswordIncorrect(connectionItem.getAccount());
+                        break;
+                    }
+                }
+            } else {
+                AccountErrorEvent accountErrorEvent = new AccountErrorEvent(
+                        connectionItem.getAccount(),
+                        AccountErrorEvent.Type.AUTHORIZATION,
+                        e.getMessage()
+                );
+
+                com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(
+                        connectionItem.getAccount(), false
+                );
+                EventBus.getDefault().postSticky(accountErrorEvent);
             }
-
-            AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
-                    AccountErrorEvent.Type.AUTHORIZATION, e.getMessage());
-
-            //com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
-            com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
-            EventBus.getDefault().postSticky(accountErrorEvent);
-
-            // catching RuntimeExceptions seems to be strange, but we got a lot of error coming from
-            // Smack or mini DSN client inside of Smack.
         } catch (XMPPException | SmackException | IOException | RuntimeException e) {
             LogManager.exception(this, e);
 
             if (!((AccountItem)connectionItem).isSuccessfulConnectionHappened()) {
                 LogManager.i(this, "There was no successful connection, disabling account");
 
-                AccountErrorEvent accountErrorEvent = new AccountErrorEvent(connectionItem.getAccount(),
-                        AccountErrorEvent.Type.CONNECTION, Log.getStackTraceString(e));
+                AccountErrorEvent accountErrorEvent;
+                if (e instanceof XMPPException.StreamErrorException) {
+                    accountErrorEvent = new AccountErrorEvent(
+                            connectionItem.getAccount(),
+                            AccountErrorEvent.Type.CONNECTION,
+                            ((XMPPException.StreamErrorException)e).getStreamError().getDescriptiveText()
+                    );
+                } else {
+                    accountErrorEvent = new AccountErrorEvent(
+                            connectionItem.getAccount(),
+                            AccountErrorEvent.Type.CONNECTION,
+                            Log.getStackTraceString(e)
+                    );
+                }
 
-                com.xabber.android.data.account.AccountManager.getInstance().addAccountError(accountErrorEvent);
-                com.xabber.android.data.account.AccountManager.getInstance().setEnabled(connectionItem.getAccount(), false);
+                com.xabber.android.data.account.AccountManager.INSTANCE.addAccountError(accountErrorEvent);
+                if (e instanceof XMPPException.StreamErrorException) {
+                    ((AccountItem)connectionItem).setStreamError(true);
+                } else {
+                    if (!((AccountItem)connectionItem).getStreamError()) {
+                        com.xabber.android.data.account.AccountManager.INSTANCE.setEnabled(connectionItem.getAccount(), false);
+                    }
+                }
                 EventBus.getDefault().postSticky(accountErrorEvent);
             }
         } catch (InterruptedException e) {
             LogManager.exception(this, e);
         }
-
         LogManager.i(this, "Connection thread finished");
     }
 
+    @NotNull
     @Override
     public String toString() {
         return getClass().getSimpleName() + ": " + connectionItem.getAccount();
     }
+
 }

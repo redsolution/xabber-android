@@ -8,21 +8,17 @@ import com.xabber.android.R;
 import com.xabber.android.data.SettingsManager;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.xaccount.AuthManager;
-import com.xabber.android.data.xaccount.XMPPAccountSettings;
 import com.xabber.android.data.xaccount.XabberAccount;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.dialog.AddEmailDialogFragment;
 import com.xabber.android.ui.dialog.ConfirmEmailDialogFragment;
 import com.xabber.android.ui.fragment.XAccountLinksFragment;
 import com.xabber.android.ui.helper.OnSocialBindListener;
-import com.xabber.android.utils.RetrofitErrorConverter;
-
-import java.util.List;
+import com.xabber.android.data.http.RetrofitErrorConverter;
 
 import okhttp3.ResponseBody;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -30,8 +26,9 @@ import rx.subscriptions.CompositeSubscription;
  * Created by valery.miller on 31.07.17.
  */
 
-public abstract class BaseLoginActivity extends ManagedActivity implements XAccountLinksFragment.Listener,
-        AddEmailDialogFragment.Listener, ConfirmEmailDialogFragment.Listener, OnSocialBindListener {
+public abstract class BaseLoginActivity extends ManagedActivity implements
+        XAccountLinksFragment.Listener, AddEmailDialogFragment.Listener,
+        ConfirmEmailDialogFragment.Listener, OnSocialBindListener {
 
     private final static String LOG_TAG = BaseLoginActivity.class.getSimpleName();
 
@@ -74,7 +71,8 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
             showProgress(getResources().getString(R.string.progress_title_sync));
             getAccountWithUpdate(account.getToken(), needGoToMainActivity);
         } else {
-            Toast.makeText(BaseLoginActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
+            Toast.makeText(BaseLoginActivity.this, R.string.sync_fail,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -82,56 +80,48 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
         Subscription loadAccountsSubscription = AuthManager.getAccount(token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<XabberAccount>() {
-                    @Override
-                    public void call(XabberAccount s) {
-                        Log.d(LOG_TAG, "Xabber account loading from net: successfully");
-                        updateAccountInfo(s);
+                .subscribe(s -> {
+                    Log.d(LOG_TAG, "Xabber account loading from net: successfully");
+                    updateAccountInfo(s);
 
-                        // if exist local accounts
-                        if (AccountManager.getInstance().getAllAccountItems().size() > 0)
-                            updateSettings(needGoToMainActivity);
-                        else getSettings(needGoToMainActivity);
+                    // if exist local accounts
+                    if (AccountManager.INSTANCE.getAllAccountItems().size() > 0)
+                        updateSettings(needGoToMainActivity);
+                    else getSettings(needGoToMainActivity);
 
+                }, throwable -> {
+                    Log.d(LOG_TAG, "Xabber account loading from net: error: "
+                            + throwable.toString());
+                    String message = RetrofitErrorConverter.throwableToHttpError(throwable);
+                    if (message != null && message.equals("Invalid token")) {
+                        XabberAccountManager.getInstance().onInvalidToken();
+                        //showLoginFragment();
                     }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "Xabber account loading from net: error: " + throwable.toString());
-                        String message = RetrofitErrorConverter.throwableToHttpError(throwable);
-                        if (message != null && message.equals("Invalid token")) {
-                            XabberAccountManager.getInstance().onInvalidToken();
-                            //showLoginFragment();
-                        }
 
-                        hideProgress();
-                        Toast.makeText(BaseLoginActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
-                    }
+                    hideProgress();
+                    Toast.makeText(BaseLoginActivity.this, R.string.sync_fail,
+                            Toast.LENGTH_SHORT).show();
                 });
         compositeSubscription.add(loadAccountsSubscription);
     }
 
     protected void updateSettings(final boolean needGoToMainActivity) {
-        Subscription getSettingsSubscription = AuthManager.patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
+        Subscription getSettingsSubscription = AuthManager
+                .patchClientSettings(XabberAccountManager.getInstance().createSettingsList())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> s) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                        hideProgress();
-                        updateLastSyncTime();
-                        onSynchronized();
-                        //Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
-                        if (needGoToMainActivity) goToMainActivity();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-                        hideProgress();
-                        Toast.makeText(BaseLoginActivity.this, R.string.sync_fail, Toast.LENGTH_SHORT).show();
-                    }
+                .subscribe(s -> {
+                    Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                    hideProgress();
+                    updateLastSyncTime();
+                    onSynchronized();
+                    if (needGoToMainActivity) goToMainActivity();
+                }, throwable -> {
+                    Log.d(LOG_TAG, "XMPP accounts loading from net: error: "
+                            + throwable.toString());
+                    hideProgress();
+                    Toast.makeText(BaseLoginActivity.this, R.string.sync_fail,
+                            Toast.LENGTH_SHORT).show();
                 });
         compositeSubscription.add(getSettingsSubscription);
     }
@@ -140,24 +130,18 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
         Subscription getSettingsSubscription = AuthManager.getClientSettings()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<XMPPAccountSettings>>() {
-                    @Override
-                    public void call(List<XMPPAccountSettings> settings) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
-                        XabberAccountManager.getInstance().setXmppAccountsForCreate(settings);
-                        hideProgress();
-                        // update last synchronization time
-                        SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
-                        onSynchronized();
-                        //Toast.makeText(BaseLoginActivity.this, R.string.sync_success, Toast.LENGTH_SHORT).show();
-                        if (needGoToMainActivity) goToMainActivity();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Log.d(LOG_TAG, "XMPP accounts loading from net: error: " + throwable.toString());
-                        hideProgress();
-                    }
+                .subscribe(settings -> {
+                    Log.d(LOG_TAG, "XMPP accounts loading from net: successfully");
+                    XabberAccountManager.getInstance().setXmppAccountsForCreate(settings);
+                    hideProgress();
+                    // update last synchronization time
+                    SettingsManager.setLastSyncDate(XabberAccountManager.getCurrentTimeString());
+                    onSynchronized();
+                    if (needGoToMainActivity) goToMainActivity();
+                }, throwable -> {
+                    Log.d(LOG_TAG, "XMPP accounts loading from net: error: "
+                            + throwable.toString());
+                    hideProgress();
                 });
         compositeSubscription.add(getSettingsSubscription);
     }
@@ -167,7 +151,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
     protected void updateLastSyncTime() {}
 
     protected void goToMainActivity() {
-        Intent intent = ContactListActivity.createIntent(BaseLoginActivity.this);
+        Intent intent = MainActivity.createIntent(BaseLoginActivity.this);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         finish();
         startActivity(intent);
@@ -182,17 +166,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
         Subscription resendEmailSubscription = AuthManager.addEmail(email)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        handleSuccessResendEmail(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorResendEmail(throwable);
-                    }
-                });
+                .subscribe(this::handleSuccessResendEmail, this::handleErrorResendEmail);
         compositeSubscription.add(resendEmailSubscription);
     }
 
@@ -214,17 +188,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
         Subscription confirmSubscription = AuthManager.confirmEmail(code)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<XabberAccount>() {
-                    @Override
-                    public void call(XabberAccount s) {
-                        handleSuccessConfirm(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorConfirm(throwable);
-                    }
-                });
+                .subscribe(this::handleSuccessConfirm, this::handleErrorConfirm);
         compositeSubscription.add(confirmSubscription);
     }
 
@@ -246,17 +210,7 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
         Subscription deleteSubscription = AuthManager.deleteEmail(emailId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        handleSuccessDelete(s);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        handleErrorDelete(throwable);
-                    }
-                });
+                .subscribe(this::handleSuccessDelete, this::handleErrorDelete);
         compositeSubscription.add(deleteSubscription);
     }
 
@@ -278,21 +232,15 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
         Subscription loginSocialSubscription = AuthManager.bindSocial(provider, credentials)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody s) {
-                        hideProgress();
-                        Toast.makeText(BaseLoginActivity.this,
-                                R.string.social_bind_success, Toast.LENGTH_SHORT).show();
-                        synchronize(false);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        hideProgress();
-                        Toast.makeText(BaseLoginActivity.this,
-                                R.string.social_bind_fail, Toast.LENGTH_SHORT).show();
-                    }
+                .subscribe(s -> {
+                    hideProgress();
+                    Toast.makeText(BaseLoginActivity.this,
+                            R.string.social_bind_success, Toast.LENGTH_SHORT).show();
+                    synchronize(false);
+                }, throwable -> {
+                    hideProgress();
+                    Toast.makeText(BaseLoginActivity.this,
+                            R.string.social_bind_fail, Toast.LENGTH_SHORT).show();
                 });
         compositeSubscription.add(loginSocialSubscription);
     }
@@ -302,21 +250,15 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
         Subscription unbindSocialSubscription = AuthManager.unbindSocial(provider)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<ResponseBody>() {
-                    @Override
-                    public void call(ResponseBody responseBody) {
-                        hideProgress();
-                        Toast.makeText(BaseLoginActivity.this,
-                                R.string.social_unbind_success, Toast.LENGTH_SHORT).show();
-                        synchronize(false);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        hideProgress();
-                        Toast.makeText(BaseLoginActivity.this,
-                                R.string.social_unbind_fail, Toast.LENGTH_SHORT).show();
-                    }
+                .subscribe(responseBody -> {
+                    hideProgress();
+                    Toast.makeText(BaseLoginActivity.this,
+                            R.string.social_unbind_success, Toast.LENGTH_SHORT).show();
+                    synchronize(false);
+                }, throwable -> {
+                    hideProgress();
+                    Toast.makeText(BaseLoginActivity.this,
+                            R.string.social_unbind_fail, Toast.LENGTH_SHORT).show();
                 });
         compositeSubscription.add(unbindSocialSubscription);
     }
@@ -325,7 +267,8 @@ public abstract class BaseLoginActivity extends ManagedActivity implements XAcco
 
     @Override
     public void onBindClick(String provider) {
-        Toast.makeText(this, R.string.nostore_restriction, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.nostore_restriction,
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override

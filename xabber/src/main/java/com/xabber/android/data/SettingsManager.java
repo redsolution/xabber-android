@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
@@ -21,18 +21,16 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.xabber.android.BuildConfig;
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
 import com.xabber.android.data.account.StatusMode;
 import com.xabber.android.data.connection.WakeLockManager;
-import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.extension.attention.AttentionManager;
-import com.xabber.android.data.extension.carbons.CarbonManager;
-import com.xabber.android.data.extension.otr.OTRManager;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.message.MessageManager;
 import com.xabber.android.data.notification.NotificationManager;
@@ -42,7 +40,7 @@ import com.xabber.android.service.XabberService;
 import com.xabber.android.ui.adapter.ComparatorByName;
 import com.xabber.android.ui.adapter.ComparatorByStatus;
 import com.xabber.android.ui.color.ColorManager;
-import com.xabber.android.utils.Emoticons;
+import com.xabber.android.ui.text.Emoticons;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,8 +52,7 @@ import java.util.regex.Pattern;
  *
  * @author alexander.ivanov
  */
-public class SettingsManager implements OnInitializedListener,
-        OnMigrationListener, OnSharedPreferenceChangeListener {
+public class SettingsManager implements OnInitializedListener, OnSharedPreferenceChangeListener {
 
     public static final String NOTIFICATION_PREFERENCES = "notification_preferences";
 
@@ -175,6 +172,26 @@ public class SettingsManager implements OnInitializedListener,
         return Uri.parse(value);
     }
 
+    public static void resetCustomPrefs() {
+        getSharedPreferences().edit().clear().commit();
+    }
+
+    public static int getMainAccountColorLevel() {
+        return getInt(R.string.main_account_color_level, R.string.main_account_color_level_default);
+    }
+
+    public static void setMainAccountColorLevel(int colorLevel) {
+        setString(R.string.main_account_color_level, String.valueOf(colorLevel));
+    }
+
+    public static String getMainAvatarHash() {
+        return getString(R.string.main_account_avatar_hash, "0");
+    }
+
+    public static void setMainAvatarHash(String avatarHash) {
+        setString(R.string.main_account_avatar_hash, avatarHash);
+    }
+
     public static boolean contactsShowAvatars() {
         return getBoolean(R.string.contacts_show_avatars_key,
                 R.bool.contacts_show_avatars_default);
@@ -195,13 +212,13 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean contactsShowGroups() {
-        return getBoolean(R.string.contacts_show_groups_key,
-                R.bool.contacts_show_groups_default);
+        return getBoolean(R.string.contacts_show_circles_key,
+                R.bool.contacts_show_circles_default);
     }
 
     public static boolean contactsShowEmptyGroups() {
-        return getBoolean(R.string.contacts_show_empty_groups_key,
-                R.bool.contacts_show_empty_groups_default);
+        return getBoolean(R.string.contacts_show_empty_circles_key,
+                R.bool.contacts_show_empty_circles_default);
     }
 
     public static boolean contactsShowAccounts() {
@@ -226,27 +243,6 @@ public class SettingsManager implements OnInitializedListener,
     public static boolean contactsEnableShowAccounts() {
         return getBoolean(R.string.contacts_enable_show_accounts_key,
                 R.bool.contacts_enable_show_accounts_default);
-    }
-
-    /**
-     * DON`T USE THIS METHOD DIRECTLY.
-     * <p/>
-     * Use {@link AccountManager#getSelectedAccount()} instead.
-     *
-     * @return
-     */
-    public static String contactsSelectedAccount() {
-        return getString(R.string.contacts_selected_account_key, "");
-    }
-
-    public static void setContactsSelectedAccount(AccountJid account) {
-        String value;
-        if (account == null) {
-            value = "";
-        } else {
-            value = account.toString();
-        }
-        setString(R.string.contacts_selected_account_key, value);
     }
 
     public static void enableContactsShowAccount() {
@@ -399,6 +395,23 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.chats_send_by_enter_default);
     }
 
+    public static boolean chatsAutoDownloadVoiceMessage() {
+        return getBoolean(R.string.connection_auto_download_voice_messages_key,
+                R.bool.connection_auto_download_voice_messages_default);
+    }
+
+    public static void setChatsAutoDownloadVoiceMessage(boolean value) {
+        setBoolean(R.string.connection_auto_download_voice_messages_key, value);
+    }
+
+    public static boolean autoDownloadVoiceMessageSuggested() {
+        return getBoolean(R.string.auto_download_voice_message_suggested_key, false);
+    }
+
+    public static void setAutoDownloadVoiceMessageSuggested() {
+        setBoolean(R.string.auto_download_voice_message_suggested_key, true);
+    }
+
     public static ChatsShowStatusChange chatsShowStatusChange() {
         String value = getString(R.string.chats_show_status_change_key,
                 R.string.chats_show_status_change_default);
@@ -466,6 +479,15 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.chats_state_notification_default);
     }
 
+    public static boolean useExternalLocation() {
+        return getBoolean(R.string.use_external_locations_key,
+                R.bool.use_external_locations_default);
+    }
+
+    public static void setUseExternalLocation(boolean useExternalLocation) {
+        setBoolean(R.string.use_external_locations_key, useExternalLocation);
+    }
+
     public static boolean chatsAttention() {
         return getNotifBoolean(R.string.chats_attention_key,
                 R.bool.chats_attention_default);
@@ -520,11 +542,6 @@ public class SettingsManager implements OnInitializedListener,
     public static boolean connectionLoadImages() {
         return getBoolean(R.string.connection_load_images_key,
                 R.bool.connection_load_images_default);
-    }
-
-    public static boolean connectionUseCarbons() {
-        return getBoolean(R.string.connection_use_carbons_key,
-                R.bool.connection_use_carbons_default);
     }
 
     public static boolean connectionCompressImage() {
@@ -585,7 +602,7 @@ public class SettingsManager implements OnInitializedListener,
     }
 
     public static boolean debugLog() {
-        return getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
+        return BuildConfig.FLAVOR_build.equals("dev") || getBoolean(R.string.debug_log_key, R.bool.debug_log_default);
     }
 
     public static boolean fileLog() {
@@ -652,28 +669,6 @@ public class SettingsManager implements OnInitializedListener,
                 R.bool.security_check_certificate_default);
     }
 
-    public static SecurityOtrMode securityOtrMode() {
-        String value = getString(R.string.security_otr_mode_key,
-                R.string.security_otr_mode_default);
-        if (Application.getInstance()
-                .getString(R.string.security_otr_mode_disabled_value)
-                .equals(value))
-            return SecurityOtrMode.disabled;
-        else if (Application.getInstance()
-                .getString(R.string.security_otr_mode_manual_value)
-                .equals(value))
-            return SecurityOtrMode.manual;
-        else if (Application.getInstance()
-                .getString(R.string.security_otr_mode_auto_value).equals(value))
-            return SecurityOtrMode.auto;
-        else if (Application.getInstance()
-                .getString(R.string.security_otr_mode_required_value)
-                .equals(value))
-            return SecurityOtrMode.required;
-        else
-            throw new IllegalStateException();
-    }
-
     public static SpamFilterMode spamFilterMode() {
         String value = getString(R.string.spam_filter_key, R.string.spam_filter_default);
 
@@ -692,12 +687,7 @@ public class SettingsManager implements OnInitializedListener,
         else throw new IllegalStateException();
     }
 
-    public static boolean securityOtrHistory() {
-        return getBoolean(R.string.security_otr_history_key,
-                R.bool.security_otr_history_default);
-    }
-
-    public static int bootCount() {
+    public static int getBootCount() {
         return getSharedPreferences()
                 .getInt(Application.getInstance().getString(
                         R.string.boot_count_key), 0);
@@ -707,7 +697,7 @@ public class SettingsManager implements OnInitializedListener,
         Editor editor = getSharedPreferences().edit();
         editor.putInt(
                 Application.getInstance().getString(R.string.boot_count_key),
-                bootCount() + 1);
+                getBootCount() + 1);
         editor.commit();
     }
 
@@ -764,6 +754,11 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.interface_theme_dark_value));
     }
 
+    public static void setLightTheme() {
+        setString(R.string.interface_theme_key, Application.getInstance().getString(
+                R.string.interface_theme_light_value));
+    }
+
     public static boolean isBatteryOptimizationDisableSuggested() {
         return getBoolean(R.string.battery_optimization_disable_suggested_key, false);
     }
@@ -796,12 +791,17 @@ public class SettingsManager implements OnInitializedListener,
         setString(R.string.status_text_key, statusText);
     }
 
+    public static String getLastSyncDate() {
+        return getString(R.string.last_sync_date_key, R.string.last_sync_date_default);
+    }
+
     public static void setLastSyncDate(String lastSyncDate) {
         setString(R.string.last_sync_date_key, lastSyncDate);
     }
 
-    public static String getLastSyncDate() {
-        return getString(R.string.last_sync_date_key, R.string.last_sync_date_default);
+    public static boolean isSyncAllAccounts() {
+        if (AccountManager.INSTANCE.haveNotAllowedSyncAccounts()) return false;
+        return getBoolean(R.string.sync_all_key, true);
     }
 
     public static void setSyncAllAccounts(boolean syncAll) {
@@ -809,65 +809,36 @@ public class SettingsManager implements OnInitializedListener,
         if (syncAll) XabberAccountManager.getInstance().setAllExistingAccountSync(true);
     }
 
-    public static boolean isSyncAllAccounts() {
-        if (AccountManager.getInstance().haveNotAllowedSyncAccounts()) return false;
-        return getBoolean(R.string.sync_all_key, true);
+    public static int getLastOrderChangeTimestamp() {
+        return getInteger(R.string.order_last_timestamp_key, 1);
     }
 
     public static void setLastOrderChangeTimestamp(int lastOrderChange) {
         setInt(R.string.order_last_timestamp_key, lastOrderChange);
     }
 
-    public static int getLastOrderChangeTimestamp() {
-        return getInteger(R.string.order_last_timestamp_key, 1);
+    public static int getLastPatreonLoadTimestamp() {
+        return getInteger(R.string.patreon_last_load_timestamp_key, 1);
     }
 
     public static void setLastPatreonLoadTimestamp(int timestamp) {
         setInt(R.string.patreon_last_load_timestamp_key, timestamp);
     }
 
-    public static int getLastPatreonLoadTimestamp() {
-        return getInteger(R.string.patreon_last_load_timestamp_key, 1);
-    }
-
-    public static void setLastCrowdfundingLoadTimestamp(int timestamp) {
-        setInt(R.string.crowdfunding_last_load_timestamp_key, timestamp);
-    }
-
-    public static int getLastCrowdfundingLoadTimestamp() {
-        return getInteger(R.string.crowdfunding_last_load_timestamp_key, 1);
-    }
-
-    public static void setLastLeaderCrowdfundingLoadTimestamp(int timestamp) {
-        setInt(R.string.crowdfunding_leader_last_load_timestamp_key, timestamp);
-    }
-
-    public static int getLastLeaderCrowdfundingLoadTimestamp() {
-        return getInteger(R.string.crowdfunding_leader_last_load_timestamp_key, 1);
+    public static int getFirstAppRunTimestamp() {
+        return getInteger(R.string.first_app_run_timestamp_key, 0);
     }
 
     public static void setFirstAppRunTimestamp(int timestamp) {
         setInt(R.string.first_app_run_timestamp_key, timestamp);
     }
 
-    public static int getFirstAppRunTimestamp() {
-        return getInteger(R.string.first_app_run_timestamp_key, 0);
-    }
-
-    public static void setLastCrowdfundingPosition(int position) {
-        setInt(R.string.crowdfunding_last_position_key, position);
-    }
-
-    public static int getLastCrowdfundingPosition() {
-        return getInteger(R.string.crowdfunding_last_position_key, 0);
+    public static String getEnabledPushNodes() {
+        return getString(R.string.enabled_push_nodes, "");
     }
 
     public static void setEnabledPushNodes(String enabledPushNodes) {
         setString(R.string.enabled_push_nodes, enabledPushNodes);
-    }
-
-    public static String getEnabledPushNodes() {
-        return getString(R.string.enabled_push_nodes, "");
     }
 
     public static void resetPreferences(Context context, String preferencesName) {
@@ -877,47 +848,6 @@ public class SettingsManager implements OnInitializedListener,
     @Override
     public void onInitialized() {
         incrementBootCount();
-    }
-
-    @Override
-    public void onMigrate(int toVersion) {
-        switch (toVersion) {
-            case 32:
-                setBoolean(R.string.chats_show_status_change_key, false);
-                break;
-            case 40:
-                String value;
-                try {
-                    if (getBoolean(R.string.chats_show_status_change_key, false))
-                        value = Application.getInstance().getString(
-                                R.string.chats_show_status_change_always_value);
-                    else
-                        value = Application.getInstance().getString(
-                                R.string.chats_show_status_change_muc_value);
-                } catch (ClassCastException e) {
-                    value = Application.getInstance().getString(
-                            R.string.chats_show_status_change_default);
-                }
-                setString(R.string.chats_show_status_change_key, value);
-                break;
-            case 45:
-                setBoolean(R.string.chats_show_avatars_key,
-                        "message".equals(getString(R.string.chats_show_avatars_key,
-                                "")));
-                break;
-            case 65:
-                SharedPreferences settings = Application.getInstance()
-                        .getSharedPreferences("accounts", Context.MODE_PRIVATE);
-                int statusModeIndex = settings.getInt("status_mode",
-                        StatusMode.available.ordinal());
-                StatusMode statusMode = StatusMode.values()[statusModeIndex];
-                setString(R.string.status_mode_key, statusMode.name());
-                String statusText = settings.getString("status_text", "");
-                setString(R.string.status_text_key, statusText);
-                break;
-            default:
-                break;
-        }
     }
 
     @Override
@@ -937,24 +867,18 @@ public class SettingsManager implements OnInitializedListener,
                 R.string.connection_wifi_lock_key))) {
             WakeLockManager.onWifiLockSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
-                R.string.connection_use_carbons_key))) {
-            CarbonManager.getInstance().onUseCarbonsSettingsChanged();
-        } else if (key.equals(Application.getInstance().getString(
                 R.string.events_show_text_key))) {
             NotificationManager.getInstance().onMessageNotification();
         } else if (key.equals(Application.getInstance().getString(
                 R.string.chats_attention_key))) {
             AttentionManager.getInstance().onSettingsChanged();
         } else if (key.equals(Application.getInstance().getString(
-                R.string.security_otr_mode_key))) {
-            OTRManager.getInstance().onSettingsChanged();
-        } else if (key.equals(Application.getInstance().getString(
                 R.string.interface_theme_key))) {
             ColorManager.getInstance().onSettingsChanged();
             if (SettingsManager.interfaceTheme() == InterfaceTheme.dark) {
                 SettingsManager.setDarkThemeSuggested();
             }
-        } else if(key.equals(Application.getInstance().getString(
+        } else if (key.equals(Application.getInstance().getString(
                 R.string.debug_file_log_key))) {
             LogManager.getInstance().onSettingsChanged();
         }
@@ -1066,30 +990,6 @@ public class SettingsManager implements OnInitializedListener,
          * Never hide keyboard.
          */
         never,
-    }
-
-    public enum SecurityOtrMode {
-
-        /**
-         * OTR is disabled.
-         */
-        disabled,
-
-        /**
-         * Manually send request and confirm requests.
-         */
-        manual,
-
-        /**
-         * Automatically try to use OTR.
-         */
-        auto,
-
-        /**
-         * Require to use OTR.
-         */
-        required
-
     }
 
     public enum SpamFilterMode {

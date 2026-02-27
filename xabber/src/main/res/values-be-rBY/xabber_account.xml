@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="social_sign_in">Уваход праз сацыяльныя сеткі</string>
+    <string name="email_hint">Email</string>
+    <string name="forgot_pass">ЗАБЫЛІ ПАРОЛЬ?</string>
+    <string name="progress_title_quit">Выйсьці</string>
+    <string name="progress_title_login">Увайсьці</string>
+    <string name="progress_title_signup">Рэгістрацыя</string>
+    <string name="title_start_messaging">Пачаць гутарыць!</string>
+    <string name="button_login">УВАХОД</string>
+    <string name="button_registration">РЭГІСТРАЦЫЯ</string>
+    <string name="btn_done">гатова</string>
+    <string name="account_sync_enable_summary">Дазволіць сынхранізацыю</string>
+    <string name="sync_status_no">Не сінхранізаваны</string>
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/search_contact_list_item_constraint_layout"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp">
+
+    <include
+        android:id="@+id/search_avatar_layout"
+        layout="@layout/avatar_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/search_contact_list_item_name_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_avatar_layout"
+        android:gravity="center_horizontal"
+        android:maxLines="1"
+        android:paddingTop="2dp"
+        android:singleLine="true"
+        android:text="John Doe"
+        android:textAppearance="@style/ChatText.Small" />
+
+</RelativeLayout>

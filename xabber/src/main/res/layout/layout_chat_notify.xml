@@ -16,22 +16,21 @@
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_centerVertical="true"
-        android:text="@string/otr_verification_notify_title"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:text="Title!"
         android:textSize="16sp"
-        android:layout_toLeftOf="@id/tvNotifyAction"
-        />
+        android:layout_toLeftOf="@id/tvNotifyAction" />
 
     <TextView
         android:id="@+id/tvNotifyAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:textSize="16sp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:text="@string/otr_verification_notify_button"
-        />
+        android:textSize="16sp" />
 
 </RelativeLayout>

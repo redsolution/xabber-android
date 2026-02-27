@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -11,8 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp"
-        >
+        android:layout_marginLeft="16dp">
 
         <TextView
             android:id="@+id/tvClient"
@@ -24,20 +24,18 @@
             android:layout_toStartOf="@id/tvDate"
             android:textColor="?android:textColorPrimary"
             android:textStyle="bold"
-            tools:text="Xabber for Web 1.0.131"
-            />
+            tools:text="Xabber for Web 1.0.131" />
 
         <TextView
             android:id="@+id/tvDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginLeft="8dp"
+            android:layout_alignParentRight="true"
             android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
             android:textColor="?android:textColorSecondary"
-            tools:text="Jul 14"
-            />
+            tools:text="Jul 14" />
 
     </RelativeLayout>
 
@@ -48,8 +46,8 @@
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         android:textColor="?android:textColorSecondary"
-        tools:text="PC, Linux x86_64"
-        />
+        android:ellipsize="end"
+        tools:text="PC, Linux x86_64" />
 
     <TextView
         android:id="@+id/tvIPAddress"
@@ -59,15 +57,6 @@
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="16dp"
         android:textColor="?android:textColorSecondary"
-        tools:text="127.0.0.1"
-        />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:background="?attr/contact_list_subgroup_separator"
-        />
+        tools:text="127.0.0.1" />
 
 </LinearLayout>

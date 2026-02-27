@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quick_contacts">Schnellkontakte</string>
+    <string name="recent_searches">Letzte Suchen</string>
+    <string name="type_here_to_search">Hier tippen um zu suchen …</string>
+    <string name="nothing_was_searched">Keine Ergebnisse</string>
+    <string name="placeholder_no_matches">Keine Übereinstimmungen</string>
+    <string name="placeholder_loading">Wird geladen...</string>
+</resources>

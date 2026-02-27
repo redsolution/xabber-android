@@ -2,16 +2,20 @@ package com.xabber.android.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.recyclerview.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
 import com.xabber.android.data.extension.file.FileManager;
+import com.xabber.android.ui.text.StringUtilsKt;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Arrays;
@@ -33,6 +37,7 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
+    @NotNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new FileViewHolder(LayoutInflater.from(parent.getContext())
@@ -45,32 +50,38 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         final File file = files[position];
 
-        fileHolder.fileName.setText(file.getName());
+        fileHolder.fileName.setText(
+                file.getName()
+                        .concat(" ")
+                        .concat(
+                                StringUtilsKt.getHumanReadableFileSize(
+                                        file.length()
+                                )
+                        )
+        );
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(holder.itemView.getContext(), holder.itemView);
-                popup.inflate(R.menu.item_log_file);
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.action_log_file_open:
-                                viewFile(file, holder.itemView.getContext());
-                                return true;
+        TypedValue typedValue = new TypedValue();
+        holder.itemView.getContext().getTheme().resolveAttribute(R.attr.contact_list_background, typedValue, true);
+        holder.itemView.setBackgroundColor(typedValue.data);
 
-                            case R.id.action_log_file_send:
-                                sendFile(file, holder.itemView.getContext());
-                                return true;
-                        }
+        holder.itemView.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(holder.itemView.getContext(), holder.itemView);
+            popup.inflate(R.menu.item_log_file);
+            popup.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.action_log_file_open:
+                        viewFile(file, holder.itemView.getContext());
+                        return true;
 
-                        return false;
-                    }
-                });
-                popup.show();
+                    case R.id.action_log_file_send:
+                        sendFile(file, holder.itemView.getContext());
+                        return true;
+                }
 
-            }
+                return false;
+            });
+            popup.show();
+
         });
     }
 
@@ -105,10 +116,15 @@ public class LogFilesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static class FileViewHolder extends RecyclerView.ViewHolder {
         TextView fileName;
 
-
         FileViewHolder(View itemView) {
             super(itemView);
             fileName = (TextView) itemView.findViewById(android.R.id.text1);
+
+            fileName.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            fileName.setHeight(28);
+            fileName.setMaxLines(1);
+            fileName.setTextSize(TypedValue.COMPLEX_UNIT_DIP,12);
         }
     }
+
 }

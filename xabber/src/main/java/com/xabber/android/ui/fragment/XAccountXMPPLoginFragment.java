@@ -3,14 +3,15 @@ package com.xabber.android.ui.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.account.AccountManager;
@@ -21,10 +22,8 @@ import com.xabber.android.ui.adapter.XMPPAccountAuthAdapter;
 import com.xabber.android.ui.color.ColorManager;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -114,7 +113,9 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
         recyclerView.setVisibility(View.GONE);
         tvTitle.setVisibility(View.GONE);
 
-        ArrayList<AccountJid> accounts = new ArrayList<>(AccountManager.getInstance().getEnabledAccounts());
+        ArrayList<AccountJid> accounts =
+                new ArrayList<>(AccountManager.INSTANCE.getEnabledAccounts());
+
         if (accounts.size() < 1) tvError.setVisibility(View.VISIBLE);
         else if (accounts.size() > 1) loadBindings(accounts);
         else connectViaJid(accounts.get(0));
@@ -122,17 +123,15 @@ public class XAccountXMPPLoginFragment extends Fragment implements XMPPAccountAu
 
     private void loadBindings(ArrayList<AccountJid> accounts) {
         showProgress(true);
-        compositeSubscription.add(PrivateStorageManager.getInstance().getAccountViewWithBindings(accounts)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(new Action1<List<XMPPAccountAuthAdapter.AccountView>>() {
-                @Override
-                public void call(List<XMPPAccountAuthAdapter.AccountView> accountViews) {
+        compositeSubscription.add(PrivateStorageManager.getInstance()
+                .getAccountViewWithBindings(accounts)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(accountViews -> {
                     showProgress(false);
                     adapter.setItems(accountViews);
                     recyclerView.setVisibility(View.VISIBLE);
                     tvTitle.setVisibility(View.VISIBLE);
-                }
             }));
     }
 

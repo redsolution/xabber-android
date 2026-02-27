@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="?attr/contact_list_contact_background"
+    android:elevation="1dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/pinned_message_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:scaleType="centerCrop"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:srcCompat="@drawable/ic_pin_white_24dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_toEndOf="@id/pinned_message_icon"
+        android:layout_toRightOf="@id/pinned_message_icon"
+        android:layout_marginTop="6dp"
+        android:layout_toStartOf="@+id/pinned_message_close_iv"
+        android:layout_toLeftOf="@+id/pinned_message_close_iv">
+
+        <TextView
+            android:id="@+id/pinned_message_jid_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:textSize="12sp"
+            tools:text="nickname@example.com"
+            android:textColor="@color/grey_800"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/pinned_message_badge_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:textColor="@color/grey_600"
+            android:background="@color/grey_200"
+            tools:text="😇"/>
+
+        <TextView
+            android:id="@+id/pinned_message_role_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/grey_600"
+            tools:text="Role"/>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <TextView
+        android:id="@+id/pinned_message_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Some text"
+        android:textColor="@color/black_text"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="6dp"
+        android:layout_toEndOf="@id/pinned_message_icon"
+        android:layout_toRightOf="@id/pinned_message_icon"
+        android:layout_toStartOf="@+id/pinned_message_close_iv"
+        android:layout_toLeftOf="@+id/pinned_message_close_iv"
+        android:autoLink="all"
+        android:maxLines="1"
+        android:layout_alignParentBottom="true" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/pinned_message_close_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="?attr/standard_clear_icon"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:alpha="0.5"/>
+
+</RelativeLayout>

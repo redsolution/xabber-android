@@ -20,13 +20,10 @@ public class ConnectionSettingsFragment extends android.preference.PreferenceFra
         PreferenceSummaryHelperActivity.updateSummary(getPreferenceScreen());
 
         batteryOptimizationPreference = findPreference(getString(R.string.battery_optimization_disable_key));
-        batteryOptimizationPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                BatteryHelper.sendIgnoreButteryOptimizationIntent(getActivity());
-                updateBatteryOptimizationPreference();
-                return true;
-            }
+        batteryOptimizationPreference.setOnPreferenceClickListener(preference -> {
+            BatteryHelper.sendIgnoreButteryOptimizationIntent(getActivity());
+            updateBatteryOptimizationPreference();
+            return true;
         });
     }
 
@@ -37,8 +34,8 @@ public class ConnectionSettingsFragment extends android.preference.PreferenceFra
     }
 
     private void updateBatteryOptimizationPreference() {
-        if (!BatteryHelper.isOptimizingBattery())
+        if (!BatteryHelper.isOptimizingBattery()) {
             batteryOptimizationPreference.setSummary(R.string.battery_optimization_disabled);
-        else batteryOptimizationPreference.setSummary(R.string.battery_optimization_enabled);
+        } else batteryOptimizationPreference.setSummary(R.string.battery_optimization_enabled);
     }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="xabber_account_info">Xabber hesabı, Xabber xidmətlərini istifadə etmək və cihaz tənzimləmələrini eyniləşdirmək üçün lazımdır.</string>
+    <string name="social_sign_in">Sosial Daxil olma</string>
+    <string name="email_hint">E-poçt</string>
+    <string name="forgot_pass">ŞİFRƏNİ UNUTDUNUZ?</string>
+    <string name="sync_success">Eyniləşdirildi</string>
+    <string name="sync_fail">Eyniləşdirmə uğursuz oldu</string>
+    <string name="quit_success">Uğurla çıxdınız</string>
+</resources>

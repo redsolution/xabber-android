@@ -1,7 +1,7 @@
 package com.xabber.android.data.extension.captcha;
 
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,7 +31,7 @@ public class CaptchaManager {
         currentCaptchas = new ArrayList<>();
     }
 
-    public String generateAndSaveCaptcha(AccountJid account, UserJid user) {
+    public String generateAndSaveCaptcha(AccountJid account, ContactJid user) {
         // remove old captcha for this user
         removeCaptcha(account, user);
 
@@ -50,7 +50,7 @@ public class CaptchaManager {
     }
 
     // returns captcha for this account and user if captcha exist else returns null
-    public Captcha getCaptcha(AccountJid account, UserJid user) {
+    public Captcha getCaptcha(AccountJid account, ContactJid user) {
         String key = account.toString() + user.toString();
 
         for (int i = 0; i < currentCaptchas.size(); i++) {
@@ -61,7 +61,7 @@ public class CaptchaManager {
         return null;
     }
 
-    public void removeCaptcha(AccountJid account, UserJid user) {
+    public void removeCaptcha(AccountJid account, ContactJid user) {
         String key = account.toString() + user.toString();
         for (Iterator<Captcha> iterator = currentCaptchas.iterator(); iterator.hasNext();) {
             if (iterator.next().getKey().equals(key))
@@ -69,7 +69,7 @@ public class CaptchaManager {
         }
     }
 
-    public Captcha generateRandomCaptcha(AccountJid account, UserJid user) {
+    public Captcha generateRandomCaptcha(AccountJid account, ContactJid user) {
         Random random = new Random(System.currentTimeMillis());
         int firstNumber = random.nextInt(9) + 1;
         int secondNumber = random.nextInt(9) + 1;

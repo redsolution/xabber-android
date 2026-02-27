@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="battery_optimization">Батареяны оптимизациялоо</string>
+    <string name="battery_optimization_disabled">Батареяны оптимизациялоо өчүрүлгөн. Түзмөктүн жөндөөлөрүнөн ишти уланта аласыз</string>
+    <string name="contacts_order">Контактарды иреттөө</string>
+    <string name="contacts_order_alphabet">Алфавит боюнча</string>
+    <string name="contacts_order_status">Статусу боюнча</string>
+    <string name="debug_crash_reports_dialog_settings_button">Орнотуулар</string>
+    <string name="interface_theme">Тема</string>
+    <string name="interface_theme_dark">Караңгы</string>
+    <string name="interface_theme_light">Жаркырак</string>
+    <string name="preference_editor">Орнотуулар</string>
+    <string name="chats_font_size">Шрифттин өлчөмү</string>
+    <string name="chats_font_size_large">Эң чоң</string>
+    <string name="chats_font_size_normal">Жөнөкөй</string>
+    <string name="chats_font_size_small">Кичинекей</string>
+    <string name="account_error_settings">Орнотуулар</string>
+    <string name="category_interface">Интерфейс</string>
+    <string name="category_settings">Орнотуулар</string>
+    <string name="category_about">Программа тууралуу</string>
+    <string name="events_on_chat_title">Эскертмелер</string>
+    <string name="events_on_muc_title">Эскертмелер</string>
+    <string name="vibro_default">Абалкы калыпта</string>
+    <string name="events_reset_title">Кайра орнотуу</string>
+</resources>

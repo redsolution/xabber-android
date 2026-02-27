@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ui.activity.QRCodeScannerActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/scanner_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimary"
+        android:minHeight="?attr/actionBarSize"
+        app:contentInsetStartWithNavigation="0dp"
+        app:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/custom_qr_scanner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/scanner_toolbar"
+        app:zxing_scanner_layout="@layout/camera_custom_qr_code_scanner">
+
+    </com.journeyapps.barcodescanner.DecoratedBarcodeView>
+
+    <Button
+        android:id="@+id/button2"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/rounded_background_grey_transparent_dark"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="My QR Code"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/addMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/custom_qr_scanner"
+        android:layout_alignLeft="@+id/custom_qr_scanner"
+        android:layout_alignTop="@+id/switch_flashlight"
+        android:layout_alignEnd="@+id/custom_qr_scanner"
+        android:layout_alignRight="@+id/custom_qr_scanner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center_horizontal"
+        android:text="Place the QR code in the center of the highlighted area."
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+</RelativeLayout>

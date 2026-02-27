@@ -30,10 +30,7 @@
     <string name="order_last_timestamp_key">order_last_timestamp_key</string>
 
     <string name="patreon_last_load_timestamp_key">patreon_last_load_timestamp_key</string>
-    <string name="crowdfunding_last_load_timestamp_key">crowdfunding_last_load_timestamp_key</string>
-    <string name="crowdfunding_leader_last_load_timestamp_key">crowdfunding_leader_last_load_timestamp_key</string>
     <string name="first_app_run_timestamp_key">first_app_run_timestamp_key</string>
-    <string name="crowdfunding_last_position_key">crowdfunding_last_position_key</string>
     <string name="enabled_push_nodes">enabled_push_nodes</string>
 
     <string name="last_sync_date_key">last_sync_date_key</string>
@@ -88,6 +85,12 @@
     </string-array>
     <string name="interface_smiles_default">@string/interface_smiles_android_value</string>
 
+    <string name="main_account_color_level">main_account_color_level</string>
+    <string name="main_account_color_level_default">0</string>
+
+    <string name="main_account_avatar_hash">main_account_hash_avatar</string>
+    <string name="main_account_avatar_hash_default">default_hash_avatar</string>
+
 <!-- preference_contacts -->
 
     <string name="contacts_show_avatars_key">contacts_show_avatars</string>
@@ -99,14 +102,14 @@
     <string name="contacts_show_offline_key">contacts_show_offline</string>
     <bool name="contacts_show_offline_default">true</bool>
 
-    <string name="contacts_show_groups_key">contacts_show_groups</string>
-    <bool name="contacts_show_groups_default">true</bool>
+    <string name="contacts_show_circles_key">contacts_show_circles</string>
+    <bool name="contacts_show_circles_default">true</bool>
 
     <string name="contacts_show_accounts_key">contacts_show_accounts</string>
     <bool name="contacts_show_accounts_default">true</bool>
 
-    <string name="contacts_show_empty_groups_key">contacts_show_empty_groups</string>
-    <bool name="contacts_show_empty_groups_default">false</bool>
+    <string name="contacts_show_empty_circles_key">contacts_show_empty_circles</string>
+    <bool name="contacts_show_empty_circles_default">false</bool>
 
     <string name="contacts_order_key">contacts_order</string>
     <string name="contacts_order_status_value">status</string>
@@ -265,6 +268,9 @@
     <string name="chats_state_notification_key">chats_state_notification</string>
     <bool name="chats_state_notification_default">true</bool>
 
+    <string name="use_external_locations_key">use_external_locations_key</string>
+    <bool name="use_external_locations_default">true</bool>
+
     <string name="chats_attention_key">chats_attention</string>
     <bool name="chats_attention_default">true</bool>
 
@@ -348,13 +354,12 @@
     <string name="connection_load_images_key">connection_load_images</string>
     <bool name="connection_load_images_default">true</bool>
 
-    <!-- "connection_use_carbons" was used up to 1.0.169, default value earlier was false -->
-    <!-- so we add new key and set it to true (old users key will not be used) -->
-    <string name="connection_use_carbons_key">connection_use_carbons_new</string>
-    <bool name="connection_use_carbons_default">true</bool>
-
     <string name="connection_compress_image_on_upload_key">connection_compress_image_on_upload</string>
     <bool name="connection_compress_image_on_upload_default">true</bool>
+
+    <string name="connection_auto_download_voice_messages_key">auto_download_voice_messages</string>
+    <bool name="connection_auto_download_voice_messages_default">false</bool>
+    <string name="auto_download_voice_message_suggested_key">auto_download_voice_message_suggested</string>
 
     <string name="connection_dns_resolver_type_key">connection_dns_resolver_type</string>
 
@@ -370,7 +375,7 @@
     <string name="cache_clear_key">cache_clear</string>
 
     <string name="debug_log_key">debug_log</string>
-    <bool name="debug_log_default">true</bool>
+    <bool name="debug_log_default">false</bool>
 
     <string name="debug_file_log_key">debug_file_log</string>
     <bool name="debug_file_log_default">false</bool>
@@ -484,28 +489,6 @@
     <!-- preference_security -->
     <string name="security_check_certificate_key">security_check_certificate</string>
     <bool name="security_check_certificate_default">true</bool>
-
-    <string name="security_otr_mode_key">security_otr_mode</string>
-    <string name="security_otr_mode_disabled_value">disabled</string>
-    <string name="security_otr_mode_manual_value">manual</string>
-    <string name="security_otr_mode_auto_value">auto</string>
-    <string name="security_otr_mode_required_value">required</string>
-    <string-array name="security_otr_mode_entries">
-        <item>@string/disabled</item>
-        <item>@string/manual</item>
-        <item>@string/auto</item>
-        <item>@string/required</item>
-    </string-array>
-    <string-array name="security_otr_mode_entryvalues">
-        <item>@string/security_otr_mode_disabled_value</item>
-        <item>@string/security_otr_mode_manual_value</item>
-        <item>@string/security_otr_mode_auto_value</item>
-        <item>@string/security_otr_mode_required_value</item>
-    </string-array>
-    <string name="security_otr_mode_default">@string/security_otr_mode_manual_value</string>
-
-    <string name="security_otr_history_key">security_otr_history</string>
-    <bool name="security_otr_history_default">true</bool>
 
 <!-- preference_phrase -->
     <string name="phrase_text_key">phrase_text</string>

@@ -38,6 +38,8 @@ public class StructuredName {
         this.lastName = lastName == null ? "" : lastName.trim();
         if (!"".equals(this.nickName))
             bestName = this.nickName;
+        else if (!"".equals(this.firstName + this.lastName))
+            bestName = (this.firstName + " " + this.lastName).trim();
         else if (!"".equals(this.formattedName))
             bestName = this.formattedName;
         else

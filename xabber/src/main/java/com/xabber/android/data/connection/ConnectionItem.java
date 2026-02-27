@@ -1,38 +1,34 @@
 /**
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
- *
+ * <p>
  * This file is part of Xabber project; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License, Version 3.
- *
+ * <p>
  * Xabber is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License,
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 package com.xabber.android.data.connection;
 
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 
 import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.connection.listeners.OnPacketListener;
 import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.data.extension.devices.DeviceVO;
 import com.xabber.android.data.log.LogManager;
 import com.xabber.android.data.roster.AccountRosterListener;
-import com.xabber.android.data.extension.xtoken.XToken;
+import com.xabber.android.ui.OnConnectionStateChangedListener;
+import com.xabber.xmpp.smack.XMPPTCPConnection;
 
-import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.StanzaListener;
-import org.jivesoftware.smack.packet.Stanza;
 import org.jivesoftware.smack.parsing.ExceptionLoggingCallback;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.sm.predicates.ForEveryStanza;
-import com.xabber.xmpp.smack.XMPPTCPConnection;
 import org.jivesoftware.smackx.ping.PingFailedListener;
 import org.jivesoftware.smackx.ping.PingManager;
 import org.jxmpp.jid.DomainBareJid;
@@ -47,52 +43,60 @@ import org.jxmpp.jid.parts.Resourcepart;
  */
 public abstract class ConnectionItem {
 
+    public static long defaultReplyTimeout = 30000; // in ms
+    final String logTag;
     @NonNull
     private final AccountJid account;
-
-    final String logTag;
-
     /**
      * Connection options.
      */
     @NonNull
     private final ConnectionSettings connectionSettings;
-
     @NonNull
     private final com.xabber.android.data.connection.ConnectionListener connectionListener;
-
+    @NonNull
+    private final AccountRosterListener rosterListener;
     /**
      * XMPP connection.
      */
     @NonNull
     XMPPTCPConnection connection;
-
     /**
      * Current state.
      */
     private ConnectionState state;
-
-    @NonNull
-    private final AccountRosterListener rosterListener;
-    Toast toast;
-
+    /**
+     * Whether the connection is outdated or not and needs to be recreated
+     */
+    private boolean connectionIsOutdated;
     private ConnectionThread connectionThread;
+    private final StanzaListener everyStanzaListener = stanza -> Application.getInstance().runOnUiThread(() -> {
+        for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
+            listener.onStanza(ConnectionItem.this, stanza);
+        }
+    });
+    private final PingFailedListener pingFailedListener = new PingFailedListener() {
+        @Override
+        public void pingFailed() {
+            LogManager.i(this, "pingFailed for " + getAccount());
+            updateState(ConnectionState.offline);
+            disconnect();
+        }
+    };
 
-    public ConnectionItem(boolean custom,
-                          String host, int port, DomainBareJid serverName, Localpart userName,
-                          Resourcepart resource, boolean storePassword, String password, String token,
-                          XToken xToken, boolean saslEnabled, TLSMode tlsMode, boolean compression,
-                          ProxyType proxyType, String proxyHost, int proxyPort,
-                          String proxyUser, String proxyPassword) {
+
+    public ConnectionItem(boolean custom, String host, int port, DomainBareJid serverName, Localpart userName,
+                          Resourcepart resource, boolean storePassword, String password, String token, DeviceVO deviceVO,
+                          boolean saslEnabled, TLSMode tlsMode, boolean compression, ProxyType proxyType,
+                          String proxyHost, int proxyPort, String proxyUser, String proxyPassword) {
+
         this.account = AccountJid.from(userName, serverName, resource);
         this.logTag = getClass().getSimpleName() + ": " + account;
         rosterListener = new AccountRosterListener(getAccount());
         connectionListener = new com.xabber.android.data.connection.ConnectionListener(this);
 
-        connectionSettings = new ConnectionSettings(userName,
-                serverName, resource, custom, host, port, password, token, xToken,
-                saslEnabled, tlsMode, compression, proxyType, proxyHost,
-                proxyPort, proxyUser, proxyPassword);
+        connectionSettings = new ConnectionSettings(userName, serverName, resource, custom, host, port, password, token,
+                deviceVO, saslEnabled, tlsMode, compression, proxyType, proxyHost, proxyPort, proxyUser, proxyPassword);
         connection = createConnection();
 
         updateState(ConnectionState.offline);
@@ -104,12 +108,26 @@ public abstract class ConnectionItem {
 
         connectionThread = new ConnectionThread(connection, this);
 
-        addConnectionListeners();
-        configureConnection();
+        final Roster roster = Roster.getInstanceFor(connection);
+        roster.addRosterListener(rosterListener);
+        roster.addRosterLoadedListener(rosterListener);
+        roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
+        roster.setRosterLoadedAtLogin(true);
+
+        connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
+        connection.addConnectionListener(connectionListener);
+
+        refreshPingFailedListener(true);
+        // enable Stream Management support. SMACK will only enable SM if supported by the server,
+        // so no additional checks are required.
+        connection.setUseStreamManagement(true);
+        connection.setUseStreamManagementResumption(false);
+
+        // by default Smack disconnects in case of parsing errors
+        connection.setParsingExceptionCallback(new ExceptionLoggingCallback());
 
         return connection;
     }
-
 
     @NonNull
     public AccountJid getAccount() {
@@ -145,36 +163,23 @@ public abstract class ConnectionItem {
     public boolean connect() {
         LogManager.i(logTag, "connect");
 
-        updateState(ConnectionState.connecting);
+        if (!NetworkManager.isNetworkAvailable()) {
+            return false;
+        }
+        if (getState() == ConnectionState.disconnecting || getState() == ConnectionState.waiting
+                || connectionSettings.getDevice() != null) {
+            // if we wanted to connect during the disconnection process, we
+            // need to make sure our connection settings aren't outdated.
+            checkIfConnectionIsOutdated();
+        }
+
         if (connectionThread == null) {
             connectionThread = new ConnectionThread(connection, this);
-        };
+        }
 
-        return connectionThread.start();
-    }
+        boolean isConnectionThreadStarted = connectionThread.start();
 
-    private void configureConnection() {
-        // enable Stream Management support. SMACK will only enable SM if supported by the server,
-        // so no additional checks are required.
-        connection.setUseStreamManagement(true);
-        connection.setUseStreamManagementResumption(false);
-
-        // by default Smack disconnects in case of parsing errors
-        connection.setParsingExceptionCallback(new ExceptionLoggingCallback());
-
-    }
-
-    private void addConnectionListeners() {
-        final Roster roster = Roster.getInstanceFor(connection);
-        roster.addRosterListener(rosterListener);
-        roster.addRosterLoadedListener(rosterListener);
-        roster.setSubscriptionMode(Roster.SubscriptionMode.manual);
-        roster.setRosterLoadedAtLogin(true);
-
-        connection.addAsyncStanzaListener(everyStanzaListener, ForEveryStanza.INSTANCE);
-        connection.addConnectionListener(connectionListener);
-
-        PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
+        return isConnectionThreadStarted;
     }
 
     /**
@@ -198,14 +203,13 @@ public abstract class ConnectionItem {
                     LogManager.i(logTag, "already disconnected");
                 }
             }
-
         };
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
         thread.start();
     }
 
-    public void recreateConnection() {
+    public void recreateConnection(boolean enableAfterConnection) {
         LogManager.i(logTag, "recreateConnection");
 
         Thread thread = new Thread("Disconnection thread for " + connection) {
@@ -213,42 +217,15 @@ public abstract class ConnectionItem {
             public void run() {
                 updateState(ConnectionState.disconnecting);
                 connection.disconnect();
-
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createNewConnection();
+                Application.getInstance().runOnUiThread(() -> {
+                    createNewConnection();
+                    if (enableAfterConnection) {
+                        AccountManager.INSTANCE.setEnabled(account, true);
                     }
                 });
-
             }
-
         };
-        thread.setPriority(Thread.MIN_PRIORITY);
-        thread.setDaemon(true);
-        thread.start();
-    }
 
-    public void recreateConnectionWithEnable(final AccountJid account) {
-        LogManager.i(logTag, "recreateConnection");
-
-        Thread thread = new Thread("Disconnection thread for " + connection) {
-            @Override
-            public void run() {
-                updateState(ConnectionState.disconnecting);
-                connection.disconnect();
-
-                Application.getInstance().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        createNewConnection();
-                        AccountManager.getInstance().setEnabled(account, true);
-                    }
-                });
-
-            }
-
-        };
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.setDaemon(true);
         thread.start();
@@ -258,7 +235,7 @@ public abstract class ConnectionItem {
     void createNewConnection() {
         LogManager.i(logTag, "createNewConnection");
 
-        PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
+        refreshPingFailedListener(false);
 
         connection.removeConnectionListener(connectionListener);
         connection.removeAsyncStanzaListener(everyStanzaListener);
@@ -274,11 +251,15 @@ public abstract class ConnectionItem {
         boolean changed = setState(newState);
 
         if (changed) {
+            for (OnConnectionStateChangedListener listener :
+                    Application.getInstance().getUIListeners(OnConnectionStateChangedListener.class)){
+                listener.onConnectionStateChanged(newState);
+            }
             if (newState == ConnectionState.connected) {
-                AccountManager.getInstance().setSuccessfulConnectionHappened(account, true);
+                AccountManager.INSTANCE.setSuccessfulConnectionHappened(account, true);
             }
 
-            AccountManager.getInstance().onAccountChanged(getAccount());
+            AccountManager.INSTANCE.onAccountChanged(getAccount());
         }
     }
 
@@ -287,33 +268,31 @@ public abstract class ConnectionItem {
 
         this.state = newState;
 
-        LogManager.i(logTag, "updateState. prev " + prevState + " new "  + newState);
+        LogManager.i(logTag, "updateState. prev " + prevState + " new " + newState);
 
         return prevState != state;
     }
 
+    public void setConnectionIsOutdated(boolean outdated) {
+        connectionIsOutdated = outdated;
+    }
 
-    private StanzaListener everyStanzaListener = new StanzaListener() {
-        @Override
-        public void processStanza(final Stanza stanza) throws SmackException.NotConnectedException {
-            Application.getInstance().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    for (OnPacketListener listener : Application.getInstance().getManagers(OnPacketListener.class)) {
-                        listener.onStanza(ConnectionItem.this, stanza);
-                    }
-                }
-            });
+    // recreates the connection if it's outdated
+    public void checkIfConnectionIsOutdated() {
+        if (connectionIsOutdated) {
+            LogManager.d(logTag, "connection is outdated, creating a new one");
+            connectionIsOutdated = false;
+            createNewConnection();
+        } else {
+            LogManager.d(logTag, "connection is not outdated");
         }
-    };
+    }
 
-    private PingFailedListener pingFailedListener = new PingFailedListener() {
-        @Override
-        public void pingFailed() {
-            LogManager.i(this, "pingFailed for " + getAccount());
-            updateState(ConnectionState.offline);
-            disconnect();
+    public void refreshPingFailedListener(boolean register) {
+        PingManager.getInstanceFor(connection).unregisterPingFailedListener(pingFailedListener);
+        if (register) {
+            PingManager.getInstanceFor(connection).registerPingFailedListener(pingFailedListener);
         }
-    };
+    }
 
 }

@@ -10,6 +10,7 @@
     <string name="vcard_middle_name">Middle name</string>
     <string name="vcard_family_name">Family name</string>
     <string name="vcard_suffix_name">Suffix name</string>
+    <string name="vcard_basic_info">Your name and an optional profile picture</string>
     <string name="vcard_birth_date">Birthday</string>
     <string name="vcard_url">Web site</string>
     <string name="vcard_organization">Organization</string>
@@ -46,7 +47,8 @@
     <string name="unknown">Unknown</string>
     <string name="edit_alias">Edit alias</string>
     <string name="edit_contact_groups">Edit groups</string>
-    <string name="remove_contact">Remove contact</string>
+    <string name="edit_contact">Edit</string>
+    <string name="remove_contact">Delete contact</string>
     <string name="edit_account_user_info">Edit user info</string>
     <string name="edit_vcard">Edit</string>
     <string name="account_user_info_save_success">Account user info saved successfully</string>
@@ -63,4 +65,25 @@
     <string name="message_info_occupants_number">Occupants: %d</string>
     <string name="contact_info_connected_clients_header">Connected devices</string>
     <string name="contact_info_visiting_card_header">vCard</string>
+    <string name="vcard_jabber_id">XMPP ID</string>
+    <string name="vcard_full_name">Full name</string>
+    <string name="vcard_type_mobile">Mobile</string>
+    <string name="vcard_type_personal">Personal</string>
+    <string name="vcard_address">Address</string>
+    <string name="vcard_job">Job</string>
+    <string name="vcard_decsription_placeholder">Something about yourself, 3-5 rows max</string>
+    <string name="vcard_home_address">Home address</string>
+    <string name="vcard_work_address">Work address</string>
+    <string name="vcard_edit__header">Edit vCard</string>
+    <string name="vcard_edit__button_save">Save</string>
+    <string name="vcard_edit__button_cancel">Cancel</string>
+    <string name="vcard_url_placeholder">www.example.com</string>
+    <string name="vcard_birth_date_placeholder">YYYY-MM-DD</string>
+    <string name="pubsub__error__text_empty_node">Node is empty</string>
+    <string name="delete_contact__label_delete_history">Delete chat history</string>
+    <string name="block_group__header">Block group</string>
+    <string name="unblock_contact_confirm_short">Do you really want to unblock %s?</string>
+    <string name="toast__copied_in_clipboard">Copied in clipboard</string>
+    <string name="toast__not_copied_in_clipboard">ERROR: Not copied in clipboard</string>
+    <string name="vcard_screen__header">Contact details</string>
 </resources>

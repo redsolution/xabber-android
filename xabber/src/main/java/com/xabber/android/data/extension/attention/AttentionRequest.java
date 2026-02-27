@@ -20,7 +20,7 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.entity.AccountJid;
 import com.xabber.android.data.entity.BaseEntity;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.notification.EntityNotificationItem;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.activity.ChatActivity;
@@ -28,18 +28,20 @@ import com.xabber.android.ui.activity.ChatActivity;
 public class AttentionRequest extends BaseEntity implements
         EntityNotificationItem {
 
-    public AttentionRequest(AccountJid account, UserJid user) {
+    public AttentionRequest(AccountJid account, ContactJid user) {
         super(account, user);
     }
 
     @Override
     public Intent getIntent() {
-        return ChatActivity.createAttentionRequestIntent(Application.getInstance(), account, user);
+        return ChatActivity.Companion.createAttentionRequestIntent(
+                Application.getInstance(), account, contactJid
+        );
     }
 
     @Override
     public String getTitle() {
-        return RosterManager.getInstance().getBestContact(account, user)
+        return RosterManager.getInstance().getBestContact(account, contactJid)
                 .getName();
     }
 

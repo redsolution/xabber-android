@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.AbstractContact;
 import com.xabber.android.data.roster.RosterManager;
 import com.xabber.android.ui.color.AccountPainter;
@@ -26,7 +26,7 @@ public abstract class BaseContactDialog extends DialogFragment
     public static final String ARGUMENT_CONTACT = "com.xabber.android.ui.dialog.BaseContactDialog.ARGUMENT_CONTACT";
 
     private AccountJid account;
-    private UserJid contact;
+    private ContactJid contact;
     private AccountPainter accountPainter;
     private AlertDialog dialog;
 
@@ -39,7 +39,7 @@ public abstract class BaseContactDialog extends DialogFragment
     protected abstract void onNegativeButtonClick();
     protected abstract void onNeutralButtonClick();
 
-    protected static void setArguments(AccountJid account, UserJid contact, DialogFragment fragment) {
+    protected static void setArguments(AccountJid account, ContactJid contact, DialogFragment fragment) {
         Bundle arguments = new Bundle();
         arguments.putParcelable(ARGUMENT_ACCOUNT, account);
         arguments.putParcelable(ARGUMENT_CONTACT, contact);
@@ -50,7 +50,7 @@ public abstract class BaseContactDialog extends DialogFragment
         return account;
     }
 
-    protected UserJid getContact() {
+    protected ContactJid getContact() {
         return contact;
     }
 

@@ -14,16 +14,20 @@
  */
 package com.xabber.android.ui.activity;
 
+import static com.xabber.android.data.account.AccountErrorEvent.Type.CONNECTION;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
 import com.xabber.android.data.account.AccountErrorEvent;
+import com.xabber.android.data.account.AccountManager;
+import com.xabber.android.data.connection.ConnectionManager;
 import com.xabber.android.data.xaccount.XabberAccountManager;
 import com.xabber.android.ui.dialog.AccountEnterPassDialog;
 import com.xabber.android.ui.dialog.AccountErrorDialogFragment;
@@ -31,8 +35,6 @@ import com.xabber.android.ui.dialog.AccountErrorDialogFragment;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import static com.xabber.android.data.account.AccountErrorEvent.Type.CONNECTION;
 
 /**
  * Base class for all Activities.
@@ -98,8 +100,13 @@ public abstract class ManagedActivity extends AppCompatActivity {
     public void onAuthErrorEvent(AccountErrorEvent accountErrorEvent) {
         if (!accountErrorEvent.getType().equals(CONNECTION)) {
             // show enter pass dialog
-            AccountEnterPassDialog.newInstance(accountErrorEvent)
-                    .show(getFragmentManager(), AccountEnterPassDialog.class.getSimpleName());
+            if (AccountManager.INSTANCE.getAccount(accountErrorEvent.getAccount()).getConnectionSettings().getDevice() != null){
+                ConnectionManager.getInstance().connectAll();
+            } else {
+                AccountEnterPassDialog.newInstance(accountErrorEvent).show(
+                        getFragmentManager(), AccountEnterPassDialog.class.getSimpleName()
+                );
+            }
         } else {
             // show error dialog
             AccountErrorDialogFragment.newInstance(accountErrorEvent)
@@ -115,13 +122,12 @@ public abstract class ManagedActivity extends AppCompatActivity {
 
     public void showAlert(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(message)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EventBus.getDefault().removeStickyEvent(XabberAccountManager.XabberAccountDeletedEvent.class);
-                    }
-                });
+        builder.setMessage(message).setPositiveButton(
+                R.string.ok,
+                (dialog, which) -> EventBus.getDefault().removeStickyEvent(
+                        XabberAccountManager.XabberAccountDeletedEvent.class
+                )
+        );
         Dialog dialog = builder.create();
         dialog.show();
     }

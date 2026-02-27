@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2013, Redsolution LTD. All rights reserved.
  *
  * This file is part of Xabber project; you can redistribute it and/or
@@ -14,7 +14,7 @@
  */
 package com.xabber.android.data.notification;
 
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 
 /**
  * Entity related notification to be displayed.
@@ -23,6 +23,6 @@ import com.xabber.android.data.entity.UserJid;
  */
 public interface EntityNotificationItem extends AccountNotificationItem {
 
-    UserJid getUser();
+    ContactJid getContactJid();
 
 }

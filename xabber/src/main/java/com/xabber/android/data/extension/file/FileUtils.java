@@ -10,6 +10,8 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import java.io.File;
+
 /**
  * Copied from siacs/Conversations project
  * https://github.com/siacs/Conversations/blob/4424a818dfdda1b7f0b8f02afabd6a8f14e39104/src/main/java/eu/siacs/conversations/utils/FileUtils.java
@@ -52,14 +54,20 @@ public class FileUtils {
             }
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
-
                 final String id = DocumentsContract.getDocumentId(uri);
-                try {
-                    final Uri contentUri = ContentUris.withAppendedId(PUBLIC_DOWNLOADS, Long.valueOf(id));
-                    return getDataColumn(context, contentUri, null, null);
-                } catch (NumberFormatException e) {
-                    String[] arr = id.split(":");
-                    return arr.length > 1 ? arr[1] : arr[0];
+                if (id.startsWith("msf:")) {
+                    final String[] split = id.split(":");
+                    final String selection = "_id=?";
+                    final String[] selectionArgs = new String[]{split[1]};
+                    return getDataColumn(context, MediaStore.Downloads.EXTERNAL_CONTENT_URI, selection, selectionArgs);
+                } else {
+                    try {
+                        final Uri contentUri = ContentUris.withAppendedId(PUBLIC_DOWNLOADS, Long.valueOf(id));
+                        return getDataColumn(context, contentUri, null, null);
+                    } catch (NumberFormatException e) {
+                        String[] arr = id.split(":");
+                        return arr.length > 1 ? arr[1] : arr[0];
+                    }
                 }
             }
             // MediaProvider

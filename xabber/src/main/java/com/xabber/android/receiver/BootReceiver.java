@@ -19,7 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.xabber.android.data.SettingsManager;
-import com.xabber.android.utils.Utils;
+import com.xabber.android.service.XabberService;
 
 /**
  * Android boot receiver.
@@ -31,7 +31,7 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (SettingsManager.connectionStartAtBoot()) {
-            Utils.startXabberServiceCompat(context);
+            XabberService.startXabberServiceCompat(context);
         } else {
             android.os.Process.killProcess(android.os.Process.myPid());
         }

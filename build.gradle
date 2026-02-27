@@ -1,27 +1,37 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
+    ext {
+        kotlinVersion = '1.6.10'
+        vbpdVersion = '1.5.6'
+        rxVersion = '3.1.2'
+        rxAndroidVersion = '3.0.0'
+        retrofitVersion = '2.9.0'
+    }
     repositories {
         jcenter()
         google()
-        maven { url 'https://maven.fabric.io/public' }
+    }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:deprecation"
+        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
-        classpath "io.realm:realm-gradle-plugin:3.1.1"
+        classpath 'com.android.tools.build:gradle:7.0.4'
+        classpath "io.realm:realm-gradle-plugin:10.9.0"
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.4'
-        classpath 'io.fabric.tools:gradle:1.25.4'
-        classpath 'com.google.gms:google-services:4.2.0'
+        classpath 'com.frogermcs.androiddevmetrics:androiddevmetrics-plugin:0.7'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.5.2'
+        classpath 'com.google.gms:google-services:4.3.10'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion"
     }
 }
 
 allprojects {
     repositories {
+        mavenLocal()
         jcenter()
         google()
-        maven { url "https://jitpack.io" }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'http://igniterealtime.org/repo' }
-        maven { url 'https://maven.fabric.io/public' }
     }
 }

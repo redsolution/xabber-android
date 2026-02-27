@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/avatarView"
@@ -13,29 +13,15 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         app:civ_circle_background_color="@color/white"
-        tools:src="@tools:sample/avatars"
-        />
+        tools:src="@tools:sample/avatars" />
 
     <ImageView
         android:id="@+id/ivStatus"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:src="@drawable/ic_status"
-        android:layout_alignBaseline="@+id/imageView"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="1dp"
-        />
-
-    <ImageView
-        android:id="@+id/ivStatusGroupchat"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:src="@drawable/ic_groupchat"
-        android:layout_alignBaseline="@+id/imageView"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:visibility="visible"
-        />
+        android:src="@drawable/ic_status_combined"
+        android:layout_marginRight="-1dp"
+        android:layout_marginBottom="-1dp"
+        android:layout_gravity="end|bottom" />
 
-</RelativeLayout>
+</FrameLayout>

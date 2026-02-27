@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro_regular_chat">Обычный чат</string>
+    <string name="intro_regular_chat_text">Сообщения в этом чате не зашифрованы. Серверы часто хранят историю пересланных сообщений. Это позволяет легко синхронизировать устройства и осуществлять поиск по истории на стороне сервера, но создает угрозы для конфиденциальности переписки.
+    </string>
+    <string name="intro_regular_chat_learn">Подробнее об обмене сообщениями</string>
+    <string name="intro_regular_chat_link">https://www.xabber.com/learn/regular</string>
+    <string name="intro_encrypted_chat">Обычный чат</string>
+    <string name="intro_encrypted_chat_text">Сообщения в этом чате зашифрованы сквозным шифрованием. Вы всегда должны подтверждать личность вашего контакта путём проверки отпечатков ключей шифрования.</string>
+    <string name="intro_encrypted_chat_learn">Подробнее о зашифрованных чатах</string>
+    <string name="intro_encrypted_chat_link">https://www.xabber.com/learn/encrypted</string>
+    <string name="intro_public_group">Публичная группа</string>
+    <string name="intro_public_group_text">Идентификаторы пользователей в этой группе являются публичными, поэтому любой участник сможет связаться с вами по вашему XMPP ID.</string>
+    <string name="intro_public_group_learn">Подробнее о публичных группах</string>
+    <string name="intro_public_group_link">https://www.xabber.com/learn/groups</string>
+    <string name="intro_incognito_group">Инкогнито группа</string>
+    <string name="intro_incognito_group_text">Идентификаторы пользователей в этой группе скрыты от участников, досуп к вашему XMPP ID могут получить только администраторы. Будьте бдительны. Не компрометируйте себя непродуманными действиями.</string>
+    <string name="intro_incognito_group_learn">Подробнее об инкогнито группах</string>
+    <string name="intro_incognito_group_link">https://www.xabber.com/learn/incognito</string>
+    <string name="intro_private_chat">Приватный чат</string>
+    <string name="intro_private_chat_text">Приватный чат с собеседником из инкогнито группы. Сообщения маршрутизируются через сервер группового чата, а ваши реальные идентификаторы скрыты друг от друга. Будьте бдительны. Не компрометируйте себя непродуманными действиями.</string>
+    <string name="intro_private_chat_learn">Подробнее о приватных чатах</string>
+    <string name="intro_private_chat_link">https://www.xabber.com/learn/private</string>
+</resources>

@@ -16,13 +16,11 @@ package com.xabber.xmpp;
 
 import android.util.Xml;
 
-import org.jxmpp.util.XmppDateTime;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Date;
 
 /**
  * Set of functions commonly used by packet writers.
@@ -96,82 +94,6 @@ public final class SerializerUtils {
         serializer.startTag(null, elementName);
         serializer.text(innerValue);
         serializer.endTag(null, elementName);
-    }
-
-    public static void addDateTimeTag(XmlSerializer serializer,
-                                      String elementName, Date innerValue) throws IOException {
-        addTextTag(serializer, elementName, serializeDateTime(innerValue));
-    }
-
-    public static void addIntegerTag(XmlSerializer serializer,
-                                     String elementName, Integer innerValue) throws IOException {
-        addTextTag(serializer, elementName, serializeInteger(innerValue));
-    }
-
-    public static void addBooleanTag(XmlSerializer serializer,
-                                     String elementName, Boolean innerValue) throws IOException {
-        addTextTag(serializer, elementName, serializeBoolean(innerValue));
-    }
-
-    /**
-     * Sets attribute.
-     *
-     * @param serializer
-     * @param attributeName
-     * @param value
-     * @throws IOException
-     */
-    public static void setTextAttribute(XmlSerializer serializer,
-                                        String attributeName, String value) throws IOException {
-        serializer.attribute(null, attributeName, value);
-    }
-
-    public static void setDateTimeAttribute(XmlSerializer serializer,
-                                            String attributeName, Date value) throws IOException {
-        setTextAttribute(serializer, attributeName, serializeDateTime(value));
-    }
-
-    public static void setIntegerAttribute(XmlSerializer serializer,
-                                           String attributeName, Integer value) throws IOException {
-        setTextAttribute(serializer, attributeName, serializeInteger(value));
-    }
-
-    public static void setBooleanAttribute(XmlSerializer serializer,
-                                           String attributeName, Boolean value) throws IOException {
-        setTextAttribute(serializer, attributeName, serializeBoolean(value));
-    }
-
-    /**
-     * Creates string with date and time according to
-     * http://xmpp.org/extensions/xep-0082.html
-     *
-     * @param value
-     * @return <code>null</code> if value was <code>null</code>.
-     */
-    public static String serializeDateTime(Date value) {
-        if (value == null)
-            return null;
-        return XmppDateTime.formatXEP0082Date(value);
-    }
-
-    /**
-     * @param value
-     * @return <code>null</code> if source value was <code>null</code>.
-     */
-    public static String serializeInteger(Integer value) {
-        if (value == null)
-            return null;
-        return value.toString();
-    }
-
-    /**
-     * @param value
-     * @return <code>null</code> if value was <code>null</code>.
-     */
-    public static String serializeBoolean(Boolean value) {
-        if (value == null)
-            return null;
-        return value.toString();
     }
 
 }

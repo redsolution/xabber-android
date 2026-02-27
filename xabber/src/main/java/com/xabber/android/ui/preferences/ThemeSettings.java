@@ -5,7 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.xabber.android.R;
 import com.xabber.android.data.ActivityManager;
-import com.xabber.android.ui.activity.ContactListActivity;
+import com.xabber.android.ui.activity.MainActivity;
 import com.xabber.android.ui.activity.ManagedActivity;
 import com.xabber.android.ui.activity.PreferenceSummaryHelperActivity;
 import com.xabber.android.ui.color.BarPainter;
@@ -29,13 +29,13 @@ public class ThemeSettings extends ManagedActivity
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new ThemeSettingsFragment()).commit();
+                    .add(R.id.content_container, new ThemeSettingsFragment()).commit();
         }
     }
 
     @Override
     public void onThemeChanged() {
         ActivityManager.getInstance().clearStack(true);
-        startActivity(ContactListActivity.createIntent(this));
+        startActivity(MainActivity.createIntent(this));
     }
 }

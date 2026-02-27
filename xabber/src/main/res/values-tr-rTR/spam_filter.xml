@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="spam_filter_ban_subscription">Bu kullanıcı abonelikleri kabul etmiyor. Onunla ancak kendisi eklerse sohbet edebilirsin.</string>
+    <string name="spam_filter_captcha_correct">Doğru cevap. Abonelik isteği kullanıcıya gösterildi.</string>
+    <string name="spam_filter_captcha_incorrect">Yanlış cevap. Spambotu değilsin, değil mi?</string>
+</resources>

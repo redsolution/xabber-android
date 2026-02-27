@@ -5,10 +5,11 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
 
 import com.xabber.android.R;
 import com.xabber.android.data.Application;
@@ -76,7 +77,7 @@ public class EnterPassDialog extends DialogFragment implements DialogInterface.O
     @NonNull
     private View setUpDialogView() {
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_enter_pass, null);
-        edtPass = (EditText) view.findViewById(R.id.edtPass);
+        edtPass = view.findViewById(R.id.edtPass);
 
         return view;
     }
@@ -91,15 +92,16 @@ public class EnterPassDialog extends DialogFragment implements DialogInterface.O
 
     private void createAccount(boolean enabled) {
         try {
-            AccountJid accountJid = AccountManager.getInstance().addAccount(jid,
+            AccountJid accountJid = AccountManager.INSTANCE.addAccount(jid,
                     edtPass.getText().toString(), token, false, true,
                     true, false, false, enabled, false);
-            AccountManager.getInstance().setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(color));
-            AccountManager.getInstance().setOrder(accountJid, order);
-            AccountManager.getInstance().setTimestamp(accountJid, timestamp);
-            AccountManager.getInstance().onAccountChanged(accountJid);
+            AccountManager.INSTANCE.setColor(accountJid, ColorManager.getInstance().convertColorNameToIndex(color));
+            AccountManager.INSTANCE.setOrder(accountJid, order);
+            AccountManager.INSTANCE.setTimestamp(accountJid, timestamp);
+            AccountManager.INSTANCE.onAccountChanged(accountJid);
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }
     }
+
 }

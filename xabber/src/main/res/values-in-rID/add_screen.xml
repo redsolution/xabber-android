@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_contact" comment="dialog_add__label_add_contact">Tambah Kontak</string>
+    <string name="create_group" comment="dialog_add__label_create_group">Buat Grup</string>
+    <string name="create_incognito_group" comment="dialog_add__label_create_incognito_group">Buat Grup Samaran</string>
+    <string name="choose_account" comment="dialog_add__label_select_account">Pilih Akun</string>
+    <string name="add_to" comment="dialog_add__label_add_to">Tambah ke</string>
+    <string name="create_to" comment="dialog_add__label_create_to">Buat</string>
+</resources>

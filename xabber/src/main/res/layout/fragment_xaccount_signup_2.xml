@@ -68,7 +68,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:textColor="@color/white"
-                android:text="@string/muc_next"
+                android:text="@string/xaccount_next"
                 />
 
         </RelativeLayout>

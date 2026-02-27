@@ -6,13 +6,13 @@ import com.xabber.android.R;
 import com.xabber.android.data.Application;
 import com.xabber.android.data.NetworkException;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.roster.PresenceManager;
 import com.xabber.android.ui.activity.ContactAddActivity;
 
 public class ContactSubscriptionDialog extends BaseContactDialog {
 
-    public static DialogFragment newInstance(AccountJid account, UserJid contact) {
+    public static DialogFragment newInstance(AccountJid account, ContactJid contact) {
         DialogFragment fragment = new ContactSubscriptionDialog();
         setArguments(account, contact, fragment);
         return fragment;
@@ -60,16 +60,16 @@ public class ContactSubscriptionDialog extends BaseContactDialog {
 
     public void onAccept() {
         try {
-            PresenceManager.getInstance().acceptSubscription(getAccount(), getContact());
+            PresenceManager.INSTANCE.acceptSubscription(getAccount(), getContact());
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }
-        startActivity(ContactAddActivity.createIntent(getActivity(), getAccount(), getContact()));
+        startActivity(ContactAddActivity.Companion.createIntent(getActivity(), getAccount(), getContact()));
     }
 
     public void onDecline() {
         try {
-            PresenceManager.getInstance().discardSubscription(getAccount(), getContact());
+            PresenceManager.INSTANCE.discardSubscription(getAccount(), getContact());
         } catch (NetworkException e) {
             Application.getInstance().onError(e);
         }

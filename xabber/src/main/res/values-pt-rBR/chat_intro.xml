@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro_regular_chat">Bate-papo normal</string>
+    <string name="intro_regular_chat_text">As mensagens neste chat não são criptografadas. Os servidores geralmente armazenam mensagens temporárias em um arquivo. Isso permite a sincronização fácil do dispositivo e a pesquisa de histórico do lado do servidor, mas adiciona riscos de privacidade.</string>
+    <string name="intro_regular_chat_learn">Saiba mais sobre mensagens</string>
+    <string name="intro_regular_chat_link">https://www.xabber.com/learn/regular</string>
+    <string name="intro_encrypted_chat">Bate-papo normal</string>
+    <string name="intro_encrypted_chat_text">As mensagens nesse chat são criptografadas com criptografia de ponta a ponta. Você deve sempre confirmar a identidade de seu contato, verificando as impressões digitais das chaves de criptografia.</string>
+    <string name="intro_encrypted_chat_learn">Saiba mais sobre bate-papos criptografados</string>
+    <string name="intro_encrypted_chat_link">https://www.xabber.com/learn/regular</string>
+    <string name="intro_public_group">Grupo público</string>
+    <string name="intro_public_group_text">As identidades dos usuários neste grupo são públicas, então qualquer membro pode contatá-lo usando seu ID XMPP real.</string>
+    <string name="intro_public_group_learn">Saiba mais sobre grupos públicos</string>
+    <string name="intro_public_group_link">https://www.xabber.com/learn/groups</string>
+    <string name="intro_incognito_group">Grupo anónimo</string>
+    <string name="intro_incognito_group_text">As identidades dos usuários neste grupo são mantidas ocultas, apenas os administradores do grupo podem acessar seu ID XMPP real. Esteja vigilante, não se exponha sendo descuidado.</string>
+    <string name="intro_incognito_group_learn">Saiba mais sobre grupos anónimos</string>
+    <string name="intro_incognito_group_link">https://www.xabber.com/learn/incognito</string>
+    <string name="intro_private_chat">Bate-papo privado</string>
+    <string name="intro_private_chat_text">Bate-papo privado com usuário anônimo. As mensagens são encaminhadas através do servidor de grupo e suas identidades são mantidas em segredo umas das outras. Esteja vigilante, não se exponha sendo descuidado.</string>
+    <string name="intro_private_chat_learn">Saiba mais sobre conversas privadas</string>
+    <string name="intro_private_chat_link">https://www.xabber.com/learn/private</string>
+</resources>

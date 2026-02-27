@@ -16,8 +16,25 @@ Xabber uses Gradle build system. The only specific thing is git submodule for Me
  git submodule update --remote
  ```
  And MemorizingTrustManager would be cloned to your local repository.
- 
-**2. Build**
+
+**2. Build Smack library**
+
+  2.1 Clone our Smack fork
+  ```
+   git clone https://github.com/redsolution/Smack.git
+  ```
+  2.2 Checkout to develop branch
+  ```
+   git checkout develop
+  ```
+  2.3 Build Smack with [Gradle version 4.8 (!)](https://gradle.org/releases/) and upload it to the local Maven repository
+  ```
+   gradle assemble
+   gradle compileAndroid
+   gradle uploadLocal
+  ```
+
+**3. Build**
 
 To build Xabber use **"open"** productFlavour. Another flavour called "store" require api keys that not represented in this repository.
 

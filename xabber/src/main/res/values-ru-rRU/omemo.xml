@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="omemo__alert_enable__link_text">Включить</string>
+    <string name="omemo__alert_enable__tooltip">Это позволит вам и вашим собеседникам обмениваться зашифрованными сообщениями. Всегда проверяйте  личность ваших собеседников сверкой цифровых отпечатков ключей шифрования ваших устройств.</string>
+    <string name="omemo__alert_enable__text">сквозное шифрование для учетной записи <b>%s</b>?</string>
+    <string name="omemo__dialog_fingerprints__button_ignore">Игнорировать</string>
+    <string name="omemo__dialog_fingerprints__button_trust">Доверять</string>
+    <string name="omemo__dialog_fingerprints__button_delete">Удалить</string>
+    <string name="omemo__dialog_fingerprints__button_error">Ошибка</string>
+    <string name="omemo__dialog_fingerprints__button_unknown">Не известно</string>
+    <string name="omemo__dialog_fingerprints__text_description">Вы должны тщательно убедиться, что цифровые отпечатки этого устройства совпадают с теми, которые видит ваш собеседник. Для обеспечения максимальной безопасности сверка отпечатков должна осуществляться через другой канал связи. Лучше всего при личной встрече.</string>
+    <string name="omemo__dialog_fingerprints__text_learn_more">Узнайте больше о шифровании и безопасном обмене ключами</string>
+    <string name="omemo__dialog_fingerprints__link_learn_more">https://www.xabber.com/encryption/</string>
+    <string name="omemo__dialog_fingerprints__text_this_device">это устройство</string>
+    <string name="omemo__dialog_fingerprints__textfield_device_id_tooltip">ID устройства: %s\nМетка: %s\nID устройства является уникальным идентификатором для устройства вашего собеседника. С каждым устройством собеседника поддерживается отдельный сеанс связи.</string>
+    <string name="omemo__dialog_fingerprints__label_set_label">установить метку</string>
+    <string name="omemo__dialog_fingerprints__label_device_id">ID устройства</string>
+    <string name="omemo__alert_new_device__button_manage_devices">Управление устройствами</string>
+    <string name="omemo__settings__section_header">Настройки OMEMO</string>
+    <string name="omemo__settings__toggle_enable_encryption">OMEMO шифрование</string>
+    <string name="omemo__settings__toggle_send_typing_notifications">Отправлять уведомления о наборе текста</string>
+    <string name="omemo__settings__button_manage_devices">Управление устройствами</string>
+    <string name="omemo__settings__button_purge_keys">Сбросить ключи</string>
+    <string name="omemo__settings__menu_item">OMEMO</string>
+    <string name="omemo__alert_new_device_yours__text_new_device">На новом устройстве опубликованы ключи шифрования для вашего аккаунта. Если это было не вы, то, возможно, у вас серьёзная проблема.</string>
+    <string name="omemo__alert_keys_changed_yours__text_keys_changed">У одного из ваших устройств были измененны доверенные публичные ключи. Этого <i>не должно</i> происходить никогда. Вас либо взламывают, либо у используемые вами программы серьёзным образом сбоят.</string>
+    <string name="omemo__alert_keys_changed_partner__text_keys_changed">Изменились публичные ключи на одном из проверенных устройств собеседника. Этого <i>не должно</i> происходить никогда. Это может говорить о попытке взлома переписки, либо о серьёзном сбое используемых приложений.</string>
+    <string name="omemo__alert_new_device_partner__text_new_device">Ваш собеседник имеет непроверенные устройства с опубликованными ключами шифрования. Пожалуйста, проверьте список устройств и осуществите проверку цифровых отпечатков. Это <u>очень</u> важно.</string>
+    <string name="omemo__dialog_fingerprints__text_no_fingerprints">Нет цифровых отпечатков</string>
+    <string name="omemo__chat__placeholder_encryption_disabled">OMEMO шифрование отключено</string>
+    <string name="omemo__dialog_fingerprints__header">%s отпечатков</string>
+    <plurals name="omemo__dialog_fingerprints__text_devices_count">
+        <item quantity="one">%s, %d устройство</item>
+        <item quantity="few">%s, %d устройства</item>
+        <item quantity="many">%s, %d устройств</item>
+        <item quantity="other">%s, %d устройств</item>
+    </plurals>
+    <string name="omemo__dialog_purge_keys__header">Сбросить ключи шифрования</string>
+    <string name="omemo__dialog_purge_keys__text">Все опубликованные ключи шифрования будут удалены  с вашего сервера и с этого устройства. Все расшифрованные чаты будут навсегда удалены, вы не сможете восстановить их в будущем. Для возобновления шифрования, вам придётся заново осуществить процедуру проверки цифровых отпечатков со всеми собеседниками. \nИспользуйте эту функцию только в качестве крайней меры.</string>
+    <string name="omemo__dialog_purge_keys__button_purge_keys">Сбросить ключи</string>
+    <string name="omemo__dialog_delete_device__header">Удалить устройство</string>
+    <string name="omemo__dialog_delete_device__text">Вы действительно хотите удалить устройство %s?</string>
+    <string name="omemo__dialog_delete_device__button_delete">Удалить</string>
+    <string name="omemo__chat_settings__button_start_encrypted_chat">Начать зашифрованный чат</string>
+    <string name="omemo__chat_settings__button_open_encrypted_chat">Открыть зашифрованный чат</string>
+    <string name="omemo__chat_settings__button_open_regular_chat">Открыть обычный чат</string>
+</resources>

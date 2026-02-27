@@ -5,24 +5,31 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Build;
+
 import androidx.core.content.ContextCompat;
 
 import com.xabber.android.data.Application;
 
 public class PermissionsRequester {
 
+    public static final int REQUEST_PERMISSION_GALLERY = 4;
     public static final int REQUEST_PERMISSION_CAMERA = 5;
+    public static final int REQUEST_READ_EXTERNAL_STORAGE = 5;
 
     public static boolean requestFileReadPermissionIfNeeded(Activity activity, int requestCode) {
-        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, activity, requestCode);
+        return checkAndRequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, activity, requestCode);
+    }
+
+    public static boolean requestLocationPermissionIfNeeded(Activity activity, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION, activity, requestCode);
     }
 
     public static boolean requestFileReadPermissionIfNeeded(Fragment fragment, int requestCode) {
-        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
+        return checkAndRequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
     public static boolean requestFileReadPermissionIfNeeded(androidx.fragment.app.Fragment fragment, int requestCode) {
-        return checkAndRequestPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, fragment, requestCode);
+        return checkAndRequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, fragment, requestCode);
     }
 
     public static boolean requestFileWritePermissionIfNeeded(Fragment fragment, int requestCode) {
@@ -45,12 +52,33 @@ public class PermissionsRequester {
         return checkAndRequestPermission(Manifest.permission.CAMERA, fragment, requestCode);
     }
 
+    public static boolean requestCameraPermissionIfNeeded(Activity activity, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.CAMERA, activity, requestCode);
+    }
+
+    public static boolean requestRecordAudioPermissionIfNeeded(Fragment fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.RECORD_AUDIO, fragment, requestCode);
+    }
+
+    public static boolean requestRecordAudioPermissionIfNeeded(androidx.fragment.app.Fragment  fragment, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.RECORD_AUDIO, fragment, requestCode);
+    }
+
+    public static boolean requestRecordAudioPermissionIfNeeded(Activity activity, int requestCode) {
+        return checkAndRequestPermission(Manifest.permission.RECORD_AUDIO, activity, requestCode);
+    }
+
+
     public static boolean hasFileReadPermission() {
         return checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     public static boolean  hasCameraPermission() {
         return checkPermission(Manifest.permission.CAMERA);
+    }
+
+    public static boolean  hasLocationPermission() {
+        return checkPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 
     private static boolean checkAndRequestPermission(String permission, Activity activity, int requestCode) {

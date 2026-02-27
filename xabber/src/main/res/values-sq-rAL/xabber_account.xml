@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="forgot_pass">Harruat Fjalëkalimin?</string>
+    <string name="sync_success">Sinkronizuar</string>
+    <string name="sync_fail">Sinkronizimi dështoi</string>
+    <string name="resend_success">Email-i i verifikimit u dërgua</string>
+    <string name="social_bind_success">Rrjetet sociale u lidhen me sukses</string>
+    <string name="toast_no_internet">Mungon lidhja e Internetit</string>
+    <string name="progress_message">Ju lutem prisni</string>
+    <string name="progress_title_sync">Sinkronizimi</string>
+    <string name="progress_title_confirm">Verifikimi</string>
+    <string name="progress_title_resend">Ridërgo email-in</string>
+    <string name="hint_old_pass">Fjalëkalimi i vjetër</string>
+    <string name="hint_pass">Fjalëkalimi</string>
+    <string name="hint_confirm_pass">Konfirmo fjalëkalimin</string>
+    <string name="title_xabber_account">Llogaria Xabber</string>
+    <string name="title_complete_register">Përfundo rregjistrimin</string>
+</resources>

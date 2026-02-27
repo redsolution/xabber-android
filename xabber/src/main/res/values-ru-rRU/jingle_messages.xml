@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_jingle_message__header">%s голосовой вызов</string>
+    <string name="jingle__error__call_in_progress">Голосовой вызов уже идёт</string>
+    <string name="dialog_jingle_message__status_calling">Вызов…</string>
+    <string name="dialog_jingle_message__status_network_error">Ошибка сети…</string>
+    <string name="dialog_jingle_message__status_search">Поиск…</string>
+    <string name="jingle__text_body_message">Вам поступил голосовой звонок. Если вы видите это сообщение, ваш клиент, вероятно, не поддерживает функцию аудио и видеовызовов. Для получения дополнительной информации см. https://xabber.com/voice/</string>
+    <string name="dialog_jingle_message__status_connecting">Соединение…</string>
+    <string name="jingle__system_message__outgoing_call">Исходящий вызов, %s</string>
+    <string name="jingle__system_message__incoming_call">Входящий вызов, %s</string>
+    <string name="jingle__system_message__cancelled_call">Отмененный вызов</string>
+    <string name="jingle__system_message__no_devices_to_answer">Входящий вызов. У вас нет необходимых устройств для ответа</string>
+    <string name="jingle__error__audio_not_supported">Этот тип аудио не поддерживается в вашем браузере</string>
+    <string name="dialog_jingle_message__status_busy">Линия занята</string>
+    <string name="dialog_jingle_message__status_disconnected">Связь прервана</string>
+    <string name="dialog_jingle_message__button_switch_video__tooltip">Вкл/выкл видео</string>
+    <string name="dialog_jingle_message__button_mute_microphone__tooltip">Отключить микрофон</string>
+    <string name="dialog_jingle_message__button_mute__tooltip">Без звука</string>
+    <string name="dialog_jingle_message__button_share_screen__tooltip">Поделиться экраном</string>
+    <string name="dialog_jingle_message__button_accept_call__tooltip">Принять вызов</string>
+    <string name="dialog_jingle_message__button_decline_call__tooltip">Отклонить вызов</string>
+</resources>

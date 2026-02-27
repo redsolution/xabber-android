@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_compression">Tengavkirin bikarbîne</string>
+    <string name="account_host">Host</string>
+    <string name="account_password">Şîfre</string>
+    <string name="confirm_password">Şîfreyê bipejirîne</string>
+    <string name="account_port">Port</string>
+    <string name="account_priority">Pêşik</string>
+    <string name="account_resource">Çavkanî</string>
+    <string name="account_server_name">Rajekar</string>
+    <string name="account_proxy_host">Proxu host</string>
+    <string name="account_proxy_password">Şîfreya proxyê</string>
+    <string name="account_proxy_port">Proxy port</string>
+    <string name="account_proxy_type">Tîpa proxyê</string>
+    <string name="account_proxy_type_none">Neçalak</string>
+    <string name="account_proxy_user">Bikarhênerê proxyê</string>
+    <string name="account_tls_enable">TLS Çalak</string>
+    <string name="orbot_required_title">Orbot Saz bike?</string>
+    <string name="account_color">Rengê ajmêr</string>
+    <string name="account_color_name_green">Kesk</string>
+    <string name="account_color_name_orange">Pirteqalî</string>
+    <string name="account_color_name_red">Sor</string>
+    <string name="account_color_name_blue">Şîn</string>
+    <string name="account_color_name_indigo">Şînê tarî</string>
+    <string name="account_color_name_teal">Şînik</string>
+    <string name="account_color_name_blue_grey">Gewrê şîn</string>
+    <string name="account_color_name_cyan">Şînê vekirî</string>
+    <string name="account_color_name_deep_purple">Morê tarî</string>
+    <string name="account_color_name_lime">Lîmonî</string>
+    <string name="account_color_name_pink">Pembeyî</string>
+    <string name="account_color_name_purple">Mor</string>
+    <string name="account_color_name_light_blue">Şînê vekirî</string>
+    <string name="account_color_name_light_green">Keskê vekirî</string>
+    <string name="account_color_name_amber">Zerê tarî</string>
+    <string name="account_color_name_deep_orange">Pirteqaliyê tarî</string>
+    <string name="account_color_name_brown">Qehweyî</string>
+    <string name="account_bookmarks">Cîhnîşan</string>
+</resources>

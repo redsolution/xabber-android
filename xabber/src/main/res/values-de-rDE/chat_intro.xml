@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro_regular_chat">Regulärer Chat</string>
+    <string name="intro_regular_chat_text">Nachrichten in diesem Chat sind nicht verschlüsselt. Server speichern oft vorübergehende Nachrichten in einem Archiv. Dies ermöglicht eine einfache Synchronisierung des Geräts und die serverseitige Verlaufssuche, führt jedoch auch zu Datenschutzrisiken.</string>
+    <string name="intro_regular_chat_learn">Mehr über Instant-Messaging erfahren</string>
+    <string name="intro_regular_chat_link">https://www.xabber.com/learn/regular</string>
+    <string name="intro_encrypted_chat">Regulärer Chat</string>
+    <string name="intro_encrypted_chat_text">Nachrichten in diesem Chat sind Ende-zu-Ende-Verschlüsselung verschlüsselt. Sie müssen immer die Identität Ihres Kontakts bestätigen, indem Sie die Fingerabdrücke der Schlüssel überprüfen.</string>
+    <string name="intro_encrypted_chat_learn">Mehr über verschlüsselte Chats erfahren</string>
+    <string name="intro_encrypted_chat_link">https://www.xabber.com/learn/encrypted</string>
+    <string name="intro_public_group">Öffentliche Gruppe</string>
+    <string name="intro_public_group_text">Die Identitäten von Benutzern in dieser Gruppe sind öffentlich, so dass jedes Mitglied Sie kontaktieren kann mit Ihrer echten XMPP-ID.</string>
+    <string name="intro_public_group_learn">Mehr über öffentliche Gruppen erfahren</string>
+    <string name="intro_public_group_link">https://www.xabber.com/learn/groups</string>
+    <string name="intro_incognito_group">Inkognito-Gruppe</string>
+    <string name="intro_incognito_group_text">Identitäten von Benutzern in dieser Gruppe werden untereinander verborgen gehalten. Nur Gruppenadministratoren können auf Ihre echte XMPP-ID zugreifen. Seien Sie wachsam und geben Sie sich selbst nicht preis durch Unachtsamkeit.</string>
+    <string name="intro_incognito_group_learn">Mehr über Inkognito-Gruppen erfahren</string>
+    <string name="intro_incognito_group_link">https://www.xabber.com/learn/incognito</string>
+    <string name="intro_private_chat">Privater Chat</string>
+    <string name="intro_private_chat_text">Privater Chat mit inkognito-Benutzer. Nachrichten werden über den Gruppenserver weitergeleitet und Ihre Identitäten werden voneinander geheim gehalten. Seien Sie wachsam und geben Sie sich selbst nicht preis durch Unachtsamkeit.</string>
+    <string name="intro_private_chat_learn">Mehr über private Chats erfahren</string>
+    <string name="intro_private_chat_link">https://www.xabber.com/learn/private</string>
+</resources>

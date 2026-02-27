@@ -2,8 +2,6 @@ package com.xabber.android.ui.widget;
 
 import android.content.Context;
 import android.preference.Preference;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,25 +9,26 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.xabber.android.R;
+import com.xabber.android.data.Application;
 import com.xabber.android.data.account.AccountItem;
 import com.xabber.android.data.account.AccountManager;
-import com.xabber.android.data.account.listeners.OnAccountChangedListener;
-import com.xabber.android.data.entity.AccountJid;
+import com.xabber.android.ui.OnAddAccountClickListener;
+import com.xabber.android.ui.OnReorderClickListener;
 import com.xabber.android.ui.adapter.AccountListPreferenceAdapter;
 import com.xabber.android.ui.preferences.PreferenceEditor;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
  * Created by valery.miller on 29.08.17.
  */
 
-public class XMPPListPreference extends Preference implements OnAccountChangedListener, View.OnClickListener {
+public class XMPPListPreference extends Preference implements View.OnClickListener {
 
     private AccountListPreferenceAdapter accountListAdapter;
     private RelativeLayout rlReorder;
@@ -73,7 +72,7 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
 
     private void update() {
         List<AccountItem> accountItems = new ArrayList<>();
-        for (AccountItem accountItem : AccountManager.getInstance().getAllAccountItems()) {
+        for (AccountItem accountItem : AccountManager.INSTANCE.getAllAccountItems()) {
             accountItems.add(accountItem);
         }
         accountListAdapter.setAccountItems(accountItems);
@@ -83,22 +82,21 @@ public class XMPPListPreference extends Preference implements OnAccountChangedLi
     }
 
     @Override
-    public void onAccountsChanged(Collection<AccountJid> accounts) {
-        update();
-    }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.rlReorder:
-                EventBus.getDefault().post(new ReorderClickEvent());
+                for (OnReorderClickListener listener :
+                        Application.getInstance().getUIListeners(OnReorderClickListener.class)){
+                    listener.onAction();
+                }
                 break;
             case R.id.btnAddAccount:
-                EventBus.getDefault().post(new AddAccountClickEvent());
+                for (OnAddAccountClickListener listener :
+                        Application.getInstance().getUIListeners(OnAddAccountClickListener.class)){
+                    listener.onAction();
+                }
                 break;
         }
     }
 
-    public static class AddAccountClickEvent {}
-    public static class ReorderClickEvent {}
 }

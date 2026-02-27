@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="omemo__dialog_fingerprints__text_this_device">המכשיר הזה</string>
+    <string name="omemo__dialog_delete_device__text">למחוק את המכשיר %s?</string>
+    <string name="omemo__dialog_delete_device__button_delete">מחיקה</string>
+</resources>

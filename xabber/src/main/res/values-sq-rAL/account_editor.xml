@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account_password">Fjalëkalimi</string>
+    <string name="confirm_password">Konfirmo fjalëkalimin</string>
+    <string name="account_priority">Prioriteti</string>
+    <string name="account_xmpp_register_warning" comment="settings_account__text_must_register">Ti duhet <a href="http://www.google.com/#q=register an XMPP account">të rregjistrosh një llogari XMPP</a> përpara se ta shtosh atë në Xabber!</string>
+    <string name="account_proxy_type_none">E çaktivizuar</string>
+    <string name="account_sasl">Përdor autentifikimin SASL (e rekomanduar)</string>
+    <string name="account_sasl_summary">Çaktivizo për servera shumë të vjetër</string>
+    <string name="account_store_password">Ruaj fjalëkalimin</string>
+    <string name="account_tls_enable">Aktivizo TLS</string>
+    <string name="account_tls_enable_summary">Përdor enkriptimin TLS kur është e mundur</string>
+    <string name="account_tls_mode">Përdorimi TLS/SSL</string>
+    <string name="account_tls_require">Kërko TLS </string>
+    <string name="account_tls_require_summary">Kërko enkriptim TLS kur lidhesh në server</string>
+    <string name="account_use_tor">Përdor rrjetin anonim TOR (kërkon proxy Orbot)</string>
+    <string name="orbot_required_title">Instalo Orbot?</string>
+    <string name="install_orbot">Instalo Orbot</string>
+    <string name="account_color_name_green">E gjelbër</string>
+    <string name="account_color_name_orange">Portokalli</string>
+    <string name="account_color_name_red">E Kuqe</string>
+    <string name="account_color_name_blue">Blu</string>
+    <string name="account_mam_default_behavior_title">Menaxhimi i Mesazheve të Arkivuar</string>
+    <string name="account_clear_history_on_exit_title">Pastro historikun në dalje </string>
+    <string name="account_sync">Sinkronizimi</string>
+    <string name="account_sync_summary" comment="settings_account__label_synchronization_hint">Sinkronizimi me llogarinë Xabber</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="web_client__screen_about__block_1__header">Protokolli XMPP</string>
+    <string name="web_client__screen_about__block_3__header">Zhvilluesit</string>
+    <string name="web_client__screen_about__block_4__header">Përkthyesit</string>
+    <string name="web_client__screen_about__block_4__text_2__link__text">%s projekt</string>
+    <string name="web_client__screen_about__block_5__text_1__link__text">GitHub</string>
+</resources>

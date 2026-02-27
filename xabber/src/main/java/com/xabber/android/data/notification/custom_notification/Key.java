@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.xabber.android.R;
 import com.xabber.android.data.entity.AccountJid;
-import com.xabber.android.data.entity.UserJid;
+import com.xabber.android.data.entity.ContactJid;
 import com.xabber.android.data.message.phrase.Phrase;
 import com.xabber.android.data.message.phrase.PhraseManager;
 
@@ -12,14 +12,14 @@ import androidx.annotation.Nullable;
 
 public class Key {
     private AccountJid account;
-    private UserJid user;
+    private ContactJid user;
     private String group;
     private Long phraseID;
     private NotifyPrefs.Type type;
 
     private Key() { }
 
-    public static Key createKey(AccountJid account, UserJid user) {
+    public static Key createKey(AccountJid account, ContactJid user) {
         Key key = new Key();
         key.account = account;
         key.user = user;
@@ -63,7 +63,7 @@ public class Key {
     }
 
     public static @Nullable
-    Key createKey(AccountJid account, UserJid user, String group, Long phraseID) {
+    Key createKey(AccountJid account, ContactJid user, String group, Long phraseID) {
         if (account != null && user != null)
             return createKey(account, user);
         else if (account != null && group != null)
@@ -79,7 +79,7 @@ public class Key {
         return account;
     }
 
-    public UserJid getUser() {
+    public ContactJid getUser() {
         return user;
     }
 

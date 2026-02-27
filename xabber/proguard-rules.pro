@@ -8,6 +8,7 @@
 # RxJava
 -dontwarn rx.internal.util.**
 -dontwarn sun.misc.**
+-dontwarn module-info
 
 -keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
    long producerIndex;
@@ -91,3 +92,6 @@
 
 # retrofit
 -dontwarn retrofit2.Platform$Java8
+
+# Android Image Cropper
+-keep class androidx.appcompat.widget.** { *; }

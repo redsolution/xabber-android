@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quick_contacts">Contatos rápidos</string>
+    <string name="recent_searches">Pesquisas recentes</string>
+    <string name="type_here_to_search">Digite aqui para pesquisar</string>
+    <string name="nothing_was_searched">Sem resultados</string>
+    <string name="placeholder_no_matches">Nenhuma correspondência</string>
+    <string name="placeholder_loading">Carregando...</string>
+    <string name="discover__no_matches">Nao há resultados para</string>
+    <string name="discover__text_discovered_groups">%1$d grupos descobertos por %2$s</string>
+</resources>
